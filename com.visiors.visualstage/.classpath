@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/batik-anim.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/batik-awt-util.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/batik-bridge.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/batik-codec.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/batik-css.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/batik-dom.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/batik-ext.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/batik-extension.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/batik-gui-util.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/batik-gvt.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/batik-parser.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/batik-script.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/batik-svg-dom.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/batik-svggen.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/batik-swing.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/batik-transcoder.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/batik-util.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/batik-xml.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/js.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/pdf-transcoder.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/xalan-2.6.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/xerces_2_5_0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/xml-apis-ext.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/xml-apis.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/batik-rasterizer.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/batik-slideshow.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/batik-squiggle.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/batik-svgpp.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/batik-ttf2svg.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/batik/batik.jar"/>
+	<classpathentry kind="lib" path="lib/google/juice/guice-3.0.jar"/>
+	<classpathentry kind="lib" path="lib/google/juice/guice-assistedinject-3.0.jar"/>
+	<classpathentry kind="lib" path="lib/google/juice/guice-grapher-3.0.jar"/>
+	<classpathentry kind="lib" path="lib/google/juice/guice-jmx-3.0.jar"/>
+	<classpathentry kind="lib" path="lib/google/juice/guice-jndi-3.0.jar"/>
+	<classpathentry kind="lib" path="lib/google/juice/guice-multibindings-3.0.jar"/>
+	<classpathentry kind="lib" path="lib/google/juice/guice-persist-3.0.jar"/>
+	<classpathentry kind="lib" path="lib/google/juice/guice-servlet-3.0.jar"/>
+	<classpathentry kind="lib" path="lib/google/juice/guice-spring-3.0.jar"/>
+	<classpathentry kind="lib" path="lib/google/juice/guice-struts2-plugin-3.0.jar"/>
+	<classpathentry kind="lib" path="lib/google/juice/guice-throwingproviders-3.0.jar"/>
+	<classpathentry kind="lib" path="lib/google/juice/javax.inject.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-1.7.5/slf4j-simple-1.7.5.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-1.7.5/jcl-over-slf4j-1.7.5.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-1.7.5/jul-to-slf4j-1.7.5.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-1.7.5/log4j-over-slf4j-1.7.5.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-1.7.5/slf4j-api-1.7.5.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-1.7.5/slf4j-ext-1.7.5.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-1.7.5/slf4j-jcl-1.7.5.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-1.7.5/slf4j-log4j12-1.7.5.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-1.7.5/slf4j-migrator-1.7.5.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-1.7.5/slf4j-nop-1.7.5.jar"/>
+	<classpathentry kind="lib" path="lib/others/mbassador-1.1.7.jar" sourcepath="lib/others/eventbus-2.1.0-beta-1-sources.jar"/>
+	<classpathentry kind="lib" path="lib/google/guava/guava-14.0.1-sources.jar"/>
+	<classpathentry kind="lib" path="lib/google/guava/guava-14.0.1.jar" sourcepath="lib/google/guava/guava-14.0.1-sources.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
