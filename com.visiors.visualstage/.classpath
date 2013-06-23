@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry kind="src" path="src/main/test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="lib/batik/batik-anim.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/batik/batik-awt-util.jar"/>
@@ -57,5 +58,6 @@
 	<classpathentry kind="lib" path="lib/others/mbassador-1.1.7.jar" sourcepath="lib/others/eventbus-2.1.0-beta-1-sources.jar"/>
 	<classpathentry kind="lib" path="lib/google/guava/guava-14.0.1-sources.jar"/>
 	<classpathentry kind="lib" path="lib/google/guava/guava-14.0.1.jar" sourcepath="lib/google/guava/guava-14.0.1-sources.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
