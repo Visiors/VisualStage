@@ -1,4 +1,4 @@
-package com.visiors.visualstage.model.listener;
+package com.visiors.visualstage.graph.listener;
 
 import com.visiors.visualstage.graph.model.EdgeModel;
 import com.visiors.visualstage.graph.model.NodeModel;
@@ -13,5 +13,4 @@ public interface GraphModelListener {
 
 	public void edgeRemoved(EdgeModel edge);
 
-	public void edgeReconnected(EdgeModel edge, NodeModel node, boolean sourceNode);
 }

@@ -3,6 +3,7 @@ package com.visiors.visualstage.graph.model.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.visiors.visualstage.exception.DuplicateIdentifierException;
 import com.visiors.visualstage.graph.model.Copyable;
 import com.visiors.visualstage.graph.model.EdgeModel;
 import com.visiors.visualstage.graph.model.NodeModel;
@@ -10,6 +11,10 @@ import com.visiors.visualstage.graph.model.NodeModel;
 /**
  * This is a default implementation for {@link NodeModel}.
  * 
+ * 
+ */
+/**
+ * @author Sharokh
  * 
  */
 public class DefaultNodeModel extends AbstractGraphObject implements NodeModel {
@@ -25,7 +30,10 @@ public class DefaultNodeModel extends AbstractGraphObject implements NodeModel {
 	}
 
 	/**
-	 * Creates a new node with the specified id.
+	 * Creates a new node with the specified id. The specified <code>id</code>
+	 * must be unique within the entire <code>graph</code> hierarchy<br>
+	 * An {@link DuplicateIdentifierException} will be thrown if the given
+	 * <code>id</code> is not unique.
 	 * 
 	 * @param id
 	 *            a unique identifier for the node, or -1 if a unique id should
@@ -129,31 +137,32 @@ public class DefaultNodeModel extends AbstractGraphObject implements NodeModel {
 		return sb.append("Node (").append("id= ").append(getID()).append(" ]").toString();
 	}
 
-	// //////////////////////////////////////////////////////////////////////////
-	// Internal access only
-
 	@Override
-	public boolean connectToIncomingEdge(EdgeModel edge) {
-		incomingEdges.add(edge);
-		return true;
-	}
+	public void preConnectAsSource(EdgeModel edge) {
 
-	@Override
-	public boolean connectToOutgoingEdge(EdgeModel edge) {
 		outgoingEdges.add(edge);
-		return true;
+
 	}
 
 	@Override
-	public boolean disconnectFromIncomingEdge(EdgeModel edge) {
-		incomingEdges.remove(edge);
-		return true;
-	}
+	public void preDisconnectAsSource(EdgeModel edge) {
 
-	@Override
-	public boolean disconnectFromOutgoingEdge(EdgeModel edge) {
 		outgoingEdges.remove(edge);
-		return true;
+
+	}
+
+	@Override
+	public void preConnectAsTarget(EdgeModel edge) {
+
+		incomingEdges.add(edge);
+
+	}
+
+	@Override
+	public void preDisconnectAsTarget(EdgeModel edge) {
+
+		incomingEdges.remove(edge);
+
 	}
 
 }

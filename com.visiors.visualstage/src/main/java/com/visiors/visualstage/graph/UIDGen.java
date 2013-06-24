@@ -16,7 +16,7 @@ public class UIDGen {
 	/*
 	 * counter containing the next identifier proposal
 	 */
-	private long nextId = 1000;
+	private long nextId = -1;
 	/*
 	 * buffer block size for each allocation
 	 */

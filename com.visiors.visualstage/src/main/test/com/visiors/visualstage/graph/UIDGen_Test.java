@@ -2,8 +2,8 @@ package com.visiors.visualstage.graph;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
@@ -37,13 +37,11 @@ public class UIDGen_Test {
 
 		// push an external id that is not used and expect no exception
 		exteranlId = currentID + 2;
-		caught = null;
 		try {
 			UIDGen.getInstance().considerExternalId(exteranlId);
 		} catch (Throwable t) {
-			caught = t;
+			fail();
 		}
-		assertNull(caught);
 
 		// expect an exception as we put the same id again
 		exteranlId = currentID;

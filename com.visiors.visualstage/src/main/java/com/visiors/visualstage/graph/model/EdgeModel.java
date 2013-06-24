@@ -1,5 +1,7 @@
 package com.visiors.visualstage.graph.model;
 
+import com.visiors.visualstage.graph.listener.EdgeModelListener;
+
 /**
  * <p>
  * This interface defines a graph <code>edge</code> (link, connection,
@@ -28,4 +30,8 @@ public interface EdgeModel extends GraphObjectModel {
 	 * Connects the edge to the the target node
 	 */
 	public void setTargetNode(NodeModel node);
+
+	public void addEdgeModelListener(EdgeModelListener listener);
+
+	public void removeEdgeModelListener(EdgeModelListener listener);
 }

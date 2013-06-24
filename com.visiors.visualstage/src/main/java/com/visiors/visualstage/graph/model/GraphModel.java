@@ -2,7 +2,7 @@ package com.visiors.visualstage.graph.model;
 
 import java.util.List;
 
-import com.visiors.visualstage.model.listener.GraphModelListener;
+import com.visiors.visualstage.graph.listener.GraphModelListener;
 
 /**
  * This interface defines the requirements for an graph without any notion of a
@@ -63,15 +63,16 @@ public interface GraphModel extends NodeModel {
 	 */
 	public List<GraphObjectModel> getGraphObjects();
 
-	/**
-	 * Connects the given edge to <code>sourceNode</code>
-	 */
-	public void connectEdgeToSourceNode(EdgeModel edge, NodeModel sourceNode);
-
-	/**
-	 * Connects the given edge to <code>targetNode</code>
-	 */
-	public void connectEdgetoTargetNode(EdgeModel edge, NodeModel targetNode);
+	//
+	// /**
+	// * Connects the given edge to <code>sourceNode</code>
+	// */
+	// public void connectEdgeToSourceNode(EdgeModel edge, NodeModel node);
+	//
+	// /**
+	// * Connects the given edge to <code>targetNode</code>
+	// */
+	// public void connectEdgeToTargetNode(EdgeModel edge, NodeModel node);
 
 	/**
 	 * Checks if the the given node is a member of the graph

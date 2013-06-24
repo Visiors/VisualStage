@@ -5,23 +5,43 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.visiors.visualstage.exception.DuplicateIdentifierException;
+import com.visiors.visualstage.graph.listener.GraphModelListener;
 import com.visiors.visualstage.graph.model.EdgeModel;
 import com.visiors.visualstage.graph.model.GraphModel;
 import com.visiors.visualstage.graph.model.GraphObjectModel;
 import com.visiors.visualstage.graph.model.NodeModel;
-import com.visiors.visualstage.model.listener.GraphModelListener;
 
+/**
+ * This is a default implementation for {@link GraphModel}. This class also
+ * extends the {@link DefaultGraphModel}; i.e. a graph model can be considered
+ * as a node as well. This approach is especially useful in context of nested
+ * graphs.
+ */
 public class DefaultGraphModel extends DefaultNodeModel implements GraphModel {
-
 	protected Map<Long, NodeModel> nodeMap;
 	protected Map<Long, EdgeModel> edgeMap;
 	protected List<GraphModelListener> graphModelListener;
 
+	/**
+	 * Creates a new graph. An unique id will be assigned automatically.
+	 */
 	public DefaultGraphModel() {
 
-		super();
+		this(-1);
 	}
 
+	/**
+	 * Creates a new node graph the specified <code>id</code>. The specified
+	 * <code>id</code> must be unique within the entire <code>graph</code>
+	 * hierarchy<br>
+	 * An {@link DuplicateIdentifierException} will be thrown if the given
+	 * <code>id</code> is not unique.
+	 * 
+	 * @param id
+	 *            a unique identifier for the node, or -1 if a unique id should
+	 *            be assigned automatically.
+	 */
 	public DefaultGraphModel(long id) {
 
 		super(id);
@@ -60,14 +80,15 @@ public class DefaultGraphModel extends DefaultNodeModel implements GraphModel {
 	@Override
 	public void removeNode(NodeModel node) {
 
-		final List<EdgeModel> incomingEdges = node.getIncomingEdges();
+		final List<EdgeModel> incomingEdges = new ArrayList<EdgeModel>(node.getIncomingEdges());
 		for (EdgeModel edge : incomingEdges) {
-			connectEdgetoTargetNode(edge, null);
+			edge.setTargetNode(null);
+
 		}
 
-		final List<EdgeModel> outgoingEdges = node.getOutgoingEdges();
+		final List<EdgeModel> outgoingEdges = new ArrayList<EdgeModel>(node.getOutgoingEdges());
 		for (EdgeModel edge : outgoingEdges) {
-			connectEdgeToSourceNode(edge, null);
+			edge.setSourceNode(null);
 		}
 
 		nodeMap.remove(node.getID());
@@ -94,23 +115,17 @@ public class DefaultGraphModel extends DefaultNodeModel implements GraphModel {
 		postEdgeAdded(edge);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.visiors.visualstage.graph.model.GraphModel#removeEdge(com.visiors
-	 * .visualstage.graph.model.EdgeModel)
-	 */
 	@Override
 	public void removeEdge(EdgeModel edge) {
-
 		if (edge.getSourceNode() != null) {
-			connectEdgeToSourceNode(edge, null);
+			edge.setSourceNode(null);
 		}
 		if (edge.getTargetNode() != null) {
-			connectEdgetoTargetNode(edge, null);
+			edge.setTargetNode(null);
 		}
+
 		edgeMap.remove(edge.getID());
+
 		postEdgeRemoved(edge);
 	}
 
@@ -204,55 +219,23 @@ public class DefaultGraphModel extends DefaultNodeModel implements GraphModel {
 		return parent == null ? 0 : parent.getDepth() + 1;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.visiors.visualstage.graph.model.GraphModel#connectEdgeToSourceNode
-	 * (com.visiors.visualstage.graph.model.EdgeModel,
-	 * com.visiors.visualstage.graph.model.NodeModel)
-	 */
-	@Override
-	public void connectEdgeToSourceNode(EdgeModel edge, NodeModel sourceNode) {
-
-		final NodeModel currentNode = edge.getSourceNode();
-		if (edge.getSourceNode() != null) {
-			if (!edge.getSourceNode().disconnectFromOutgoingEdge(edge)) {
-				return;
-			}
-		}
-		if (!sourceNode.connectToOutgoingEdge(edge)) {
-			return;
-		}
-		edge.setSourceNode(sourceNode);
-
-		postEdgeReconnected(edge, currentNode, true);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.visiors.visualstage.graph.model.GraphModel#connectEdgetoTargetNode
-	 * (com.visiors.visualstage.graph.model.EdgeModel,
-	 * com.visiors.visualstage.graph.model.NodeModel)
-	 */
-	@Override
-	public void connectEdgetoTargetNode(EdgeModel edge, NodeModel targetNode) {
-
-		final NodeModel currentNode = edge.getTargetNode();
-
-		if (edge.getTargetNode() != null) {
-			if (!edge.getTargetNode().disconnectFromIncomingEdge(edge)) {
-				return;
-			}
-		}
-		if (!targetNode.connectToIncomingEdge(edge)) {
-			return;
-		}
-		edge.setTargetNode(targetNode);
-		postEdgeReconnected(edge, currentNode, false);
-	}
+	// @Override
+	// public void connectEdgeToSourceNode(EdgeModel edge, NodeModel node) {
+	//
+	// NodeModel oldNode = edge.getSourceNode();
+	// edge.setSourceNode(node);
+	// postEdgeSourceNodeChanged(edge, oldNode);
+	// }
+	//
+	// @Override
+	// public void connectEdgeToTargetNode(EdgeModel edge, NodeModel node) {
+	//
+	// NodeModel oldNode = edge.getTargetNode();
+	//
+	// edge.setTargetNode(node);
+	//
+	// postEdgeSourceNodeChanged(edge, oldNode);
+	// }
 
 	/*
 	 * (non-Javadoc)
@@ -383,13 +366,6 @@ public class DefaultGraphModel extends DefaultNodeModel implements GraphModel {
 
 		for (GraphModelListener l : graphModelListener) {
 			l.edgeRemoved(edge);
-		}
-	}
-
-	protected void postEdgeReconnected(EdgeModel edge, NodeModel oldNode, boolean sourceNodeChanged) {
-
-		for (GraphModelListener l : graphModelListener) {
-			l.edgeReconnected(edge, oldNode, sourceNodeChanged);
 		}
 	}
 

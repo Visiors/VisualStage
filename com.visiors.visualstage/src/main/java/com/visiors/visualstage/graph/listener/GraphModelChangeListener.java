@@ -1,4 +1,4 @@
-package com.visiors.visualstage.model.listener;
+package com.visiors.visualstage.graph.listener;
 
 
 public interface GraphModelChangeListener extends GraphModelListener{
