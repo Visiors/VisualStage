@@ -2,8 +2,6 @@ package com.visiors.visualstage.graph.model;
 
 import java.util.List;
 
-import com.visiors.visualstage.graph.listener.GraphModelListener;
-
 /**
  * This interface defines the requirements for an graph without any notion of a
  * visualization. This class can be used on its own for applying graph
@@ -14,24 +12,19 @@ import com.visiors.visualstage.graph.listener.GraphModelListener;
 public interface GraphModel extends NodeModel {
 
 	/**
-	 * Adds the given node to the graph.
+	 * Adds the given graph-objects (edges, nodes) to the graph.
 	 */
-	public void addNode(NodeModel node);
+	public void add(GraphObjectModel... graphObjects);
 
 	/**
-	 * removes the specified node from the graph
+	 * removes the specified graph-objects (edges, nodes) from the graph
 	 */
-	public void removeNode(NodeModel node);
+	public void remove(GraphObjectModel... graphObjects);
 
 	/**
-	 * Adds the given edge to the graph
+	 * Returns all graph-objects (edges, nodes) in the graph
 	 */
-	public void addEdge(EdgeModel edge);
-
-	/**
-	 * Removes the specified edge from the graph
-	 */
-	public void removeEdge(EdgeModel edge);
+	public List<GraphObjectModel> getGraphObjects();
 
 	/**
 	 * Removes all nodes and edges from the graph
@@ -58,11 +51,6 @@ public interface GraphModel extends NodeModel {
 	 */
 	public List<EdgeModel> getEdges();
 
-	/**
-	 * Returns all nodes and edges in the graph
-	 */
-	public List<GraphObjectModel> getGraphObjects();
-
 	//
 	// /**
 	// * Connects the given edge to <code>sourceNode</code>
@@ -75,20 +63,9 @@ public interface GraphModel extends NodeModel {
 	// public void connectEdgeToTargetNode(EdgeModel edge, NodeModel node);
 
 	/**
-	 * Checks if the the given node is a member of the graph
-	 */
-	public boolean existsNode(NodeModel node);
-
-	/**
-	 * 
-	 * Checks if the the given edge is a member of the graph
-	 */
-	public boolean existsEdge(EdgeModel edge);
-
-	/**
 	 * Graphs can be nested. This method returns the depth of a graph in the
 	 * graph hierarchy tree. The graph on the root of hierarchy tree has the
-	 * depth 0
+	 * depth <code>0</code>
 	 */
 	public int getDepth();
 

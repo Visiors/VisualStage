@@ -1,18 +1,18 @@
 package com.visiors.visualstage.graph.model.impl;
 
+import com.visiors.visualstage.graph.CustomData;
 import com.visiors.visualstage.graph.UIDGen;
-import com.visiors.visualstage.graph.model.Copyable;
 import com.visiors.visualstage.graph.model.GraphModel;
 import com.visiors.visualstage.graph.model.GraphObjectModel;
 
 /**
  * This class an implements of {@link AbstractGraphObject}.
  */
-public abstract class AbstractGraphObject implements GraphObjectModel, Copyable {
+public abstract class AbstractGraphObject implements GraphObjectModel {
 
 	protected GraphModel parentGraph;
 	protected final long id;
-	protected Object customObject;
+	protected CustomData customObject;
 
 	/**
 	 * The default constructor. This constructor creates a unique
@@ -60,7 +60,7 @@ public abstract class AbstractGraphObject implements GraphObjectModel, Copyable 
 	 * .lang.Object)
 	 */
 	@Override
-	public void setCustomObject(Object object) {
+	public void setCustomObject(CustomData object) {
 
 		customObject = object;
 	}
@@ -71,7 +71,7 @@ public abstract class AbstractGraphObject implements GraphObjectModel, Copyable 
 	 * @see com.visiors.visualstage.graph.model.GraphObjectModel#getCustomData()
 	 */
 	@Override
-	public Object getCustomObject() {
+	public CustomData getCustomObject() {
 
 		return customObject;
 	}

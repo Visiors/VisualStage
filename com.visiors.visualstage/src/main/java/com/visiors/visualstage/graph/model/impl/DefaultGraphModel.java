@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.visiors.visualstage.exception.DuplicateIdentifierException;
-import com.visiors.visualstage.graph.listener.GraphModelListener;
 import com.visiors.visualstage.graph.model.EdgeModel;
 import com.visiors.visualstage.graph.model.GraphModel;
+import com.visiors.visualstage.graph.model.GraphModelListener;
 import com.visiors.visualstage.graph.model.GraphObjectModel;
 import com.visiors.visualstage.graph.model.NodeModel;
 
@@ -54,11 +54,46 @@ public class DefaultGraphModel extends DefaultNodeModel implements GraphModel {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.visiors.visualstage.graph.model.GraphModel#addNode(com.visiors.
-	 * visualstage.graph.model.NodeModel)
+	 * @see
+	 * com.visiors.visualstage.graph.model.GraphModel#add(com.visiors.visualstage
+	 * .graph.model.GraphObjectModel[])
 	 */
 	@Override
-	public void addNode(NodeModel node) {
+	public void add(GraphObjectModel... graphObjects) {
+		for (GraphObjectModel go : graphObjects) {
+			if (go instanceof NodeModel) {
+				addNode((NodeModel) go);
+			}
+		}
+		for (GraphObjectModel go : graphObjects) {
+			if (go instanceof EdgeModel) {
+				addEdge((EdgeModel) go);
+			}
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.visiors.visualstage.graph.model.GraphModel#remove(com.visiors.visualstage
+	 * .graph.model.GraphObjectModel[])
+	 */
+	@Override
+	public void remove(GraphObjectModel... graphObjects) {
+		for (GraphObjectModel go : graphObjects) {
+			if (go instanceof EdgeModel) {
+				removeEdge((EdgeModel) go);
+			}
+		}
+		for (GraphObjectModel go : graphObjects) {
+			if (go instanceof NodeModel) {
+				removeNode((NodeModel) go);
+			}
+		}
+	}
+
+	protected void addNode(NodeModel node) {
 
 		if (nodeMap.put(node.getID(), node) != null) {
 			throw new IllegalArgumentException("The edge cannot be added to graph model. "
@@ -70,20 +105,11 @@ public class DefaultGraphModel extends DefaultNodeModel implements GraphModel {
 		postNodeAdded(node);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.visiors.visualstage.graph.model.GraphModel#removeNode(com.visiors
-	 * .visualstage.graph.model.NodeModel)
-	 */
-	@Override
-	public void removeNode(NodeModel node) {
+	protected void removeNode(NodeModel node) {
 
 		final List<EdgeModel> incomingEdges = new ArrayList<EdgeModel>(node.getIncomingEdges());
 		for (EdgeModel edge : incomingEdges) {
 			edge.setTargetNode(null);
-
 		}
 
 		final List<EdgeModel> outgoingEdges = new ArrayList<EdgeModel>(node.getOutgoingEdges());
@@ -96,14 +122,7 @@ public class DefaultGraphModel extends DefaultNodeModel implements GraphModel {
 		postNodeRemoved(node);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.visiors.visualstage.graph.model.GraphModel#addEdge(com.visiors.
-	 * visualstage.graph.model.EdgeModel)
-	 */
-	@Override
-	public void addEdge(EdgeModel edge) {
+	protected void addEdge(EdgeModel edge) {
 
 		if (edgeMap.put(edge.getID(), edge) != null) {
 			throw new IllegalArgumentException("The edge cannot be added to the graph model. "
@@ -115,8 +134,7 @@ public class DefaultGraphModel extends DefaultNodeModel implements GraphModel {
 		postEdgeAdded(edge);
 	}
 
-	@Override
-	public void removeEdge(EdgeModel edge) {
+	protected void removeEdge(EdgeModel edge) {
 		if (edge.getSourceNode() != null) {
 			edge.setSourceNode(null);
 		}
@@ -219,50 +237,6 @@ public class DefaultGraphModel extends DefaultNodeModel implements GraphModel {
 		return parent == null ? 0 : parent.getDepth() + 1;
 	}
 
-	// @Override
-	// public void connectEdgeToSourceNode(EdgeModel edge, NodeModel node) {
-	//
-	// NodeModel oldNode = edge.getSourceNode();
-	// edge.setSourceNode(node);
-	// postEdgeSourceNodeChanged(edge, oldNode);
-	// }
-	//
-	// @Override
-	// public void connectEdgeToTargetNode(EdgeModel edge, NodeModel node) {
-	//
-	// NodeModel oldNode = edge.getTargetNode();
-	//
-	// edge.setTargetNode(node);
-	//
-	// postEdgeSourceNodeChanged(edge, oldNode);
-	// }
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.visiors.visualstage.graph.model.GraphModel#existsNode(com.visiors
-	 * .visualstage.graph.model.NodeModel)
-	 */
-	@Override
-	public boolean existsNode(NodeModel node) {
-
-		return nodeMap.containsValue(node);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.visiors.visualstage.graph.model.GraphModel#existsEdge(com.visiors
-	 * .visualstage.graph.model.EdgeModel)
-	 */
-	@Override
-	public boolean existsEdge(EdgeModel edge) {
-
-		return edgeMap.containsValue(edge);
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -271,14 +245,19 @@ public class DefaultGraphModel extends DefaultNodeModel implements GraphModel {
 	@Override
 	public GraphModel deepCopy() {
 
-		final DefaultGraphModel graphModel = new DefaultGraphModel();
+		final DefaultGraphModel gm = new DefaultGraphModel();
+		gm.incomingEdges = new ArrayList<EdgeModel>(incomingEdges);
+		gm.outgoingEdges = new ArrayList<EdgeModel>(outgoingEdges);
+		gm.parentGraph = parentGraph;
+		gm.customObject = customObject.deepCopy();
+
 		for (NodeModel n : nodeMap.values()) {
 			nodeMap.put(n.getID(), n);
 		}
 		for (EdgeModel e : edgeMap.values()) {
 			edgeMap.put(e.getID(), e);
 		}
-		return graphModel;
+		return gm;
 	}
 
 	/*

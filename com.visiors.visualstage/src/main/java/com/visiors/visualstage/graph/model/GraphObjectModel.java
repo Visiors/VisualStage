@@ -1,5 +1,7 @@
 package com.visiors.visualstage.graph.model;
 
+import com.visiors.visualstage.graph.CustomData;
+
 /**
  * 
  * <p>
@@ -23,19 +25,16 @@ public interface GraphObjectModel {
 	 * Allows clients to attach an object to a this {@link GraphObjectModel} .
 	 * This is a convenient way for client applications to store additional
 	 * information to this graph element. <br>
-	 * Note: The {@link #deepCopy()} creates a deep copy of the
-	 * <code>graph object</code> instance. It checks if the
-	 * <code>custom data</code> implements the interface {@link Copyable}; it
-	 * this is the case it calls the method {@link Copyable#deepCopy()} of the
-	 * give <code>custom object</code> otherwise it simple copies its reference
+	 * Note: The custom data needs to implement the interface
+	 * {@link GraphObjectModel} in order to be cloned and store properly.
 	 */
 	// TODOL object must implement attributable in order to be persistable
-	public void setCustomObject(Object object);
+	public void setCustomObject(CustomData data);
 
 	/**
 	 * returns the custom object attached to this graph element
 	 */
-	public Object getCustomObject();
+	public CustomData getCustomObject();
 
 	/**
 	 * This method returns the {@link GraphModel} in which this

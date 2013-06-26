@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.visiors.visualstage.exception.DuplicateIdentifierException;
-import com.visiors.visualstage.graph.model.Copyable;
 import com.visiors.visualstage.graph.model.EdgeModel;
 import com.visiors.visualstage.graph.model.NodeModel;
 
@@ -118,11 +117,7 @@ public class DefaultNodeModel extends AbstractGraphObject implements NodeModel {
 		n.incomingEdges = new ArrayList<EdgeModel>(incomingEdges);
 		n.outgoingEdges = new ArrayList<EdgeModel>(outgoingEdges);
 		n.parentGraph = parentGraph;
-		if (customObject instanceof Copyable) {
-			n.customObject = ((Copyable) customObject).deepCopy();
-		} else {
-			n.customObject = customObject;
-		}
+		n.customObject = customObject.deepCopy();
 		return n;
 	}
 

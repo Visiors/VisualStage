@@ -1,7 +1,5 @@
-package com.visiors.visualstage.graph.listener;
+package com.visiors.visualstage.graph.model;
 
-import com.visiors.visualstage.graph.model.EdgeModel;
-import com.visiors.visualstage.graph.model.NodeModel;
 
 public interface EdgeModelListener {
 

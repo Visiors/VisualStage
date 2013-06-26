@@ -1,6 +1,5 @@
 package com.visiors.visualstage.graph.model;
 
-import com.visiors.visualstage.graph.listener.EdgeModelListener;
 
 /**
  * <p>

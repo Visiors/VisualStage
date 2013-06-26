@@ -29,11 +29,11 @@ public class GraphModel_Test {
 		NodeModel nodeC = new DefaultNodeModel();
 
 		// add some nodes and edges
-		graph.addEdge(edgeA);
-		graph.addEdge(edgeB);
-		graph.addNode(nodeA);
-		graph.addNode(nodeB);
-		graph.addNode(nodeC);
+		graph.add(edgeA);
+		graph.add(edgeB);
+		graph.add(nodeA);
+		graph.add(nodeB);
+		graph.add(nodeC);
 		// connect nodes
 		edgeA.setSourceNode(nodeA);
 		edgeA.setTargetNode(nodeB);
@@ -59,7 +59,7 @@ public class GraphModel_Test {
 		assertEquals(graph.getNodes().size(), 3);
 		assertEquals(graph.getEdges().size(), 2);
 		// remove and edge
-		graph.removeEdge(edgeA);
+		graph.remove(edgeA);
 		// verify edges data
 		assertEquals(edgeA.getSourceNode(), null);
 		assertEquals(edgeA.getTargetNode(), null);
@@ -78,7 +78,7 @@ public class GraphModel_Test {
 		assertEquals(nodeC.getOutdegree(), 0);
 
 		// remove a connected node
-		graph.removeNode(nodeA);
+		graph.remove(nodeA);
 		// verify graph' internal data
 		assertEquals(graph.getNodes().size(), 2);
 		assertEquals(graph.getEdges().size(), 1);
@@ -105,7 +105,7 @@ public class GraphModel_Test {
 		final int e = 1000000;
 		// create n nodes and n x n edges
 		for (int i = 0; i < n; i++) {
-			graph.addNode(new DefaultNodeModel());
+			graph.add(new DefaultNodeModel());
 		}
 		List<NodeModel> nodes = graph.getNodes();
 
@@ -113,7 +113,7 @@ public class GraphModel_Test {
 			int s = randomGenerator.nextInt(nodes.size() - 1);
 			int t = randomGenerator.nextInt(nodes.size() - 1);
 			DefaultEdgeModel edge = new DefaultEdgeModel();
-			graph.addEdge(edge);
+			graph.add(edge);
 			edge.setSourceNode(nodes.get(s));
 			edge.setSourceNode(nodes.get(t));
 		}

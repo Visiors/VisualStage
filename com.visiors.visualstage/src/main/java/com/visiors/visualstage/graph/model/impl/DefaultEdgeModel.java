@@ -4,9 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.visiors.visualstage.exception.DuplicateIdentifierException;
-import com.visiors.visualstage.graph.listener.EdgeModelListener;
-import com.visiors.visualstage.graph.model.Copyable;
 import com.visiors.visualstage.graph.model.EdgeModel;
+import com.visiors.visualstage.graph.model.EdgeModelListener;
 import com.visiors.visualstage.graph.model.NodeModel;
 
 public class DefaultEdgeModel extends AbstractGraphObject implements EdgeModel {
@@ -111,11 +110,7 @@ public class DefaultEdgeModel extends AbstractGraphObject implements EdgeModel {
 		e.sourceNode = sourceNode;
 		e.targetNode = targetNode;
 		e.parentGraph = parentGraph;
-		if (customObject instanceof Copyable) {
-			e.customObject = ((Copyable) customObject).deepCopy();
-		} else {
-			e.customObject = customObject;
-		}
+		e.customObject = customObject.deepCopy();
 		return e;
 	}
 
