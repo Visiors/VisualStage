@@ -40,7 +40,7 @@ public interface NodeModel extends GraphObjectModel {
 	public List<EdgeModel> getConnectedEdges();
 
 	/**
-	 * This method will be called to inform the node instance that it is going
+	 * This method will be called to inform the node instance that it is about
 	 * to be attached as a source-node.
 	 * 
 	 * @param edge
@@ -51,7 +51,7 @@ public interface NodeModel extends GraphObjectModel {
 	public void preConnectAsSource(EdgeModel edge);
 
 	/**
-	 * This method will be called to inform the node instance that it is going
+	 * This method will be called to inform the node instance that it is about
 	 * to be detached as a source-node.
 	 * 
 	 * @param edge
@@ -62,7 +62,7 @@ public interface NodeModel extends GraphObjectModel {
 	public void preDisconnectAsSource(EdgeModel edge);
 
 	/**
-	 * This method will be called to inform the node instance that it is going
+	 * This method will be called to inform the node instance that it is about
 	 * to be attached as a target-node.
 	 * 
 	 * @param edge
@@ -73,7 +73,7 @@ public interface NodeModel extends GraphObjectModel {
 	public void preConnectAsTarget(EdgeModel edge);
 
 	/**
-	 * This method will be called to inform the node instance that it is going
+	 * This method will be called to inform the node instance that it is about
 	 * to be detached as a target-node.
 	 * 
 	 * @param edge

@@ -10,10 +10,7 @@ import com.visiors.visualstage.graph.model.NodeModel;
 /**
  * This is a default implementation for {@link NodeModel}.
  * 
- * 
- */
-/**
- * @author Sharokh
+ * @author Shane
  * 
  */
 public class DefaultNodeModel extends AbstractGraphObject implements NodeModel {
@@ -25,6 +22,7 @@ public class DefaultNodeModel extends AbstractGraphObject implements NodeModel {
 	 * Creates a new node. An unique id will be assigned automatically.
 	 */
 	public DefaultNodeModel() {
+
 		this(-1);
 	}
 
@@ -39,6 +37,7 @@ public class DefaultNodeModel extends AbstractGraphObject implements NodeModel {
 	 *            be assigned automatically
 	 */
 	public DefaultNodeModel(long id) {
+
 		super(id);
 		incomingEdges = new ArrayList<EdgeModel>();
 		outgoingEdges = new ArrayList<EdgeModel>();
@@ -51,6 +50,7 @@ public class DefaultNodeModel extends AbstractGraphObject implements NodeModel {
 	 */
 	@Override
 	public int getDegree() {
+
 		return getIndegree() + getOutdegree();
 	}
 
@@ -61,6 +61,7 @@ public class DefaultNodeModel extends AbstractGraphObject implements NodeModel {
 	 */
 	@Override
 	public int getIndegree() {
+
 		return incomingEdges.size();
 	}
 
@@ -71,6 +72,7 @@ public class DefaultNodeModel extends AbstractGraphObject implements NodeModel {
 	 */
 	@Override
 	public int getOutdegree() {
+
 		return outgoingEdges.size();
 	}
 
@@ -81,6 +83,7 @@ public class DefaultNodeModel extends AbstractGraphObject implements NodeModel {
 	 */
 	@Override
 	public List<EdgeModel> getOutgoingEdges() {
+
 		return outgoingEdges;
 	}
 
@@ -91,6 +94,7 @@ public class DefaultNodeModel extends AbstractGraphObject implements NodeModel {
 	 */
 	@Override
 	public List<EdgeModel> getIncomingEdges() {
+
 		return incomingEdges;
 	}
 
@@ -101,6 +105,7 @@ public class DefaultNodeModel extends AbstractGraphObject implements NodeModel {
 	 */
 	@Override
 	public List<EdgeModel> getConnectedEdges() {
+
 		final List<EdgeModel> edges = getIncomingEdges();
 		edges.addAll(getOutgoingEdges());
 		return edges;
@@ -113,6 +118,7 @@ public class DefaultNodeModel extends AbstractGraphObject implements NodeModel {
 	 */
 	@Override
 	public NodeModel deepCopy() {
+
 		final DefaultNodeModel n = new DefaultNodeModel(-1);
 		n.incomingEdges = new ArrayList<EdgeModel>(incomingEdges);
 		n.outgoingEdges = new ArrayList<EdgeModel>(outgoingEdges);
@@ -128,6 +134,7 @@ public class DefaultNodeModel extends AbstractGraphObject implements NodeModel {
 	 */
 	@Override
 	public String toString() {
+
 		StringBuffer sb = new StringBuffer();
 		return sb.append("Node (").append("id= ").append(getID()).append(" ]").toString();
 	}
