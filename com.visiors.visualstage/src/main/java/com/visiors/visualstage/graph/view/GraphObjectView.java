@@ -3,14 +3,14 @@ package com.visiors.visualstage.graph.view;
 import java.awt.Point;
 import java.awt.Rectangle;
 
-import com.visiors.visualstage.generics.attribute.Attributable;
-import com.visiors.visualstage.generics.attribute.PropertyOwner;
-import com.visiors.visualstage.generics.interaction.Interactable;
-import com.visiors.visualstage.generics.interaction.Manipulatable;
-import com.visiors.visualstage.generics.renderer.RenderingContext;
+import com.visiors.visualstage.attribute.Attributable;
 import com.visiors.visualstage.graph.CustomData;
 import com.visiors.visualstage.graph.view.graph.GraphView;
 import com.visiors.visualstage.graph.view.transform.Transformer;
+import com.visiors.visualstage.property.PropertyOwner;
+import com.visiors.visualstage.renderer.RenderingContext;
+import com.visiors.visualstage.stage.interaction.Interactable;
+import com.visiors.visualstage.stage.interaction.Manipulatable;
 
 /**
  * This interface defines methods that are common in all visual graph objects;
@@ -47,7 +47,7 @@ public interface GraphObjectView extends Interactable, Manipulatable, Attributab
 
 	public String getStyleID();
 
-	public String getViewDescription(RenderingContext context);
+	public String getViewDescription(RenderingContext context, boolean standalone);
 
 	public Rectangle getBounds();
 

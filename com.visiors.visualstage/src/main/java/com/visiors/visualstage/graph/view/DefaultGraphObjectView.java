@@ -2,12 +2,14 @@ package com.visiors.visualstage.graph.view;
 
 import java.awt.Point;
 
-import com.google.inject.Inject;
-import com.visiors.visualstage.generics.attribute.Attribute;
+import com.visiors.visualstage.attribute.Attribute;
 import com.visiors.visualstage.graph.CustomData;
 import com.visiors.visualstage.graph.UIDGen;
 import com.visiors.visualstage.graph.view.graph.GraphView;
 import com.visiors.visualstage.graph.view.transform.Transformer;
+import com.visiors.visualstage.property.PropertyList;
+import com.visiors.visualstage.property.impl.DefaultPropertyList;
+import com.visiors.visualstage.validation.Validator;
 
 /**
  * This class implements features that are common in all graph objects (edges,
@@ -23,11 +25,14 @@ public abstract class DefaultGraphObjectView implements GraphObjectView {
 	protected boolean selected;
 	protected boolean highlighted;
 	protected CustomData customData;
+	protected Validator validator;
+	protected PropertyList properties;
+
 	// @Inject
 	// protected UndoRedoHandler undoRedoHandler;
-	@Inject
+
 	protected Transformer transformer;
-	private final String name;
+	protected final String name;
 
 	protected DefaultGraphObjectView(String name) {
 
@@ -43,7 +48,7 @@ public abstract class DefaultGraphObjectView implements GraphObjectView {
 		}
 		this.id = id;
 		this.name = name;
-
+		this.properties = new DefaultPropertyList();
 	}
 
 	@Override
@@ -168,5 +173,15 @@ public abstract class DefaultGraphObjectView implements GraphObjectView {
 	@Override
 	public void terminateInteraction() {
 
+	}
+
+	public Validator getValidator() {
+
+		return validator;
+	}
+
+	public void setValidator(Validator validator) {
+
+		this.validator = validator;
 	}
 }

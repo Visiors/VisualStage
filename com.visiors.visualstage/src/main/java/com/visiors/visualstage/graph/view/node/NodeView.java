@@ -7,7 +7,7 @@ import java.util.List;
 import com.visiors.visualstage.graph.view.GraphObjectView;
 import com.visiors.visualstage.graph.view.edge.EdgeView;
 import com.visiors.visualstage.graph.view.graph.GraphView;
-import com.visiors.visualstage.graph.view.listener.NodeViewListener;
+import com.visiors.visualstage.graph.view.node.listener.NodeViewListener;
 
 /**
  * This interface defines the functionality of an <code>edge</code> in context
@@ -17,9 +17,9 @@ import com.visiors.visualstage.graph.view.listener.NodeViewListener;
  * 
  */
 public interface NodeView extends GraphObjectView/*
-												  * , LayoutableNode, Undoable,
-												  * DockingBase
-												  */{
+ * , LayoutableNode, Undoable,
+ * DockingBase
+ */{
 
 	/**
 	 * Sets the node's bounding-box
@@ -92,27 +92,7 @@ public interface NodeView extends GraphObjectView/*
 	 */
 	public void highlightPort(int portID, boolean on);
 
-	/**
-	 * This method will be called to request a new connection. The node can
-	 * reject the request by returning <code>false</code>. <br>
-	 * Note: Accepting the request is no guaranty for establishment of the
-	 * actual connection since this requires that all involved parties accept
-	 * the action in which case the invocation of the method
-	 * {@link #postConnected(NodeView, EdgeView, boolean)} will follow.
-	 * 
-	 * @param edge
-	 *            the <code>EdgeView</code> that will be used for this
-	 *            connection.
-	 * @param opositeNode
-	 *            the node that will be attached to this node; it might be
-	 *            <code>null</code>
-	 * @param incomingConnection
-	 *            if <code>true</code>, this node will be used as the
-	 *            source-node; otherwise it will be the target-node
-	 * @return <code>true</code> to accept the potential attachment; or
-	 *         <code>false</code> to reject it
-	 */
-	public boolean preConnect(EdgeView edge, NodeView opositeNode, boolean incomingConnection);
+
 
 	/**
 	 * This method will be called to notify the node about the connect to the

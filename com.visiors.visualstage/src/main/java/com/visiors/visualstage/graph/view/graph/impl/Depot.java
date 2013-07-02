@@ -6,10 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.visiors.visualstage.graph.view.GraphObjectView;
+import com.visiors.visualstage.graph.view.edge.EdgePoint;
 import com.visiors.visualstage.graph.view.edge.EdgeView;
 import com.visiors.visualstage.graph.view.graph.GraphView;
-import com.visiors.visualstage.graph.view.listener.GraphViewAdapter;
-import com.visiors.visualstage.graph.view.listener.GraphViewListener;
+import com.visiors.visualstage.graph.view.graph.listener.GraphViewAdapter;
+import com.visiors.visualstage.graph.view.graph.listener.GraphViewListener;
 import com.visiors.visualstage.graph.view.node.NodeView;
 
 public class Depot extends GraphViewAdapter implements GraphViewListener {
@@ -268,7 +269,7 @@ public class Depot extends GraphViewAdapter implements GraphViewListener {
 	}
 
 	@Override
-	public void edgeStoppedChangingPath(EdgeView edge, Point[] oldPath) {
+	public void edgeStoppedChangingPath(EdgeView edge, EdgePoint[] oldPath) {
 
 		container.setObjectBoundaryChanged(edge);
 		checkExpansionAndSendNotification();

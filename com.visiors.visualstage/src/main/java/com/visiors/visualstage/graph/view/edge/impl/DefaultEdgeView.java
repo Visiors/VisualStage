@@ -7,30 +7,30 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import com.visiors.visualstage.generics.attribute.Attribute;
-import com.visiors.visualstage.generics.attribute.DefaultAttribute;
-import com.visiors.visualstage.generics.attribute.PropertyList;
-import com.visiors.visualstage.generics.interaction.Interactable;
-import com.visiors.visualstage.generics.renderer.RenderingContext;
-import com.visiors.visualstage.generics.renderer.RenderingContext.Resolution;
-import com.visiors.visualstage.generics.renderer.resource.svg.SVGDefinition;
-import com.visiors.visualstage.generics.renderer.resource.svg.SVGDefinitionPool;
+import com.visiors.visualstage.attribute.Attribute;
+import com.visiors.visualstage.attribute.DefaultAttribute;
 import com.visiors.visualstage.graph.view.Constants;
 import com.visiors.visualstage.graph.view.DefaultGraphObjectView;
 import com.visiors.visualstage.graph.view.edge.EdgePoint;
 import com.visiors.visualstage.graph.view.edge.EdgeView;
 import com.visiors.visualstage.graph.view.edge.Path;
 import com.visiors.visualstage.graph.view.edge.PathChangeListener;
+import com.visiors.visualstage.graph.view.edge.listener.EdgeViewListener;
 import com.visiors.visualstage.graph.view.graph.GraphView;
-import com.visiors.visualstage.graph.view.listener.EdgeViewListener;
-import com.visiors.visualstage.graph.view.listener.NodeViewAdapter;
-import com.visiors.visualstage.graph.view.listener.NodeViewListener;
 import com.visiors.visualstage.graph.view.node.NodeView;
+import com.visiors.visualstage.graph.view.node.listener.NodeViewAdapter;
+import com.visiors.visualstage.graph.view.node.listener.NodeViewListener;
+import com.visiors.visualstage.property.PropertyList;
+import com.visiors.visualstage.renderer.RenderingContext;
+import com.visiors.visualstage.renderer.RenderingContext.Resolution;
+import com.visiors.visualstage.resource.SVGDefinition;
+import com.visiors.visualstage.resource.SVGDefinitionPool;
+import com.visiors.visualstage.stage.interaction.Interactable;
 
 public class DefaultEdgeView extends DefaultGraphObjectView implements EdgeView, PathChangeListener/*
-																								    * ,
-																								    * PropertyListener
-																								    */{
+ * ,
+ * PropertyListener
+ */{
 
 	protected NodeView sourceNode;
 	protected NodeView targetNode;
@@ -116,27 +116,7 @@ public class DefaultEdgeView extends DefaultGraphObjectView implements EdgeView,
 		return targetNode;
 	}
 
-	@Override
-	public boolean preConnect(NodeView source, int sourcePortId, NodeView target, int targetPortId) {
 
-		return true;
-	}
-
-	private boolean canConnect(NodeView source, int sourcePortId, NodeView target, int targetPortId) {
-
-		if (!preConnect(source, sourcePortId, target, targetPortId)) {
-			return false;
-		}
-		if (sourceNode != null && (!sourceNode.preConnect(this, target, false))) {
-			return false;
-		}
-		if (targetNode != null && !targetNode.preConnect(this, source, true)) {
-			return false;
-		}
-
-		return true;
-
-	}
 
 	@Override
 	public void connect(NodeView source, int sourcePortId, NodeView target, int targetPortId) {
@@ -146,8 +126,7 @@ public class DefaultEdgeView extends DefaultGraphObjectView implements EdgeView,
 			return;
 		}
 
-		if (!canConnect(source, sourcePortId, target, targetPortId)) {
-			// TODO add log
+		if (!getValidator().permitConnection(source, sourcePortId, this, target, targetPortId)) {
 			return;
 		}
 
@@ -170,7 +149,6 @@ public class DefaultEdgeView extends DefaultGraphObjectView implements EdgeView,
 		}
 		this.sourceNode = source;
 		this.sourcePortId = sourcePortId;
-		fireEdgeReconnected(oldSourceNode, oldSourcePort, true);
 
 		/* update target */
 		if (targetNode == null || !targetNode.equals(target)) {
@@ -187,7 +165,8 @@ public class DefaultEdgeView extends DefaultGraphObjectView implements EdgeView,
 		}
 		this.targetNode = target;
 		this.targetPortId = targetPortId;
-		fireEdgeReconnected(oldTargetNode, oldTargetPort, false);
+
+		fireEdgeReconnected(oldSourceNode, oldSourcePort, oldTargetNode, oldTargetPort);
 	}
 
 	@Override
@@ -225,7 +204,7 @@ public class DefaultEdgeView extends DefaultGraphObjectView implements EdgeView,
 	// cachedImage = null;
 	// }
 	@Override
-	public String getViewDescription(RenderingContext context) {
+	public String getViewDescription(RenderingContext context, boolean standalone) {
 
 		switch (context.subject) {
 		case OBJECT:
@@ -562,20 +541,20 @@ public class DefaultEdgeView extends DefaultGraphObjectView implements EdgeView,
 			if (getSourcePortId() != DefaultGraphObjectView.NONE) {
 				p1 = sourceNode.getPortSet().getPortByID(getSourcePortId()).getPosition();
 			} /*
-			   * else { final Rectangle r = sourceNode.getBounds(); p1 = new
-			   * Point((int) r.getCenterX(), (int) r.getCenterY()); }
-			   */
+			 * else { final Rectangle r = sourceNode.getBounds(); p1 = new
+			 * Point((int) r.getCenterX(), (int) r.getCenterY()); }
+			 */
 			movePoint(0, p1);
 		}
 		if (updateTarget) {
 			if (getTargetPortId() != DefaultGraphObjectView.NONE) {
 				p2 = targetNode.getPortSet().getPortByID(getTargetPortId()).getPosition();
 			}/*
-			  * else { p1 = path.getStart().getPoint(); final Rectangle r =
-			  * targetNode.getBounds(); p2 = new Point((int) r.getCenterX(),
-			  * (int) r.getCenterY()); if (p1.x < p2.x) { p2.x = r.x; } else {
-			  * p2.x = r.x + r.width; } }
-			  */
+			 * else { p1 = path.getStart().getPoint(); final Rectangle r =
+			 * targetNode.getBounds(); p2 = new Point((int) r.getCenterX(),
+			 * (int) r.getCenterY()); if (p1.x < p2.x) { p2.x = r.x; } else {
+			 * p2.x = r.x + r.width; } }
+			 */
 			movePoint(path.getSize() - 1, p2);
 		}
 	}
@@ -728,10 +707,10 @@ public class DefaultEdgeView extends DefaultGraphObjectView implements EdgeView,
 
 		final StringBuffer sb = new StringBuffer();
 		sb.append("EdgeView (").append("id= ").append(getID()).append(", source node= ")
-				.append(getSourceNode() != null ? String.valueOf(getSourceNode().getID()) : "Nil")
-				.append(", target node= ")
-				.append(getTargetNode() != null ? String.valueOf(getTargetNode().getID()) : "Nil")
-				.append(" ]");
+		.append(getSourceNode() != null ? String.valueOf(getSourceNode().getID()) : "Nil")
+		.append(", target node= ")
+		.append(getTargetNode() != null ? String.valueOf(getTargetNode().getID()) : "Nil")
+		.append(" ]");
 		return sb.toString();
 	}
 
@@ -767,14 +746,15 @@ public class DefaultEdgeView extends DefaultGraphObjectView implements EdgeView,
 	//
 	// return fireEvents;
 	// }
-	protected void fireEdgeReconnected(NodeView oldConnectedNode, int oldPortID,
-			boolean sourceNodeChanged) {
+
+	protected void fireEdgeReconnected(NodeView oldSourceNode, int oldSourcePortID,
+			NodeView oldTagetNode, int oldTargetPortID) {
 
 		if (!fireEvents) {
 			return;
 		}
 		for (final EdgeViewListener l : edgeViewlistener) {
-			l.edgeReconnected(this, oldConnectedNode, oldPortID, sourceNodeChanged);
+			l.edgeReconnected(this, oldSourceNode, oldSourcePortID, oldTagetNode, oldTargetPortID);
 		}
 	}
 

@@ -1,4 +1,4 @@
-package com.visiors.visualstage.view.transform;
+package com.visiors.visualstage.graph.view.transform;
 
 public interface TransformValueChangeListener {
 

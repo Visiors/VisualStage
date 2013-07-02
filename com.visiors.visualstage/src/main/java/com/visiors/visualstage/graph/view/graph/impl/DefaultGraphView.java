@@ -8,23 +8,23 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.visiors.visualstage.generics.attribute.PropertyList;
-import com.visiors.visualstage.generics.attribute.PropertyUnit;
-import com.visiors.visualstage.generics.renderer.RenderingContext;
 import com.visiors.visualstage.graph.view.Constants;
 import com.visiors.visualstage.graph.view.DefaultGraphObjectView;
 import com.visiors.visualstage.graph.view.GraphObjectView;
 import com.visiors.visualstage.graph.view.edge.EdgePoint;
 import com.visiors.visualstage.graph.view.edge.EdgeView;
+import com.visiors.visualstage.graph.view.edge.listener.EdgeViewListener;
 import com.visiors.visualstage.graph.view.graph.GraphView;
-import com.visiors.visualstage.graph.view.listener.EdgeViewListener;
-import com.visiors.visualstage.graph.view.listener.GraphViewListener;
-import com.visiors.visualstage.graph.view.listener.NodeViewListener;
+import com.visiors.visualstage.graph.view.graph.listener.GraphViewListener;
 import com.visiors.visualstage.graph.view.node.NodeView;
 import com.visiors.visualstage.graph.view.node.impl.DefaultNodeView;
+import com.visiors.visualstage.graph.view.node.listener.NodeViewListener;
+import com.visiors.visualstage.property.PropertyList;
+import com.visiors.visualstage.property.PropertyUnit;
+import com.visiors.visualstage.renderer.RenderingContext;
 
 public class DefaultGraphView extends DefaultNodeView implements GraphView, NodeViewListener,
-		EdgeViewListener
+EdgeViewListener
 
 {
 
@@ -616,8 +616,8 @@ public class DefaultGraphView extends DefaultNodeView implements GraphView, Node
 		StringBuffer sb = new StringBuffer();
 
 		sb.append("GraphView (").append("id = ").append(getID()).append(", level = ")
-				.append(getDepth()).append(", objects = ")
-				.append(String.valueOf(getGraphObjects().size())).append(" ]");
+		.append(getDepth()).append(", objects = ")
+		.append(String.valueOf(getGraphObjects().size())).append(" ]");
 		return sb.toString();
 
 	}
@@ -638,20 +638,20 @@ public class DefaultGraphView extends DefaultNodeView implements GraphView, Node
 
 	@Override
 	public String getViewDescription(RenderingContext context/*
-															  * , boolean
-															  * useEmbeddedImage
-															  */) {
+	 * , boolean
+	 * useEmbeddedImage
+	 */, boolean standalone) {
 
 		GraphObjectView[] objects = depot.getObjects();
 		if (objects.length == 0) {
-			return super.getViewDescription(context/* , useEmbeddedImage */);
+			return super.getViewDescription(context/* , useEmbeddedImage */, true);
 		}
 
 		final StringBuffer svg = new StringBuffer();
 		String subgraphDesc = super.getViewDescription(context/*
-															   * ,
-															   * useEmbeddedImage
-															   */);
+		 * ,
+		 * useEmbeddedImage
+		 */, true);
 		if (subgraphDesc != null) {
 			svg.append(subgraphDesc);
 		}
@@ -661,9 +661,9 @@ public class DefaultGraphView extends DefaultNodeView implements GraphView, Node
 		for (GraphObjectView vgo : objects) {
 
 			String description = vgo.getViewDescription(context/*
-															    * ,
-															    * useEmbeddedImage
-															    */);
+			 * ,
+			 * useEmbeddedImage
+			 */, true);
 			if (description != null && !description.isEmpty()) {
 				svg.append(description);
 			}
@@ -921,8 +921,9 @@ public class DefaultGraphView extends DefaultNodeView implements GraphView, Node
 	}
 
 	@Override
-	public void edgeReconnected(EdgeView edge, NodeView oldConnecedNode, int oldPortID,
-			boolean sourceNodeChanged) {
+	public void edgeReconnected(EdgeView edge, NodeView oldSourceNode, int oldSourcePortID,
+			NodeView oldTagetNode, int oldTargetPortID) {
+
 
 		if (!fireEvents) {
 			return;

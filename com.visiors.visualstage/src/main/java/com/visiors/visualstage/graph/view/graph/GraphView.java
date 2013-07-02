@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.visiors.visualstage.graph.view.GraphObjectView;
 import com.visiors.visualstage.graph.view.edge.EdgeView;
-import com.visiors.visualstage.graph.view.listener.GraphViewListener;
+import com.visiors.visualstage.graph.view.graph.listener.GraphViewListener;
 import com.visiors.visualstage.graph.view.node.NodeView;
 
 public interface GraphView extends NodeView/* , LayoutableGraph */{

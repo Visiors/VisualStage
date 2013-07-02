@@ -1,26 +1,23 @@
 package com.visiors.visualstage.graph.view.edge;
 
 import com.visiors.visualstage.graph.view.GraphObjectView;
-import com.visiors.visualstage.graph.view.listener.EdgeViewListener;
+import com.visiors.visualstage.graph.view.edge.listener.EdgeViewListener;
 import com.visiors.visualstage.graph.view.node.NodeView;
+import com.visiors.visualstage.validation.Validator;
 
 public interface EdgeView extends GraphObjectView/*
-												  * LayoutableEdge, Undoable,
-												  * DockingBase,PropertyOwner
-												  */{
+ * LayoutableEdge, Undoable,
+ * DockingBase,PropertyOwner
+ */{
 
 	public void setPath(Path path);
 
 	public Path getPath();
 
-	public boolean preConnect(NodeView source, int sourcePortId, NodeView target, int targetPortId);
 
 	/**
 	 * Connects the specified source- and target-node. This methods calls
-	 * {@link EdgeView#preConnect(NodeView, int, NodeView, int)}, and
-	 * {@link NodeView#preConnect(EdgeView, NodeView, boolean)} for both source-
-	 * and target-node internally to make sure that all involved parties accept
-	 * the connection.
+	 * {@link Validator#permitConnection(NodeView, EdgeView, NodeView)} to validate the action.
 	 * <p>
 	 * This method makes sures that exiting nodes are detached correctly from
 	 * this edges and the new nodes are informed about this connection.

@@ -6,12 +6,12 @@ import org.apache.batik.ext.awt.image.codec.util.PropertyUtil;
 
 import com.visiors.visualstage.generics.attribute.PropertyList;
 import com.visiors.visualstage.generics.interaction.Interactable;
-import com.visiors.visualstage.generics.renderer.resource.svg.SVGDefinition;
-import com.visiors.visualstage.generics.renderer.resource.svg.SVGDefinitionPool;
 import com.visiors.visualstage.graph.view.DefaultGraphObjectView;
 import com.visiors.visualstage.graph.view.ViewConstants;
 import com.visiors.visualstage.graph.view.edge.EdgeView;
 import com.visiors.visualstage.graph.view.edge.impl.curved.polyline.PolygonalEdgeView;
+import com.visiors.visualstage.resource.SVGDefinition;
+import com.visiors.visualstage.resource.SVGDefinitionPool;
 
 public class OrthogonalEdge extends PolygonalEdgeView {
 

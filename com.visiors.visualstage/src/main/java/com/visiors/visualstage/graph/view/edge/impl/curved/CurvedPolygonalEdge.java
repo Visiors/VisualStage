@@ -6,10 +6,10 @@ import java.awt.geom.Path2D;
 
 import org.apache.batik.ext.awt.image.codec.util.PropertyUtil;
 
-import com.visiors.visualstage.generics.renderer.resource.svg.SVGDefinition;
-import com.visiors.visualstage.generics.renderer.resource.svg.SVGDefinitionPool;
 import com.visiors.visualstage.graph.view.edge.EdgeView;
 import com.visiors.visualstage.graph.view.edge.impl.curved.polyline.PolygonalEdgeView;
+import com.visiors.visualstage.resource.SVGDefinition;
+import com.visiors.visualstage.resource.SVGDefinitionPool;
 
 /* The quadratic Bézier curve  */
 public class CurvedPolygonalEdge extends PolygonalEdgeView {

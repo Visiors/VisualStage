@@ -1,66 +1,66 @@
-package com.visiors.visualstage.view.transform;
+package com.visiors.visualstage.graph.view.transform;
 
 import java.awt.Point;
 import java.awt.Rectangle;
 
 public interface Transformer {
 
-    public void setTransform(VSTransformer t);
+	public void setTransform(VSTransformer t);
 
-    public void reset();
+	public void reset();
 
-    public void setScale(double s);
+	public void setScale(double s);
 
-    public void setShear(double sx);
+	public void setShear(double sx);
 
-    public void setShearX(double sx);
+	public void setShearX(double sx);
 
-    public void setShearY(double sy);
+	public void setShearY(double sy);
 
-    public void setTranslateX(double tx);
+	public void setTranslateX(double tx);
 
-    public void setTranslateY(double ty);
+	public void setTranslateY(double ty);
 
-    public void setRotation(double alpha);
+	public void setRotation(double alpha);
 
-    public double getScaleX();
+	public double getScaleX();
 
-    public double getScale();
+	public double getScale();
 
-    public double getScaleY();
+	public double getScaleY();
 
-    public double getShear();
+	public double getShear();
 
-    public double getShearX();
+	public double getShearX();
 
-    public double getShearY();
+	public double getShearY();
 
-    public double getTranslateX();
+	public double getTranslateX();
 
-    public double getTranslateY();
+	public double getTranslateY();
 
-    public double getRotation();
+	public double getRotation();
 
-    public Point transformToScreen(Point ptGraph);
+	public Point transformToScreen(Point ptGraph);
 
-    public Point transformToGraph(Point ptScreen);
+	public Point transformToGraph(Point ptScreen);
 
-    public Rectangle transformToScreen(Rectangle rGraph);
+	public Rectangle transformToScreen(Rectangle rGraph);
 
-    public Rectangle transformToGraph(Rectangle rScreen);
+	public Rectangle transformToGraph(Rectangle rScreen);
 
-    public int transformToScreenX(int x);
+	public int transformToScreenX(int x);
 
-    public int transformToScreenY(int y);
+	public int transformToScreenY(int y);
 
-    public int transformToGraphX(int x);
+	public int transformToGraphX(int x);
 
-    public int transformToGraphY(int y);
+	public int transformToGraphY(int y);
 
-    public void addListener(TransformValueChangeListener l);
+	public void addListener(TransformValueChangeListener l);
 
-    public void removeListener(TransformValueChangeListener l);
+	public void removeListener(TransformValueChangeListener l);
 
-    public Object clone();
+	public Object clone();
 
 }
