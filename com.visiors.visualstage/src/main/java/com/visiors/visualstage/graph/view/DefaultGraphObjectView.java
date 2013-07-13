@@ -3,6 +3,7 @@ package com.visiors.visualstage.graph.view;
 import java.awt.Point;
 
 import com.visiors.visualstage.attribute.Attribute;
+import com.visiors.visualstage.attribute.DefaultAttribute;
 import com.visiors.visualstage.graph.CustomData;
 import com.visiors.visualstage.graph.UIDGen;
 import com.visiors.visualstage.graph.view.graph.GraphView;
@@ -20,13 +21,14 @@ public abstract class DefaultGraphObjectView implements GraphObjectView {
 
 	protected static final int NONE = -1;
 	protected long id;
-	protected Attribute attributes;
 	protected GraphView parent;
 	protected boolean selected;
 	protected boolean highlighted;
 	protected CustomData customData;
 	protected Validator validator;
+	protected Attribute attributes;
 	protected PropertyList properties;
+
 
 	// @Inject
 	// protected UndoRedoHandler undoRedoHandler;
@@ -49,6 +51,7 @@ public abstract class DefaultGraphObjectView implements GraphObjectView {
 		this.id = id;
 		this.name = name;
 		this.properties = new DefaultPropertyList();
+		this.attributes = new DefaultAttribute();
 	}
 
 	@Override

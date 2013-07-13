@@ -8,7 +8,6 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 
 import com.visiors.visualstage.attribute.Attribute;
-import com.visiors.visualstage.attribute.DefaultAttribute;
 import com.visiors.visualstage.graph.view.Constants;
 import com.visiors.visualstage.graph.view.DefaultGraphObjectView;
 import com.visiors.visualstage.graph.view.edge.EdgePoint;
@@ -60,7 +59,6 @@ public class DefaultEdgeView extends DefaultGraphObjectView implements EdgeView,
 		targetPortId = DefaultGraphObjectView.NONE;
 		path = new DefaultPath();
 		path.addPathListener(this);
-		attributes = new DefaultAttribute();
 	}
 
 	protected DefaultEdgeView(EdgeView edge, long id) {

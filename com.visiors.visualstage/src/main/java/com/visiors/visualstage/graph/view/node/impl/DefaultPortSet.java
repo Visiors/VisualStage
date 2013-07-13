@@ -3,12 +3,17 @@ package com.visiors.visualstage.graph.view.node.impl;
 import java.awt.Point;
 import java.awt.Rectangle;
 
+import com.visiors.visualstage.constants.PropertyConstants;
 import com.visiors.visualstage.graph.view.node.Port;
 import com.visiors.visualstage.graph.view.node.PortSet;
+import com.visiors.visualstage.property.PropertyList;
+import com.visiors.visualstage.property.impl.DefaultPropertyList;
 
 public class DefaultPortSet implements PortSet {
 
 	protected Port[] ports;
+	protected PropertyList properties;
+
 
 	public DefaultPortSet() {
 
@@ -99,8 +104,7 @@ public class DefaultPortSet implements PortSet {
 
 			for (int i = 0, d; i < ports.length; i++) {
 				Point pos = ports[i].getPosition();
-				d = (int) Math
-						.abs(Math.sqrt(Math.pow(pt.x - pos.x, 2) + Math.pow(pt.y - pos.y, 2)));
+				d = (int) Math.abs(Math.sqrt(Math.pow(pt.x - pos.x, 2) + Math.pow(pt.y - pos.y, 2)));
 				if (d < dist) {
 					dist = d;
 					p = i;
@@ -125,30 +129,30 @@ public class DefaultPortSet implements PortSet {
 		return -1;
 	}
 
-	// @Override
-	// public void setProperties(PropertyList properties) {
-	//
-	// if (properties == null) {
-	// return;
-	// }
-	// ports = new DefaultPort[properties.getSize()];
-	// for (int i = 0; i < properties.getSize(); i++) {
-	// ports[i] = new DefaultPort();
-	// ports[i].setProperties((PropertyList) properties.get(i));
-	// }
-	// }
-	//
-	// @Override
-	// public PropertyList getProperties() {
-	//
-	// DefaultPropertyList properties = null;
-	// if (ports != null && ports.length > 0) {
-	// properties = new DefaultPropertyList(PropertyConstants.PORTS_PROPERTY);
-	// for (int i = 0; i < ports.length; i++) {
-	// properties.add(ports[i].getProperties());
-	// }
-	// }
-	// return properties;
-	// }
+	@Override
+	public void setProperties(PropertyList properties) {
+
+		if (properties != null) {
+			ports = new DefaultPort[properties.size()];
+			for (int i = 0; i < properties.size(); i++) {
+				ports[i] = new DefaultPort();
+				ports[i].setProperties((PropertyList) properties.get(i));
+			}
+		}
+	}
+
+	@Override
+	public PropertyList getProperties() {
+
+		if (properties == null) {
+			if (ports != null && ports.length > 0) {
+				properties = new DefaultPropertyList(PropertyConstants.PORTS_PROPERTY);
+				for (Port port : ports) {
+					properties.add(port.getProperties());
+				}
+			}
+		}
+		return properties;
+	}
 
 }

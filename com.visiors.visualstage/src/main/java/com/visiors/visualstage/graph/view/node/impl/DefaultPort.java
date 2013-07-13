@@ -4,8 +4,15 @@ import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
 
+import com.visiors.visualstage.constants.PropertyConstants;
 import com.visiors.visualstage.graph.view.ViewConstants;
 import com.visiors.visualstage.graph.view.node.Port;
+import com.visiors.visualstage.property.PropertyList;
+import com.visiors.visualstage.property.PropertyUnit;
+import com.visiors.visualstage.property.impl.DefaultPropertyList;
+import com.visiors.visualstage.property.impl.DefaultPropertyUnit;
+import com.visiors.visualstage.util.ConvertUtil;
+import com.visiors.visualstage.util.PropertyUtil;
 
 public class DefaultPort implements Port {
 
@@ -19,6 +26,7 @@ public class DefaultPort implements Port {
 	protected double yRatio;
 	// protected int range = ViewConstants.MARKER_SIZE;
 	protected int[] accseptingInterval = { 0, 0 };
+	private DefaultPropertyList properties;
 
 	public DefaultPort() {
 
@@ -77,7 +85,7 @@ public class DefaultPort implements Port {
 
 		accseptingInterval = interval;
 
-		/* normalizing interval */
+		// normalizing 
 
 		// -make angles positive
 		if (accseptingInterval[0] < 0) {
@@ -108,9 +116,9 @@ public class DefaultPort implements Port {
 
 		StringBuffer sb = new StringBuffer();
 
-		sb.append("Port [").append("id= ").append(id).append(", interval= ")
-				.append(accseptingInterval[0]).append(" - ").append(accseptingInterval[1])
-				.append(", position= ").append(xRatio).append(" , ").append(yRatio).append(" ]");
+		sb.append("Port [").append("id= ").append(id).append(", interval= ").append(accseptingInterval[0])
+		.append(" - ").append(accseptingInterval[1]).append(", position= ").append(xRatio).append(" , ")
+		.append(yRatio).append(" ]");
 
 		return sb.toString();
 	}
@@ -151,33 +159,39 @@ public class DefaultPort implements Port {
 		return new Point(position);
 	}
 
-	// //
-	// ///////////////////////////////////////////////////////////////////////
-	// // implementation of Attributable interface
-	// @Override
-	// public void setProperties(PropertyList properties) {
 	//
-	// id = PropertyUtil.getProperty(properties, "id", -1);
-	// xRatio = PropertyUtil.getProperty(properties, "xRatio", 0.0);
-	// yRatio = PropertyUtil.getProperty(properties, "yRatio", 0.0);
-	// accseptingInterval[0] = PropertyUtil.getProperty(properties, "from", 0);
-	// accseptingInterval[1] = PropertyUtil.getProperty(properties, "to", 0);
-	// }
-	//
-	// @Override
-	// public PropertyList getProperties() {
-	//
-	// PropertyList pl = new
-	// DefaultPropertyList(PropertyConstants.PORT_PROPERTY);
-	// pl.add(new DefaultPropertyUnit("id", new Integer(id)));
-	// pl.add(new DefaultPropertyUnit("xRatio", new Double(xRatio)));
-	// pl.add(new DefaultPropertyUnit("yRatio", new Double(yRatio)));
-	// pl.add(new DefaultPropertyUnit("from", new
-	// Integer(accseptingInterval[0])));
-	// pl.add(new DefaultPropertyUnit("to", new
-	// Integer(accseptingInterval[1])));
-	// return pl;
-	// }
+	// /////////////////////////////////////////////////////////////////////
+	// implementation of Attributable interface
+
+	@Override
+	public PropertyList getProperties() {
+
+		if(properties == null){
+			properties = new DefaultPropertyList(PropertyConstants.PORT_PROPERTY);
+			properties.add(new DefaultPropertyUnit("id", new Integer(id)));
+			properties.add(new DefaultPropertyUnit("xRatio", new Double(xRatio)));
+			properties.add(new DefaultPropertyUnit("yRatio", new Double(yRatio)));
+			properties.add(new DefaultPropertyUnit("from", new Integer(accseptingInterval[0])));
+			properties.add(new DefaultPropertyUnit("to", new Integer(accseptingInterval[1])));
+		}
+		return properties;
+	}
+
+	@Override
+	public void setProperties(PropertyList properties) {
+		PropertyUnit unit;
+		unit = PropertyUtil.findPropertyUnit(properties, "id");
+		id = ConvertUtil.object2int(unit);
+		unit = PropertyUtil.findPropertyUnit(properties, "xRatio");
+		xRatio = ConvertUtil.object2int(unit);
+		unit = PropertyUtil.findPropertyUnit(properties, "yRatio");
+		yRatio = ConvertUtil.object2int(unit);
+		unit = PropertyUtil.findPropertyUnit(properties, "from");
+		accseptingInterval[0] = ConvertUtil.object2int(unit);
+		unit = PropertyUtil.findPropertyUnit(properties, "to");
+		accseptingInterval[1] = ConvertUtil.object2int(unit);
+	}
+
 
 	// ///////////////////////////////////////////////////////////////////////
 	// implementation of VisualObject interface
@@ -198,8 +212,8 @@ public class DefaultPort implements Port {
 	public boolean isHit(Point pt) {
 
 		int range = ViewConstants.PORT_SIZE;
-		return pt.x >= position.x - range / 2 && pt.x <= position.x + range / 2
-				&& pt.y >= position.y - range / 2 && pt.y <= position.y + range / 2;
+		return pt.x >= position.x - range / 2 && pt.x <= position.x + range / 2 && pt.y >= position.y - range / 2
+				&& pt.y <= position.y + range / 2;
 	}
 
 	@Override
@@ -226,15 +240,12 @@ public class DefaultPort implements Port {
 		if (angle > 360) {
 			angle %= 360;
 		}
-
 		if (int2 > 360 && int1 < 360) {
 			angle += 360;
 		}
-
 		if (int1 > int2) {
 			return (angle >= int1 && angle <= 360) || (angle >= 0 && angle <= int2);
 		}
-
 		return angle >= int1 && angle <= int2;
 	}
 

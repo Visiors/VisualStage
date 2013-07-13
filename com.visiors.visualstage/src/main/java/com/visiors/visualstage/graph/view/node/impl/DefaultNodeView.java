@@ -14,12 +14,10 @@ import javax.imageio.ImageIO;
 
 import org.apache.xerces.impl.dv.util.Base64;
 
-import com.visiors.visualstage.attribute.DefaultAttribute;
 import com.visiors.visualstage.constants.PropertyConstants;
 import com.visiors.visualstage.graph.view.Constants;
 import com.visiors.visualstage.graph.view.DefaultGraphObjectView;
 import com.visiors.visualstage.graph.view.GraphObjectView;
-import com.visiors.visualstage.graph.view.PropertyManager;
 import com.visiors.visualstage.graph.view.ViewConstants;
 import com.visiors.visualstage.graph.view.edge.EdgeView;
 import com.visiors.visualstage.graph.view.graph.GraphView;
@@ -28,16 +26,17 @@ import com.visiors.visualstage.graph.view.node.Port;
 import com.visiors.visualstage.graph.view.node.PortSet;
 import com.visiors.visualstage.graph.view.node.listener.NodeViewListener;
 import com.visiors.visualstage.property.PropertyList;
+import com.visiors.visualstage.property.impl.DefaultPropertyList;
+import com.visiors.visualstage.property.impl.DefaultPropertyUnit;
+import com.visiors.visualstage.property.impl.PropertyBinder;
 import com.visiors.visualstage.renderer.RenderingContext;
 import com.visiors.visualstage.renderer.RenderingContext.Resolution;
 import com.visiors.visualstage.resource.SVGDefinition;
 import com.visiors.visualstage.resource.SVGDefinitionPool;
 import com.visiors.visualstage.stage.interaction.Interactable;
+import com.visiors.visualstage.util.PropertyUtil;
 
-public class DefaultNodeView extends DefaultGraphObjectView implements NodeView/*
- * ,
- * PropertyListener
- */{
+public class DefaultNodeView extends DefaultGraphObjectView implements NodeView{
 
 	protected static final int RESIZE_WEST = 1;
 	protected static final int RESIZE_SOUTH = 2;
@@ -50,8 +49,8 @@ public class DefaultNodeView extends DefaultGraphObjectView implements NodeView/
 
 	protected static final int PROCESSING_BY_ATTACHMENT = 9;
 
-	public static final String[] dockingSlots = new String[] { "North", "NorthEast", "East",
-		"SouthEast", "South", "SouthWest", "West", "NorthWest", "Center" };
+	public static final String[] dockingSlots = new String[] { "North", "NorthEast", "East", "SouthEast", "South",
+		"SouthWest", "West", "NorthWest", "Center" };
 
 	protected List<EdgeView> incomingEdges;
 	protected List<EdgeView> outgoingEdges;
@@ -70,7 +69,7 @@ public class DefaultNodeView extends DefaultGraphObjectView implements NodeView/
 	protected String presentationID;
 	protected String styleID;
 	protected String formID;
-	private PropertyManager propertyManager;
+	private PropertyBinder propertyBinder;
 
 	// private final VisualObjectPreviewGenerator previewCreator;
 	// private final List<CachedImage> cachedImage;
@@ -89,8 +88,6 @@ public class DefaultNodeView extends DefaultGraphObjectView implements NodeView/
 		this.incomingEdges = new ArrayList<EdgeView>();
 		this.outgoingEdges = new ArrayList<EdgeView>();
 		this.boundary = new Rectangle(0, 0, 80, 50);
-		this.attributes = new DefaultAttribute();
-
 
 		// previewCreator = new VisualObjectPreviewGenerator(this);
 		// cachedImage = new ArrayList<CachedImage>();
@@ -119,23 +116,32 @@ public class DefaultNodeView extends DefaultGraphObjectView implements NodeView/
 	@PostConstruct
 	protected void init() {
 
-		propertyManager = new PropertyManager(this);
-		propertyManager.bind(PropertyConstants.NODE_PROPERTY_ID, "id", Integer.TYPE, true);
-		propertyManager.bind(PropertyConstants.NODE_PROPERTY_PARENT_ID, "parentGraph", Integer.TYPE, true);
-		propertyManager.bind(PropertyConstants.NODE_PROPERTY_NAME, "name", String.class, true);
-		propertyManager.bind(PropertyConstants.NODE_PROPERTY_PRESENTATION, "presentationID", Integer.TYPE, false);
-		propertyManager.bind(PropertyConstants.NODE_PROPERTY_STYLE, "styleID", Integer.TYPE, false);
-		propertyManager.bind(PropertyConstants.NODE_PROPERTY_X, "x", Integer.TYPE, false);
-		propertyManager.bind(PropertyConstants.NODE_PROPERTY_Y, "y", Integer.TYPE, false);
-		propertyManager.bind(PropertyConstants.NODE_PROPERTY_WIDTH, "width", Integer.TYPE, false);
-		propertyManager.bind(PropertyConstants.NODE_PROPERTY_HEIGHT, "height", Integer.TYPE, false);
+		// create the property definition
+		PropertyList properties = new DefaultPropertyList(PropertyConstants.NODE_PROPERTY_PREFIX);
+		properties.add(new DefaultPropertyUnit(PropertyConstants.NODE_PROPERTY_ID, getID()));
+		properties.add(new DefaultPropertyUnit(PropertyConstants.NODE_PROPERTY_NAME, getName()));
+		properties.add(new DefaultPropertyUnit(PropertyConstants.NODE_PROPERTY_X, getX()));
+		properties.add(new DefaultPropertyUnit(PropertyConstants.NODE_PROPERTY_Y, getY()));
+		properties.add(new DefaultPropertyUnit(PropertyConstants.NODE_PROPERTY_WIDTH, getWidth()));
+		properties.add(new DefaultPropertyUnit(PropertyConstants.NODE_PROPERTY_HEIGHT, getHeight()));
+		properties.add(new DefaultPropertyUnit(PropertyConstants.NODE_PROPERTY_PRESENTATION, getPresentationID()));
+		properties.add(new DefaultPropertyUnit(PropertyConstants.NODE_PROPERTY_STYLE, getStyleID()));
+		properties.add(new DefaultPropertyUnit(PropertyConstants.NODE_PROPERTY_PARENT_ID, getParentGraphID()));
+		// add posts properties
+		PropertyList portsProperties = portSet.getProperties();
+		properties.add(portsProperties);
+
+		propertyBinder = new PropertyBinder(this);
+		propertyBinder.setHandler(portsProperties.getName(), portSet);
+
+		setProperties(properties);
 	}
 
 	@Override
 	public void setParentGraph(GraphView graph) {
 
 		super.setParentGraph(graph);
-		propertyManager.updateProperty(PropertyConstants.NODE_PROPERTY_PARENT_ID);
+		propertyBinder.saveAll();
 	}
 
 	// @Override
@@ -409,7 +415,6 @@ public class DefaultNodeView extends DefaultGraphObjectView implements NodeView/
 		return NONE;
 	}
 
-
 	//
 	@Override
 	public void postConnected(EdgeView edge, NodeView opositeNode, boolean incomingConnection) {
@@ -446,11 +451,10 @@ public class DefaultNodeView extends DefaultGraphObjectView implements NodeView/
 
 		StringBuffer sb = new StringBuffer();
 
-		sb.append("NodeView (").append("id= ").append(getID()).append(", name = ")
-		.append(getName()).append(", indegree = ").append(String.valueOf(getIndegree()))
-		.append(", outdegree = ").append(String.valueOf(getOutdegree()))
-		.append(", boundary: x = ").append(boundary.x).append(", y = ").append(boundary.y)
-		.append(", width = ").append(boundary.width).append(", height = ")
+		sb.append("NodeView (").append("id= ").append(getID()).append(", name = ").append(getName())
+		.append(", indegree = ").append(String.valueOf(getIndegree())).append(", outdegree = ")
+		.append(String.valueOf(getOutdegree())).append(", boundary: x = ").append(boundary.x).append(", y = ")
+		.append(boundary.y).append(", width = ").append(boundary.width).append(", height = ")
 		.append(boundary.height).append(" ]");
 		return sb.toString();
 
@@ -461,7 +465,7 @@ public class DefaultNodeView extends DefaultGraphObjectView implements NodeView/
 
 		this.presentationID = presentationID;
 
-		propertyManager.updateProperty(PropertyConstants.NODE_PROPERTY_PRESENTATION);
+		propertyBinder.saveAll();
 
 		// invalidatePreview();
 		//
@@ -480,8 +484,7 @@ public class DefaultNodeView extends DefaultGraphObjectView implements NodeView/
 	public void setStyleID(String styleID) {
 
 		this.styleID = styleID;
-		propertyManager.updateProperty(PropertyConstants.NODE_PROPERTY_STYLE);
-
+		propertyBinder.saveAll();
 
 		// invalidatePreview();
 
@@ -496,134 +499,72 @@ public class DefaultNodeView extends DefaultGraphObjectView implements NodeView/
 		return styleID;
 	}
 
+	public long getParentGraphID() {
+
+		return parent == null ? -1 : parent.getID();
+	}
+
 	// ///////////////////////////////////////////////////////////////////////
 	// implementation of the interface Attributable
 
 	@Override
 	public PropertyList getProperties() {
 
-		if (properties == null) {
-			return null;
-		}
-		PropertyList result = properties.deepCopy();
-
-		// posts
-		if (portSet != null && result.get(PropertyConstants.PORTS_PROPERTY) == null) {
-			PropertyList portsProperties = portSet.getProperties();
-			if (portsProperties != null) {
-				result.add(portsProperties);
-			}
-		}
-
-		//		// form
-		//		if (form != null && result.get(Constants.FORM_PROPERTY) == null)
-		//		{
-		//			result.add(form.getProperties());
-		//		}
-
-		return result;
-
+		return properties;
 	}
 
 	@Override
 	public void setProperties(PropertyList properties) {
 
-
-		propertyManager
 		this.properties = properties;
-		//
-		// // adjust coordinates
-		// Rectangle r = new Rectangle();
-		// r.x = PropertyUtil.getProperty(properties,
-		// PropertyConstants.NODE_PROPERTY_X, 0);
-		// r.y = PropertyUtil.getProperty(properties,
-		// PropertyConstants.NODE_PROPERTY_Y, 0);
-		// r.width = PropertyUtil.getProperty(properties,
-		// PropertyConstants.NODE_PROPERTY_WIDTH, 50);
-		// r.height = PropertyUtil.getProperty(properties,
-		// PropertyConstants.NODE_PROPERTY_HEIGHT, 50);
-		// setBounds(r);
-		//
-		// PropertyList portsProperties =
-		// PropertyUtil.getPropertyList(properties,
-		// PropertyConstants.PORTS_PROPERTY);
-		// if (portsProperties != null) {
-		// portSet.setProperties(portsProperties);
-		// updatePortPosition();
-		// }
-		//
-		// // PropertyList formProperties =
-		// // PropertyUtil.getPropertyList(properties, Constants.FORM_PROPERTY);
-		// // if(formProperties != null) {
-		// // form = new DefaultForm(formProperties, this);
-		// // }
-		//
-		// setPresentationID(PropertyUtil.getProperty(properties,
-		// PropertyConstants.NODE_PROPERTY_PRESENTATION, null));
-		// setStyleID(PropertyUtil
-		// .getProperty(properties, PropertyConstants.NODE_PROPERTY_STYLE,
-		// null));
-		// setFormID(PropertyUtil.getProperty(properties,
-		// PropertyConstants.NODE_PROPERTY_FORM, null));
-		//
-		// // never accept the given id and name
-		// properties = PropertyUtil.setProperty(properties,
-		// PropertyConstants.NODE_PROPERTY_ID, id);
-		// PropertyUtil.makeEditable(properties,
-		// PropertyConstants.NODE_PROPERTY_ID,
-		// false);
-		// properties = PropertyUtil.setProperty(properties,
-		// PropertyConstants.NODE_PROPERTY_PARENT_ID, (parent != null ?
-		// parent.getID() : -1));
-		// PropertyUtil.makeEditable(properties,
-		// PropertyConstants.NODE_PROPERTY_PARENT_ID, false);
-		// PropertyUtil.makeEditable(properties,
-		// PropertyConstants.NODE_PROPERTY_NAME, false);
-		// properties = PropertyUtil.setProperty(properties,
-		// PropertyConstants.NODE_PROPERTY_NAME,
-		// name);
-		// PropertyUtil.makeEditable(properties,
-		// PropertyConstants.NODE_PROPERTY_NAME, false);
-	}
+		propertyBinder.loadAll();
 
-
-	protected void setX(int x) {
-
-		if (x != boundary.x) {
-			Rectangle r = new Rectangle(boundary);
-			r.x = x;
-			setBounds(r);
+		final PropertyList portsProperty = PropertyUtil.findPropertyList(properties, PropertyConstants.PORTS_PROPERTY);
+		if (portsProperty != null) {
+			portSet.setProperties(portsProperty);
+			updatePortPosition();
 		}
 	}
 
-	protected void setY(int y) {
+	public int getX() {
 
-		if (y != boundary.y) {
-			Rectangle r = new Rectangle(boundary);
-			r.y = y;
-			setBounds(r);
-		}
+		return boundary.x;
 	}
 
-	protected void setWidth(int w) {
+	public void setX(int x) {
 
-		if (w != boundary.width) {
-			Rectangle r = new Rectangle(boundary);
-			r.width = w;
-			setBounds(r);
-		}
+		setBounds(new Rectangle(x, boundary.y, boundary.width, boundary.height));
 	}
 
-	protected void setHeight(int h) {
+	public int getY() {
 
-		if (h != boundary.height) {
-			Rectangle r = new Rectangle(boundary);
-			r.height = h;
-			setBounds(r);
-		}
+		return boundary.y;
 	}
 
+	public void setY(int y) {
 
+		setBounds(new Rectangle(boundary.x, y, boundary.width, boundary.height));
+	}
+
+	public int getWidth() {
+
+		return boundary.width;
+	}
+
+	public void setWidth(int w) {
+
+		setBounds(new Rectangle(boundary.x, boundary.y, w, boundary.height));
+	}
+
+	public int getHeight() {
+
+		return boundary.height;
+	}
+
+	public void setHeight(int h) {
+
+		setBounds(new Rectangle(boundary.x, boundary.y, boundary.width, h));
+	}
 
 	@Override
 	public Rectangle getExtendedBoundary() {
@@ -973,17 +914,17 @@ public class DefaultNodeView extends DefaultGraphObjectView implements NodeView/
 		return null;
 	}
 
-	//	@Override
-	//	public String[][] getSVGDocumentAttributes() {
+	// @Override
+	// public String[][] getSVGDocumentAttributes() {
 	//
-	//		if (svgDef == null) {
-	//			svgDef = SVGDefinitionPool.get(getPresentationID());
-	//		}
-	//		if (svgDef != null) {
-	//			return svgDef.getDocumentAttributes();
-	//		}
-	//		return null;
-	//	}
+	// if (svgDef == null) {
+	// svgDef = SVGDefinitionPool.get(getPresentationID());
+	// }
+	// if (svgDef != null) {
+	// return svgDef.getDocumentAttributes();
+	// }
+	// return null;
+	// }
 
 	private String ImageToString(BufferedImage img) {
 
@@ -1077,14 +1018,10 @@ public class DefaultNodeView extends DefaultGraphObjectView implements NodeView/
 				svgDef = SVGDefinitionPool.get(getPresentationID());
 			}
 			if (svgDef != null && !svgDef.keepRatio) {
-				createSelectionMarkDescriotor(svg, b.x + b.width / 2 - selDef.width / 2, b.y
-						- selDef.height - 2);// N
-				createSelectionMarkDescriotor(svg, b.x + b.width / 2 - selDef.width / 2, b.y
-						+ b.height + 2);// S
-				createSelectionMarkDescriotor(svg, b.x - selDef.width - 2, b.y + b.height / 2
-						- selDef.height / 2);// W
-				createSelectionMarkDescriotor(svg, b.x + b.width + 2, b.y + b.height / 2
-						- selDef.height / 2);// E
+				createSelectionMarkDescriotor(svg, b.x + b.width / 2 - selDef.width / 2, b.y - selDef.height - 2);// N
+				createSelectionMarkDescriotor(svg, b.x + b.width / 2 - selDef.width / 2, b.y + b.height + 2);// S
+				createSelectionMarkDescriotor(svg, b.x - selDef.width - 2, b.y + b.height / 2 - selDef.height / 2);// W
+				createSelectionMarkDescriotor(svg, b.x + b.width + 2, b.y + b.height / 2 - selDef.height / 2);// E
 			}
 
 			createSelectionMarkDescriotor(svg, b.x - selDef.width - 2, b.y - selDef.height - 2);// NW
@@ -1150,8 +1087,7 @@ public class DefaultNodeView extends DefaultGraphObjectView implements NodeView/
 		return null;
 	}
 
-	private void createPortIndicatorDescriotor(StringBuffer svg, double x, double y,
-			boolean highlighted) {
+	private void createPortIndicatorDescriotor(StringBuffer svg, double x, double y, boolean highlighted) {
 
 		if (portHLDef == null) {
 			portHLDef = SVGDefinitionPool.get(getPortHighlighingDesriptorID());

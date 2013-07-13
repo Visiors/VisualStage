@@ -3,7 +3,9 @@ package com.visiors.visualstage.graph.view.node;
 import java.awt.Point;
 import java.awt.Rectangle;
 
-public interface Port /* extends PropertyOwner */{
+import com.visiors.visualstage.property.PropertyOwner;
+
+public interface Port  extends PropertyOwner {
 
 	public int getID();
 

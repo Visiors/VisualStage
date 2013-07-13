@@ -333,7 +333,7 @@ public class DefaultFormItem implements FormItem, PropertyListener {
     @Override
     public void documentChanged() {
 
-        form.update();
+        form.saveAll();
     }
 
     private void wrap() {
@@ -426,7 +426,7 @@ public class DefaultFormItem implements FormItem, PropertyListener {
     public void editingCancelled() {
 
         editing = false;
-        form.update();
+        form.saveAll();
     }
 
     @Override
@@ -436,7 +436,7 @@ public class DefaultFormItem implements FormItem, PropertyListener {
         createDocument(newDescription);
         maxSize = null;
         wrap();
-        form.update();
+        form.saveAll();
     }
 
 }

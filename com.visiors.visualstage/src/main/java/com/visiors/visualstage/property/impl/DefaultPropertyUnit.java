@@ -15,9 +15,10 @@ public class DefaultPropertyUnit implements PropertyUnit {
 	private String name;
 	private Object value;
 	private PropertyList parent;
-	private int attributes;
 	private final ValueRange range;
 	private PropertyType type;
+	private boolean readOnly;
+	private boolean visible ;
 
 	public DefaultPropertyUnit() {
 
@@ -26,58 +27,25 @@ public class DefaultPropertyUnit implements PropertyUnit {
 
 	public DefaultPropertyUnit(String name, Object value) {
 
-		this(name, value, PropertyType.OBJECT);
+		this(name, value, PropertyType.typeOf(value));
 	}
 
 	public DefaultPropertyUnit(String name, Object value, PropertyType type) {
 
-		this(name, value, type, VISIBLE | EDITABLE | PERSISTENT, null);
+		this(name, value, type, null);
 	}
 
 	public DefaultPropertyUnit(String name, Object value, PropertyType type, String range) {
 
-		this(name, value, type, VISIBLE | EDITABLE | PERSISTENT, range);
-	}
-
-	public DefaultPropertyUnit(String name, Object value, PropertyType type, int attributes,
-			String range) {
-
 		this.name = name;
 		this.value = value;
-		this.attributes = attributes;
-		this.type = type != PropertyType.OBJECT ? type : findType(value);
-
+		this.type = type ;
+		this.visible = true;
+		this.readOnly= false;
 		this.range = new DefaultValueRange(type, range);
 	}
 
-	private PropertyType findType(Object value) {
 
-		if (value instanceof Long) {
-			return PropertyType.LONG;
-		}
-		if (value instanceof Integer) {
-			return PropertyType.INTEGER;
-		}
-		if (value instanceof Double) {
-			return PropertyType.DOUBLE;
-		}
-		if (value instanceof Float) {
-			return PropertyType.FLOAT;
-		}
-		if (value instanceof Boolean) {
-			return PropertyType.BOOLEAN;
-		}
-		if (value instanceof String) {
-			return PropertyType.STRING;
-		}
-
-		return PropertyType.OBJECT;
-	}
-
-	public DefaultPropertyUnit(PropertyUnit a) {
-
-		this(a.getName(), a.getValue(), a.getType(), a.getAttribute(), a.getValueRangeExpression());
-	}
 
 	@Override
 	public String getName() {
@@ -135,28 +103,42 @@ public class DefaultPropertyUnit implements PropertyUnit {
 	}
 
 	@Override
-	public int getAttribute() {
-
-		return attributes;
-	}
-
-	@Override
-	public void setAttribute(int a) {
-
-		this.attributes = a;
-	}
-
-	@Override
 	public PropertyUnit deepCopy() {
 
 		DefaultPropertyUnit punit = new DefaultPropertyUnit(name, DeepCopy.copy(value), type,
-				attributes, range.getExpression());
+				range.getExpression());
+		punit.setReadOnly(isReadOnly());
+		punit.setVisible(isVisible());
 
 		// for (PropertyListener l : propertyListener) {
 		// punit.addPropertyListener(l);
 		// }
 
 		return punit;
+	}
+
+	@Override
+	public void setVisible(boolean visible) {
+
+		this.visible = visible;
+	}
+
+	@Override
+	public boolean isVisible() {
+
+		return visible;
+	}
+
+	@Override
+	public void setReadOnly(boolean readOnly) {
+
+		this.readOnly = readOnly;
+	}
+
+	@Override
+	public boolean isReadOnly() {
+
+		return readOnly;
 	}
 
 	@Override

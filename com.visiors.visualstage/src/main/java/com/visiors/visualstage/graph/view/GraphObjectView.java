@@ -17,8 +17,6 @@ import com.visiors.visualstage.stage.interaction.Manipulatable;
  * i.e. edges, nodes, and sub-graphs
  * 
  */
-
-// TODO: is the model a better place for Attributable, PropertyOwner?
 public interface GraphObjectView extends Interactable, Manipulatable, Attributable, PropertyOwner {
 
 	public long getID();

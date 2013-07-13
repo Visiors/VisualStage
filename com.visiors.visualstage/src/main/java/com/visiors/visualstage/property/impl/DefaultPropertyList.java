@@ -17,10 +17,11 @@ public class DefaultPropertyList implements PropertyList, PropertyListener {
 	private String contentText = "";
 	protected PropertyList parent;
 	protected Vector<Property> properties = new Vector<Property>();
-	private int attributes;
+	protected boolean readOnly;
+	protected boolean visible;
 
 	public DefaultPropertyList() {
-
+		visible = true;
 	}
 
 	public DefaultPropertyList(String name) {
@@ -136,16 +137,29 @@ public class DefaultPropertyList implements PropertyList, PropertyListener {
 		this.parent = parent;
 	}
 
-	@Override
-	public int getAttribute() {
 
-		return attributes;
+	@Override
+	public void setVisible(boolean visible) {
+
+		this.visible = visible;
 	}
 
 	@Override
-	public void setAttribute(int a) {
+	public boolean isVisible() {
 
-		this.attributes = a;
+		return visible;
+	}
+
+	@Override
+	public void setReadOnly(boolean readOnly) {
+
+		this.readOnly = readOnly;
+	}
+
+	@Override
+	public boolean isReadOnly() {
+
+		return readOnly;
 	}
 
 	@Override
