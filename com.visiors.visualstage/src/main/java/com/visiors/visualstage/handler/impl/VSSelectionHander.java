@@ -15,9 +15,9 @@ import com.visiors.visualstage.view.xxx.GraphObjectView;
 
 public class VSSelectionHander extends GraphViewAdapter implements GraphViewListener, SelectionHandler {
     protected boolean multiselection;
-    protected GraphView graphView;
+    protected VisualGraph graphView;
     private boolean processing;
-    private volatile List<GraphObjectView> listOfSelectedObjects;
+    private volatile List<VisualGraphObject> listOfSelectedObjects;
 
     @Inject
     public VSSelectionHander() {
@@ -25,11 +25,11 @@ public class VSSelectionHander extends GraphViewAdapter implements GraphViewList
     }
 
     @Override
-    public void setScope(GraphView graphView) {
+    public void setScope(VisualGraph graphView) {
 
         this.graphView = graphView;
         graphView.addGraphViewListener(this);
-        listOfSelectedObjects = new ArrayList<GraphObjectView>();
+        listOfSelectedObjects = new ArrayList<VisualGraphObject>();
     }
 
     @Override
@@ -56,7 +56,7 @@ public class VSSelectionHander extends GraphViewAdapter implements GraphViewList
         try {
             processing = true;
             while (listOfSelectedObjects.size() != 0) {
-                GraphObjectView vgo = listOfSelectedObjects.remove(0);
+                VisualGraphObject vgo = listOfSelectedObjects.remove(0);
                 vgo.setSelected(false);
                 // if(vgo instanceof GraphView) {
                 // ((GraphView) vgo).getSelectionService().clearSelection();
@@ -72,13 +72,13 @@ public class VSSelectionHander extends GraphViewAdapter implements GraphViewList
      * in multi-selection mode only the state of the specified object will be changed, in single-selection mode all
      * other objects will be unselected.
      * 
-     * @param graphObject the {@link GraphObjectView} of which the selection state is to be changed
+     * @param graphObject the {@link VisualGraphObject} of which the selection state is to be changed
      */
     @Override
-    public void invertObjectSelection(GraphObjectView graphObject) {
+    public void invertObjectSelection(VisualGraphObject graphObject) {
 
-        GraphObjectView vobj;
-        GraphObjectView[] objects = graphView.getGraphObjects();
+        VisualGraphObject vobj;
+        VisualGraphObject[] objects = graphView.getGraphObjects();
 
         for (int i = 0; i < objects.length; i++) {
             vobj = objects[i];
@@ -99,11 +99,11 @@ public class VSSelectionHander extends GraphViewAdapter implements GraphViewList
      * @param selected
      */
     @Override
-    public void select(GraphObjectView graphObject, boolean selected) {
+    public void select(VisualGraphObject graphObject, boolean selected) {
 
-        GraphObjectView vobj;
+        VisualGraphObject vobj;
 
-        GraphObjectView[] objects = graphView.getGraphObjects();
+        VisualGraphObject[] objects = graphView.getGraphObjects();
 
         for (int i = 0; i < objects.length; i++) {
             vobj = objects[i];
@@ -118,26 +118,26 @@ public class VSSelectionHander extends GraphViewAdapter implements GraphViewList
     }
 
     @Override
-    public void select(List<GraphObjectView> graphObject) {
+    public void select(List<VisualGraphObject> graphObject) {
 
         clearSelection();
 
-        for (GraphObjectView vobj : graphObject) {
+        for (VisualGraphObject vobj : graphObject) {
             vobj.setSelected(true);
         }
 
     }
 
     @Override
-    public List<GraphObjectView> getSelection() {
+    public List<VisualGraphObject> getSelection() {
 
-        return new ArrayList<GraphObjectView>(listOfSelectedObjects);
+        return new ArrayList<VisualGraphObject>(listOfSelectedObjects);
     }
 
     // ////////////////////////////////////////////////////////////
     // Graph View events
     @Override
-    public void nodeSelectionChanged(NodeView node) {
+    public void nodeSelectionChanged(VisualNode node) {
 
         if (processing) {
             return;
@@ -157,12 +157,12 @@ public class VSSelectionHander extends GraphViewAdapter implements GraphViewList
         listOfSelectedObjects.clear();
 
         graphView.clearSelection();
-        GraphObjectView[] vgos = graphView.getGraphObjects();
+        VisualGraphObject[] vgos = graphView.getGraphObjects();
 
-        for (GraphObjectView GraphObjectView : vgos) {
+        for (VisualGraphObject GraphObjectView : vgos) {
 
-            if (GraphObjectView instanceof GraphView) {
-                GraphView gv = (GraphView) GraphObjectView;
+            if (GraphObjectView instanceof VisualGraph) {
+                VisualGraph gv = (VisualGraph) GraphObjectView;
                 listOfSelectedObjects.addAll(gv.getSelection());
             }
             if (GraphObjectView.isSelected()) {
@@ -173,7 +173,7 @@ public class VSSelectionHander extends GraphViewAdapter implements GraphViewList
     }
 
     @Override
-    public void nodeAdded(NodeView node) {
+    public void nodeAdded(VisualNode node) {
 
         if (node.isSelected() && !listOfSelectedObjects.contains(node)) {
             listOfSelectedObjects.add(node);
@@ -181,7 +181,7 @@ public class VSSelectionHander extends GraphViewAdapter implements GraphViewList
     }
 
     @Override
-    public void nodeRemoved(NodeView node) {
+    public void nodeRemoved(VisualNode node) {
 
         int index = listOfSelectedObjects.indexOf(node);
         if (index != -1) {
@@ -190,7 +190,7 @@ public class VSSelectionHander extends GraphViewAdapter implements GraphViewList
     }
 
     @Override
-    public void edgeAdded(EdgeView edge) {
+    public void edgeAdded(VisualEdge edge) {
 
         if (edge.isSelected() && !listOfSelectedObjects.contains(edge)) {
             listOfSelectedObjects.add(edge);
@@ -198,7 +198,7 @@ public class VSSelectionHander extends GraphViewAdapter implements GraphViewList
     }
 
     @Override
-    public void edgeRemoved(EdgeView edge) {
+    public void edgeRemoved(VisualEdge edge) {
 
         int index = listOfSelectedObjects.indexOf(edge);
         if (index != -1) {
@@ -207,7 +207,7 @@ public class VSSelectionHander extends GraphViewAdapter implements GraphViewList
     }
 
     @Override
-    public void edgeSelectionChanged(EdgeView edge) {
+    public void edgeSelectionChanged(VisualEdge edge) {
 
         if (processing) {
             return;

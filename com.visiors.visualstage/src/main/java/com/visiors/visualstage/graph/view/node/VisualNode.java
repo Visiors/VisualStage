@@ -1,31 +1,24 @@
 package com.visiors.visualstage.graph.view.node;
 
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.util.List;
 
-import com.visiors.visualstage.graph.view.GraphObjectView;
-import com.visiors.visualstage.graph.view.edge.EdgeView;
-import com.visiors.visualstage.graph.view.graph.GraphView;
-import com.visiors.visualstage.graph.view.node.listener.NodeViewListener;
+import com.visiors.visualstage.graph.view.VisualGraphObject;
+import com.visiors.visualstage.graph.view.edge.VisualEdge;
+import com.visiors.visualstage.graph.view.graph.VisualGraph;
+import com.visiors.visualstage.graph.view.node.listener.VisualNodeListener;
 
 /**
  * This interface defines the functionality of an <code>edge</code> in context
- * of {@link GraphView}
+ * of {@link VisualGraph}
  * 
  * @author Shane
  * 
  */
-public interface NodeView extends GraphObjectView/*
+public interface VisualNode extends VisualGraphObject/*
  * , LayoutableNode, Undoable,
  * DockingBase
  */{
-
-	/**
-	 * Sets the node's bounding-box
-	 */
-	public void setBounds(Rectangle r);
-
 	/**
 	 * Returns the number of all edges connected to this node
 	 */
@@ -44,27 +37,25 @@ public interface NodeView extends GraphObjectView/*
 	/**
 	 * returns the list of all outgoing edges
 	 */
-	public List<EdgeView> getOutgoingEdges();
+	public List<VisualEdge> getOutgoingEdges();
 
 	/**
 	 * returns the list of all incoming edges
 	 */
-	public List<EdgeView> getIncomingEdges();
+	public List<VisualEdge> getIncomingEdges();
 
 	/**
 	 * returns the list of all connected edges
 	 */
-	public List<EdgeView> getConnectedEdges();
+	public List<VisualEdge> getConnectedEdges();
 
-	// port
 	/**
-	 * Returns the node's {@link PortSet}. Ports are usually located on the
-	 * node's border and define where locations that edges can be connected to
+	 * Returns the node's {@link PortSet}. 
 	 */
 	public void setPortSet(PortSet portSetView);
 
 	/**
-	 * Sets the {@link PortSet} for the node instance
+	 * Returns the node's {@link PortSet}.
 	 */
 	public PortSet getPortSet();
 
@@ -92,42 +83,24 @@ public interface NodeView extends GraphObjectView/*
 	 */
 	public void highlightPort(int portID, boolean on);
 
-
-
 	/**
 	 * This method will be called to notify the node about the connect to the
 	 * specified <code>opositeNode</code> and <code>edge</code>
 	 * 
-	 * @see #preConnect(EdgeView)
+	 * @see #preConnect(VisualEdge)
 	 */
-	public void postConnected(EdgeView edge, NodeView opositeNode, boolean incomingConnection);
-
-	// /**
-	// * This method will be called to request the disconnection from the
-	// current
-	// * edge. The node can reject the request by returning <code>false</code>.
-	// <br>
-	// * Note: Accepting the request is no guaranty for actual disconnection
-	// since
-	// * this requires that all involved parties accept the action in which case
-	// * the invocation of the method {@link #postDisconnected(EdgeView)} will
-	// * follow.
-	// *
-	// * @param edge
-	// * the <code>EdgeView</code> that is used for the connection.
-	// */
-	// public boolean preDisconnect(EdgeView edge);
+	public void postConnected(VisualEdge edge, VisualNode opositeNode, boolean incomingConnection);
 
 	/**
 	 * This method will be called to notify the node about disconnection from
 	 * the specified <code>edge</code>
 	 * 
-	 * @see #preDisconnect(EdgeView)
+	 * @see #preDisconnect(VisualEdge)
 	 */
-	public void postDisconnected(EdgeView edge);
+	public void postDisconnected(VisualEdge edge);
 
-	public void addNodeViewListener(NodeViewListener listener);
+	public void addNodeViewListener(VisualNodeListener listener);
 
-	public void removeNodeViewListener(NodeViewListener listener);
+	public void removeNodeViewListener(VisualNodeListener listener);
 
 }

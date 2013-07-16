@@ -2,13 +2,13 @@ package com.visiors.visualstage.graph.view.graph.impl;
 
 import java.awt.Rectangle;
 
-import com.visiors.visualstage.graph.view.GraphObjectView;
-import com.visiors.visualstage.graph.view.graph.GraphView;
-import com.visiors.visualstage.graph.view.node.NodeView;
+import com.visiors.visualstage.graph.view.VisualGraphObject;
+import com.visiors.visualstage.graph.view.graph.VisualGraph;
+import com.visiors.visualstage.graph.view.node.VisualNode;
 
 public class DepotObject {
 
-	GraphObjectView object;
+	VisualGraphObject object;
 
 	int typeFixedPriority;
 	int order;
@@ -17,12 +17,12 @@ public class DepotObject {
 	int y1;
 	int y2;
 
-	public DepotObject(GraphObjectView object, int order) {
+	public DepotObject(VisualGraphObject object, int order) {
 		this.object = object;
 		this.order = order;
-		if (object instanceof GraphView) {
+		if (object instanceof VisualGraph) {
 			typeFixedPriority = 1;
-		} else if (object instanceof NodeView) {
+		} else if (object instanceof VisualNode) {
 			typeFixedPriority = 2;
 		} else {
 			typeFixedPriority = 3;

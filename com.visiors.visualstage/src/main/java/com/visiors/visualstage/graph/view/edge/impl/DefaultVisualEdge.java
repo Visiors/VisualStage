@@ -9,16 +9,16 @@ import javax.annotation.PostConstruct;
 
 import com.visiors.visualstage.attribute.Attribute;
 import com.visiors.visualstage.graph.view.Constants;
-import com.visiors.visualstage.graph.view.DefaultGraphObjectView;
+import com.visiors.visualstage.graph.view.DefaultVisualGraphObject;
 import com.visiors.visualstage.graph.view.edge.EdgePoint;
-import com.visiors.visualstage.graph.view.edge.EdgeView;
+import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.edge.Path;
 import com.visiors.visualstage.graph.view.edge.PathChangeListener;
 import com.visiors.visualstage.graph.view.edge.listener.EdgeViewListener;
-import com.visiors.visualstage.graph.view.graph.GraphView;
-import com.visiors.visualstage.graph.view.node.NodeView;
+import com.visiors.visualstage.graph.view.graph.VisualGraph;
+import com.visiors.visualstage.graph.view.node.VisualNode;
 import com.visiors.visualstage.graph.view.node.listener.NodeViewAdapter;
-import com.visiors.visualstage.graph.view.node.listener.NodeViewListener;
+import com.visiors.visualstage.graph.view.node.listener.VisualNodeListener;
 import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.renderer.RenderingContext;
 import com.visiors.visualstage.renderer.RenderingContext.Resolution;
@@ -26,13 +26,13 @@ import com.visiors.visualstage.resource.SVGDefinition;
 import com.visiors.visualstage.resource.SVGDefinitionPool;
 import com.visiors.visualstage.stage.interaction.Interactable;
 
-public class DefaultEdgeView extends DefaultGraphObjectView implements EdgeView, PathChangeListener/*
+public class DefaultVisualEdge extends DefaultVisualGraphObject implements VisualEdge, PathChangeListener/*
  * ,
  * PropertyListener
  */{
 
-	protected NodeView sourceNode;
-	protected NodeView targetNode;
+	protected VisualNode sourceNode;
+	protected VisualNode targetNode;
 	protected int sourcePortId;
 	protected int targetPortId;
 	protected Path path;
@@ -46,22 +46,22 @@ public class DefaultEdgeView extends DefaultGraphObjectView implements EdgeView,
 	protected String styleID;
 	protected String formID;
 
-	protected DefaultEdgeView(String name) {
+	protected DefaultVisualEdge(String name) {
 
 		super(name);
 	}
 
-	protected DefaultEdgeView(String name, long id) {
+	protected DefaultVisualEdge(String name, long id) {
 
 		super(name, id);
 
-		sourcePortId = DefaultGraphObjectView.NONE;
-		targetPortId = DefaultGraphObjectView.NONE;
+		sourcePortId = DefaultVisualGraphObject.NONE;
+		targetPortId = DefaultVisualGraphObject.NONE;
 		path = new DefaultPath();
 		path.addPathListener(this);
 	}
 
-	protected DefaultEdgeView(EdgeView edge, long id) {
+	protected DefaultVisualEdge(VisualEdge edge, long id) {
 
 		super(edge.getName(), id);
 
@@ -93,7 +93,7 @@ public class DefaultEdgeView extends DefaultGraphObjectView implements EdgeView,
 	}
 
 	@Override
-	public void setParentGraph(GraphView graph) {
+	public void setParentGraph(VisualGraph graph) {
 
 		super.setParentGraph(graph);
 		//
@@ -103,13 +103,13 @@ public class DefaultEdgeView extends DefaultGraphObjectView implements EdgeView,
 	}
 
 	@Override
-	public NodeView getSourceNode() {
+	public VisualNode getSourceNode() {
 
 		return sourceNode;
 	}
 
 	@Override
-	public NodeView getTargetNode() {
+	public VisualNode getTargetNode() {
 
 		return targetNode;
 	}
@@ -117,7 +117,7 @@ public class DefaultEdgeView extends DefaultGraphObjectView implements EdgeView,
 
 
 	@Override
-	public void connect(NodeView source, int sourcePortId, NodeView target, int targetPortId) {
+	public void connect(VisualNode source, int sourcePortId, VisualNode target, int targetPortId) {
 
 		if (sourceNode.equals(source) && this.sourcePortId != sourcePortId
 				&& targetNode.equals(target) && this.targetPortId != targetPortId) {
@@ -128,9 +128,9 @@ public class DefaultEdgeView extends DefaultGraphObjectView implements EdgeView,
 			return;
 		}
 
-		final NodeView oldSourceNode = sourceNode;
+		final VisualNode oldSourceNode = sourceNode;
 		final int oldSourcePort = sourcePortId;
-		final NodeView oldTargetNode = targetNode;
+		final VisualNode oldTargetNode = targetNode;
 		final int oldTargetPort = targetPortId;
 		/* update source */
 		if (sourceNode == null || !sourceNode.equals(source)) {
@@ -180,9 +180,9 @@ public class DefaultEdgeView extends DefaultGraphObjectView implements EdgeView,
 	}
 
 	@Override
-	public EdgeView deepCopy(long id) {
+	public VisualEdge deepCopy(long id) {
 
-		return new DefaultEdgeView(this, id);
+		return new DefaultVisualEdge(this, id);
 	}
 
 	// @Override
@@ -202,7 +202,7 @@ public class DefaultEdgeView extends DefaultGraphObjectView implements EdgeView,
 	// cachedImage = null;
 	// }
 	@Override
-	public String getViewDescription(RenderingContext context, boolean standalone) {
+	public String getViewDescriptor(RenderingContext context, boolean standalone) {
 
 		switch (context.subject) {
 		case OBJECT:
@@ -498,7 +498,7 @@ public class DefaultEdgeView extends DefaultGraphObjectView implements EdgeView,
 	@Override
 	public boolean isHit(Point pt) {
 
-		return path.getHitSegmentIndex(pt) != DefaultGraphObjectView.NONE;
+		return path.getHitSegmentIndex(pt) != DefaultVisualGraphObject.NONE;
 	}
 
 	// //////////////////////////////////////////////////////////////////////////
@@ -536,7 +536,7 @@ public class DefaultEdgeView extends DefaultGraphObjectView implements EdgeView,
 		Point p1 = null;
 		Point p2 = null;
 		if (updateSource) {
-			if (getSourcePortId() != DefaultGraphObjectView.NONE) {
+			if (getSourcePortId() != DefaultVisualGraphObject.NONE) {
 				p1 = sourceNode.getPortSet().getPortByID(getSourcePortId()).getPosition();
 			} /*
 			 * else { final Rectangle r = sourceNode.getBounds(); p1 = new
@@ -545,7 +545,7 @@ public class DefaultEdgeView extends DefaultGraphObjectView implements EdgeView,
 			movePoint(0, p1);
 		}
 		if (updateTarget) {
-			if (getTargetPortId() != DefaultGraphObjectView.NONE) {
+			if (getTargetPortId() != DefaultVisualGraphObject.NONE) {
 				p2 = targetNode.getPortSet().getPortByID(getTargetPortId()).getPosition();
 			}/*
 			 * else { p1 = path.getStart().getPoint(); final Rectangle r =
@@ -592,14 +592,14 @@ public class DefaultEdgeView extends DefaultGraphObjectView implements EdgeView,
 	@Override
 	public boolean mouseMoved(Point pt, int button, int functionKey) {
 
-		manipulationID = DefaultGraphObjectView.NONE;
+		manipulationID = DefaultVisualGraphObject.NONE;
 		if (attributes.isResizable() && isSelected()) {
 			final int index = path.getHitPointIndex(pt);
-			if (index != DefaultGraphObjectView.NONE) {
+			if (index != DefaultVisualGraphObject.NONE) {
 				manipulationID = index;
 			}
 		}
-		return manipulationID != DefaultGraphObjectView.NONE;
+		return manipulationID != DefaultVisualGraphObject.NONE;
 	}
 
 	@Override
@@ -621,7 +621,7 @@ public class DefaultEdgeView extends DefaultGraphObjectView implements EdgeView,
 	@Override
 	public boolean isInteracting() {
 
-		return manipulationID != DefaultGraphObjectView.NONE;
+		return manipulationID != DefaultVisualGraphObject.NONE;
 	}
 
 	@Override
@@ -745,8 +745,8 @@ public class DefaultEdgeView extends DefaultGraphObjectView implements EdgeView,
 	// return fireEvents;
 	// }
 
-	protected void fireEdgeReconnected(NodeView oldSourceNode, int oldSourcePortID,
-			NodeView oldTagetNode, int oldTargetPortID) {
+	protected void fireEdgeReconnected(VisualNode oldSourceNode, int oldSourcePortID,
+			VisualNode oldTagetNode, int oldTargetPortID) {
 
 		if (!fireEvents) {
 			return;
@@ -805,10 +805,10 @@ public class DefaultEdgeView extends DefaultGraphObjectView implements EdgeView,
 
 	// ///////////////////////////////
 	// events coming from connected nodes
-	NodeViewListener nodeListener = new NodeViewAdapter() {
+	VisualNodeListener nodeListener = new NodeViewAdapter() {
 
 		@Override
-		public void nodeBoundaryChangning(NodeView node) {
+		public void nodeBoundaryChangning(VisualNode node) {
 
 			final boolean sourceChanged = sourceNode != null && sourceNode.getID() == node.getID();
 			updatePath(sourceChanged, !sourceChanged);

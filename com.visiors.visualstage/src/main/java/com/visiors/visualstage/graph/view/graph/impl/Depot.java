@@ -5,13 +5,13 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.visiors.visualstage.graph.view.GraphObjectView;
+import com.visiors.visualstage.graph.view.VisualGraphObject;
 import com.visiors.visualstage.graph.view.edge.EdgePoint;
-import com.visiors.visualstage.graph.view.edge.EdgeView;
-import com.visiors.visualstage.graph.view.graph.GraphView;
+import com.visiors.visualstage.graph.view.edge.VisualEdge;
+import com.visiors.visualstage.graph.view.graph.VisualGraph;
 import com.visiors.visualstage.graph.view.graph.listener.GraphViewAdapter;
 import com.visiors.visualstage.graph.view.graph.listener.GraphViewListener;
-import com.visiors.visualstage.graph.view.node.NodeView;
+import com.visiors.visualstage.graph.view.node.VisualNode;
 
 public class Depot extends GraphViewAdapter implements GraphViewListener {
 
@@ -21,10 +21,10 @@ public class Depot extends GraphViewAdapter implements GraphViewListener {
 	private int subgraphs;
 
 	// private final boolean selectionOnTop = true;
-	private final DefaultGraphView graphView;
+	private final DefaultVisualGraph graphView;
 	private final Rectangle expansion = new Rectangle();;
 
-	Depot(DefaultGraphView graphView) {
+	Depot(DefaultVisualGraph graphView) {
 
 		graphView.addGraphViewListener(this);
 		this.graphView = graphView;
@@ -32,56 +32,56 @@ public class Depot extends GraphViewAdapter implements GraphViewListener {
 		clear();
 	}
 
-	void add(GraphObjectView vgo) {
+	void add(VisualGraphObject vgo) {
 
 		container.add(vgo);
 		increaseObjectCounter(vgo);
 		checkExpansionAndSendNotification();
 	}
 
-	void remove(GraphObjectView vgo) {
+	void remove(VisualGraphObject vgo) {
 
 		container.delete(vgo);
 		decreaseObjectCounter(vgo);
 		checkExpansionAndSendNotification();
 	}
 
-	GraphObjectView getObject(long id) {
+	VisualGraphObject getObject(long id) {
 
 		return container.getObject(id);
 	}
 
-	NodeView[] getNodes() {
+	VisualNode[] getNodes() {
 
 		int i = 0;
-		NodeView[] ns = new NodeView[nodes];
+		VisualNode[] ns = new VisualNode[nodes];
 		if (nodes > 0) {
-			GraphObjectView[] objects = container.getObjects();
-			for (GraphObjectView n : objects) {
-				if (n instanceof NodeView) {
-					ns[i++] = (NodeView) n;
+			VisualGraphObject[] objects = container.getObjects();
+			for (VisualGraphObject n : objects) {
+				if (n instanceof VisualNode) {
+					ns[i++] = (VisualNode) n;
 				}
 			}
 		}
 		return ns;
 	}
 
-	EdgeView[] getEdges() {
+	VisualEdge[] getEdges() {
 
 		int i = 0;
-		EdgeView[] es = new EdgeView[edges];
+		VisualEdge[] es = new VisualEdge[edges];
 		if (edges > 0) {
-			GraphObjectView[] objects = container.getObjects();
-			for (GraphObjectView e : objects) {
-				if (e instanceof EdgeView) {
-					es[i++] = (EdgeView) e;
+			VisualGraphObject[] objects = container.getObjects();
+			for (VisualGraphObject e : objects) {
+				if (e instanceof VisualEdge) {
+					es[i++] = (VisualEdge) e;
 				}
 			}
 		}
 		return es;
 	}
 
-	GraphObjectView[] getObjects() {
+	VisualGraphObject[] getObjects() {
 
 		return container.getObjects();
 		// GraphObjectView[] objects = container.getObjects();
@@ -109,29 +109,29 @@ public class Depot extends GraphViewAdapter implements GraphViewListener {
 		subgraphs = 0;
 	}
 
-	GraphObjectView[] getHitObjects(Point pt) {
+	VisualGraphObject[] getHitObjects(Point pt) {
 
 		// first pick objects of with the bounding box is hit
-		GraphObjectView[] candidates = container.getObjectToDraw();
+		VisualGraphObject[] candidates = container.getObjectToDraw();
 
 		// consider only objects that consider themselves as hit
-		List<GraphObjectView> hitObjects = new ArrayList<GraphObjectView>();
-		for (GraphObjectView candidate : candidates) {
+		List<VisualGraphObject> hitObjects = new ArrayList<VisualGraphObject>();
+		for (VisualGraphObject candidate : candidates) {
 			if (candidate.isHit(pt)) {
 				hitObjects.add(candidate);
-				if (candidate instanceof GraphView) {
-					List<GraphObjectView> hitNestedOject = ((GraphView) candidate)
+				if (candidate instanceof VisualGraph) {
+					List<VisualGraphObject> hitNestedOject = ((VisualGraph) candidate)
 							.getGraphObjectsAt(pt);
-					for (GraphObjectView element : hitNestedOject) {
+					for (VisualGraphObject element : hitNestedOject) {
 						hitObjects.add(element);
 					}
 				}
 			}
 		}
-		return hitObjects.toArray(new GraphObjectView[hitObjects.size()]);
+		return hitObjects.toArray(new VisualGraphObject[hitObjects.size()]);
 	}
 
-	GraphObjectView[] getGraphObjects(Rectangle r) {
+	VisualGraphObject[] getGraphObjects(Rectangle r) {
 
 		return container.getObjectToDraw();
 
@@ -158,11 +158,11 @@ public class Depot extends GraphViewAdapter implements GraphViewListener {
 
 	}
 
-	private void increaseObjectCounter(GraphObjectView vgo) {
+	private void increaseObjectCounter(VisualGraphObject vgo) {
 
-		if (vgo instanceof NodeView) {
+		if (vgo instanceof VisualNode) {
 			nodes++;
-			if (vgo instanceof GraphView) {
+			if (vgo instanceof VisualGraph) {
 				subgraphs++;
 			}
 		} else {
@@ -170,11 +170,11 @@ public class Depot extends GraphViewAdapter implements GraphViewListener {
 		}
 	}
 
-	private void decreaseObjectCounter(GraphObjectView vgo) {
+	private void decreaseObjectCounter(VisualGraphObject vgo) {
 
-		if (vgo instanceof NodeView) {
+		if (vgo instanceof VisualNode) {
 			nodes--;
-			if (vgo instanceof GraphView) {
+			if (vgo instanceof VisualGraph) {
 				subgraphs--;
 			}
 		} else {
@@ -207,22 +207,22 @@ public class Depot extends GraphViewAdapter implements GraphViewListener {
 	// return all;
 	// }
 
-	void toFront(GraphObjectView gov) {
+	void toFront(VisualGraphObject gov) {
 
 		container.toFront(gov);
 	}
 
-	void toBack(GraphObjectView gov) {
+	void toBack(VisualGraphObject gov) {
 
 		container.toBack(gov);
 	}
 
-	void moveForward(GraphObjectView gov) {
+	void moveForward(VisualGraphObject gov) {
 
 		container.moveForward(gov);
 	}
 
-	void moveBackward(GraphObjectView gov) {
+	void moveBackward(VisualGraphObject gov) {
 
 		container.moveBackward(gov);
 	}
@@ -262,42 +262,42 @@ public class Depot extends GraphViewAdapter implements GraphViewListener {
 	// }
 
 	@Override
-	public void nodeStoppedChangingBoundary(NodeView node, Rectangle oldBoundary) {
+	public void nodeStoppedChangingBoundary(VisualNode node, Rectangle oldBoundary) {
 
 		container.setObjectBoundaryChanged(node);
 		checkExpansionAndSendNotification();
 	}
 
 	@Override
-	public void edgeStoppedChangingPath(EdgeView edge, EdgePoint[] oldPath) {
+	public void edgeStoppedChangingPath(VisualEdge edge, EdgePoint[] oldPath) {
 
 		container.setObjectBoundaryChanged(edge);
 		checkExpansionAndSendNotification();
 	}
 
 	@Override
-	public void edgeRemoved(EdgeView edge) {
+	public void edgeRemoved(VisualEdge edge) {
 
 		container.setObjectBoundaryChanged(edge);
 		checkExpansionAndSendNotification();
 	}
 
 	@Override
-	public void nodeRemoved(NodeView node) {
+	public void nodeRemoved(VisualNode node) {
 
 		container.setObjectBoundaryChanged(node);
 		checkExpansionAndSendNotification();
 	}
 
 	@Override
-	public void edgeAdded(EdgeView edge) {
+	public void edgeAdded(VisualEdge edge) {
 
 		container.setObjectBoundaryChanged(edge);
 		checkExpansionAndSendNotification();
 	}
 
 	@Override
-	public void nodeAdded(NodeView node) {
+	public void nodeAdded(VisualNode node) {
 
 		container.setObjectBoundaryChanged(node);
 		checkExpansionAndSendNotification();

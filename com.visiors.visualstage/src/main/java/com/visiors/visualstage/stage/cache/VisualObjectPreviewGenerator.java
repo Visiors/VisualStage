@@ -13,13 +13,13 @@ import com.visiors.visualstage.transform.Transformer;
 
 public class VisualObjectPreviewGenerator implements Runnable {
 
-    private final GraphObjectView vgo;
+    private final VisualGraphObject vgo;
     private String[][]              svgAttributes;
     private Thread                  t;
     private RenderingContext        context;
     private ImageObserver           observer;
 
-    public VisualObjectPreviewGenerator(GraphObjectView vgo) {
+    public VisualObjectPreviewGenerator(VisualGraphObject vgo) {
 
         this.vgo = vgo;
     }

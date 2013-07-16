@@ -2,21 +2,21 @@ package com.visiors.visualstage.validation;
 
 import java.awt.Rectangle;
 
-import com.visiors.visualstage.graph.view.edge.EdgeView;
+import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.edge.Path;
-import com.visiors.visualstage.graph.view.node.NodeView;
+import com.visiors.visualstage.graph.view.node.VisualNode;
 
 
 public interface Validator{
 
-	public boolean permitAddingNode(NodeView node);
-	public boolean permitDeletingNode(NodeView node);
-	public boolean permitAddingEdge(EdgeView edge);
-	public boolean permitDeletingEdge(EdgeView edge);
-	public boolean permitMovingEdge(EdgeView edge, int dx, int dy);
-	public boolean permitResizingEdge(EdgeView edge, Path newPath);
-	public boolean permitMovingNode(NodeView node, int dx, int dy);
-	public boolean permitResizingNode(NodeView node, Rectangle targetBoundary);
+	public boolean permitAddingNode(VisualNode node);
+	public boolean permitDeletingNode(VisualNode node);
+	public boolean permitAddingEdge(VisualEdge edge);
+	public boolean permitDeletingEdge(VisualEdge edge);
+	public boolean permitMovingEdge(VisualEdge edge, int dx, int dy);
+	public boolean permitResizingEdge(VisualEdge edge, Path newPath);
+	public boolean permitMovingNode(VisualNode node, int dx, int dy);
+	public boolean permitResizingNode(VisualNode node, Rectangle targetBoundary);
 
 	/**
 	 * This method is called to ask for permission for a new connection. 
@@ -29,5 +29,5 @@ public interface Validator{
 	 * @param targetPortId the new target port
 	 * @return true to <code>allow</code> the new connection; otherwise <code>false</code>
 	 */
-	public boolean permitConnection(NodeView sourceNode, int sourcePortId, EdgeView edge, NodeView targetNode, int targetPortId);
+	public boolean permitConnection(VisualNode sourceNode, int sourcePortId, VisualEdge edge, VisualNode targetNode, int targetPortId);
 }

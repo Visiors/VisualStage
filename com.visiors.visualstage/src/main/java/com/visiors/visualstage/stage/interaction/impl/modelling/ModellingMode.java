@@ -35,17 +35,17 @@ public class ModellingMode extends BaseInteractionHandler {
 
 	private Point mousePressedPos;
 	private Rectangle hitObjectPos;
-	private GraphObjectView hitObject;
-	private EdgeView connectingEdge;
-	private NodeView connectingSourceNode;
-	private NodeView connectingTargetNode;
+	private VisualGraphObject hitObject;
+	private VisualEdge connectingEdge;
+	private VisualNode connectingSourceNode;
+	private VisualNode connectingTargetNode;
 	private int connectingTargetPort;
 	private int connectingSourcePort;
 
 	private boolean manipulatingNotified;
 	private int manipulatoinIndex;
 	private int currentCursor;
-	private GraphView hitGroup;
+	private VisualGraph hitGroup;
 
 	@Inject
 	private UndoRedoHandler undoRedoHandler;
@@ -325,7 +325,7 @@ public class ModellingMode extends BaseInteractionHandler {
 
 	private void updateHitObject(Point pt) {
 
-		GraphObjectView lastHitObject = hitObject;
+		VisualGraphObject lastHitObject = hitObject;
 
 		hitObject = GraphInteractionUtil.getFirstHitObjectAt(graphView, pt);
 		if (lastHitObject != hitObject && lastHitObject != null) {
@@ -348,7 +348,7 @@ public class ModellingMode extends BaseInteractionHandler {
 
 		boolean keyPressed = isAltKeyPressed(functionKey);
 		if (keyPressed) {
-			if (hitObject instanceof NodeView) {
+			if (hitObject instanceof VisualNode) {
 				if (hitObject.getParent().getDepth() > 0) {
 					hitObject.getParent().setHighlighted(true);
 				}
@@ -361,8 +361,8 @@ public class ModellingMode extends BaseInteractionHandler {
 			hitGroup = null;
 		}
 
-		if (hitObject instanceof NodeView) {
-			final List<GraphObjectView> selection = graphView.getSelection();
+		if (hitObject instanceof VisualNode) {
+			final List<VisualGraphObject> selection = graphView.getSelection();
 			hitGroup = GraphInteractionUtil.getLastGroupHitByObjects(graphView, selection);
 			if (hitGroup != null) {
 				hitObject.getParent().setHighlighted(false);
@@ -388,12 +388,12 @@ public class ModellingMode extends BaseInteractionHandler {
 		}
 
 		// check if a connector is acting
-		if (hitObject instanceof EdgeView) {
+		if (hitObject instanceof VisualEdge) {
 
-			EdgeView edge = (EdgeView) hitObject;
+			VisualEdge edge = (VisualEdge) hitObject;
 			Point sPt = edge.getStartConnectionPoint();
 			// check if a node is hit by connector
-			NodeView node = GraphInteractionUtil.getFirstHitNodeAt(graphView, sPt);
+			VisualNode node = GraphInteractionUtil.getFirstHitNodeAt(graphView, sPt);
 			if (node != null) {
 				node.openPorts(true);
 				int port = node.getPreferredPort(sPt);
@@ -434,12 +434,12 @@ public class ModellingMode extends BaseInteractionHandler {
 		if (isAltKeyPressed(functionKey)) {
 			return;
 		}
-		if (hitObject instanceof NodeView && hitObject != hitGroup) {
+		if (hitObject instanceof VisualNode && hitObject != hitGroup) {
 			if (hitGroup == null) {
 				hitGroup = graphView;
 			}
 			if (hitObject.getParent() != hitGroup) {
-				final List<GraphObjectView> selection = graphView.getSelection();
+				final List<VisualGraphObject> selection = graphView.getSelection();
 				GraphInteractionUtil.relocateObject(selection, hitGroup);
 			}
 		}
@@ -477,8 +477,8 @@ public class ModellingMode extends BaseInteractionHandler {
 
 		undoRedoHandler.stratOfGroupAction();
 		// notify object about immediate actions
-		final List<GraphObjectView> selection = graphView.getSelection();
-		for (GraphObjectView vgo : selection) {
+		final List<VisualGraphObject> selection = graphView.getSelection();
+		for (VisualGraphObject vgo : selection) {
 			vgo.startManipulating();
 		}
 		manipulatingNotified = true;
@@ -488,8 +488,8 @@ public class ModellingMode extends BaseInteractionHandler {
 
 		// notify object about end of interaction
 		manipulatingNotified = false;
-		final List<GraphObjectView> selection = graphView.getSelection();
-		for (GraphObjectView vgo : selection) {
+		final List<VisualGraphObject> selection = graphView.getSelection();
+		for (VisualGraphObject vgo : selection) {
 			vgo.endManipulating();
 		}
 
@@ -502,13 +502,13 @@ public class ModellingMode extends BaseInteractionHandler {
 			undoRedoHandler.stratOfGroupAction();
 
 			// create
-			List<GraphObjectView> selection = graphView.getSelection();
+			List<VisualGraphObject> selection = graphView.getSelection();
 			// selection.remove(hitObject);
 
 			PropertyList propertyList = new DefaultPropertyList();
-			GraphBuilder.visualObjects2ProperyList(selection.toArray(new GraphObjectView[0]),
+			GraphBuilder.visualObjects2ProperyList(selection.toArray(new VisualGraphObject[0]),
 					propertyList);
-			List<GraphObjectView> duplicatedObjects = GraphBuilder.createGraphObjects(
+			List<VisualGraphObject> duplicatedObjects = GraphBuilder.createGraphObjects(
 					propertyList, graphView, true);
 			graphView.setSelection(duplicatedObjects);
 			for (int i = 0; i < duplicatedObjects.size(); i++) {
@@ -531,7 +531,7 @@ public class ModellingMode extends BaseInteractionHandler {
 			int dx = mousePressedPos.x - pt.x + currentPos.x - startPos.x;
 			int dy = mousePressedPos.y - pt.y + currentPos.y - startPos.y;
 
-			List<GraphObjectView> selection = graphView.getSelection();
+			List<VisualGraphObject> selection = graphView.getSelection();
 
 			moveEdgesWithSelectedNodes(selection, dx, dy);
 			moveEdges(selection, dx, dy);
@@ -540,16 +540,16 @@ public class ModellingMode extends BaseInteractionHandler {
 		}
 	}
 
-	private void moveEdgesWithSelectedNodes(List<GraphObjectView> selection, int dx, int dy) {
+	private void moveEdgesWithSelectedNodes(List<VisualGraphObject> selection, int dx, int dy) {
 
-		List<EdgeView> edgesToMove = new ArrayList<EdgeView>();
-		NodeView sn, tn;
+		List<VisualEdge> edgesToMove = new ArrayList<VisualEdge>();
+		VisualNode sn, tn;
 
-		for (GraphObjectView vgo : selection) {
-			if (vgo instanceof NodeView) {
-				NodeView n = (NodeView) vgo;
-				List<EdgeView> connections = n.getOutgoingEdges();
-				for (EdgeView edge : connections) {
+		for (VisualGraphObject vgo : selection) {
+			if (vgo instanceof VisualNode) {
+				VisualNode n = (VisualNode) vgo;
+				List<VisualEdge> connections = n.getOutgoingEdges();
+				for (VisualEdge edge : connections) {
 					if (!edge.isSelected()) {
 						tn = edge.getTargetNode();
 						if (tn != null && tn.isSelected() && !edgesToMove.contains(edge)) {
@@ -558,7 +558,7 @@ public class ModellingMode extends BaseInteractionHandler {
 					}
 				}
 				connections = n.getIncomingEdges();
-				for (EdgeView edge : connections) {
+				for (VisualEdge edge : connections) {
 					if (!edge.isSelected()) {
 						sn = edge.getSourceNode();
 						if (sn != null && sn.isSelected() && !edgesToMove.contains(edge)) {
@@ -568,24 +568,24 @@ public class ModellingMode extends BaseInteractionHandler {
 				}
 			}
 		}
-		for (EdgeView edge : edgesToMove) {
+		for (VisualEdge edge : edgesToMove) {
 			edge.move(-dx, -dy);
 		}
 	}
 
-	private final synchronized void moveEdges(List<GraphObjectView> selection, int dx, int dy) {
+	private final synchronized void moveEdges(List<VisualGraphObject> selection, int dx, int dy) {
 
-		for (GraphObjectView vgo : selection) {
-			if (vgo instanceof EdgeView) {
+		for (VisualGraphObject vgo : selection) {
+			if (vgo instanceof VisualEdge) {
 				vgo.move(-dx, -dy);
 			}
 		}
 	}
 
-	private final synchronized void moveNodes(List<GraphObjectView> selection, int dx, int dy) {
+	private final synchronized void moveNodes(List<VisualGraphObject> selection, int dx, int dy) {
 
-		for (GraphObjectView vgo : selection) {
-			if (vgo instanceof NodeView) {
+		for (VisualGraphObject vgo : selection) {
+			if (vgo instanceof VisualNode) {
 				vgo.move(-dx, -dy);
 			}
 		}

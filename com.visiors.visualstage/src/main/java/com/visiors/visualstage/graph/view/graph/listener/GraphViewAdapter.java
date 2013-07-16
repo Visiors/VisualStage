@@ -3,9 +3,9 @@ package com.visiors.visualstage.graph.view.graph.listener;
 import java.awt.Rectangle;
 
 import com.visiors.visualstage.graph.view.edge.EdgePoint;
-import com.visiors.visualstage.graph.view.edge.EdgeView;
-import com.visiors.visualstage.graph.view.graph.GraphView;
-import com.visiors.visualstage.graph.view.node.NodeView;
+import com.visiors.visualstage.graph.view.edge.VisualEdge;
+import com.visiors.visualstage.graph.view.graph.VisualGraph;
+import com.visiors.visualstage.graph.view.node.VisualNode;
 
 /**
  * A convenience adapter-class for GraphViewListener.
@@ -15,98 +15,98 @@ import com.visiors.visualstage.graph.view.node.NodeView;
 public class GraphViewAdapter implements GraphViewListener {
 
 	@Override
-	public void edgeAdded(EdgeView edge) {
+	public void edgeAdded(VisualEdge edge) {
 
 	}
 
 	@Override
-	public void edgeStartedChangingPath(EdgeView edge) {
+	public void edgeStartedChangingPath(VisualEdge edge) {
 
 	}
 
 	@Override
-	public void edgePathChanging(EdgeView edge) {
+	public void edgePathChanging(VisualEdge edge) {
 
 	}
 
 	@Override
-	public void edgeStoppedChangingPath(EdgeView edge, EdgePoint[] oldPath) {
+	public void edgeStoppedChangingPath(VisualEdge edge, EdgePoint[] oldPath) {
 
 	}
 
 	@Override
-	public void edgePortReassigned(EdgeView edge, int oldPortID, boolean sourcePortChanged) {
+	public void edgePortReassigned(VisualEdge edge, int oldPortID, boolean sourcePortChanged) {
 
 	}
 
 	@Override
-	public void edgeReassigned(EdgeView edge, NodeView oldConnectnode, int oldPortID,
+	public void edgeReassigned(VisualEdge edge, VisualNode oldConnectnode, int oldPortID,
 			boolean sourceNode) {
 
 	}
 
 	@Override
-	public void edgeRemoved(EdgeView edge) {
+	public void edgeRemoved(VisualEdge edge) {
 
 	}
 
 	@Override
-	public void edgeSelectionChanged(EdgeView edge) {
+	public void edgeSelectionChanged(VisualEdge edge) {
 
 	}
 
 	@Override
-	public void nodeAdded(NodeView node) {
+	public void nodeAdded(VisualNode node) {
 
 	}
 
 	@Override
-	public void nodeStartedChangingBoundary(NodeView node) {
+	public void nodeStartedChangingBoundary(VisualNode node) {
 
 	}
 
 	@Override
-	public void nodeBoundaryChangning(NodeView node) {
+	public void nodeBoundaryChangning(VisualNode node) {
 
 	}
 
 	@Override
-	public void nodeStoppedChangingBoundary(NodeView node, Rectangle oldBoundary) {
+	public void nodeStoppedChangingBoundary(VisualNode node, Rectangle oldBoundary) {
 
 	}
 
 	@Override
-	public void nodeRemoved(NodeView node) {
+	public void nodeRemoved(VisualNode node) {
 
 	}
 
 	@Override
-	public void nodeSelectionChanged(NodeView node) {
+	public void nodeSelectionChanged(VisualNode node) {
 
 	}
 
 	@Override
-	public void graphManipulated(GraphView graph) {
+	public void graphManipulated(VisualGraph graph) {
 
 	}
 
 	@Override
-	public void viewChanged(GraphView graph) {
+	public void viewChanged(VisualGraph graph) {
 
 	}
 
 	@Override
-	public void graphExpansionChanged(GraphView graph, Rectangle newBoundary) {
+	public void graphExpansionChanged(VisualGraph graph, Rectangle newBoundary) {
 
 	}
 
 	@Override
-	public void startGrouping(GraphView group) {
+	public void startGrouping(VisualGraph group) {
 
 	}
 
 	@Override
-	public void endGrouping(GraphView group) {
+	public void endGrouping(VisualGraph group) {
 
 	}
 }

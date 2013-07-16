@@ -1,8 +1,8 @@
 package com.visiors.visualstage.handler;
 
-import com.visiors.visualstage.graph.view.graph.GraphView;
+import com.visiors.visualstage.graph.view.graph.VisualGraph;
 
 public interface ScopeAware {
 
-	void setScope(GraphView graphView);
+	void setScope(VisualGraph graphView);
 }

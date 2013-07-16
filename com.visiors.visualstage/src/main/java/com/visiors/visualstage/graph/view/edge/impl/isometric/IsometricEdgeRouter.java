@@ -2,8 +2,8 @@ package com.visiors.visualstage.graph.view.edge.impl.isometric;
 
 import java.awt.Point;
 
-import com.visiors.visualstage.graph.view.edge.EdgeView;
-import com.visiors.visualstage.graph.view.node.NodeView;
+import com.visiors.visualstage.graph.view.edge.VisualEdge;
+import com.visiors.visualstage.graph.view.node.VisualNode;
 
 /**
 
@@ -23,7 +23,7 @@ public class IsometricEdgeRouter {
 	private static final double ISO_ANGLE2 = 0.46365; // Math.PI / 3.0;
 	private static final double ISO_ANGLE1 = Math.PI / 2 - ISO_ANGLE2;
 
-	public static Point[] routeEdge(EdgeView edge, Point[] points, int sDistance, int tDistance) {
+	public static Point[] routeEdge(VisualEdge edge, Point[] points, int sDistance, int tDistance) {
 
 		final Point start = points[0];
 		final Point end = points[points.length - 1];
@@ -84,9 +84,9 @@ public class IsometricEdgeRouter {
 		return points;
 	}
 
-	public static int getInputDirection(EdgeView edge, Point start, Point end) {
+	public static int getInputDirection(VisualEdge edge, Point start, Point end) {
 
-		NodeView targetNode = edge.getTargetNode();
+		VisualNode targetNode = edge.getTargetNode();
 		if (targetNode != null) {
 			int spid = edge.getTargetPortId();
 			if (spid != -1) {
@@ -118,9 +118,9 @@ public class IsometricEdgeRouter {
 		}
 	}
 
-	public static int getOutputDirection(EdgeView edge, Point start, Point end) {
+	public static int getOutputDirection(VisualEdge edge, Point start, Point end) {
 
-		NodeView sourceNode = edge.getSourceNode();
+		VisualNode sourceNode = edge.getSourceNode();
 		if (sourceNode != null) {
 			int spid = edge.getSourcePortId();
 			if (spid != -1) {

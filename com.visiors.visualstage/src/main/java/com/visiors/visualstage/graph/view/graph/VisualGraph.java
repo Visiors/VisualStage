@@ -4,12 +4,12 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.List;
 
-import com.visiors.visualstage.graph.view.GraphObjectView;
-import com.visiors.visualstage.graph.view.edge.EdgeView;
+import com.visiors.visualstage.graph.view.VisualGraphObject;
+import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.graph.listener.GraphViewListener;
-import com.visiors.visualstage.graph.view.node.NodeView;
+import com.visiors.visualstage.graph.view.node.VisualNode;
 
-public interface GraphView extends NodeView/* , LayoutableGraph */{
+public interface VisualGraph extends VisualNode/* , LayoutableGraph */{
 	/**
 	 * Removes all nodes and edges from the graph
 	 */
@@ -18,52 +18,52 @@ public interface GraphView extends NodeView/* , LayoutableGraph */{
 	/**
 	 * Adds the given graph-objects (edges, nodes) to the graph.
 	 */
-	public void add(GraphObjectView... graphObject);
+	public void add(VisualGraphObject... graphObject);
 
 	/**
 	 * removes the specified graph-objects (edges, nodes) from the graph
 	 */
-	public void remove(GraphObjectView... graphObject);
+	public void remove(VisualGraphObject... graphObject);
 
 	/**
 	 * Returns the node specified by <code>id</code>
 	 */
-	public NodeView getNode(long id);
+	public VisualNode getNode(long id);
 
 	/**
 	 * Returns the edge specified by <code>id</code>
 	 */
-	public EdgeView getEdge(long id);
+	public VisualEdge getEdge(long id);
 
 	/**
 	 * Returns all nodes in the graph
 	 */
-	public List<NodeView> getNodes();
+	public List<VisualNode> getNodes();
 
 	/**
 	 * Returns all edges in the graph
 	 */
-	public List<EdgeView> getEdges();
+	public List<VisualEdge> getEdges();
 
 	/**
 	 * Returns all graph-objects (edges, nodes) in the graph
 	 */
-	public List<GraphObjectView> getGraphObjects();
+	public List<VisualGraphObject> getGraphObjects();
 
 	/**
 	 * Returns all graph-objects inside the specified rectangle
 	 */
-	public List<GraphObjectView> getGraphObjects(Rectangle rect);
+	public List<VisualGraphObject> getGraphObjects(Rectangle rect);
 
 	/**
 	 * Returns the graph-object at the given position
 	 */
-	public List<GraphObjectView> getGraphObjectsAt(Point pt);
+	public List<VisualGraphObject> getGraphObjectsAt(Point pt);
 
 	/**
 	 * Returns the graph-object at the given position
 	 */
-	public List<GraphObjectView> getHitObjects(Point pt);
+	public List<VisualGraphObject> getHitObjects(Point pt);
 
 	/**
 	 * Graphs can be nested. This method returns the depth of a graph in the
@@ -75,28 +75,28 @@ public interface GraphView extends NodeView/* , LayoutableGraph */{
 	/**
 	 * Sends the given graph-object to the front of the drawing order.
 	 */
-	public void toFront(GraphObjectView gov);
+	public void toFront(VisualGraphObject gov);
 
 	/**
 	 * Sends the given graph-object to the back of the drawing order.
 	 */
-	public void toBack(GraphObjectView gov);
+	public void toBack(VisualGraphObject gov);
 
 	/**
 	 * Sends the given graph-object one step higher in the drawing order.
 	 */
-	public void moveForward(GraphObjectView gov);
+	public void moveForward(VisualGraphObject gov);
 
 	/**
 	 * Sends the given graph-object one step deeper in the drawing order.
 	 */
-	public void moveBackward(GraphObjectView gov);
+	public void moveBackward(VisualGraphObject gov);
 
-	public List<GraphObjectView> getSelection();
+	public List<VisualGraphObject> getSelection();
 
-	public void setSelection(List<GraphObjectView> selection);
+	public void setSelection(List<VisualGraphObject> selection);
 
-	public void setSelection(GraphObjectView selection);
+	public void setSelection(VisualGraphObject selection);
 
 	public void clearSelection();
 

@@ -14,7 +14,7 @@ import com.visiors.visualstage.util.GraphInteractionUtil;
 public class FormComposeMode extends BaseInteractionHandler {
 
 	private FormItem hitComponent;
-	private NodeView hitNode;
+	private VisualNode hitNode;
 	private Point mousePressedPt;
 	private final int margin = 3;
 	private int dx;
@@ -214,11 +214,11 @@ public class FormComposeMode extends BaseInteractionHandler {
 	@Override
 	public void paintOnTop(Device device, Rectangle visibleScreenRect) {
 
-		final NodeView[] nodes = graphView.getNodes();
+		final VisualNode[] nodes = graphView.getNodes();
 		final Transformer xform = graphView.getTransform();
 		boolean slotUsed;
 		Point pt;
-		for (NodeView node : nodes) {
+		for (VisualNode node : nodes) {
 			String[] slots = node.getSlots();
 			for (String slot : slots) {
 				pt = node.getSlotLocation(slot);
@@ -236,7 +236,7 @@ public class FormComposeMode extends BaseInteractionHandler {
 		}
 	}
 
-	private boolean slotUsed(NodeView node, String slot) {
+	private boolean slotUsed(VisualNode node, String slot) {
 
 		Form form = node.getForm();
 		if (form != null) {

@@ -1,11 +1,11 @@
 package com.visiors.visualstage.graph.view.edge.impl.straight;
 
 import com.visiors.visualstage.constants.PropertyConstants;
-import com.visiors.visualstage.graph.view.edge.EdgeView;
-import com.visiors.visualstage.graph.view.edge.impl.DefaultEdgeView;
+import com.visiors.visualstage.graph.view.edge.VisualEdge;
+import com.visiors.visualstage.graph.view.edge.impl.DefaultVisualEdge;
 import com.visiors.visualstage.util.PropertyUtil;
 
-public class StraightEdge extends DefaultEdgeView {
+public class StraightEdge extends DefaultVisualEdge {
 
 	public StraightEdge(String name) {
 
@@ -17,7 +17,7 @@ public class StraightEdge extends DefaultEdgeView {
 		super(name, id);
 	}
 
-	protected StraightEdge(EdgeView edge, long id) {
+	protected StraightEdge(VisualEdge edge, long id) {
 
 		super(edge, id);
 	}
@@ -32,7 +32,7 @@ public class StraightEdge extends DefaultEdgeView {
 	}
 
 	@Override
-	public EdgeView deepCopy(long id) {
+	public VisualEdge deepCopy(long id) {
 
 		return new StraightEdge(this, id);
 	}

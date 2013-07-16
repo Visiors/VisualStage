@@ -6,7 +6,7 @@ import java.awt.geom.Path2D;
 
 import org.apache.batik.ext.awt.image.codec.util.PropertyUtil;
 
-import com.visiors.visualstage.graph.view.edge.EdgeView;
+import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.edge.impl.orthogonal.OrthogonalEdge;
 import com.visiors.visualstage.resource.SVGDefinition;
 import com.visiors.visualstage.resource.SVGDefinitionPool;
@@ -25,7 +25,7 @@ public class CurvedOrthogonalEdge extends OrthogonalEdge {
 		super(name, id);
 	}
 
-	protected CurvedOrthogonalEdge(EdgeView edge, long id) {
+	protected CurvedOrthogonalEdge(VisualEdge edge, long id) {
 
 		super(edge, id);
 	}
@@ -42,7 +42,7 @@ public class CurvedOrthogonalEdge extends OrthogonalEdge {
 	}
 
 	@Override
-	public EdgeView deepCopy(long id) {
+	public VisualEdge deepCopy(long id) {
 
 		return new CurvedOrthogonalEdge(this, id);
 	}

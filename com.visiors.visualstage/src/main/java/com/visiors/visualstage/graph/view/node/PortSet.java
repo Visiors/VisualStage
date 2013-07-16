@@ -8,6 +8,8 @@ import com.visiors.visualstage.property.PropertyOwner;
 public interface PortSet extends PropertyOwner
 {
 
+	public enum Positioning {FIXED, FLOATING};
+
 	public Port[] getPorts();
 
 	public PortSet deepCopy();
@@ -25,5 +27,9 @@ public interface PortSet extends PropertyOwner
 	public void createDefaultFourPortSet();
 
 	public void createDefaultEightPortSet();
+
+	public Positioning getPositioning();
+
+	public void setPositioning(Positioning positioning);
 
 }

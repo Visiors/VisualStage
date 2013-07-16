@@ -2,32 +2,32 @@ package com.visiors.visualstage.graph.view.node.listener;
 
 import java.awt.Rectangle;
 
-import com.visiors.visualstage.graph.view.node.NodeView;
+import com.visiors.visualstage.graph.view.node.VisualNode;
 
-public class NodeViewAdapter implements NodeViewListener {
+public class NodeViewAdapter implements VisualNodeListener {
 
 	@Override
-	public void nodeSelectionChanged(NodeView node) {
+	public void nodeSelectionChanged(VisualNode node) {
 
 	}
 
 	@Override
-	public void nodeStartedChangingBoundary(NodeView node) {
+	public void nodeStartedChangingBoundary(VisualNode node) {
 
 	}
 
 	@Override
-	public void nodeStoppedChangingBoundary(NodeView node, Rectangle oldBoundary) {
+	public void nodeStoppedChangingBoundary(VisualNode node, Rectangle oldBoundary) {
 
 	}
 
 	@Override
-	public void nodeBoundaryChangning(NodeView node) {
+	public void nodeBoundaryChangning(VisualNode node) {
 
 	}
 
 	@Override
-	public void nodeHighlightingChanged(NodeView node) {
+	public void nodeHighlightingChanged(VisualNode node) {
 
 	}
 

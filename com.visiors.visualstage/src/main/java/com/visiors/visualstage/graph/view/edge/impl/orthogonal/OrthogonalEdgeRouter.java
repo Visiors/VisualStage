@@ -2,8 +2,8 @@ package com.visiors.visualstage.graph.view.edge.impl.orthogonal;
 
 import java.awt.Point;
 
-import com.visiors.visualstage.graph.view.edge.EdgeView;
-import com.visiors.visualstage.graph.view.node.NodeView;
+import com.visiors.visualstage.graph.view.edge.VisualEdge;
+import com.visiors.visualstage.graph.view.node.VisualNode;
 
 /**
  * TODO: comment.
@@ -23,7 +23,7 @@ public class OrthogonalEdgeRouter {
 	private static final int FROM_NORTH = 7;
 	private static final int FROM_SOUTH = 8;
 
-	public static Point[] ensureOrthogonality(EdgeView edge, Point[] points) {
+	public static Point[] ensureOrthogonality(VisualEdge edge, Point[] points) {
 
 		final Point start = points[0];
 		final Point end = points[points.length - 1];
@@ -64,7 +64,7 @@ public class OrthogonalEdgeRouter {
 		return pt1.x == pt2.x || pt1.y == pt2.y;
 	}
 
-	public static Point[] routeEdge(EdgeView edge, Point[] points, int distanceToNode) {
+	public static Point[] routeEdge(VisualEdge edge, Point[] points, int distanceToNode) {
 
 		final Point start = points[0];
 		final Point end = points[points.length - 1];
@@ -503,9 +503,9 @@ public class OrthogonalEdgeRouter {
 		return (int) ((a - b) / 2.0);
 	}
 
-	public static int getInputDirection(EdgeView edge, Point start, Point end) {
+	public static int getInputDirection(VisualEdge edge, Point start, Point end) {
 
-		NodeView targetNode = edge.getTargetNode();
+		VisualNode targetNode = edge.getTargetNode();
 		if (targetNode != null) {
 			int spid = edge.getTargetPortId();
 			if (spid != -1) {
@@ -538,9 +538,9 @@ public class OrthogonalEdgeRouter {
 		return UNDEFINED;
 	}
 
-	public static int getOutputDirection(EdgeView edge, Point start, Point end) {
+	public static int getOutputDirection(VisualEdge edge, Point start, Point end) {
 
-		NodeView sourceNode = edge.getSourceNode();
+		VisualNode sourceNode = edge.getSourceNode();
 		if (sourceNode != null) {
 			int spid = edge.getSourcePortId();
 			if (spid != -1) {

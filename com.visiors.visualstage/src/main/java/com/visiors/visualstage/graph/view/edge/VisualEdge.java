@@ -1,11 +1,11 @@
 package com.visiors.visualstage.graph.view.edge;
 
-import com.visiors.visualstage.graph.view.GraphObjectView;
+import com.visiors.visualstage.graph.view.VisualGraphObject;
 import com.visiors.visualstage.graph.view.edge.listener.EdgeViewListener;
-import com.visiors.visualstage.graph.view.node.NodeView;
+import com.visiors.visualstage.graph.view.node.VisualNode;
 import com.visiors.visualstage.validation.Validator;
 
-public interface EdgeView extends GraphObjectView/*
+public interface VisualEdge extends VisualGraphObject/*
  * LayoutableEdge, Undoable,
  * DockingBase,PropertyOwner
  */{
@@ -17,7 +17,7 @@ public interface EdgeView extends GraphObjectView/*
 
 	/**
 	 * Connects the specified source- and target-node. This methods calls
-	 * {@link Validator#permitConnection(NodeView, EdgeView, NodeView)} to validate the action.
+	 * {@link Validator#permitConnection(VisualNode, EdgeView, VisualNode)} to validate the action.
 	 * <p>
 	 * This method makes sures that exiting nodes are detached correctly from
 	 * this edges and the new nodes are informed about this connection.
@@ -27,13 +27,13 @@ public interface EdgeView extends GraphObjectView/*
 	 * </p>
 	 * 
 	 */
-	public void connect(NodeView source, int sourcePortId, NodeView target, int targetPortId);
+	public void connect(VisualNode source, int sourcePortId, VisualNode target, int targetPortId);
 
-	public NodeView getTargetNode();
+	public VisualNode getTargetNode();
 
 	public int getTargetPortId();
 
-	public NodeView getSourceNode();
+	public VisualNode getSourceNode();
 
 	public int getSourcePortId();
 

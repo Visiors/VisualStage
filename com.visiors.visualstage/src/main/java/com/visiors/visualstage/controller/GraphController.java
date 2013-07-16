@@ -1,25 +1,24 @@
 package com.visiors.visualstage.controller;
 
-import com.visiors.visualstage.graph.mode.listener.GraphModelChangeListener;
-import com.visiors.visualstage.stage.graph.GraphView;
+import com.visiors.visualstage.graph.view.graph.VisualGraph;
 
 public interface GraphController {
 
-    // void loadGraphView(GraphView graphView, InputStream stream) throws IOException,
-    // ParserConfigurationException, SAXException;
+	// void loadGraphView(GraphView graphView, InputStream stream) throws IOException,
+	// ParserConfigurationException, SAXException;
 
-    // public GraphView createGraphView();
+	// public GraphView createGraphView();
 
-    // void saveGraphView(GraphView graphView, OutputStream stream) throws IOException;
+	// void saveGraphView(GraphView graphView, OutputStream stream) throws IOException;
 
-    void refreshGraphModel(GraphView graphview);
+	void refreshGraphModel(VisualGraph visualGraph);
 
-    void refreshGraphView(GraphView graphView);
+	void refreshVisualGraph(VisualGraph graphView);
 
-    void deleteGraphView(GraphView graphView);
+	void deleteVisualGraph(VisualGraph graphView);
 
-    void addGraphModelChangeListener(GraphModelChangeListener listener);
+	void addGraphModelChangeListener(GraphModelChangeListener listener);
 
-    void removeGraphModelChangeListener(GraphModelChangeListener listener);
+	void removeGraphModelChangeListener(GraphModelChangeListener listener);
 
 }

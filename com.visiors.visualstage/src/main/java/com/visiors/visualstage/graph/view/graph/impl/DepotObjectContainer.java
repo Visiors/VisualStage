@@ -6,12 +6,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import com.visiors.visualstage.graph.view.GraphObjectView;
+import com.visiors.visualstage.graph.view.VisualGraphObject;
 
 public class DepotObjectContainer {
 
 	DepotObject[] objects;
-	GraphObjectView[] objectsTorDraw;
+	VisualGraphObject[] objectsTorDraw;
 	boolean modified;
 	private Rectangle expansion;
 
@@ -22,7 +22,7 @@ public class DepotObjectContainer {
 		this.modified = true;
 	}
 
-	void add(GraphObjectView obj) {
+	void add(VisualGraphObject obj) {
 
 		DepotObject[] tmp = new DepotObject[objects.length + 1];
 		System.arraycopy(objects, 0, tmp, 0, objects.length);
@@ -31,7 +31,7 @@ public class DepotObjectContainer {
 		modified = true;
 	}
 
-	void delete(GraphObjectView obj) {
+	void delete(VisualGraphObject obj) {
 
 		int index = findObject(obj);
 		DepotObject[] tmp = new DepotObject[objects.length - 1];
@@ -83,7 +83,7 @@ public class DepotObjectContainer {
 		return objList;
 	}
 
-	public void toFront(GraphObjectView obj) {
+	public void toFront(VisualGraphObject obj) {
 
 		int idx = findObject(obj);
 		int objOrder = objects[idx].order;
@@ -95,7 +95,7 @@ public class DepotObjectContainer {
 		objects[idx].order = objects.length - 1;
 	}
 
-	public void toBack(GraphObjectView obj) {
+	public void toBack(VisualGraphObject obj) {
 
 		int idx = findObject(obj);
 		int objOrder = objects[idx].order;
@@ -107,7 +107,7 @@ public class DepotObjectContainer {
 		objects[idx].order = 0;
 	}
 
-	public void moveForward(GraphObjectView obj) {
+	public void moveForward(VisualGraphObject obj) {
 
 		int idx = findObject(obj);
 		int objOrder = objects[idx].order;
@@ -120,7 +120,7 @@ public class DepotObjectContainer {
 		}
 	}
 
-	public void moveBackward(GraphObjectView obj) {
+	public void moveBackward(VisualGraphObject obj) {
 
 		int idx = findObject(obj);
 		int objOrder = objects[idx].order;
@@ -133,7 +133,7 @@ public class DepotObjectContainer {
 		}
 	}
 
-	void setObjectBoundaryChanged(GraphObjectView obj) {
+	void setObjectBoundaryChanged(VisualGraphObject obj) {
 
 		int index = findObject(obj);
 		if (index != -1) {
@@ -142,7 +142,7 @@ public class DepotObjectContainer {
 		modified = true;
 	}
 
-	GraphObjectView[] getObjectToDraw() {
+	VisualGraphObject[] getObjectToDraw() {
 
 		// long t1 = System.currentTimeMillis();
 
@@ -160,32 +160,32 @@ public class DepotObjectContainer {
 
 		objectsInInterval = sortByDrawingOrder(objectsInInterval);
 
-		GraphObjectView[] result = extractVisualObjects(objectsInInterval);
+		VisualGraphObject[] result = extractVisualObjects(objectsInInterval);
 
 		// System.err.println("sequenciell search for objects to draw: "
 		// + (System.currentTimeMillis() - t1) + " ms");
 		return result;
 	}
 
-	GraphObjectView[] extractVisualObjects(DepotObject[] depotObject) {
+	VisualGraphObject[] extractVisualObjects(DepotObject[] depotObject) {
 
-		GraphObjectView result[] = new GraphObjectView[depotObject.length];
+		VisualGraphObject result[] = new VisualGraphObject[depotObject.length];
 		for (int i = 0; i < result.length; i++) {
 			result[i] = depotObject[i].object;
 		}
 		return result;
 	}
 
-	GraphObjectView[] extractVisualObjects(List<DepotObject> depotObject) {
+	VisualGraphObject[] extractVisualObjects(List<DepotObject> depotObject) {
 
-		GraphObjectView result[] = new GraphObjectView[depotObject.size()];
+		VisualGraphObject result[] = new VisualGraphObject[depotObject.size()];
 		for (int i = 0; i < result.length; i++) {
 			result[i] = depotObject.get(i).object;
 		}
 		return result;
 	}
 
-	int findObject(GraphObjectView obj) {
+	int findObject(VisualGraphObject obj) {
 
 		for (int i = 0; i < objects.length; i++) {
 			if (objects[i].object == obj) {
@@ -195,7 +195,7 @@ public class DepotObjectContainer {
 		return -1;
 	}
 
-	public GraphObjectView getObject(long id) {
+	public VisualGraphObject getObject(long id) {
 
 		for (DepotObject object : objects) {
 			if (object.object.getID() == id) {
@@ -205,7 +205,7 @@ public class DepotObjectContainer {
 		return null;
 	}
 
-	public GraphObjectView[] getObjects() {
+	public VisualGraphObject[] getObjects() {
 
 		return extractVisualObjects(objects);
 	}

@@ -16,7 +16,7 @@ public class MarqueeSelectionMode extends BaseInteractionHandler {
 
 	private final Rectangle marqueeRect = new Rectangle();
 	private final Color lineColor;
-	private final List<GraphObjectView> objectInMarquee = new ArrayList<GraphObjectView>();
+	private final List<VisualGraphObject> objectInMarquee = new ArrayList<VisualGraphObject>();
 	private Point mousePressedPos;
 
 	@Inject
@@ -41,7 +41,7 @@ public class MarqueeSelectionMode extends BaseInteractionHandler {
 
 		undoRedoHandler.stratOfGroupAction();
 
-		GraphObjectView[] hit = graphView.getHitObjects(pt);
+		VisualGraphObject[] hit = graphView.getHitObjects(pt);
 		if (hit.length == 0) {
 			final Transformer transformer = graphView.getTransform();
 			mousePressedPos = transformer.transformToScreen(pt);
@@ -90,9 +90,9 @@ public class MarqueeSelectionMode extends BaseInteractionHandler {
 	 */
 	private void updateObjectSelectionState() {
 
-		GraphObjectView vobj;
+		VisualGraphObject vobj;
 		Rectangle robj;
-		GraphObjectView[] objects = graphView.getGraphObjects();
+		VisualGraphObject[] objects = graphView.getGraphObjects();
 
 		final Transformer transformer = graphView.getTransform();
 		for (int i = 0; i < objects.length; i++) {

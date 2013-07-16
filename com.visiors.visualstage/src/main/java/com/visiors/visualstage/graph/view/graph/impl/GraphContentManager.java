@@ -3,21 +3,21 @@ package com.visiors.visualstage.graph.view.graph.impl;
 import java.awt.Rectangle;
 import java.util.List;
 
-import com.visiors.visualstage.graph.view.GraphObjectView;
-import com.visiors.visualstage.graph.view.edge.EdgeView;
-import com.visiors.visualstage.graph.view.graph.GraphView;
+import com.visiors.visualstage.graph.view.VisualGraphObject;
+import com.visiors.visualstage.graph.view.edge.VisualEdge;
+import com.visiors.visualstage.graph.view.graph.VisualGraph;
 import com.visiors.visualstage.graph.view.graph.listener.GraphViewAdapter;
 import com.visiors.visualstage.graph.view.graph.listener.GraphViewListener;
-import com.visiors.visualstage.graph.view.node.NodeView;
+import com.visiors.visualstage.graph.view.node.VisualNode;
 
 /**
  * This class passes events coming from a subgraph to its parent graph
  */
 class GraphContentManager {
 
-	final DefaultGraphView graphview;
+	final DefaultVisualGraph graphview;
 
-	GraphContentManager(DefaultGraphView graphview) {
+	GraphContentManager(DefaultVisualGraph graphview) {
 
 		this.graphview = graphview;
 
@@ -82,7 +82,7 @@ class GraphContentManager {
 	GraphViewListener graphListener = new GraphViewAdapter() {
 
 		@Override
-		public void graphExpansionChanged(GraphView graph, Rectangle newBoundary) {
+		public void graphExpansionChanged(VisualGraph graph, Rectangle newBoundary) {
 
 			if (graphview.fitToContent) {
 				fitToContent(newBoundary);
@@ -90,7 +90,7 @@ class GraphContentManager {
 		}
 
 		@Override
-		public void nodeStoppedChangingBoundary(NodeView node, Rectangle oldBoundary) {
+		public void nodeStoppedChangingBoundary(VisualNode node, Rectangle oldBoundary) {
 
 			if (!graphview.fitToContent) {
 				ensureContentIsVisible();
@@ -98,7 +98,7 @@ class GraphContentManager {
 		}
 
 		@Override
-		public void nodeAdded(NodeView node) {
+		public void nodeAdded(VisualNode node) {
 
 			// AttributeUtil.setSelectable(node, graphview.contentSelectable);
 			// AttributeUtil.setMovable(node, graphview.contentMovable);
@@ -106,7 +106,7 @@ class GraphContentManager {
 		}
 
 		@Override
-		public void edgeAdded(EdgeView edge) {
+		public void edgeAdded(VisualEdge edge) {
 
 			// AttributeUtil.setSelectable(edge, graphview.contentSelectable);
 			// AttributeUtil.setMovable(edge, graphview.contentMovable);
@@ -116,7 +116,7 @@ class GraphContentManager {
 		boolean unselecting;
 
 		@Override
-		public void nodeSelectionChanged(NodeView node) {
+		public void nodeSelectionChanged(VisualNode node) {
 
 			boolean selected = node.isSelected();
 			/*
@@ -131,15 +131,15 @@ class GraphContentManager {
 			}
 
 			/* */
-			if (!unselecting && selected && node instanceof GraphView) {
-				unselectMembers((GraphView) node);
+			if (!unselecting && selected && node instanceof VisualGraph) {
+				unselectMembers((VisualGraph) node);
 			}
 		}
 
-		private void unselectMembers(GraphView gv) {
+		private void unselectMembers(VisualGraph gv) {
 
-			List<GraphObjectView> members = gv.getGraphObjects();
-			for (GraphObjectView member : members) {
+			List<VisualGraphObject> members = gv.getGraphObjects();
+			for (VisualGraphObject member : members) {
 				member.setSelected(false);
 			}
 		}

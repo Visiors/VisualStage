@@ -2,11 +2,11 @@ package com.visiors.visualstage.graph.view.graph.impl;
 
 import java.util.List;
 
-import com.visiors.visualstage.graph.view.edge.EdgeView;
-import com.visiors.visualstage.graph.view.graph.GraphView;
+import com.visiors.visualstage.graph.view.edge.VisualEdge;
+import com.visiors.visualstage.graph.view.graph.VisualGraph;
 import com.visiors.visualstage.graph.view.graph.listener.GraphViewAdapter;
 import com.visiors.visualstage.graph.view.graph.listener.GraphViewListener;
-import com.visiors.visualstage.graph.view.node.NodeView;
+import com.visiors.visualstage.graph.view.node.VisualNode;
 
 /**
  * This class passes events coming from a subgraph to its parent graph
@@ -14,14 +14,14 @@ import com.visiors.visualstage.graph.view.node.NodeView;
 class SubgraphEventMediator {
 
 	List<GraphViewListener> parentListener;
-	private final GraphView subgraph;
+	private final VisualGraph subgraph;
 
-	SubgraphEventMediator(GraphView subgraph) {
+	SubgraphEventMediator(VisualGraph subgraph) {
 
 		this.subgraph = subgraph;
 	}
 
-	void setParentView(DefaultGraphView parentView) {
+	void setParentView(DefaultVisualGraph parentView) {
 
 		if (parentView == null) {
 			subgraph.removeGraphViewListener(subgraphEventListener);
@@ -35,7 +35,7 @@ class SubgraphEventMediator {
 	GraphViewListener subgraphEventListener = new GraphViewAdapter() {
 
 		@Override
-		public void graphManipulated(GraphView graph) {
+		public void graphManipulated(VisualGraph graph) {
 
 			for (GraphViewListener l : parentListener) {
 				l.graphManipulated(graph);
@@ -43,7 +43,7 @@ class SubgraphEventMediator {
 		}
 
 		@Override
-		public void viewChanged(GraphView graph) {
+		public void viewChanged(VisualGraph graph) {
 
 			for (GraphViewListener l : parentListener) {
 				l.viewChanged(graph);
@@ -51,7 +51,7 @@ class SubgraphEventMediator {
 		}
 
 		@Override
-		public void nodeSelectionChanged(NodeView node) {
+		public void nodeSelectionChanged(VisualNode node) {
 
 			for (GraphViewListener l : parentListener) {
 				l.nodeSelectionChanged(node);
@@ -59,7 +59,7 @@ class SubgraphEventMediator {
 		}
 
 		@Override
-		public void edgeSelectionChanged(EdgeView edge) {
+		public void edgeSelectionChanged(VisualEdge edge) {
 
 			for (GraphViewListener l : parentListener) {
 				l.edgeSelectionChanged(edge);

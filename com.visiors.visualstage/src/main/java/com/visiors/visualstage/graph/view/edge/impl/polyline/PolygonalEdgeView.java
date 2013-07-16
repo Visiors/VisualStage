@@ -15,7 +15,7 @@ import com.visiors.visualstage.view.edge.impl.DefaultEdgeView;
 import com.visiors.visualstage.view.node.NodeView;
 import com.visiors.visualstage.view.xxx.DefaultGraphObjectView;
 
-public class PolygonalEdgeView extends DefaultEdgeView {
+public class PolygonalEdgeView extends DefaultVisualEdge {
 
     private static final int SEGMENT_START_INDEX = 0X000FFF;
     protected int manipulationID;
@@ -31,7 +31,7 @@ public class PolygonalEdgeView extends DefaultEdgeView {
         super(name, id);
     }
 
-    protected PolygonalEdgeView(EdgeView edge, long id) {
+    protected PolygonalEdgeView(VisualEdge edge, long id) {
 
         super(edge, id);
     }
@@ -46,7 +46,7 @@ public class PolygonalEdgeView extends DefaultEdgeView {
     }
 
     @Override
-    public EdgeView deepCopy(long id) {
+    public VisualEdge deepCopy(long id) {
 
         return new PolygonalEdgeView(this, id);
     }
@@ -54,21 +54,21 @@ public class PolygonalEdgeView extends DefaultEdgeView {
     @Override
     public boolean mouseMoved(Point pt, int button, int functionKey) {
 
-        manipulationID = DefaultGraphObjectView.NONE;
+        manipulationID = DefaultVisualGraphObject.NONE;
         boolean altKeyPressed = (functionKey & Interactable.KEY_ALT) != 0;
 
         if (isSelected()) {
             if (AttributeUtil.isResizable(this)) {
                 /* hit point? */
                 int index = path.getHitPointIndex(pt);
-                if (index != DefaultGraphObjectView.NONE) {
+                if (index != DefaultVisualGraphObject.NONE) {
                     manipulationID = index;
                     setPinned(true);
                 }
 
                 /* hit segment? */
                 int hitSegmentindex = path.getHitSegmentIndex(pt);
-                if (hitSegmentindex != DefaultGraphObjectView.NONE) {
+                if (hitSegmentindex != DefaultVisualGraphObject.NONE) {
 
                     if (altKeyPressed) { /* make sure we always hit a segment while inserting new points */
                         manipulationID = PolygonalEdgeView.SEGMENT_START_INDEX + hitSegmentindex;
@@ -76,13 +76,13 @@ public class PolygonalEdgeView extends DefaultEdgeView {
                 }
             }
         }
-        return manipulationID != DefaultGraphObjectView.NONE;
+        return manipulationID != DefaultVisualGraphObject.NONE;
     }
 
     @Override
     public boolean mouseDragged(Point pt, int button, int functionKey) {
 
-        if (manipulationID == DefaultGraphObjectView.NONE) {
+        if (manipulationID == DefaultVisualGraphObject.NONE) {
             return false;
         }
 
@@ -98,7 +98,7 @@ public class PolygonalEdgeView extends DefaultEdgeView {
     @Override
     public boolean mousePressed(Point pt, int button, int functionKey) {
 
-        if (manipulationID == DefaultGraphObjectView.NONE) {
+        if (manipulationID == DefaultVisualGraphObject.NONE) {
             return false;
         }
 
@@ -122,7 +122,7 @@ public class PolygonalEdgeView extends DefaultEdgeView {
     @Override
     public boolean mouseReleased(Point pt, int button, int functionKey) {
 
-        if (manipulationID != DefaultGraphObjectView.NONE) {
+        if (manipulationID != DefaultVisualGraphObject.NONE) {
             endManipulating();
             int index = IDToIndex(manipulationID);
             if (index != 0 && index != path.getSize() - 1) {
@@ -136,13 +136,13 @@ public class PolygonalEdgeView extends DefaultEdgeView {
     @Override
     public boolean mouseDoubleClicked(Point pt, int button, int functionKey) {
 
-        return manipulationID != DefaultGraphObjectView.NONE;
+        return manipulationID != DefaultVisualGraphObject.NONE;
     }
 
     @Override
     public int getPreferredCursor() {
 
-        if (manipulationID != DefaultGraphObjectView.NONE) {
+        if (manipulationID != DefaultVisualGraphObject.NONE) {
             return GraphStageConstants.CURSOR_CROSSHAIR;
         }
 
@@ -244,7 +244,7 @@ public class PolygonalEdgeView extends DefaultEdgeView {
     }
 
     @Override
-    protected void fireEdgeCoonectionChanged(NodeView oldConnectedNode, int oldPortID, boolean sourceNodeChanged) {
+    protected void fireEdgeCoonectionChanged(VisualNode oldConnectedNode, int oldPortID, boolean sourceNodeChanged) {
 
         setPinned(false);
         super.fireEdgeReconnected(oldConnectedNode, oldPortID, sourceNodeChanged);

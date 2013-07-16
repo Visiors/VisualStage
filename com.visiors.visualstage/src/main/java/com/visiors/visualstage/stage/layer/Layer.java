@@ -20,5 +20,5 @@ public interface Layer {
 
     void setOrder(int order);
 
-    GraphView getGraphView();
+    VisualGraph getGraphView();
 }

@@ -137,7 +137,7 @@ public class DefaultGraphDocument implements GraphDocument, InteractionListener 
     @Override
     public Layer createNewLayer(int id) {
 
-        GraphView graphViewer = injector.getInstance(GraphView.class);
+        VisualGraph graphViewer = injector.getInstance(VisualGraph.class);
 
         graphViewer.addGraphViewListener(graphViewListener);
 
@@ -165,7 +165,7 @@ public class DefaultGraphDocument implements GraphDocument, InteractionListener 
     }
 
     @Override
-    public GraphView getGraphView() {
+    public VisualGraph getGraphView() {
 
         final Layer currentLayer = getCurrentLayer();
         return currentLayer.getGraphView();
@@ -307,7 +307,7 @@ public class DefaultGraphDocument implements GraphDocument, InteractionListener 
 
         stageDesigner.paintBackground(device, visibleScreenRect, resolution);
 
-        final GraphView gv = getGraphView();
+        final VisualGraph gv = getGraphView();
         // keep always the main graph view fit to the screen
         gv.setBounds(visibleScreenRect);
         gv.enableImageBuffering(enableImageBuffering);
@@ -442,19 +442,19 @@ public class DefaultGraphDocument implements GraphDocument, InteractionListener 
 
     GraphViewListener graphViewListener = new GraphViewAdapter() {
         @Override
-        public void graphManipulated(GraphView graph) {
+        public void graphManipulated(VisualGraph graph) {
 
             fireGraphManipulated();
         }
 
         @Override
-        public void viewChanged(GraphView graph) {
+        public void viewChanged(VisualGraph graph) {
 
             fireViewChanged();
         }
 
         @Override
-        public void graphExpansionChanged(GraphView graph, Rectangle newExpansion) {
+        public void graphExpansionChanged(VisualGraph graph, Rectangle newExpansion) {
 
             fireGraphExpansionChanged(newExpansion);
         }

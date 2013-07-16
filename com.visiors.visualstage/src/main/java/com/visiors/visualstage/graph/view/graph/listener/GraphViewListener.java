@@ -3,9 +3,9 @@ package com.visiors.visualstage.graph.view.graph.listener;
 import java.awt.Rectangle;
 
 import com.visiors.visualstage.graph.view.edge.EdgePoint;
-import com.visiors.visualstage.graph.view.edge.EdgeView;
-import com.visiors.visualstage.graph.view.graph.GraphView;
-import com.visiors.visualstage.graph.view.node.NodeView;
+import com.visiors.visualstage.graph.view.edge.VisualEdge;
+import com.visiors.visualstage.graph.view.graph.VisualGraph;
+import com.visiors.visualstage.graph.view.node.VisualNode;
 
 public interface GraphViewListener {
 
@@ -15,7 +15,7 @@ public interface GraphViewListener {
 	 * @param node
 	 *            the added node.
 	 */
-	public void nodeAdded(NodeView node);
+	public void nodeAdded(VisualNode node);
 
 	/**
 	 * Invoked after a node was removed from the graph.
@@ -23,52 +23,52 @@ public interface GraphViewListener {
 	 * @param node
 	 *            the node that have been was removed.
 	 */
-	public void nodeRemoved(NodeView node);
+	public void nodeRemoved(VisualNode node);
 
-	void nodeStartedChangingBoundary(NodeView node);
+	void nodeStartedChangingBoundary(VisualNode node);
 
-	void nodeBoundaryChangning(NodeView node);
+	void nodeBoundaryChangning(VisualNode node);
 
-	void nodeStoppedChangingBoundary(NodeView node, Rectangle oldBoundary);
+	void nodeStoppedChangingBoundary(VisualNode node, Rectangle oldBoundary);
 
-	public void edgeStartedChangingPath(EdgeView edge);
+	public void edgeStartedChangingPath(VisualEdge edge);
 
-	public void edgePathChanging(EdgeView edge);
+	public void edgePathChanging(VisualEdge edge);
 
-	public void edgeStoppedChangingPath(EdgeView edge, EdgePoint[] oldPath);
+	public void edgeStoppedChangingPath(VisualEdge edge, EdgePoint[] oldPath);
 
-	public void nodeSelectionChanged(NodeView node);
+	public void nodeSelectionChanged(VisualNode node);
 
-	public void edgeAdded(EdgeView edge);
+	public void edgeAdded(VisualEdge edge);
 
-	public void edgeRemoved(EdgeView edge);
+	public void edgeRemoved(VisualEdge edge);
 
-	public void edgeReassigned(EdgeView edge, NodeView oldConnecedNod, int oldPort,
+	public void edgeReassigned(VisualEdge edge, VisualNode oldConnecedNod, int oldPort,
 			boolean sourceNode);
 
-	public void edgePortReassigned(EdgeView edge, int oldPortID, boolean sourcePortChanged);
+	public void edgePortReassigned(VisualEdge edge, int oldPortID, boolean sourcePortChanged);
 
-	public void edgeSelectionChanged(EdgeView edge);
+	public void edgeSelectionChanged(VisualEdge edge);
 
-	public void startGrouping(GraphView group);
+	public void startGrouping(VisualGraph group);
 
-	public void endGrouping(GraphView group);
+	public void endGrouping(VisualGraph group);
 
 	/**
 	 * View needs to be repainted
 	 * 
 	 */
-	public void viewChanged(GraphView graph);
+	public void viewChanged(VisualGraph graph);
 
 	/**
 	 * changes to graph redarding expansion of graph
 	 * 
 	 * @param graph
 	 */
-	public void graphManipulated(GraphView graph);
+	public void graphManipulated(VisualGraph graph);
 
 	/**
 	 * graph's boundary has changed
 	 */
-	void graphExpansionChanged(GraphView graph, Rectangle newBoundary);
+	void graphExpansionChanged(VisualGraph graph, Rectangle newBoundary);
 }

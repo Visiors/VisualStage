@@ -7,19 +7,19 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.inject.Inject;
-import com.visiors.visualstage.graph.view.GraphObjectView;
-import com.visiors.visualstage.graph.view.edge.EdgeView;
-import com.visiors.visualstage.graph.view.graph.GraphView;
-import com.visiors.visualstage.graph.view.node.NodeView;
+import com.visiors.visualstage.graph.view.VisualGraphObject;
+import com.visiors.visualstage.graph.view.edge.VisualEdge;
+import com.visiors.visualstage.graph.view.graph.VisualGraph;
+import com.visiors.visualstage.graph.view.node.VisualNode;
 import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.util.GraphInteractionUtil;
 
 public class DefaultGroupingHandler implements GroupingHandler {
 
-	private GraphView graphView;
-	private final Map<EdgeView, ConnectionInfo> edgeSourceMap;
-	private final Map<EdgeView, ConnectionInfo> edgeTargetMap;
-	private final Map<EdgeView, PropertyList> edgePropertiesMap;
+	private VisualGraph graphView;
+	private final Map<VisualEdge, ConnectionInfo> edgeSourceMap;
+	private final Map<VisualEdge, ConnectionInfo> edgeTargetMap;
+	private final Map<VisualEdge, PropertyList> edgePropertiesMap;
 
 	@Inject
 	private UndoRedoHandler undoRedoHandler;
@@ -27,13 +27,13 @@ public class DefaultGroupingHandler implements GroupingHandler {
 	@Inject
 	public DefaultGroupingHandler() {
 
-		edgeSourceMap = new HashMap<EdgeView, ConnectionInfo>();
-		edgeTargetMap = new HashMap<EdgeView, ConnectionInfo>();
-		edgePropertiesMap = new HashMap<EdgeView, PropertyList>();
+		edgeSourceMap = new HashMap<VisualEdge, ConnectionInfo>();
+		edgeTargetMap = new HashMap<VisualEdge, ConnectionInfo>();
+		edgePropertiesMap = new HashMap<VisualEdge, PropertyList>();
 	}
 
 	@Override
-	public void setScope(GraphView graphView) {
+	public void setScope(VisualGraph graphView) {
 
 		this.graphView = graphView;
 
@@ -48,54 +48,54 @@ public class DefaultGroupingHandler implements GroupingHandler {
 	@Override
 	public boolean canUngroup() {
 
-		List<GraphObjectView> selection = graphView.getSelection();
+		List<VisualGraphObject> selection = graphView.getSelection();
 		if (selection.size() == 0) {
 			return false;
 		}
 
-		for (GraphObjectView vgo : selection) {
-			if (!(vgo instanceof GraphView)) {
+		for (VisualGraphObject vgo : selection) {
+			if (!(vgo instanceof VisualGraph)) {
 				return false;
 			}
 		}
 		return true;
 	}
 
-	private List<NodeView> getTargetedNodes() {
+	private List<VisualNode> getTargetedNodes() {
 
-		List<NodeView> result = new ArrayList<NodeView>();
-		List<GraphObjectView> objects = graphView.getSelection();
-		for (GraphObjectView obj : objects) {
-			if (obj instanceof NodeView) {
-				result.add((NodeView) obj);
+		List<VisualNode> result = new ArrayList<VisualNode>();
+		List<VisualGraphObject> objects = graphView.getSelection();
+		for (VisualGraphObject obj : objects) {
+			if (obj instanceof VisualNode) {
+				result.add((VisualNode) obj);
 			}
 		}
 		return result;
 	}
 
-	private List<EdgeView> getTargetedEdges() {
+	private List<VisualEdge> getTargetedEdges() {
 
 		// capture all selected edges
-		List<EdgeView> result = new ArrayList<EdgeView>();
-		List<GraphObjectView> objects = graphView.getSelection();
-		for (GraphObjectView obj : objects) {
-			if (obj instanceof EdgeView) {
-				result.add((EdgeView) obj);
+		List<VisualEdge> result = new ArrayList<VisualEdge>();
+		List<VisualGraphObject> objects = graphView.getSelection();
+		for (VisualGraphObject obj : objects) {
+			if (obj instanceof VisualEdge) {
+				result.add((VisualEdge) obj);
 			}
 		}
 
 		// capture edges that are connected to the selected nodes
-		List<NodeView> nodes = getTargetedNodes();
-		List<EdgeView> connections;
-		for (NodeView node : nodes) {
+		List<VisualNode> nodes = getTargetedNodes();
+		List<VisualEdge> connections;
+		for (VisualNode node : nodes) {
 			connections = node.getOutgoingEdges();
-			for (EdgeView edge : connections) {
+			for (VisualEdge edge : connections) {
 				if (result.indexOf(edge) == -1) {
 					result.add(edge);
 				}
 			}
 			connections = node.getIncomingEdges();
-			for (EdgeView edge : connections) {
+			for (VisualEdge edge : connections) {
 				if (result.indexOf(edge) == -1) {
 					result.add(edge);
 				}
@@ -107,10 +107,10 @@ public class DefaultGroupingHandler implements GroupingHandler {
 
 	private boolean allNodesOnSameLevel() {
 
-		List<NodeView> nodes = getTargetedNodes();
+		List<VisualNode> nodes = getTargetedNodes();
 		if (nodes.size() > 1) {
 
-			GraphView parent = nodes.get(0).getParentGraph();
+			VisualGraph parent = nodes.get(0).getParentGraph();
 			for (int i = 1; i < nodes.size(); i++) {
 				if (nodes.get(i).getParentGraph() != parent) {
 					return false;
@@ -121,12 +121,12 @@ public class DefaultGroupingHandler implements GroupingHandler {
 		return false;
 	}
 
-	private GraphView getObjectsParentContainer() {
+	private VisualGraph getObjectsParentContainer() {
 
-		List<GraphObjectView> objects = graphView.getSelection();
+		List<VisualGraphObject> objects = graphView.getSelection();
 		if (objects.size() > 0) {
 
-			GraphView parent = objects.get(0).getParentGraphGraph();
+			VisualGraph parent = objects.get(0).getParentGraphGraph();
 			for (int i = 1; i < objects.size(); i++) {
 				if (objects.get(i).getParentGraph() != parent) {
 					return null;
@@ -140,31 +140,31 @@ public class DefaultGroupingHandler implements GroupingHandler {
 	@Override
 	public void groupSelection(String graphviewToUse) {
 
-		GraphView parentGraph = getObjectsParentContainer();
+		VisualGraph parentGraph = getObjectsParentContainer();
 		if (parentGraph == null) {
 			return;
 		}
 
-		GraphView group = GraphFactory.instance().createContainer(-1, graphviewToUse);
+		VisualGraph group = GraphFactory.instance().createContainer(-1, graphviewToUse);
 
 		undoRedoHandler.stratOfGroupAction();
 		graphView.fireStartGrouping(group);
 
 		parentGraph.addGraphObject(group);
-		List<GraphObjectView> objectsToBeGroupped = parentGraph.getSelection();
+		List<VisualGraphObject> objectsToBeGroupped = parentGraph.getSelection();
 		objectsToBeGroupped
 				.addAll(expandToNotIncludedConnections(objectsToBeGroupped, parentGraph));
 
 		saveEdgeConnectionInfo(objectsToBeGroupped);
 		// delete edges first then nodes. This is needed for undo to create
 		// edges with exiting nodes
-		for (GraphObjectView vgo : objectsToBeGroupped) {
-			if (vgo instanceof EdgeView) {
+		for (VisualGraphObject vgo : objectsToBeGroupped) {
+			if (vgo instanceof VisualEdge) {
 				parentGraph.deleteGraphObject(vgo);
 			}
 		}
-		for (GraphObjectView vgo : objectsToBeGroupped) {
-			if (vgo instanceof NodeView) {
+		for (VisualGraphObject vgo : objectsToBeGroupped) {
+			if (vgo instanceof VisualNode) {
 				parentGraph.deleteGraphObject(vgo);
 			}
 		}
@@ -172,13 +172,13 @@ public class DefaultGroupingHandler implements GroupingHandler {
 		group.setSelected(true);
 
 		// add nodes first
-		for (GraphObjectView vgo : objectsToBeGroupped) {
-			if (vgo instanceof NodeView) {
+		for (VisualGraphObject vgo : objectsToBeGroupped) {
+			if (vgo instanceof VisualNode) {
 				group.addGraphObject(vgo);
 			}
 		}
-		for (GraphObjectView vgo : objectsToBeGroupped) {
-			if (vgo instanceof EdgeView) {
+		for (VisualGraphObject vgo : objectsToBeGroupped) {
+			if (vgo instanceof VisualEdge) {
 				group.addGraphObject(vgo);
 			}
 		}
@@ -191,21 +191,21 @@ public class DefaultGroupingHandler implements GroupingHandler {
 		undoRedoHandler.endOfGroupAction();
 	}
 
-	private boolean edgeHasConnectionToOutside(EdgeView e) {
+	private boolean edgeHasConnectionToOutside(VisualEdge e) {
 
 		ConnectionInfo c1 = edgeSourceMap.get(e);
 		ConnectionInfo c2 = edgeTargetMap.get(e);
 		return (c1 == null || !c1.node.isSelected() || c2 == null || !c2.node.isSelected());
 	}
 
-	private List<GraphObjectView> expandToNotIncludedConnections(List<GraphObjectView> objects,
-			GraphView parnetGraphView) {
+	private List<VisualGraphObject> expandToNotIncludedConnections(List<VisualGraphObject> objects,
+			VisualGraph parnetGraphView) {
 
-		List<GraphObjectView> objectToBeIncluded = new ArrayList<GraphObjectView>();
+		List<VisualGraphObject> objectToBeIncluded = new ArrayList<VisualGraphObject>();
 		// include edges that are at least from one side are connected to
 		// selected objects
-		EdgeView[] edges = parnetGraphView.getEdges();
-		for (EdgeView e : edges) {
+		VisualEdge[] edges = parnetGraphView.getEdges();
+		for (VisualEdge e : edges) {
 			if (!objects.contains(e)) {
 				if (isSourceNodeInList(e, objects) || isTargetNodeInList(e, objects)) {
 					objectToBeIncluded.add(e);
@@ -215,12 +215,12 @@ public class DefaultGroupingHandler implements GroupingHandler {
 		return objectToBeIncluded;
 	}
 
-	private boolean isSourceNodeInList(EdgeView e, List<GraphObjectView> objects) {
+	private boolean isSourceNodeInList(VisualEdge e, List<VisualGraphObject> objects) {
 
-		NodeView sn = e.getSourceNode();
-		for (GraphObjectView obj : objects) {
-			if (obj instanceof NodeView) {
-				if (isChildOf(sn, (NodeView) obj)) {
+		VisualNode sn = e.getSourceNode();
+		for (VisualGraphObject obj : objects) {
+			if (obj instanceof VisualNode) {
+				if (isChildOf(sn, (VisualNode) obj)) {
 					return true;
 				}
 			}
@@ -228,12 +228,12 @@ public class DefaultGroupingHandler implements GroupingHandler {
 		return false;
 	}
 
-	private boolean isTargetNodeInList(EdgeView e, List<GraphObjectView> objects) {
+	private boolean isTargetNodeInList(VisualEdge e, List<VisualGraphObject> objects) {
 
-		NodeView tn = e.getTargetNode();
-		for (GraphObjectView obj : objects) {
-			if (obj instanceof NodeView) {
-				if (isChildOf(tn, (NodeView) obj)) {
+		VisualNode tn = e.getTargetNode();
+		for (VisualGraphObject obj : objects) {
+			if (obj instanceof VisualNode) {
+				if (isChildOf(tn, (VisualNode) obj)) {
 					return true;
 				}
 			}
@@ -241,7 +241,7 @@ public class DefaultGroupingHandler implements GroupingHandler {
 		return false;
 	}
 
-	private boolean isChildOf(NodeView node, NodeView parent) {
+	private boolean isChildOf(VisualNode node, VisualNode parent) {
 
 		if (node == null) {
 			return false;
@@ -254,22 +254,22 @@ public class DefaultGroupingHandler implements GroupingHandler {
 		return isChildOf(node.getParentGraph(), parent);
 	}
 
-	private void saveEdgeConnectionInfo(List<GraphObjectView> objects) {
+	private void saveEdgeConnectionInfo(List<VisualGraphObject> objects) {
 
 		edgeSourceMap.clear();
 		edgeTargetMap.clear();
-		EdgeView e;
-		NodeView n;
-		for (GraphObjectView vgo : objects) {
-			if (vgo instanceof EdgeView) {
-				e = ((EdgeView) vgo);
+		VisualEdge e;
+		VisualNode n;
+		for (VisualGraphObject vgo : objects) {
+			if (vgo instanceof VisualEdge) {
+				e = ((VisualEdge) vgo);
 				n = e.getSourceNode();
 				if (n != null) {
-					edgeSourceMap.put((EdgeView) vgo, new ConnectionInfo(n, e.getSourcePortId()));
+					edgeSourceMap.put((VisualEdge) vgo, new ConnectionInfo(n, e.getSourcePortId()));
 				}
-				n = ((EdgeView) vgo).getTargetNode();
+				n = ((VisualEdge) vgo).getTargetNode();
 				if (n != null) {
-					edgeTargetMap.put((EdgeView) vgo, new ConnectionInfo(n, e.getTargetPortId()));
+					edgeTargetMap.put((VisualEdge) vgo, new ConnectionInfo(n, e.getTargetPortId()));
 				}
 				edgePropertiesMap.put(e, e.getProperties());
 			}
@@ -277,13 +277,13 @@ public class DefaultGroupingHandler implements GroupingHandler {
 		}
 	}
 
-	private void reconnectEdges(List<GraphObjectView> objects) {
+	private void reconnectEdges(List<VisualGraphObject> objects) {
 
-		EdgeView e;
+		VisualEdge e;
 		ConnectionInfo c;
-		for (GraphObjectView vgo : objects) {
-			if (vgo instanceof EdgeView) {
-				e = (EdgeView) vgo;
+		for (VisualGraphObject vgo : objects) {
+			if (vgo instanceof VisualEdge) {
+				e = (VisualEdge) vgo;
 				c = edgeSourceMap.get(e);
 				if (c != null) {
 					e.setSourceNode(c.node);
@@ -303,26 +303,26 @@ public class DefaultGroupingHandler implements GroupingHandler {
 	@Override
 	public void ungroupSelection() {
 
-		GraphView parentGraph = getObjectsParentContainer();
+		VisualGraph parentGraph = getObjectsParentContainer();
 		if (parentGraph == null) {
 			return;
 		}
 
 		undoRedoHandler.stratOfGroupAction();
-		List<GraphObjectView> selection = graphView.getSelection();
+		List<VisualGraphObject> selection = graphView.getSelection();
 
 		if (selection.size() == 0) {
 			return;
 		}
 
-		for (GraphObjectView vgo : selection) {
+		for (VisualGraphObject vgo : selection) {
 
-			if (vgo instanceof GraphView) {
+			if (vgo instanceof VisualGraph) {
 
-				GraphView group = (GraphView) vgo;
-				GraphView parentContainer = group.getParentGraph();
-				GraphObjectView[] objects = group.getGraphObjects();
-				List<GraphObjectView> objectsToBeUngroupped = new ArrayList<GraphObjectView>(
+				VisualGraph group = (VisualGraph) vgo;
+				VisualGraph parentContainer = group.getParentGraph();
+				VisualGraphObject[] objects = group.getGraphObjects();
+				List<VisualGraphObject> objectsToBeUngroupped = new ArrayList<VisualGraphObject>(
 						Arrays.asList(objects));
 				objectsToBeUngroupped.addAll(expandToNotIncludedConnections(objectsToBeUngroupped,
 						parentGraph));
@@ -330,13 +330,13 @@ public class DefaultGroupingHandler implements GroupingHandler {
 
 				// delete edges first then nodes. This is needed for undo to
 				// create edges with exiting nodes
-				for (GraphObjectView go : objectsToBeUngroupped) {
-					if (go instanceof EdgeView) {
+				for (VisualGraphObject go : objectsToBeUngroupped) {
+					if (go instanceof VisualEdge) {
 						group.deleteGraphObject(go);
 					}
 				}
-				for (GraphObjectView go : objectsToBeUngroupped) {
-					if (go instanceof NodeView) {
+				for (VisualGraphObject go : objectsToBeUngroupped) {
+					if (go instanceof VisualNode) {
 						group.deleteGraphObject(go);
 					}
 				}
@@ -344,14 +344,14 @@ public class DefaultGroupingHandler implements GroupingHandler {
 				parentContainer.deleteGraphObject(group);
 
 				// add nodes first
-				for (GraphObjectView go : objectsToBeUngroupped) {
-					if (go instanceof NodeView) {
+				for (VisualGraphObject go : objectsToBeUngroupped) {
+					if (go instanceof VisualNode) {
 						parentContainer.addGraphObject(go);
 						go.setSelected(true);
 					}
 				}
-				for (GraphObjectView go : objectsToBeUngroupped) {
-					if (go instanceof EdgeView) {
+				for (VisualGraphObject go : objectsToBeUngroupped) {
+					if (go instanceof VisualEdge) {
 						parentContainer.addGraphObject(go);
 						go.setSelected(true);
 					}
@@ -387,10 +387,10 @@ public class DefaultGroupingHandler implements GroupingHandler {
 	// return result;
 	// }
 
-	private GraphObjectView findParentOfLevel(GraphObjectView vgo, int level) {
+	private VisualGraphObject findParentOfLevel(VisualGraphObject vgo, int level) {
 
 		for (;;) {
-			GraphView parent = vgo.getParentGraph();
+			VisualGraph parent = vgo.getParentGraph();
 			if (parent == null) {
 				return null;
 			} else if (parent.getDepth() == level) {
@@ -403,10 +403,10 @@ public class DefaultGroupingHandler implements GroupingHandler {
 
 	static private class ConnectionInfo {
 
-		NodeView node;
+		VisualNode node;
 		int portID;
 
-		ConnectionInfo(NodeView node, int portID) {
+		ConnectionInfo(VisualNode node, int portID) {
 
 			this.node = node;
 			this.portID = portID;

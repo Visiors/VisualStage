@@ -2,63 +2,63 @@ package com.visiors.visualstage.validation;
 
 import java.awt.Rectangle;
 
-import com.visiors.visualstage.graph.view.edge.EdgeView;
+import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.edge.Path;
-import com.visiors.visualstage.graph.view.node.NodeView;
+import com.visiors.visualstage.graph.view.node.VisualNode;
 
 public class DefaultValidator implements Validator {
 
 	@Override
-	public boolean permitAddingNode(NodeView node) {
+	public boolean permitAddingNode(VisualNode node) {
 
 		return true;
 	}
 
 	@Override
-	public boolean permitDeletingNode(NodeView node) {
+	public boolean permitDeletingNode(VisualNode node) {
 
 		return true;
 	}
 
 	@Override
-	public boolean permitAddingEdge(EdgeView edge) {
+	public boolean permitAddingEdge(VisualEdge edge) {
 
 		return true;
 	}
 
 	@Override
-	public boolean permitDeletingEdge(EdgeView edge) {
+	public boolean permitDeletingEdge(VisualEdge edge) {
 
 		return true;
 	}
 
 	@Override
-	public boolean permitMovingEdge(EdgeView edge, int dx, int dy) {
+	public boolean permitMovingEdge(VisualEdge edge, int dx, int dy) {
 
 		return true;
 	}
 
 	@Override
-	public boolean permitResizingEdge(EdgeView edge, Path newPath) {
+	public boolean permitResizingEdge(VisualEdge edge, Path newPath) {
 
 		return true;
 	}
 
 	@Override
-	public boolean permitMovingNode(NodeView node, int dx, int dy) {
+	public boolean permitMovingNode(VisualNode node, int dx, int dy) {
 
 		return true;
 	}
 
 	@Override
-	public boolean permitResizingNode(NodeView node, Rectangle targetBoundary) {
+	public boolean permitResizingNode(VisualNode node, Rectangle targetBoundary) {
 
 		return true;
 	}
 
 	@Override
-	public boolean permitConnection(NodeView sourceNode, int sourcePortId, EdgeView edge,
-			NodeView targetNode, int targetPortId) {
+	public boolean permitConnection(VisualNode sourceNode, int sourcePortId, VisualEdge edge,
+			VisualNode targetNode, int targetPortId) {
 
 		return true;
 	}

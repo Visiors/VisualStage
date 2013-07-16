@@ -11,7 +11,7 @@ import com.visiors.visualstage.stage.interaction.impl.BaseInteractionHandler;
 
 public class PortEditingMode extends BaseInteractionHandler {
 
-	private NodeView subject;
+	private VisualNode subject;
 	private PortSet originalPortSet;
 	private int portID = -1;
 	private final Rectangle angleEndHandle;
@@ -38,10 +38,10 @@ public class PortEditingMode extends BaseInteractionHandler {
 
 		if (activated) {
 			if (graphView.getSelection().size() == 1) {
-				List<GraphObjectView> selection = graphView.getSelection();
-				GraphObjectView vgo = selection.get(0);
-				if (vgo instanceof NodeView) {
-					subject = (NodeView) vgo;
+				List<VisualGraphObject> selection = graphView.getSelection();
+				VisualGraphObject vgo = selection.get(0);
+				if (vgo instanceof VisualNode) {
+					subject = (VisualNode) vgo;
 					subject.openPorts(true);
 					// subject.setSelected(false);
 					originalPortSet = subject.getPortSet();

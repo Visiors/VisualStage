@@ -7,7 +7,7 @@ import org.apache.batik.ext.awt.image.codec.util.PropertyUtil;
 
 import com.visiors.visualstage.generics.attribute.PropertyList;
 import com.visiors.visualstage.generics.attribute.PropertyUnit;
-import com.visiors.visualstage.graph.view.edge.EdgeView;
+import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.edge.impl.orthogonal.OrthogonalEdge;
 
 public class RoundedOrthogonalEdge extends OrthogonalEdge {
@@ -24,7 +24,7 @@ public class RoundedOrthogonalEdge extends OrthogonalEdge {
 		super(name, id);
 	}
 
-	protected RoundedOrthogonalEdge(EdgeView edge, long id) {
+	protected RoundedOrthogonalEdge(VisualEdge edge, long id) {
 
 		super(edge, id);
 	}
@@ -59,7 +59,7 @@ public class RoundedOrthogonalEdge extends OrthogonalEdge {
 	}
 
 	@Override
-	public EdgeView deepCopy(long id) {
+	public VisualEdge deepCopy(long id) {
 
 		return new RoundedOrthogonalEdge(this, id);
 	}

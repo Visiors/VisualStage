@@ -2,7 +2,7 @@ package com.visiors.visualstage.handler;
 
 import java.util.List;
 
-import com.visiors.visualstage.graph.view.GraphObjectView;
+import com.visiors.visualstage.graph.view.VisualGraphObject;
 
 public interface SelectionHandler extends ScopeAware {
 
@@ -21,16 +21,16 @@ public interface SelectionHandler extends ScopeAware {
 	 * mode all other objects will be unselected.
 	 * 
 	 * @param graphObject
-	 *            the {@link GraphObjectView} of which the selection state is to
+	 *            the {@link VisualGraphObject} of which the selection state is to
 	 *            be changed
 	 */
-	public void invertObjectSelection(GraphObjectView graphObject);
+	public void invertObjectSelection(VisualGraphObject graphObject);
 
-	public void select(GraphObjectView graphObject, boolean selected);
+	public void select(VisualGraphObject graphObject, boolean selected);
 
-	public void select(List<GraphObjectView> graphObject);
+	public void select(List<VisualGraphObject> graphObject);
 
-	public List<GraphObjectView> getSelection();
+	public List<VisualGraphObject> getSelection();
 
 	public void invalidate();
 

@@ -37,7 +37,7 @@ public class DefaultStageDesigner implements StageDesigner {
     private boolean lockSize;
     private Rectangle exBounds;
 
-    protected GraphView GraphView;
+    protected VisualGraph GraphView;
 
     @Inject
     SystemUnit systemUnit;
@@ -48,7 +48,7 @@ public class DefaultStageDesigner implements StageDesigner {
     }
 
     @Override
-    public void setScope(GraphView graphView) {
+    public void setScope(VisualGraph graphView) {
 
         final Transformer transform = GraphView.getTransform();
         grid = new Grid(transform);

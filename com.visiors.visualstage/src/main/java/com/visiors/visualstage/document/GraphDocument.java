@@ -37,7 +37,7 @@ public interface GraphDocument extends MultiLayerDocument, Undoable, Interactabl
 
     // public long getID();
 
-    public GraphView getGraphView();
+    public VisualGraph getGraphView();
 
     public InteractionHandler getInteractionHandler();
 

@@ -16,9 +16,9 @@ public class EdgeCreationMode extends BaseInteractionHandler {
 	private static final int minDistance = 60;
 	private static final int DELAY = 400;
 
-	private NodeView draggingNode;
-	private NodeView nodeToMate;
-	private EdgeView createdEdge;
+	private VisualNode draggingNode;
+	private VisualNode nodeToMate;
+	private VisualEdge createdEdge;
 	private Timer timer;
 	boolean forward;
 	private Point lastDraggedPoint;
@@ -124,9 +124,9 @@ public class EdgeCreationMode extends BaseInteractionHandler {
 		forward = !controlKeyPressed;
 		if (createdEdge != null) {
 			// reverse edge
-			NodeView s = createdEdge.getSourceNode();
+			VisualNode s = createdEdge.getSourceNode();
 			int sp = createdEdge.getSourcePortId();
-			NodeView t = createdEdge.getTargetNode();
+			VisualNode t = createdEdge.getTargetNode();
 			int tp = createdEdge.getTargetPortId();
 			createdEdge.setSourceNode(null);
 			createdEdge.setTargetNode(null);
@@ -175,7 +175,7 @@ public class EdgeCreationMode extends BaseInteractionHandler {
 				if (draggingNode != null) {
 
 					Port[] posrts = new Port[2];
-					nodeToMate = (NodeView) GraphInteractionUtil.getClosestNode(graphView,
+					nodeToMate = (VisualNode) GraphInteractionUtil.getClosestNode(graphView,
 							draggingNode, EdgeCreationMode.range, true, posrts);
 
 					final boolean connect = nodeToMate != null && draggingNode != null
@@ -199,10 +199,10 @@ public class EdgeCreationMode extends BaseInteractionHandler {
 		}
 	}
 
-	private boolean nodeConnected(NodeView node1, NodeView node2) {
+	private boolean nodeConnected(VisualNode node1, VisualNode node2) {
 
-		List<EdgeView> edges = node1.getIncomingEdges();
-		for (EdgeView edge : edges) {
+		List<VisualEdge> edges = node1.getIncomingEdges();
+		for (VisualEdge edge : edges) {
 			if (edge.getSourceNode() != null) {
 				if (node2.getID() == edge.getSourceNode().getID()) {
 					return true;
@@ -210,7 +210,7 @@ public class EdgeCreationMode extends BaseInteractionHandler {
 			}
 		}
 		edges = node1.getOutgoingEdges();
-		for (EdgeView edge : edges) {
+		for (VisualEdge edge : edges) {
 			if (edge.getTargetNode() != null) {
 				if (node2.getID() == edge.getTargetNode().getID()) {
 					return true;
@@ -258,7 +258,7 @@ public class EdgeCreationMode extends BaseInteractionHandler {
 		forward = true;
 	}
 
-	private void adaptEdge(EdgeView edge, Point start, Point end) {
+	private void adaptEdge(VisualEdge edge, Point start, Point end) {
 
 		Point[] points = edge.getPoints();
 		// createdEdge.move(start.x - points[0].x, start.y - points[0].y);
@@ -282,7 +282,7 @@ public class EdgeCreationMode extends BaseInteractionHandler {
 
 	}
 
-	private Port getHighlightedPort(NodeView node) {
+	private Port getHighlightedPort(VisualNode node) {
 
 		if (node != null && node.portsOpened()) {
 			PortSet ports = node.getPortSet();

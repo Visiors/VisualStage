@@ -2,7 +2,7 @@ package com.visiors.visualstage.graph.view.edge.impl.isometric;
 
 import java.awt.Point;
 
-import com.visiors.visualstage.graph.view.edge.EdgeView;
+import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.edge.impl.curved.polyline.PolygonalEdgeView;
 
 public class IsometricEdge extends PolygonalEdgeView {
@@ -17,13 +17,13 @@ public class IsometricEdge extends PolygonalEdgeView {
 		super(name, id);
 	}
 
-	protected IsometricEdge(EdgeView edge, long id) {
+	protected IsometricEdge(VisualEdge edge, long id) {
 
 		super(edge, id);
 	}
 
 	@Override
-	public EdgeView deepCopy(long id) {
+	public VisualEdge deepCopy(long id) {
 
 		return new IsometricEdge(this, id);
 	}

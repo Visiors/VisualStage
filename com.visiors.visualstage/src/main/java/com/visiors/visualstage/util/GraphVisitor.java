@@ -16,6 +16,6 @@ public interface GraphVisitor
      * @param currentLevel the depth of the recursion, which is measured
      * from the beginning point of the recursion.
      */
-    public void visit (GraphView subgraph, int currentLevel);
+    public void visit (VisualGraph subgraph, int currentLevel);
 }
     

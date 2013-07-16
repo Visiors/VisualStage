@@ -9,21 +9,21 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.visiors.visualstage.graph.view.Constants;
-import com.visiors.visualstage.graph.view.DefaultGraphObjectView;
-import com.visiors.visualstage.graph.view.GraphObjectView;
+import com.visiors.visualstage.graph.view.DefaultVisualGraphObject;
+import com.visiors.visualstage.graph.view.VisualGraphObject;
 import com.visiors.visualstage.graph.view.edge.EdgePoint;
-import com.visiors.visualstage.graph.view.edge.EdgeView;
+import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.edge.listener.EdgeViewListener;
-import com.visiors.visualstage.graph.view.graph.GraphView;
+import com.visiors.visualstage.graph.view.graph.VisualGraph;
 import com.visiors.visualstage.graph.view.graph.listener.GraphViewListener;
-import com.visiors.visualstage.graph.view.node.NodeView;
-import com.visiors.visualstage.graph.view.node.impl.DefaultNodeView;
-import com.visiors.visualstage.graph.view.node.listener.NodeViewListener;
+import com.visiors.visualstage.graph.view.node.VisualNode;
+import com.visiors.visualstage.graph.view.node.impl.DefaultVisualNode;
+import com.visiors.visualstage.graph.view.node.listener.VisualNodeListener;
 import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.property.PropertyUnit;
 import com.visiors.visualstage.renderer.RenderingContext;
 
-public class DefaultGraphView extends DefaultNodeView implements GraphView, NodeViewListener,
+public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph, VisualNodeListener,
 EdgeViewListener
 
 {
@@ -45,12 +45,12 @@ EdgeViewListener
 
 	// private Validator validator;
 
-	protected DefaultGraphView(String name) {
+	protected DefaultVisualGraph(String name) {
 
 		super(name);
 	}
 
-	protected DefaultGraphView(String name, long id) {
+	protected DefaultVisualGraph(String name, long id) {
 
 		super(name, id);
 
@@ -60,14 +60,14 @@ EdgeViewListener
 		new GraphContentManager(this);
 	}
 
-	protected DefaultGraphView(GraphView graphView, long id) {
+	protected DefaultVisualGraph(VisualGraph graphView, long id) {
 
 		super(graphView.getName(), id);
 
 		this.setBounds(graphView.getBounds());
 		this.SetAttributes(graphView.getAttributes());
-		this.incomingEdges = new ArrayList<EdgeView>(graphView.getIncomingEdges());
-		this.outgoingEdges = new ArrayList<EdgeView>(graphView.getOutgoingEdges());
+		this.incomingEdges = new ArrayList<VisualEdge>(graphView.getIncomingEdges());
+		this.outgoingEdges = new ArrayList<VisualEdge>(graphView.getOutgoingEdges());
 		this.setProperties(graphView.getProperties());
 		this.setStyleID(graphView.getStyleID());
 		this.setPresentationID(graphView.getPresentationID());
@@ -81,39 +81,39 @@ EdgeViewListener
 	}
 
 	@Override
-	public void add(GraphObjectView... graphObjects) {
+	public void add(VisualGraphObject... graphObjects) {
 
-		for (GraphObjectView go : graphObjects) {
-			if (go instanceof NodeView) {
-				addNode((NodeView) go);
+		for (VisualGraphObject go : graphObjects) {
+			if (go instanceof VisualNode) {
+				addNode((VisualNode) go);
 			}
 		}
-		for (GraphObjectView go : graphObjects) {
-			if (go instanceof EdgeView) {
-				addEdge((EdgeView) go);
+		for (VisualGraphObject go : graphObjects) {
+			if (go instanceof VisualEdge) {
+				addEdge((VisualEdge) go);
 			}
 		}
 	}
 
 	@Override
-	public void remove(GraphObjectView... graphObjects) {
+	public void remove(VisualGraphObject... graphObjects) {
 
 		// undoRedoHandler.stratOfGroupAction();
 
-		for (GraphObjectView go : graphObjects) {
-			if (go instanceof NodeView) {
-				removeNode((NodeView) go);
+		for (VisualGraphObject go : graphObjects) {
+			if (go instanceof VisualNode) {
+				removeNode((VisualNode) go);
 			}
 		}
-		for (GraphObjectView go : graphObjects) {
-			if (go instanceof EdgeView) {
-				removeEdge((EdgeView) go);
+		for (VisualGraphObject go : graphObjects) {
+			if (go instanceof VisualEdge) {
+				removeEdge((VisualEdge) go);
 			}
 		}
 		// undoRedoHandler.endOfGroupAction();
 	}
 
-	protected void addNode(NodeView node) {
+	protected void addNode(VisualNode node) {
 
 		if (depot.getObject(node.getID()) != null) {
 			throw new IllegalArgumentException("The node cannot be added into the graph. "
@@ -136,12 +136,12 @@ EdgeViewListener
 	}
 
 	@Override
-	public void setParentGraph(GraphView parentgraph) {
+	public void setParentGraph(VisualGraph parentgraph) {
 
 		super.setParentGraph(parentgraph);
 
-		if (parentgraph instanceof DefaultGraphView) {
-			eventMediator.setParentView((DefaultGraphView) parentgraph);
+		if (parentgraph instanceof DefaultVisualGraph) {
+			eventMediator.setParentView((DefaultVisualGraph) parentgraph);
 		} else {
 			eventMediator.setParentView(null);
 		}
@@ -151,24 +151,24 @@ EdgeViewListener
 		// (parentgraph != null ? parentgraph.getID() : -1));
 	}
 
-	protected void removeNode(NodeView node) {
+	protected void removeNode(VisualNode node) {
 
 		depot.remove(node);
 		node.removeNodeViewListener(this);
-		final List<EdgeView> ies = new ArrayList<EdgeView>(node.getIncomingEdges());
-		for (EdgeView e : ies) {
-			e.connect(e.getSourceNode(), e.getSourcePortId(), null, DefaultGraphObjectView.NONE);
+		final List<VisualEdge> ies = new ArrayList<VisualEdge>(node.getIncomingEdges());
+		for (VisualEdge e : ies) {
+			e.connect(e.getSourceNode(), e.getSourcePortId(), null, DefaultVisualGraphObject.NONE);
 		}
-		final List<EdgeView> oes = new ArrayList<EdgeView>(node.getOutgoingEdges());
-		for (EdgeView e : oes) {
-			e.connect(null, DefaultGraphObjectView.NONE, e.getTargetNode(), e.getTargetPortId());
+		final List<VisualEdge> oes = new ArrayList<VisualEdge>(node.getOutgoingEdges());
+		for (VisualEdge e : oes) {
+			e.connect(null, DefaultVisualGraphObject.NONE, e.getTargetNode(), e.getTargetPortId());
 		}
 		fireNodeRemoved(node);
 
 		// graphViewUndoHelper.registerNodeRemoval(node);
 	}
 
-	protected void addEdge(EdgeView edge) {
+	protected void addEdge(VisualEdge edge) {
 
 		if (depot.getObject(edge.getID()) != null) {
 			throw new IllegalArgumentException("The edge cannot be added into the graph. "
@@ -184,10 +184,10 @@ EdgeViewListener
 		// graphViewUndoHelper.registerEdgeCreation(edge);
 	}
 
-	protected void removeEdge(EdgeView edge) {
+	protected void removeEdge(VisualEdge edge) {
 
 		edge.removeEdgeViewListener(this);
-		NodeView n = edge.getSourceNode();
+		VisualNode n = edge.getSourceNode();
 		if (n != null) {
 			n.postDisconnected(edge);
 		}
@@ -201,43 +201,43 @@ EdgeViewListener
 	}
 
 	@Override
-	public EdgeView getEdge(long id) {
+	public VisualEdge getEdge(long id) {
 
-		return (EdgeView) depot.getObject(id);
+		return (VisualEdge) depot.getObject(id);
 	}
 
 	@Override
-	public NodeView getNode(long id) {
+	public VisualNode getNode(long id) {
 
-		return (NodeView) depot.getObject(id);
+		return (VisualNode) depot.getObject(id);
 	}
 
 	@Override
-	public List<GraphObjectView> getHitObjects(Point pt) {
+	public List<VisualGraphObject> getHitObjects(Point pt) {
 
 		return Arrays.asList(depot.getHitObjects(pt));
 	}
 
 	@Override
-	public List<EdgeView> getEdges() {
+	public List<VisualEdge> getEdges() {
 
 		return Arrays.asList(depot.getEdges());
 	}
 
 	@Override
-	public List<NodeView> getNodes() {
+	public List<VisualNode> getNodes() {
 
 		return Arrays.asList(depot.getNodes());
 	}
 
 	@Override
-	public List<GraphObjectView> getGraphObjects(Rectangle rect) {
+	public List<VisualGraphObject> getGraphObjects(Rectangle rect) {
 
 		return Arrays.asList(depot.getGraphObjects(rect));
 	}
 
 	@Override
-	public List<GraphObjectView> getGraphObjects() {
+	public List<VisualGraphObject> getGraphObjects() {
 
 		return Arrays.asList(depot.getObjects());
 	}
@@ -245,7 +245,7 @@ EdgeViewListener
 	@Override
 	public void clear() {
 
-		GraphObjectView[] objects = depot.getObjects();
+		VisualGraphObject[] objects = depot.getObjects();
 		if (objects != null) {
 			remove(objects);
 		}
@@ -260,10 +260,10 @@ EdgeViewListener
 	}
 
 	@Override
-	public List<GraphObjectView> getSelection() {
+	public List<VisualGraphObject> getSelection() {
 
-		List<GraphObjectView> selection = new ArrayList<GraphObjectView>();
-		for (GraphObjectView vo : getGraphObjects()) {
+		List<VisualGraphObject> selection = new ArrayList<VisualGraphObject>();
+		for (VisualGraphObject vo : getGraphObjects()) {
 			if (vo.isSelected()) {
 				selection.add(vo);
 			}
@@ -273,17 +273,17 @@ EdgeViewListener
 	}
 
 	@Override
-	public void setSelection(List<GraphObjectView> selection) {
+	public void setSelection(List<VisualGraphObject> selection) {
 
-		for (GraphObjectView vo : getGraphObjects()) {
+		for (VisualGraphObject vo : getGraphObjects()) {
 			vo.setSelected(selection.contains(vo));
 		}
 	}
 
 	@Override
-	public void setSelection(GraphObjectView selection) {
+	public void setSelection(VisualGraphObject selection) {
 
-		for (GraphObjectView vo : getGraphObjects()) {
+		for (VisualGraphObject vo : getGraphObjects()) {
 			vo.setSelected(vo.equals(selection));
 		}
 	}
@@ -291,7 +291,7 @@ EdgeViewListener
 	@Override
 	public void clearSelection() {
 
-		for (GraphObjectView vo : getGraphObjects()) {
+		for (VisualGraphObject vo : getGraphObjects()) {
 			vo.setSelected(false);
 		}
 	}
@@ -301,15 +301,15 @@ EdgeViewListener
 		// move content
 		if (dx != 0 || dy != 0 && !movingContent) {
 			movingContent = true;
-			GraphObjectView[] objects = depot.getObjects();
+			VisualGraphObject[] objects = depot.getObjects();
 
-			for (GraphObjectView vgo : objects) {
-				if (!(vgo instanceof NodeView)) {
+			for (VisualGraphObject vgo : objects) {
+				if (!(vgo instanceof VisualNode)) {
 					vgo.move(dx, dy);
 				}
 			}
-			for (GraphObjectView vgo : objects) {
-				if ((vgo instanceof NodeView)) {
+			for (VisualGraphObject vgo : objects) {
+				if ((vgo instanceof VisualNode)) {
 					vgo.move(dx, dy);
 				}
 			}
@@ -322,8 +322,8 @@ EdgeViewListener
 	public void startManipulating() {
 
 		super.startManipulating();
-		GraphObjectView[] objects = depot.getObjects();
-		for (GraphObjectView vgo : objects) {
+		VisualGraphObject[] objects = depot.getObjects();
+		for (VisualGraphObject vgo : objects) {
 			vgo.startManipulating();
 		}
 	}
@@ -331,21 +331,21 @@ EdgeViewListener
 	@Override
 	public void endManipulating() {
 
-		GraphObjectView[] objects = depot.getObjects();
-		for (GraphObjectView vgo : objects) {
+		VisualGraphObject[] objects = depot.getObjects();
+		for (VisualGraphObject vgo : objects) {
 			vgo.endManipulating();
 		}
 		super.endManipulating();
 	}
 
 	@Override
-	public List<GraphObjectView> getGraphObjectsAt(Point pt) {
+	public List<VisualGraphObject> getGraphObjectsAt(Point pt) {
 
 		return Arrays.asList(depot.getHitObjects(pt));
 	}
 
 	@Override
-	public void toFront(GraphObjectView gov) {
+	public void toFront(VisualGraphObject gov) {
 
 		if (gov.getParentGraph() == this) {
 			depot.toFront(gov);
@@ -356,7 +356,7 @@ EdgeViewListener
 	}
 
 	@Override
-	public void toBack(GraphObjectView gov) {
+	public void toBack(VisualGraphObject gov) {
 
 		if (gov.getParentGraph() == this) {
 			depot.toBack(gov);
@@ -367,7 +367,7 @@ EdgeViewListener
 	}
 
 	@Override
-	public void moveForward(GraphObjectView gov) {
+	public void moveForward(VisualGraphObject gov) {
 
 		if (gov.getParentGraph() == this) {
 			depot.moveForward(gov);
@@ -378,7 +378,7 @@ EdgeViewListener
 	}
 
 	@Override
-	public void moveBackward(GraphObjectView gov) {
+	public void moveBackward(VisualGraphObject gov) {
 
 		if (gov.getParentGraph() == this) {
 			depot.moveBackward(gov);
@@ -391,7 +391,7 @@ EdgeViewListener
 	@Override
 	public int getDepth() {
 
-		GraphView parent = getParentGraph();
+		VisualGraph parent = getParentGraph();
 		return parent == null ? 0 : parent.getDepth() + 1;
 	}
 
@@ -406,12 +406,12 @@ EdgeViewListener
 	}
 
 	@Override
-	public void setBounds(Rectangle r) {
+	public void setBounds(Rectangle bounds) {
 
 		if (parent == null) {
-			boundary = new Rectangle(r);
+			boundary = new Rectangle(bounds);
 		} else {
-			super.setBounds(r);
+			super.setBounds(bounds);
 		}
 	}
 
@@ -623,9 +623,9 @@ EdgeViewListener
 	}
 
 	@Override
-	public GraphObjectView deepCopy(long id) {
+	public VisualGraphObject deepCopy(long id) {
 
-		return new DefaultGraphView(this, id);
+		return new DefaultVisualGraph(this, id);
 	}
 
 	@Override
@@ -637,18 +637,18 @@ EdgeViewListener
 	}
 
 	@Override
-	public String getViewDescription(RenderingContext context/*
+	public String getViewDescriptor(RenderingContext context/*
 	 * , boolean
 	 * useEmbeddedImage
 	 */, boolean standalone) {
 
-		GraphObjectView[] objects = depot.getObjects();
+		VisualGraphObject[] objects = depot.getObjects();
 		if (objects.length == 0) {
-			return super.getViewDescription(context/* , useEmbeddedImage */, true);
+			return super.getViewDescriptor(context/* , useEmbeddedImage */, true);
 		}
 
 		final StringBuffer svg = new StringBuffer();
-		String subgraphDesc = super.getViewDescription(context/*
+		String subgraphDesc = super.getViewDescriptor(context/*
 		 * ,
 		 * useEmbeddedImage
 		 */, true);
@@ -658,9 +658,9 @@ EdgeViewListener
 
 		svg.append("\n<g>\n");
 
-		for (GraphObjectView vgo : objects) {
+		for (VisualGraphObject vgo : objects) {
 
-			String description = vgo.getViewDescription(context/*
+			String description = vgo.getViewDescriptor(context/*
 			 * ,
 			 * useEmbeddedImage
 			 */, true);
@@ -717,7 +717,7 @@ EdgeViewListener
 	// }
 	// }
 
-	protected void fireNodeAdded(NodeView n) {
+	protected void fireNodeAdded(VisualNode n) {
 
 		if (!fireEvents) {
 			return;
@@ -728,7 +728,7 @@ EdgeViewListener
 		fireGraphManipulated();
 	}
 
-	protected void fireNodeRemoved(NodeView n) {
+	protected void fireNodeRemoved(VisualNode n) {
 
 		if (!fireEvents) {
 			return;
@@ -739,7 +739,7 @@ EdgeViewListener
 		fireGraphManipulated();
 	}
 
-	protected void fireEdgeAdded(EdgeView e) {
+	protected void fireEdgeAdded(VisualEdge e) {
 
 		if (!fireEvents) {
 			return;
@@ -750,7 +750,7 @@ EdgeViewListener
 		fireGraphManipulated();
 	}
 
-	protected void fireEdgeRemoved(EdgeView e) {
+	protected void fireEdgeRemoved(VisualEdge e) {
 
 		if (!fireEvents) {
 			return;
@@ -761,14 +761,14 @@ EdgeViewListener
 		fireGraphManipulated();
 	}
 
-	protected void fireStartGrouping(GraphView group) {
+	protected void fireStartGrouping(VisualGraph group) {
 
 		for (GraphViewListener l : graphViewListener) {
 			l.startGrouping(group);
 		}
 	}
 
-	protected void fireEndGrouping(GraphView group) {
+	protected void fireEndGrouping(VisualGraph group) {
 
 		for (GraphViewListener l : graphViewListener) {
 			l.endGrouping(group);
@@ -811,7 +811,7 @@ EdgeViewListener
 	// events coming from nodes\
 
 	@Override
-	public void nodeStartedChangingBoundary(NodeView node) {
+	public void nodeStartedChangingBoundary(VisualNode node) {
 
 		if (!fireEvents) {
 			return;
@@ -822,7 +822,7 @@ EdgeViewListener
 	}
 
 	@Override
-	public void nodeBoundaryChangning(NodeView node) {
+	public void nodeBoundaryChangning(VisualNode node) {
 
 		if (!fireEvents) {
 			return;
@@ -834,7 +834,7 @@ EdgeViewListener
 	}
 
 	@Override
-	public void nodeStoppedChangingBoundary(NodeView node, Rectangle oldBoundary) {
+	public void nodeStoppedChangingBoundary(VisualNode node, Rectangle oldBoundary) {
 
 		if (!fireEvents) {
 			return;
@@ -863,7 +863,7 @@ EdgeViewListener
 	// }
 
 	@Override
-	public void nodeSelectionChanged(NodeView node) {
+	public void nodeSelectionChanged(VisualNode node) {
 
 		// graphViewUndoHelper.registerSelectionChange(node);
 
@@ -877,7 +877,7 @@ EdgeViewListener
 	}
 
 	@Override
-	public void nodeHighlightingChanged(NodeView node) {
+	public void nodeHighlightingChanged(VisualNode node) {
 
 		updateView();
 	}
@@ -886,7 +886,7 @@ EdgeViewListener
 	// events coming from edges
 
 	@Override
-	public void edgeStartChangingPath(EdgeView edge) {
+	public void edgeStartChangingPath(VisualEdge edge) {
 
 		if (!fireEvents) {
 			return;
@@ -897,7 +897,7 @@ EdgeViewListener
 	}
 
 	@Override
-	public void edgePathChanging(EdgeView edge) {
+	public void edgePathChanging(VisualEdge edge) {
 
 		if (!fireEvents) {
 			return;
@@ -909,7 +909,7 @@ EdgeViewListener
 	}
 
 	@Override
-	public void edgeStoppedChangingPath(EdgeView edge, EdgePoint[] oldPath) {
+	public void edgeStoppedChangingPath(VisualEdge edge, EdgePoint[] oldPath) {
 
 		if (!fireEvents) {
 			return;
@@ -921,8 +921,8 @@ EdgeViewListener
 	}
 
 	@Override
-	public void edgeReconnected(EdgeView edge, NodeView oldSourceNode, int oldSourcePortID,
-			NodeView oldTagetNode, int oldTargetPortID) {
+	public void edgeReconnected(VisualEdge edge, VisualNode oldSourceNode, int oldSourcePortID,
+			VisualNode oldTagetNode, int oldTargetPortID) {
 
 
 		if (!fireEvents) {
@@ -937,7 +937,7 @@ EdgeViewListener
 	}
 
 	@Override
-	public void edgeSelectionChanged(EdgeView edge) {
+	public void edgeSelectionChanged(VisualEdge edge) {
 
 		// graphViewUndoHelper.registerSelectionChange(edge);
 
@@ -951,7 +951,7 @@ EdgeViewListener
 	}
 
 	@Override
-	public void edgeHighlightingChanged(EdgeView edge) {
+	public void edgeHighlightingChanged(VisualEdge edge) {
 
 		updateView();
 	}

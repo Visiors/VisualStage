@@ -27,13 +27,13 @@ public class ReadOnlyMode extends BaseInteractionHandler {
 		unselectGraph(graphView);
 	}
 
-	private void unselectGraph(GraphView gv) {
+	private void unselectGraph(VisualGraph gv) {
 
-		GraphObjectView[] objects = gv.getGraphObjects();
+		VisualGraphObject[] objects = gv.getGraphObjects();
 		for (int i = 0; i < objects.length; i++) {
 			objects[i].setSelected(false);
-			if (objects[i] instanceof GraphView) {
-				unselectGraph((GraphView) objects[i]);
+			if (objects[i] instanceof VisualGraph) {
+				unselectGraph((VisualGraph) objects[i]);
 			}
 		}
 	}

@@ -48,7 +48,7 @@ public class GraphBuilder {
 		PropertyList documentProperties = (PropertyList) properties
 				.get(PropertyConstants.DOCUMENT_PROPERTY_SETTING);
 		graphDocument.setProperties(documentProperties);
-		GraphView graphView = graphDocument.getGraphView();
+		VisualGraph graphView = graphDocument.getGraphView();
 		graphView.clear();
 		GraphBuilder.old2newID.clear();
 		propertyList2VisualObjects(properties, graphView, false);
@@ -92,7 +92,7 @@ public class GraphBuilder {
 	 * @param GraphObjectViews
 	 * @param properties
 	 */
-	public static void visualObjects2ProperyList(GraphObjectView[] GraphObjectViews,
+	public static void visualObjects2ProperyList(VisualGraphObject[] GraphObjectViews,
 			PropertyList properties) {
 
 		PropertyList edgesProperties = new DefaultPropertyList(PropertyConstants.EDGE_SECTION_TAG);
@@ -100,14 +100,14 @@ public class GraphBuilder {
 		PropertyList subgraphProperties = new DefaultPropertyList(
 				PropertyConstants.SUBGRAPH_SECTION_TAG);
 
-		for (GraphObjectView vo : GraphObjectViews) {
+		for (VisualGraphObject vo : GraphObjectViews) {
 
-			if (vo instanceof GraphView) {
-				appendGraphProperties((GraphView) vo, subgraphProperties);
-			} else if (vo instanceof NodeView) {
-				appendNodeProperties((NodeView) vo, nodesProperties);
-			} else if (vo instanceof EdgeView) {
-				appendEdgeProperties((EdgeView) vo, edgesProperties);
+			if (vo instanceof VisualGraph) {
+				appendGraphProperties((VisualGraph) vo, subgraphProperties);
+			} else if (vo instanceof VisualNode) {
+				appendNodeProperties((VisualNode) vo, nodesProperties);
+			} else if (vo instanceof VisualEdge) {
+				appendEdgeProperties((VisualEdge) vo, edgesProperties);
 			}
 		}
 
@@ -122,24 +122,24 @@ public class GraphBuilder {
 		}
 	}
 
-	private static void appendNodeProperties(NodeView node, PropertyList properties) {
+	private static void appendNodeProperties(VisualNode node, PropertyList properties) {
 
 		properties.add(node.getProperties());
 	}
 
-	private static void appendEdgeProperties(EdgeView edge, PropertyList properties) {
+	private static void appendEdgeProperties(VisualEdge edge, PropertyList properties) {
 
 		properties.add(edge.getProperties());
 	}
 
-	private static void appendGraphProperties(GraphView graph, PropertyList properties) {
+	private static void appendGraphProperties(VisualGraph graph, PropertyList properties) {
 
 		PropertyList subgraphProperties = graph.getProperties();
 		visualObjects2ProperyList(graph.getGraphObjects(), subgraphProperties);
 		properties.add(subgraphProperties);
 	}
 
-	public static void propertyList2VisualObjects(PropertyList properties, GraphView graphView,
+	public static void propertyList2VisualObjects(PropertyList properties, VisualGraph graphView,
 			boolean assignNewID) {
 
 		PropertyList edgesProperties = (PropertyList) properties
@@ -169,12 +169,12 @@ public class GraphBuilder {
 		}
 	}
 
-	public static List<GraphObjectView> createGraphObjects(PropertyList properties,
-			GraphView topContainer, boolean assignNewID) {
+	public static List<VisualGraphObject> createGraphObjects(PropertyList properties,
+			VisualGraph topContainer, boolean assignNewID) {
 
 		GraphBuilder.old2newID.clear();
 
-		List<GraphObjectView> result = new ArrayList<GraphObjectView>();
+		List<VisualGraphObject> result = new ArrayList<VisualGraphObject>();
 
 		PropertyList edgesProperties = (PropertyList) properties
 				.get(PropertyConstants.EDGE_SECTION_TAG);
@@ -186,28 +186,28 @@ public class GraphBuilder {
 		if (groupsProperties != null) {
 			for (int i = 0; i < groupsProperties.size(); i++) {
 				PropertyList groupProperties = (PropertyList) groupsProperties.get(i);
-				GraphView subgraph = createSubgraph(groupProperties, topContainer, assignNewID);
+				VisualGraph subgraph = createSubgraph(groupProperties, topContainer, assignNewID);
 				result.add(subgraph);
 			}
 		}
 		if (nodesProperties != null) {
 			for (int i = 0; i < nodesProperties.size(); i++) {
 				PropertyList nodeProperties = (PropertyList) nodesProperties.get(i);
-				NodeView node = createNode(nodeProperties, topContainer, assignNewID);
+				VisualNode node = createNode(nodeProperties, topContainer, assignNewID);
 				result.add(node);
 			}
 		}
 		if (edgesProperties != null) {
 			for (int i = 0; i < edgesProperties.size(); i++) {
 				PropertyList edgeProperties = (PropertyList) edgesProperties.get(i);
-				EdgeView edge = createEdge(edgeProperties, topContainer, assignNewID);
+				VisualEdge edge = createEdge(edgeProperties, topContainer, assignNewID);
 				result.add(edge);
 			}
 		}
 		return result;
 	}
 
-	private static GraphView createSubgraph(PropertyList properties, GraphView subgraph,
+	private static VisualGraph createSubgraph(PropertyList properties, VisualGraph subgraph,
 			boolean assignNewID) {
 
 		String name = PropertyUtil.getProperty(properties, PropertyConstants.GRAPH_PROPERTY_NAME,
@@ -216,7 +216,7 @@ public class GraphBuilder {
 				PropertyConstants.GRAPH_PROPERTY_PARENT_ID, -1L);
 		long previousID = PropertyUtil.getProperty(properties, PropertyConstants.GRAPH_PROPERTY_ID,
 				-1L);
-		GraphView graph = GraphFactory.instance().createContainer(assignNewID ? -1 : previousID,
+		VisualGraph graph = GraphFactory.instance().createContainer(assignNewID ? -1 : previousID,
 				name);
 		long newID = graph.getID();
 
@@ -232,7 +232,7 @@ public class GraphBuilder {
 		}
 
 		// find the parent container and add this object into it.
-		GraphView parentContainer = getParentContainer(subgraph, previousParentId);
+		VisualGraph parentContainer = getParentContainer(subgraph, previousParentId);
 		parentContainer.addGraphObject(graph);
 
 		PropertyList groupProperties = properties.deepCopy();
@@ -247,7 +247,7 @@ public class GraphBuilder {
 		return graph;
 	}
 
-	public static NodeView createNode(PropertyList properties, GraphView rootContainer,
+	public static VisualNode createNode(PropertyList properties, VisualGraph rootContainer,
 			boolean assignNewID) {
 
 		String name = PropertyUtil
@@ -256,7 +256,7 @@ public class GraphBuilder {
 				PropertyConstants.NODE_PROPERTY_PARENT_ID, -1L);
 		long previousID = PropertyUtil.getProperty(properties, PropertyConstants.NODE_PROPERTY_ID,
 				-1L);
-		NodeView node = GraphFactory.instance().createNode(assignNewID ? -1 : previousID, name);
+		VisualNode node = GraphFactory.instance().createNode(assignNewID ? -1 : previousID, name);
 		long newID = node.getID();
 		node.setProperties(properties);
 
@@ -272,12 +272,12 @@ public class GraphBuilder {
 		}
 
 		// find the parent container and add this node into it.
-		GraphView parentContainer = getParentContainer(rootContainer, previousParentId);
+		VisualGraph parentContainer = getParentContainer(rootContainer, previousParentId);
 		parentContainer.addGraphObject(node);
 		return node;
 	}
 
-	private static EdgeView createEdge(PropertyList properties, GraphView rootContainer,
+	private static VisualEdge createEdge(PropertyList properties, VisualGraph rootContainer,
 			boolean assignNewID) {
 
 		String name = PropertyUtil
@@ -286,7 +286,7 @@ public class GraphBuilder {
 				PropertyConstants.EDGE_PROPERTY_PARENT_ID, -1L);
 		long previousID = PropertyUtil.getProperty(properties, PropertyConstants.EDGE_PROPERTY_ID,
 				-1L);
-		EdgeView edge = GraphFactory.instance().createEdge(assignNewID ? -1 : previousID, name);
+		VisualEdge edge = GraphFactory.instance().createEdge(assignNewID ? -1 : previousID, name);
 		long newID = edge.getID();
 
 		if (assignNewID) {
@@ -299,7 +299,7 @@ public class GraphBuilder {
 			}
 		}
 		// find the parent container and add this edge to it.
-		GraphView parentContainer = getParentContainer(rootContainer, previousParentId);
+		VisualGraph parentContainer = getParentContainer(rootContainer, previousParentId);
 		parentContainer.addGraphObject(edge);
 		edge.setProperties(properties);
 
@@ -312,7 +312,7 @@ public class GraphBuilder {
 				sourceID = GraphBuilder.old2newID.get(new Long(sourceID)).longValue();
 			}
 		}
-		NodeView sourceNode = rootContainer.getNode(sourceID);
+		VisualNode sourceNode = rootContainer.getNode(sourceID);
 		if (sourceNode != null) {
 			int sourcePortID = PropertyUtil.getProperty(properties,
 					PropertyConstants.EDGE_PROPERTY_SOURCE_PORT, -1);
@@ -328,7 +328,7 @@ public class GraphBuilder {
 				targetID = GraphBuilder.old2newID.get(new Long(targetID)).longValue();
 			}
 		}
-		NodeView targetNode = rootContainer.getNode(targetID);
+		VisualNode targetNode = rootContainer.getNode(targetID);
 		if (targetNode != null) {
 			int targetPortID = PropertyUtil.getProperty(properties,
 					PropertyConstants.EDGE_PROPERTY_TARGET_PORT, -1);
@@ -338,16 +338,16 @@ public class GraphBuilder {
 		return edge;
 	}
 
-	private static GraphView getParentContainer(GraphView rootContainer, long parentId) {
+	private static VisualGraph getParentContainer(VisualGraph rootContainer, long parentId) {
 
 		if (parentId == -1 || parentId == rootContainer.getID()) {
 			return rootContainer;
 		}
 
-		NodeView[] nodes = rootContainer.getNodes();
+		VisualNode[] nodes = rootContainer.getNodes();
 		for (int i = 0; i < nodes.length; i++) {
-			if (nodes[i] instanceof GraphView) {
-				GraphView pc = getParentContainer((GraphView) nodes[i], parentId);
+			if (nodes[i] instanceof VisualGraph) {
+				VisualGraph pc = getParentContainer((VisualGraph) nodes[i], parentId);
 				if (pc != null) {
 					return pc;
 				}

@@ -21,7 +21,7 @@ public class AutoSnapMode extends BaseInteractionHandler {
 	private Point cursor;
 
 	private boolean ignoreEvents;
-	private NodeView hitObject;
+	private VisualNode hitObject;
 	@Inject
 	SystemUnit systemUnit;
 
@@ -131,7 +131,7 @@ public class AutoSnapMode extends BaseInteractionHandler {
 		device.drawLine(cursor.x, r.y, cursor.x, r.y + r.height);
 	}
 
-	void snapToGrid(NodeView node) {
+	void snapToGrid(VisualNode node) {
 
 		if (ignoreEvents || !isSnapToGrid()) {
 			return;
@@ -202,23 +202,23 @@ public class AutoSnapMode extends BaseInteractionHandler {
 		this.moveToStraightEdge = moveToStraightEdge;
 	}
 
-	private void adjustNodePos(NodeView node) {
+	private void adjustNodePos(VisualNode node) {
 
-		List<EdgeView> edges = node.getOutgoingEdges();
-		for (EdgeView edge : edges) {
+		List<VisualEdge> edges = node.getOutgoingEdges();
+		for (VisualEdge edge : edges) {
 			adjustSourceNode(edge);
 		}
 		edges = node.getIncomingEdges();
-		for (EdgeView edge : edges) {
+		for (VisualEdge edge : edges) {
 			adjustTargetNode(edge);
 		}
 	}
 
-	private void adjustSourceNode(EdgeView edge) {
+	private void adjustSourceNode(VisualEdge edge) {
 
 		final Point[] points = edge.getPoints();
-		NodeView sourceNode = edge.getSourceNode();
-		NodeView targetNode = edge.getTargetNode();
+		VisualNode sourceNode = edge.getSourceNode();
+		VisualNode targetNode = edge.getTargetNode();
 		if (sourceNode == null || targetNode == null) {
 			return;
 		}
@@ -243,11 +243,11 @@ public class AutoSnapMode extends BaseInteractionHandler {
 		}
 	}
 
-	private void adjustTargetNode(EdgeView edge) {
+	private void adjustTargetNode(VisualEdge edge) {
 
 		final Point[] points = edge.getPoints();
-		NodeView sourceNode = edge.getSourceNode();
-		NodeView targetNode = edge.getTargetNode();
+		VisualNode sourceNode = edge.getSourceNode();
+		VisualNode targetNode = edge.getTargetNode();
 		if (sourceNode == null || targetNode == null) {
 			return;
 		}

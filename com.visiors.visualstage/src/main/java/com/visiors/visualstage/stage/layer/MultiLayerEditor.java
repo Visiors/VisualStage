@@ -6,7 +6,7 @@ public interface MultiLayerEditor {
 
 	public Layer getSelectedLayer();
 
-	public Layer addLayer(int id, GraphView graphViewr);
+	public Layer addLayer(int id, VisualGraph graphViewr);
 
 	public Layer getLayer(int id);
 

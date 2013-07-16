@@ -6,12 +6,12 @@ import com.google.inject.Singleton;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.name.Names;
 import com.visiors.visualstage.constants.PropertyConstants;
-import com.visiors.visualstage.graph.view.edge.EdgeView;
-import com.visiors.visualstage.graph.view.edge.impl.DefaultEdgeView;
-import com.visiors.visualstage.graph.view.graph.GraphView;
-import com.visiors.visualstage.graph.view.graph.impl.DefaultGraphView;
-import com.visiors.visualstage.graph.view.node.NodeView;
-import com.visiors.visualstage.graph.view.node.impl.DefaultNodeView;
+import com.visiors.visualstage.graph.view.edge.VisualEdge;
+import com.visiors.visualstage.graph.view.edge.impl.DefaultVisualEdge;
+import com.visiors.visualstage.graph.view.graph.VisualGraph;
+import com.visiors.visualstage.graph.view.graph.impl.DefaultVisualGraph;
+import com.visiors.visualstage.graph.view.node.VisualNode;
+import com.visiors.visualstage.graph.view.node.impl.DefaultVisualNode;
 import com.visiors.visualstage.handler.ClipboardHandler;
 import com.visiors.visualstage.handler.DefaultGroupingHandler;
 import com.visiors.visualstage.handler.GroupingHandler;
@@ -108,19 +108,19 @@ public class GraphDocumentBindingModule extends BindingModule {
 
     public void bindGraphViewFactory(Binder binder) {
 
-        binder.install(new FactoryModuleBuilder().implement(GraphView.class, DefaultGraphView.class).build(
+        binder.install(new FactoryModuleBuilder().implement(VisualGraph.class, DefaultVisualGraph.class).build(
                 GraphViewFactory.class));
     }
 
     public void bindNodeViewFactory(Binder binder) {
 
-        binder.install(new FactoryModuleBuilder().implement(NodeView.class, DefaultNodeView.class).build(
+        binder.install(new FactoryModuleBuilder().implement(VisualNode.class, DefaultVisualNode.class).build(
                 NodeViewFactory.class));
     }
 
     public void bindEdgeViewFactory(Binder binder) {
 
-        binder.install(new FactoryModuleBuilder().implement(EdgeView.class, DefaultEdgeView.class).build(
+        binder.install(new FactoryModuleBuilder().implement(VisualEdge.class, DefaultVisualEdge.class).build(
                 EdgeViewFactory.class));
     }
 

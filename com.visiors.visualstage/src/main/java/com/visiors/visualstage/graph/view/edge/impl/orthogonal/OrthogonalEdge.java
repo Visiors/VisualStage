@@ -6,9 +6,9 @@ import org.apache.batik.ext.awt.image.codec.util.PropertyUtil;
 
 import com.visiors.visualstage.generics.attribute.PropertyList;
 import com.visiors.visualstage.generics.interaction.Interactable;
-import com.visiors.visualstage.graph.view.DefaultGraphObjectView;
+import com.visiors.visualstage.graph.view.DefaultVisualGraphObject;
 import com.visiors.visualstage.graph.view.ViewConstants;
-import com.visiors.visualstage.graph.view.edge.EdgeView;
+import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.edge.impl.curved.polyline.PolygonalEdgeView;
 import com.visiors.visualstage.resource.SVGDefinition;
 import com.visiors.visualstage.resource.SVGDefinitionPool;
@@ -39,7 +39,7 @@ public class OrthogonalEdge extends PolygonalEdgeView {
 		super(name, id);
 	}
 
-	protected OrthogonalEdge(EdgeView edge, long id) {
+	protected OrthogonalEdge(VisualEdge edge, long id) {
 
 		super(edge, id);
 	}
@@ -56,7 +56,7 @@ public class OrthogonalEdge extends PolygonalEdgeView {
 	}
 
 	@Override
-	public EdgeView deepCopy(long id) {
+	public VisualEdge deepCopy(long id) {
 
 		return new OrthogonalEdge(this, id);
 	}
@@ -64,7 +64,7 @@ public class OrthogonalEdge extends PolygonalEdgeView {
 	@Override
 	public boolean mouseMoved(Point pt, int button, int functionKey) {
 
-		manipulationID = DefaultGraphObjectView.NONE;
+		manipulationID = DefaultVisualGraphObject.NONE;
 		boolean altKeyPressed = (functionKey & Interactable.KEY_ALT) != 0;
 
 		if (isSelected()) {
@@ -73,7 +73,7 @@ public class OrthogonalEdge extends PolygonalEdgeView {
 				int size = path.getSize();
 				/* hit point? */
 				int index = path.getHitPointIndex(pt);
-				if (index != DefaultGraphObjectView.NONE) {
+				if (index != DefaultVisualGraphObject.NONE) {
 					if (index == 0) {
 						manipulationID = OrthogonalEdge.FIRST_EDGE_POINT_INDEX; /*
 																				 * start
@@ -100,7 +100,7 @@ public class OrthogonalEdge extends PolygonalEdgeView {
 
 				/* hit segment? */
 				int hitSegmentindex = path.getHitSegmentIndex(pt);
-				if (hitSegmentindex != DefaultGraphObjectView.NONE) {
+				if (hitSegmentindex != DefaultVisualGraphObject.NONE) {
 
 					if (altKeyPressed) { /*
 										  * make sure we always hit a segment
@@ -124,13 +124,13 @@ public class OrthogonalEdge extends PolygonalEdgeView {
 				}
 			}
 		}
-		return manipulationID != DefaultGraphObjectView.NONE;
+		return manipulationID != DefaultVisualGraphObject.NONE;
 	}
 
 	@Override
 	public boolean mousePressed(Point pt, int button, int functionKey) {
 
-		if (manipulationID == DefaultGraphObjectView.NONE) {
+		if (manipulationID == DefaultVisualGraphObject.NONE) {
 			return false;
 		}
 		boolean altKeyPressed = (functionKey & Interactable.KEY_ALT) != 0;
@@ -160,7 +160,7 @@ public class OrthogonalEdge extends PolygonalEdgeView {
 	@Override
 	public boolean mouseReleased(Point pt, int button, int functionKey) {
 
-		if (manipulationID != DefaultGraphObjectView.NONE) {
+		if (manipulationID != DefaultVisualGraphObject.NONE) {
 			endManipulating();
 		}
 
@@ -170,7 +170,7 @@ public class OrthogonalEdge extends PolygonalEdgeView {
 	@Override
 	public boolean mouseDragged(Point pt, int button, int functionKey) {
 
-		if (manipulationID == DefaultGraphObjectView.NONE) {
+		if (manipulationID == DefaultVisualGraphObject.NONE) {
 			return false;
 		}
 
@@ -198,7 +198,7 @@ public class OrthogonalEdge extends PolygonalEdgeView {
 	@Override
 	protected void addPoint(Point target, int segIndex) {
 
-		if (segIndex != DefaultGraphObjectView.NONE) {
+		if (segIndex != DefaultVisualGraphObject.NONE) {
 			// add 2 points
 			undoRedoHandler.stratOfGroupAction();
 			path.insertPointAt(segIndex, target);
@@ -362,7 +362,7 @@ public class OrthogonalEdge extends PolygonalEdgeView {
 	@Override
 	public int getPreferredCursor() {
 
-		if (manipulationID == DefaultGraphObjectView.NONE) {
+		if (manipulationID == DefaultVisualGraphObject.NONE) {
 			return GraphStageConstants.CURSOR_DEFAULT;
 		}
 

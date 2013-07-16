@@ -64,7 +64,7 @@ public class DefaultInteractionHandler implements InteractionHandler {
 	}
 
 	@Override
-	public void setScope(GraphView graphView) {
+	public void setScope(VisualGraph graphView) {
 
 		List<InteractionMode> regModes = getRegisteredModes();
 		for (InteractionMode interactionMode : regModes) {

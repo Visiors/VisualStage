@@ -25,7 +25,7 @@ public class VSClipboardHandler implements ClipboardHandler {
     // @Inject
     // EventBus eventbus;
 
-    private GraphView graphView;
+    private VisualGraph graphView;
 
     @Inject
     private UndoRedoHandler undoRedoHandler;
@@ -37,7 +37,7 @@ public class VSClipboardHandler implements ClipboardHandler {
     }
 
     @Override
-    public void setScope(GraphView graphView) {
+    public void setScope(VisualGraph graphView) {
 
         this.graphView = graphView;
 
@@ -58,7 +58,7 @@ public class VSClipboardHandler implements ClipboardHandler {
     @Override
     public boolean canCopy() {
 
-        final List<GraphObjectView> selection = graphView.getSelection();
+        final List<VisualGraphObject> selection = graphView.getSelection();
         return selection.size() != 0;
     }
 
@@ -71,11 +71,11 @@ public class VSClipboardHandler implements ClipboardHandler {
     @Override
     public void copySelection() {
 
-        final List<GraphObjectView> selection = graphView.getSelection();
+        final List<VisualGraphObject> selection = graphView.getSelection();
         if (selection.size() == 0) {
             return;
         } else if (selection.size() > 0) {
-            GraphObjectView[] objectToCopy = selection.toArray(new GraphObjectView[0]);
+            VisualGraphObject[] objectToCopy = selection.toArray(new VisualGraphObject[0]);
             PropertyList properties = new DefaultPropertyList();
             GraphBuilder.visualObjects2ProperyList(objectToCopy, properties);
             VSClipboardHandler.clipboardContent = GraphBuilder.propertyList2XML(properties, true);
@@ -94,7 +94,7 @@ public class VSClipboardHandler implements ClipboardHandler {
                     graphView.clearSelection();
 
                     Rectangle rGraph = graphView.getBounds();
-                    List<GraphObjectView> objects = GraphBuilder.createGraphObjects(propertes, graphView, true);
+                    List<VisualGraphObject> objects = GraphBuilder.createGraphObjects(propertes, graphView, true);
                     Rectangle r = getObjectsArea(objects);
                     if (!r.union(rGraph).equals(rGraph)) {
                         r.x = rGraph.x;
@@ -116,12 +116,12 @@ public class VSClipboardHandler implements ClipboardHandler {
     }
 
     // get the original objects area
-    private Rectangle getObjectsArea(List<GraphObjectView> objects) {
+    private Rectangle getObjectsArea(List<VisualGraphObject> objects) {
 
         Rectangle r = new Rectangle();
 
         for (int i = 0; i < objects.size(); i++) {
-            GraphObjectView o = objects.get(i);
+            VisualGraphObject o = objects.get(i);
             if (i == 0) {
                 r = o.getBounds();
             } else {
@@ -131,16 +131,16 @@ public class VSClipboardHandler implements ClipboardHandler {
         return r;
     }
 
-    private void moveObjectsToTargetLocation(List<GraphObjectView> objects, Point at) {
+    private void moveObjectsToTargetLocation(List<VisualGraphObject> objects, Point at) {
 
         // get the original objects area
         Rectangle r = getObjectsArea(objects);
 
         // move the edges
         for (int i = 0; i < objects.size(); i++) {
-            GraphObjectView o = objects.get(i);
-            if (o instanceof EdgeView) {
-                EdgeView e = (EdgeView) o;
+            VisualGraphObject o = objects.get(i);
+            if (o instanceof VisualEdge) {
+                VisualEdge e = (VisualEdge) o;
                 int dx = -r.x + at.x;
                 int dy = -r.y + at.y;
                 e.move(dx, dy);
@@ -148,9 +148,9 @@ public class VSClipboardHandler implements ClipboardHandler {
         }
         // move the nodes
         for (int i = 0; i < objects.size(); i++) {
-            GraphObjectView o = objects.get(i);
-            if (o instanceof NodeView) {
-                NodeView n = (NodeView) o;
+            VisualGraphObject o = objects.get(i);
+            if (o instanceof VisualNode) {
+                VisualNode n = (VisualNode) o;
                 int dx = -r.x + at.x;
                 int dy = -r.y + at.y;
                 n.move(dx, dy);
