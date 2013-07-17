@@ -16,9 +16,13 @@ import org.xml.sax.SAXException;
 
 import com.visiors.visualstage.constants.PropertyConstants;
 import com.visiors.visualstage.document.GraphDocument;
+import com.visiors.visualstage.factory.GraphFactory;
+import com.visiors.visualstage.graph.view.VisualGraphObject;
+import com.visiors.visualstage.graph.view.edge.VisualEdge;
+import com.visiors.visualstage.graph.view.graph.VisualGraph;
+import com.visiors.visualstage.graph.view.node.VisualNode;
 import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.property.impl.DefaultPropertyList;
-import com.visiors.visualstage.stage.cache.GraphObjectView;
 import com.visiors.visualstage.util.PropertyUtil;
 
 public class GraphBuilder {
@@ -41,17 +45,17 @@ public class GraphBuilder {
 	}
 
 	public static void load(GraphDocument graphDocument, InputStream stream) throws IOException,
-			ParserConfigurationException, SAXException {
+	ParserConfigurationException, SAXException {
 
 		XMLService xmlService = new XMLService();
 		PropertyList properties = xmlService.XML2PropertyList(stream);
 		PropertyList documentProperties = (PropertyList) properties
 				.get(PropertyConstants.DOCUMENT_PROPERTY_SETTING);
 		graphDocument.setProperties(documentProperties);
-		VisualGraph graphView = graphDocument.getGraphView();
-		graphView.clear();
+		VisualGraph visualGraph = graphDocument.getGraphView();
+		visualGraph.clear();
 		GraphBuilder.old2newID.clear();
-		propertyList2VisualObjects(properties, graphView, false);
+		propertyList2VisualObjects(properties, visualGraph, false);
 		graphDocument.setUpdateView(true);
 	}
 
@@ -139,7 +143,7 @@ public class GraphBuilder {
 		properties.add(subgraphProperties);
 	}
 
-	public static void propertyList2VisualObjects(PropertyList properties, VisualGraph graphView,
+	public static void propertyList2VisualObjects(PropertyList properties, VisualGraph visualGraph,
 			boolean assignNewID) {
 
 		PropertyList edgesProperties = (PropertyList) properties
@@ -152,19 +156,19 @@ public class GraphBuilder {
 		if (groupsProperties != null) {
 			for (int i = 0; i < groupsProperties.size(); i++) {
 				PropertyList subgraphProperties = (PropertyList) groupsProperties.get(i);
-				createSubgraph(subgraphProperties, graphView, assignNewID);
+				createSubgraph(subgraphProperties, visualGraph, assignNewID);
 			}
 		}
 		if (nodesProperties != null) {
 			for (int i = 0; i < nodesProperties.size(); i++) {
 				PropertyList nodeProperties = (PropertyList) nodesProperties.get(i);
-				createNode(nodeProperties, graphView, assignNewID);
+				createNode(nodeProperties, visualGraph, assignNewID);
 			}
 		}
 		if (edgesProperties != null) {
 			for (int i = 0; i < edgesProperties.size(); i++) {
 				PropertyList edgeProperties = (PropertyList) edgesProperties.get(i);
-				createEdge(edgeProperties, graphView, assignNewID);
+				createEdge(edgeProperties, visualGraph, assignNewID);
 			}
 		}
 	}
@@ -345,9 +349,9 @@ public class GraphBuilder {
 		}
 
 		VisualNode[] nodes = rootContainer.getNodes();
-		for (int i = 0; i < nodes.length; i++) {
-			if (nodes[i] instanceof VisualGraph) {
-				VisualGraph pc = getParentContainer((VisualGraph) nodes[i], parentId);
+		for (VisualNode node : nodes) {
+			if (node instanceof VisualGraph) {
+				VisualGraph pc = getParentContainer((VisualGraph) node, parentId);
 				if (pc != null) {
 					return pc;
 				}

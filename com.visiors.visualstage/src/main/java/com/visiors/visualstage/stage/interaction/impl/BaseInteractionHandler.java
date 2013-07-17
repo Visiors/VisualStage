@@ -10,16 +10,16 @@ import com.visiors.visualstage.stage.interaction.InteractionMode;
 public abstract class BaseInteractionHandler implements InteractionMode {
 
 	protected boolean active;
-	protected VisualGraph graphView;
+	protected VisualGraph visualGraph;
 
 	protected BaseInteractionHandler() {
 
 	}
 
 	@Override
-	public void setScope(VisualGraph graphView) {
+	public void setScope(VisualGraph visualGraph) {
 
-		this.graphView = graphView;
+		this.visualGraph = visualGraph;
 
 	}
 

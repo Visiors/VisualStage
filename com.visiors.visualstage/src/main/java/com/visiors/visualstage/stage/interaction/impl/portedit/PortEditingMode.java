@@ -37,8 +37,8 @@ public class PortEditingMode extends BaseInteractionHandler {
 	public void setActive(boolean activated) {
 
 		if (activated) {
-			if (graphView.getSelection().size() == 1) {
-				List<VisualGraphObject> selection = graphView.getSelection();
+			if (visualGraph.getSelection().size() == 1) {
+				List<VisualGraphObject> selection = visualGraph.getSelection();
 				VisualGraphObject vgo = selection.get(0);
 				if (vgo instanceof VisualNode) {
 					subject = (VisualNode) vgo;
@@ -86,7 +86,7 @@ public class PortEditingMode extends BaseInteractionHandler {
 		}
 
 		handle = null;
-		final Point spt = graphView.getTransform().transformToScreen(pt);
+		final Point spt = visualGraph.getTransform().transformToScreen(pt);
 		if (angleStartHandle.contains(spt) || angleEndHandle.contains(spt)) {
 			handle = angleStartHandle.contains(spt) ? angleStartHandle : angleEndHandle;
 			return true;
@@ -105,7 +105,7 @@ public class PortEditingMode extends BaseInteractionHandler {
 			subject.highlightPort(portID, true);
 		}
 
-		graphView.updateView();
+		visualGraph.updateView();
 
 		return isActive();
 	}
@@ -170,7 +170,7 @@ public class PortEditingMode extends BaseInteractionHandler {
 				movePort(portID, pt);
 			}
 
-			graphView.updateView();
+			visualGraph.updateView();
 		}
 		return isActive();
 	}
@@ -283,7 +283,7 @@ public class PortEditingMode extends BaseInteractionHandler {
 
 		currentCursor = GraphStageConstants.CURSOR_DEFAULT;
 		if (subject != null) {
-			pt = graphView.getTransform().transformToScreen(pt);
+			pt = visualGraph.getTransform().transformToScreen(pt);
 			if (angleStartHandle.contains(pt) || angleEndHandle.contains(pt)) {
 				currentCursor = GraphStageConstants.CURSOR_CROSSHAIR;
 			}
@@ -308,7 +308,7 @@ public class PortEditingMode extends BaseInteractionHandler {
 		device.setColor(Color.lightGray);
 
 		Rectangle b = subject.getBounds();
-		b = graphView.getTransform().transformToScreen(b);
+		b = visualGraph.getTransform().transformToScreen(b);
 		// device.drawLine(b.x - 50,
 		// b.y + b.height / 2,
 		// b.x + b.width + 50,
@@ -350,7 +350,7 @@ public class PortEditingMode extends BaseInteractionHandler {
 			int[] angles = port.getAcceptedInterval();
 			double start = Math.toRadians(angles[0]);
 			double end = Math.toRadians(angles[1]);
-			Point pt = graphView.getTransform().transformToScreen(port.getPosition());
+			Point pt = visualGraph.getTransform().transformToScreen(port.getPosition());
 			device.setColor(Color.black);
 
 			int dx1 = (int) (6 * Math.cos(start));

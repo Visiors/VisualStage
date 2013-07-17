@@ -41,9 +41,9 @@ public class MarqueeSelectionMode extends BaseInteractionHandler {
 
 		undoRedoHandler.stratOfGroupAction();
 
-		VisualGraphObject[] hit = graphView.getHitObjects(pt);
+		VisualGraphObject[] hit = visualGraph.getHitObjects(pt);
 		if (hit.length == 0) {
-			final Transformer transformer = graphView.getTransform();
+			final Transformer transformer = visualGraph.getTransform();
 			mousePressedPos = transformer.transformToScreen(pt);
 		}
 		return false;
@@ -56,7 +56,7 @@ public class MarqueeSelectionMode extends BaseInteractionHandler {
 		mousePressedPos = null;
 		if (!isEmpty()) {
 			empty();
-			graphView.updateView();
+			visualGraph.updateView();
 		}
 		return false;
 	}
@@ -65,9 +65,9 @@ public class MarqueeSelectionMode extends BaseInteractionHandler {
 	public boolean mouseDragged(Point pt, int button, int functionKey) {
 
 		if (mousePressedPos != null) {
-			final Transformer transformer = graphView.getTransform();
+			final Transformer transformer = visualGraph.getTransform();
 			setMarqueeRect(mousePressedPos, transformer.transformToScreen(pt));
-			graphView.updateView();
+			visualGraph.updateView();
 		}
 		return false;
 	}
@@ -92,9 +92,9 @@ public class MarqueeSelectionMode extends BaseInteractionHandler {
 
 		VisualGraphObject vobj;
 		Rectangle robj;
-		VisualGraphObject[] objects = graphView.getGraphObjects();
+		VisualGraphObject[] objects = visualGraph.getGraphObjects();
 
-		final Transformer transformer = graphView.getTransform();
+		final Transformer transformer = visualGraph.getTransform();
 		for (int i = 0; i < objects.length; i++) {
 			vobj = objects[i];
 			robj = transformer.transformToScreen(vobj.getBounds());

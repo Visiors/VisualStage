@@ -60,7 +60,7 @@ public class EdgeCreationMode extends BaseInteractionHandler {
 	public boolean mousePressed(Point pt, int button, int functionKey) {
 
 		if (draggingNode == null) {
-			draggingNode = GraphInteractionUtil.getFirstHitNodeAt(graphView, pt);
+			draggingNode = GraphInteractionUtil.getFirstHitNodeAt(visualGraph, pt);
 		}
 
 		return false;
@@ -106,7 +106,7 @@ public class EdgeCreationMode extends BaseInteractionHandler {
 			// node might be
 			// duplicated in a "copy on move" action
 			if (draggingNode != null) {
-				draggingNode = GraphInteractionUtil.getFirstHitNodeAt(graphView, pt);
+				draggingNode = GraphInteractionUtil.getFirstHitNodeAt(visualGraph, pt);
 			}
 
 			if (draggingNode != null) {
@@ -132,7 +132,7 @@ public class EdgeCreationMode extends BaseInteractionHandler {
 			createdEdge.setTargetNode(null);
 			createdEdge.setSourceNode(t, tp);
 			createdEdge.setTargetNode(s, sp);
-			graphView.updateView();
+			visualGraph.updateView();
 		}
 	}
 
@@ -175,7 +175,7 @@ public class EdgeCreationMode extends BaseInteractionHandler {
 				if (draggingNode != null) {
 
 					Port[] posrts = new Port[2];
-					nodeToMate = (VisualNode) GraphInteractionUtil.getClosestNode(graphView,
+					nodeToMate = (VisualNode) GraphInteractionUtil.getClosestNode(visualGraph,
 							draggingNode, EdgeCreationMode.range, true, posrts);
 
 					final boolean connect = nodeToMate != null && draggingNode != null
@@ -183,7 +183,7 @@ public class EdgeCreationMode extends BaseInteractionHandler {
 					if (connect) {
 						highlightTargetPorts(posrts, true, true);
 						createEdge(forward);
-						graphView.updateView();
+						visualGraph.updateView();
 					}
 				}
 			}
@@ -226,7 +226,7 @@ public class EdgeCreationMode extends BaseInteractionHandler {
 		cancelTimer();
 		if (createdEdge != null) {
 			createdEdge.getParent().deleteGraphObject(createdEdge);
-			graphView.updateView();
+			visualGraph.updateView();
 		}
 		highlightTargetPorts(null, false, false);
 		draggingNode = null;
@@ -243,7 +243,7 @@ public class EdgeCreationMode extends BaseInteractionHandler {
 			int p1 = refPort.getID();
 			int p2 = alignPort.getID();
 			GraphFactory f = GraphFactory.instance();
-			createdEdge = f.createDefaultEdge();
+			createdEdge = f.createEdge();
 			if (forward) {
 				createdEdge.setSourceNode(nodeToMate, p1);
 				createdEdge.setTargetNode(draggingNode, p2);

@@ -4,5 +4,5 @@ import com.visiors.visualstage.graph.view.graph.VisualGraph;
 
 public interface ScopeAware {
 
-	void setScope(VisualGraph graphView);
+	void setScope(VisualGraph visualGraph);
 }

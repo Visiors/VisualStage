@@ -104,7 +104,7 @@ public class ModellingMode extends BaseInteractionHandler {
 			 * control key is not pressed
 			 */
 			if (!isControlKeyPressed(functionKey) && !isShiftKeyPressed(functionKey)) {
-				graphView.clearSelection();
+				visualGraph.clearSelection();
 			}
 		} else {
 			/*
@@ -132,7 +132,7 @@ public class ModellingMode extends BaseInteractionHandler {
 		// TODO move it to an own mode implementiation
 		// /* set allow multi-selection if the control- or shift key are pressed
 		// */
-		// graphView.setMuliSelectionMode(isControlKeyPressed(functionKey) ||
+		// visualGraph.setMuliSelectionMode(isControlKeyPressed(functionKey) ||
 		// isShiftKeyPressed(functionKey));
 		return false;
 	}
@@ -159,7 +159,7 @@ public class ModellingMode extends BaseInteractionHandler {
 
 		if (mousePressedPos.equals(pt)) {
 			/* only if mouse is released on the same object */
-			if (hitObject == GraphInteractionUtil.getFirstHitObjectAt(graphView, pt)) { /*
+			if (hitObject == GraphInteractionUtil.getFirstHitObjectAt(visualGraph, pt)) { /*
 																						 * invert
 																						 * selection
 																						 * if
@@ -182,18 +182,18 @@ public class ModellingMode extends BaseInteractionHandler {
 				// !isControlKeyPressed(functionKey)
 				// && !isShiftKeyPressed(functionKey)) {
 				//
-				// graphView.clearSelection();
-				// graphView.select(hitObject, true);
+				// visualGraph.clearSelection();
+				// visualGraph.select(hitObject, true);
 				// }
-				// if (graphView.isMuliSelectionMode()) {
+				// if (visualGraph.isMuliSelectionMode()) {
 				// if (hitObject != null) {
-				// graphView.invertObjectSelection(hitObject);
+				// visualGraph.invertObjectSelection(hitObject);
 				// }
 				// } else {
 				//
-				// if (graphView.getSelectionCount() > 1) {
-				// graphView.clearSelection();
-				// graphView.select(hitObject, true);
+				// if (visualGraph.getSelectionCount() > 1) {
+				// visualGraph.clearSelection();
+				// visualGraph.select(hitObject, true);
 				// }
 				// }
 			}
@@ -266,8 +266,8 @@ public class ModellingMode extends BaseInteractionHandler {
 		if (hitObject != null) {
 			if (!hitObject.isSelected()) { // always select objects that are
 										   // being dragged
-				graphView.clearSelection();
-				graphView.setSelection(hitObject);
+				visualGraph.clearSelection();
+				visualGraph.setSelection(hitObject);
 			}
 			if (manipulatoinIndex == ModellingMode.MOVE_OR_COPY_OBJECTS) { // Duplicate
 																		   // selection
@@ -327,14 +327,14 @@ public class ModellingMode extends BaseInteractionHandler {
 
 		VisualGraphObject lastHitObject = hitObject;
 
-		hitObject = GraphInteractionUtil.getFirstHitObjectAt(graphView, pt);
+		hitObject = GraphInteractionUtil.getFirstHitObjectAt(visualGraph, pt);
 		if (lastHitObject != hitObject && lastHitObject != null) {
 			lastHitObject.setHighlighted(false);
 		}
 
 		if (hitObject != null) {
 			hitObject.setHighlighted(true);
-			graphView = hitObject.getParent();
+			visualGraph = hitObject.getParent();
 		}
 	}
 
@@ -362,8 +362,8 @@ public class ModellingMode extends BaseInteractionHandler {
 		}
 
 		if (hitObject instanceof VisualNode) {
-			final List<VisualGraphObject> selection = graphView.getSelection();
-			hitGroup = GraphInteractionUtil.getLastGroupHitByObjects(graphView, selection);
+			final List<VisualGraphObject> selection = visualGraph.getSelection();
+			hitGroup = GraphInteractionUtil.getLastGroupHitByObjects(visualGraph, selection);
 			if (hitGroup != null) {
 				hitObject.getParent().setHighlighted(false);
 				hitGroup.setHighlighted(true);
@@ -393,7 +393,7 @@ public class ModellingMode extends BaseInteractionHandler {
 			VisualEdge edge = (VisualEdge) hitObject;
 			Point sPt = edge.getStartConnectionPoint();
 			// check if a node is hit by connector
-			VisualNode node = GraphInteractionUtil.getFirstHitNodeAt(graphView, sPt);
+			VisualNode node = GraphInteractionUtil.getFirstHitNodeAt(visualGraph, sPt);
 			if (node != null) {
 				node.openPorts(true);
 				int port = node.getPreferredPort(sPt);
@@ -410,7 +410,7 @@ public class ModellingMode extends BaseInteractionHandler {
 			}
 
 			Point ePt = edge.getEndConnectionPoint();
-			node = GraphInteractionUtil.getFirstHitNodeAt(graphView, ePt);
+			node = GraphInteractionUtil.getFirstHitNodeAt(visualGraph, ePt);
 			if (node != null) {
 				node.openPorts(true);
 				int port = node.getPreferredPort(ePt);
@@ -436,10 +436,10 @@ public class ModellingMode extends BaseInteractionHandler {
 		}
 		if (hitObject instanceof VisualNode && hitObject != hitGroup) {
 			if (hitGroup == null) {
-				hitGroup = graphView;
+				hitGroup = visualGraph;
 			}
 			if (hitObject.getParent() != hitGroup) {
-				final List<VisualGraphObject> selection = graphView.getSelection();
+				final List<VisualGraphObject> selection = visualGraph.getSelection();
 				GraphInteractionUtil.relocateObject(selection, hitGroup);
 			}
 		}
@@ -477,7 +477,7 @@ public class ModellingMode extends BaseInteractionHandler {
 
 		undoRedoHandler.stratOfGroupAction();
 		// notify object about immediate actions
-		final List<VisualGraphObject> selection = graphView.getSelection();
+		final List<VisualGraphObject> selection = visualGraph.getSelection();
 		for (VisualGraphObject vgo : selection) {
 			vgo.startManipulating();
 		}
@@ -488,7 +488,7 @@ public class ModellingMode extends BaseInteractionHandler {
 
 		// notify object about end of interaction
 		manipulatingNotified = false;
-		final List<VisualGraphObject> selection = graphView.getSelection();
+		final List<VisualGraphObject> selection = visualGraph.getSelection();
 		for (VisualGraphObject vgo : selection) {
 			vgo.endManipulating();
 		}
@@ -502,17 +502,17 @@ public class ModellingMode extends BaseInteractionHandler {
 			undoRedoHandler.stratOfGroupAction();
 
 			// create
-			List<VisualGraphObject> selection = graphView.getSelection();
+			List<VisualGraphObject> selection = visualGraph.getSelection();
 			// selection.remove(hitObject);
 
 			PropertyList propertyList = new DefaultPropertyList();
 			GraphBuilder.visualObjects2ProperyList(selection.toArray(new VisualGraphObject[0]),
 					propertyList);
 			List<VisualGraphObject> duplicatedObjects = GraphBuilder.createGraphObjects(
-					propertyList, graphView, true);
-			graphView.setSelection(duplicatedObjects);
+					propertyList, visualGraph, true);
+			visualGraph.setSelection(duplicatedObjects);
 			for (int i = 0; i < duplicatedObjects.size(); i++) {
-				graphView.toFront(duplicatedObjects.get(i));
+				visualGraph.toFront(duplicatedObjects.get(i));
 			}
 
 			updateHitObject(pt);
@@ -531,7 +531,7 @@ public class ModellingMode extends BaseInteractionHandler {
 			int dx = mousePressedPos.x - pt.x + currentPos.x - startPos.x;
 			int dy = mousePressedPos.y - pt.y + currentPos.y - startPos.y;
 
-			List<VisualGraphObject> selection = graphView.getSelection();
+			List<VisualGraphObject> selection = visualGraph.getSelection();
 
 			moveEdgesWithSelectedNodes(selection, dx, dy);
 			moveEdges(selection, dx, dy);

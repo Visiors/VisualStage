@@ -21,13 +21,13 @@ public class Depot extends GraphViewAdapter implements GraphViewListener {
 	private int subgraphs;
 
 	// private final boolean selectionOnTop = true;
-	private final DefaultVisualGraph graphView;
+	private final DefaultVisualGraph visualGraph;
 	private final Rectangle expansion = new Rectangle();;
 
-	Depot(DefaultVisualGraph graphView) {
+	Depot(DefaultVisualGraph visualGraph) {
 
-		graphView.addGraphViewListener(this);
-		this.graphView = graphView;
+		visualGraph.addGraphViewListener(this);
+		this.visualGraph = visualGraph;
 		container = new DepotObjectContainer();
 		clear();
 	}
@@ -229,7 +229,7 @@ public class Depot extends GraphViewAdapter implements GraphViewListener {
 
 	private void fireGraphExpansionChanged() {
 
-		graphView.fireGraphExpansionChanged(expansion);
+		visualGraph.fireGraphExpansionChanged(expansion);
 	}
 
 	private void checkExpansionAndSendNotification() {

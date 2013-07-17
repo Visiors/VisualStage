@@ -4,18 +4,18 @@ import com.visiors.visualstage.graph.view.graph.VisualGraph;
 
 public interface GraphController {
 
-	// void loadGraphView(GraphView graphView, InputStream stream) throws IOException,
+	// void loadGraphView(GraphView visualGraph, InputStream stream) throws IOException,
 	// ParserConfigurationException, SAXException;
 
 	// public GraphView createGraphView();
 
-	// void saveGraphView(GraphView graphView, OutputStream stream) throws IOException;
+	// void saveGraphView(GraphView visualGraph, OutputStream stream) throws IOException;
 
 	void refreshGraphModel(VisualGraph visualGraph);
 
-	void refreshVisualGraph(VisualGraph graphView);
+	void refreshVisualGraph(VisualGraph visualGraph);
 
-	void deleteVisualGraph(VisualGraph graphView);
+	void deleteVisualGraph(VisualGraph visualGraph);
 
 	void addGraphModelChangeListener(GraphModelChangeListener listener);
 

@@ -24,7 +24,7 @@ public class ReadOnlyMode extends BaseInteractionHandler {
 
 		super.setActive(activated);
 
-		unselectGraph(graphView);
+		unselectGraph(visualGraph);
 	}
 
 	private void unselectGraph(VisualGraph gv) {

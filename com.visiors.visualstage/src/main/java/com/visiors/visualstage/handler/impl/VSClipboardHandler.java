@@ -25,7 +25,7 @@ public class VSClipboardHandler implements ClipboardHandler {
     // @Inject
     // EventBus eventbus;
 
-    private VisualGraph graphView;
+    private VisualGraph visualGraph;
 
     @Inject
     private UndoRedoHandler undoRedoHandler;
@@ -37,9 +37,9 @@ public class VSClipboardHandler implements ClipboardHandler {
     }
 
     @Override
-    public void setScope(VisualGraph graphView) {
+    public void setScope(VisualGraph visualGraph) {
 
-        this.graphView = graphView;
+        this.visualGraph = visualGraph;
 
     }
 
@@ -58,7 +58,7 @@ public class VSClipboardHandler implements ClipboardHandler {
     @Override
     public boolean canCopy() {
 
-        final List<VisualGraphObject> selection = graphView.getSelection();
+        final List<VisualGraphObject> selection = visualGraph.getSelection();
         return selection.size() != 0;
     }
 
@@ -71,7 +71,7 @@ public class VSClipboardHandler implements ClipboardHandler {
     @Override
     public void copySelection() {
 
-        final List<VisualGraphObject> selection = graphView.getSelection();
+        final List<VisualGraphObject> selection = visualGraph.getSelection();
         if (selection.size() == 0) {
             return;
         } else if (selection.size() > 0) {
@@ -91,10 +91,10 @@ public class VSClipboardHandler implements ClipboardHandler {
             if (propertes != null) {
                 try {
                     undoRedoHandler.stratOfGroupAction();
-                    graphView.clearSelection();
+                    visualGraph.clearSelection();
 
-                    Rectangle rGraph = graphView.getBounds();
-                    List<VisualGraphObject> objects = GraphBuilder.createGraphObjects(propertes, graphView, true);
+                    Rectangle rGraph = visualGraph.getBounds();
+                    List<VisualGraphObject> objects = GraphBuilder.createGraphObjects(propertes, visualGraph, true);
                     Rectangle r = getObjectsArea(objects);
                     if (!r.union(rGraph).equals(rGraph)) {
                         r.x = rGraph.x;
@@ -104,7 +104,7 @@ public class VSClipboardHandler implements ClipboardHandler {
                     at.translate(localPasteOffset, localPasteOffset);
                     moveObjectsToTargetLocation(objects, at);
 
-                    graphView.setSelection(objects);
+                    visualGraph.setSelection(objects);
 
                     localPasteOffset += VSClipboardHandler.PASTE_OFFSET_STEP;
 

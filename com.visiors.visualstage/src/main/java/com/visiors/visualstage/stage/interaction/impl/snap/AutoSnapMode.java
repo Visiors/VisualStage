@@ -45,7 +45,7 @@ public class AutoSnapMode extends BaseInteractionHandler {
 			return false;
 		}
 
-		hitObject = GraphInteractionUtil.getFirstHitNodeAt(graphView, pt);
+		hitObject = GraphInteractionUtil.getFirstHitNodeAt(visualGraph, pt);
 
 		return false;
 	}
@@ -75,9 +75,9 @@ public class AutoSnapMode extends BaseInteractionHandler {
 		}
 
 		if (isShowPositionLines()) {
-			final Transformer transform = graphView.getTransform();
+			final Transformer transform = visualGraph.getTransform();
 			cursor = transform.transformToScreen(pt);
-			graphView.updateView();
+			visualGraph.updateView();
 		}
 
 		if (isSnapToGrid()) {
@@ -94,9 +94,9 @@ public class AutoSnapMode extends BaseInteractionHandler {
 		}
 
 		if (isShowPositionLines()) {
-			final Transformer transform = graphView.getTransform();
+			final Transformer transform = visualGraph.getTransform();
 			cursor = transform.transformToScreen(pt);
-			graphView.updateView();
+			visualGraph.updateView();
 		}
 		return false;
 	}
@@ -104,7 +104,7 @@ public class AutoSnapMode extends BaseInteractionHandler {
 	private void snapToGrid(Point pt) {
 
 		if (hitObject != null) {
-			if (hitObject.isSelected() && graphView.getSelection().size() == 1) {
+			if (hitObject.isSelected() && visualGraph.getSelection().size() == 1) {
 				snapToGrid(hitObject);
 			}
 		}

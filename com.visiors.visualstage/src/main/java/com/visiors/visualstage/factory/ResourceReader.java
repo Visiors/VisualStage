@@ -1,4 +1,4 @@
-package com.visiors.visualstage.resource;
+package com.visiors.visualstage.factory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -121,15 +121,15 @@ public class ResourceReader
 //	}
 
 
-	public List<PropertyList> getNodeTemplates() {
+	public List<PropertyList> extractNodeDefinitions() {
 		return nodes;
 	}
 	
-	public List<PropertyList> getEdgeTemplates() {
+	public List<PropertyList> extractEdgeDefinitions() {
 		return edges;
 	}
 	
-	public List<PropertyList> getSubgraphTemplates() {
+	public List<PropertyList> extractSubgraphDefinitions() {
 		return subgraphs;
 	}
 	

@@ -16,7 +16,7 @@ import com.visiors.visualstage.util.GraphInteractionUtil;
 
 public class DefaultGroupingHandler implements GroupingHandler {
 
-	private VisualGraph graphView;
+	private VisualGraph visualGraph;
 	private final Map<VisualEdge, ConnectionInfo> edgeSourceMap;
 	private final Map<VisualEdge, ConnectionInfo> edgeTargetMap;
 	private final Map<VisualEdge, PropertyList> edgePropertiesMap;
@@ -33,9 +33,9 @@ public class DefaultGroupingHandler implements GroupingHandler {
 	}
 
 	@Override
-	public void setScope(VisualGraph graphView) {
+	public void setScope(VisualGraph visualGraph) {
 
-		this.graphView = graphView;
+		this.visualGraph = visualGraph;
 
 	}
 
@@ -48,7 +48,7 @@ public class DefaultGroupingHandler implements GroupingHandler {
 	@Override
 	public boolean canUngroup() {
 
-		List<VisualGraphObject> selection = graphView.getSelection();
+		List<VisualGraphObject> selection = visualGraph.getSelection();
 		if (selection.size() == 0) {
 			return false;
 		}
@@ -64,7 +64,7 @@ public class DefaultGroupingHandler implements GroupingHandler {
 	private List<VisualNode> getTargetedNodes() {
 
 		List<VisualNode> result = new ArrayList<VisualNode>();
-		List<VisualGraphObject> objects = graphView.getSelection();
+		List<VisualGraphObject> objects = visualGraph.getSelection();
 		for (VisualGraphObject obj : objects) {
 			if (obj instanceof VisualNode) {
 				result.add((VisualNode) obj);
@@ -77,7 +77,7 @@ public class DefaultGroupingHandler implements GroupingHandler {
 
 		// capture all selected edges
 		List<VisualEdge> result = new ArrayList<VisualEdge>();
-		List<VisualGraphObject> objects = graphView.getSelection();
+		List<VisualGraphObject> objects = visualGraph.getSelection();
 		for (VisualGraphObject obj : objects) {
 			if (obj instanceof VisualEdge) {
 				result.add((VisualEdge) obj);
@@ -123,7 +123,7 @@ public class DefaultGroupingHandler implements GroupingHandler {
 
 	private VisualGraph getObjectsParentContainer() {
 
-		List<VisualGraphObject> objects = graphView.getSelection();
+		List<VisualGraphObject> objects = visualGraph.getSelection();
 		if (objects.size() > 0) {
 
 			VisualGraph parent = objects.get(0).getParentGraphGraph();
@@ -132,7 +132,7 @@ public class DefaultGroupingHandler implements GroupingHandler {
 					return null;
 				}
 			}
-			return parent == null ? graphView : parent;
+			return parent == null ? visualGraph : parent;
 		}
 		return null;
 	}
@@ -148,7 +148,7 @@ public class DefaultGroupingHandler implements GroupingHandler {
 		VisualGraph group = GraphFactory.instance().createContainer(-1, graphviewToUse);
 
 		undoRedoHandler.stratOfGroupAction();
-		graphView.fireStartGrouping(group);
+		visualGraph.fireStartGrouping(group);
 
 		parentGraph.addGraphObject(group);
 		List<VisualGraphObject> objectsToBeGroupped = parentGraph.getSelection();
@@ -187,7 +187,7 @@ public class DefaultGroupingHandler implements GroupingHandler {
 
 		reconnectEdges(objectsToBeGroupped);
 
-		graphView.fireEndGrouping(group);
+		visualGraph.fireEndGrouping(group);
 		undoRedoHandler.endOfGroupAction();
 	}
 
@@ -309,7 +309,7 @@ public class DefaultGroupingHandler implements GroupingHandler {
 		}
 
 		undoRedoHandler.stratOfGroupAction();
-		List<VisualGraphObject> selection = graphView.getSelection();
+		List<VisualGraphObject> selection = visualGraph.getSelection();
 
 		if (selection.size() == 0) {
 			return;
@@ -366,7 +366,7 @@ public class DefaultGroupingHandler implements GroupingHandler {
 	// private List<GraphObjectView> getObjectsToGroup() {
 	//
 	// List<GraphObjectView> selection =
-	// graphView.getSelectionService().getSelection();
+	// visualGraph.getSelectionService().getSelection();
 	// if(selection.size() == 0)
 	// return null;
 	// List<GraphObjectView> result = new ArrayList<GraphObjectView>();

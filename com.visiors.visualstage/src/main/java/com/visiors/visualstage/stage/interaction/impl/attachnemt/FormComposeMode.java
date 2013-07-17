@@ -44,7 +44,7 @@ public class FormComposeMode extends BaseInteractionHandler {
 	public boolean mouseReleased(Point pt, int button, int functionKey) {
 
 		hitComponent = null;
-		graphView.updateView();
+		visualGraph.updateView();
 		return false;
 	}
 
@@ -56,7 +56,7 @@ public class FormComposeMode extends BaseInteractionHandler {
 			adjustFormSetting(pt);
 
 			hitNode.getForm().invalidate();
-			graphView.updateView();
+			visualGraph.updateView();
 		}
 		return hitComponent != null;
 	}
@@ -192,7 +192,7 @@ public class FormComposeMode extends BaseInteractionHandler {
 	public void setActive(boolean activated) {
 
 		if (activated) {
-			graphView.clearSelection();
+			visualGraph.clearSelection();
 
 		}
 	}
@@ -214,8 +214,8 @@ public class FormComposeMode extends BaseInteractionHandler {
 	@Override
 	public void paintOnTop(Device device, Rectangle visibleScreenRect) {
 
-		final VisualNode[] nodes = graphView.getNodes();
-		final Transformer xform = graphView.getTransform();
+		final VisualNode[] nodes = visualGraph.getNodes();
+		final Transformer xform = visualGraph.getTransform();
 		boolean slotUsed;
 		Point pt;
 		for (VisualNode node : nodes) {
@@ -299,7 +299,7 @@ public class FormComposeMode extends BaseInteractionHandler {
 		final String slot = hitComponent.getSlot();
 		final Dimension size = hitComponent.getSize();
 		final Point offset = hitComponent.getOffset();
-		Transformer xform = graphView.getTransform();
+		Transformer xform = visualGraph.getTransform();
 		final Rectangle b = xform.transformToScreen(hitNode.getBounds());
 		final Point pt = new Point(b.x, b.y - size.height - 50);
 
@@ -323,7 +323,7 @@ public class FormComposeMode extends BaseInteractionHandler {
 
 	private FormItem getComponentAt(Point pt) {
 
-		hitNode = GraphInteractionUtil.getFirstHitNodeAt(graphView, pt);
+		hitNode = GraphInteractionUtil.getFirstHitNodeAt(visualGraph, pt);
 
 		if (hitNode != null) {
 			Form form = hitNode.getForm();

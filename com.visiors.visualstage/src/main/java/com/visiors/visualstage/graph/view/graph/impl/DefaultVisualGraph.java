@@ -60,23 +60,23 @@ EdgeViewListener
 		new GraphContentManager(this);
 	}
 
-	protected DefaultVisualGraph(VisualGraph graphView, long id) {
+	protected DefaultVisualGraph(VisualGraph visualGraph, long id) {
 
-		super(graphView.getName(), id);
+		super(visualGraph.getName(), id);
 
-		this.setBounds(graphView.getBounds());
-		this.SetAttributes(graphView.getAttributes());
-		this.incomingEdges = new ArrayList<VisualEdge>(graphView.getIncomingEdges());
-		this.outgoingEdges = new ArrayList<VisualEdge>(graphView.getOutgoingEdges());
-		this.setProperties(graphView.getProperties());
-		this.setStyleID(graphView.getStyleID());
-		this.setPresentationID(graphView.getPresentationID());
+		this.setBounds(visualGraph.getBounds());
+		this.SetAttributes(visualGraph.getAttributes());
+		this.incomingEdges = new ArrayList<VisualEdge>(visualGraph.getIncomingEdges());
+		this.outgoingEdges = new ArrayList<VisualEdge>(visualGraph.getOutgoingEdges());
+		this.setProperties(visualGraph.getProperties());
+		this.setStyleID(visualGraph.getStyleID());
+		this.setPresentationID(visualGraph.getPresentationID());
 		/* this.setFormID(node.getFormID()); */
-		if (graphView.getPortSet() != null) {
-			portSet = graphView.getPortSet();
+		if (visualGraph.getPortSet() != null) {
+			portSet = visualGraph.getPortSet();
 		}
-		if (graphView.getCustomData() != null) {
-			setCustomData(graphView.getCustomData().deepCopy());
+		if (visualGraph.getCustomData() != null) {
+			setCustomData(visualGraph.getCustomData().deepCopy());
 		}
 	}
 

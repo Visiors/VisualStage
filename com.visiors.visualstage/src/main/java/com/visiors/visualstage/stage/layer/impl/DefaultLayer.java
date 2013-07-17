@@ -11,13 +11,13 @@ public class DefaultLayer implements Layer {
     private boolean visible;
     private Color bkColor;
     private int order;
-    private final VisualGraph graphView;
+    private final VisualGraph visualGraph;
 
-    public DefaultLayer(int id, int order, VisualGraph graphView) {
+    public DefaultLayer(int id, int order, VisualGraph visualGraph) {
 
         this.id = id;
         this.order = order;
-        this.graphView = graphView;
+        this.visualGraph = visualGraph;
         visible = true;
     }
 
@@ -72,6 +72,6 @@ public class DefaultLayer implements Layer {
     @Override
     public VisualGraph getGraphView() {
 
-        return graphView;
+        return visualGraph;
     }
 }

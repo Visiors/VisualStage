@@ -48,7 +48,7 @@ public class DefaultStageDesigner implements StageDesigner {
     }
 
     @Override
-    public void setScope(VisualGraph graphView) {
+    public void setScope(VisualGraph visualGraph) {
 
         final Transformer transform = GraphView.getTransform();
         grid = new Grid(transform);

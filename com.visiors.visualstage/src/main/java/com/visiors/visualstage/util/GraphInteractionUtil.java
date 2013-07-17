@@ -122,7 +122,7 @@ public class GraphInteractionUtil {
         return null;
     }
 
-    public static VisualGraphObject getClosestObject(VisualGraph graphView, VisualGraphObject refObject,
+    public static VisualGraphObject getClosestObject(VisualGraph visualGraph, VisualGraphObject refObject,
             boolean ignoreGroups, boolean ignoreNodes, boolean ignoreEdges, boolean ignoreOverlaps) {
 
         double minDist = Double.MAX_VALUE;
@@ -136,7 +136,7 @@ public class GraphInteractionUtil {
             bref = refObject.getBounds();
             Point cpt = new Point(bref.x + bref.width / 2, bref.y + bref.height / 2);
 
-            VisualNode[] nodes = graphView.getNodes();
+            VisualNode[] nodes = visualGraph.getNodes();
             for (int i = 0; i < nodes.length; i++) {
 
                 if (nodes[i].getID() == refObject.getID()) {
@@ -162,7 +162,7 @@ public class GraphInteractionUtil {
         }
         if (!ignoreEdges) {
             // TODO
-            // EdgeView[] edges = graphView.getEdges();
+            // EdgeView[] edges = visualGraph.getEdges();
             // for (int i = 0; i < edges.length; i++) {
             //
             // }
@@ -170,7 +170,7 @@ public class GraphInteractionUtil {
         return bestmatch;
     }
 
-    public static VisualGraphObject getClosestNode(VisualGraph graphView, VisualGraphObject refObject, int maxDistance,
+    public static VisualGraphObject getClosestNode(VisualGraph visualGraph, VisualGraphObject refObject, int maxDistance,
             boolean ignoreOverlaps, Port[] posrts) {
 
         double minDist = Double.MAX_VALUE;
@@ -179,7 +179,7 @@ public class GraphInteractionUtil {
         double r;
         Rectangle bref = refObject.getBounds();
 
-        VisualNode[] nodes = graphView.getNodes();
+        VisualNode[] nodes = visualGraph.getNodes();
         for (int i = 0; i < nodes.length; i++) {
 
             if (nodes[i].getID() == refObject.getID()) {
@@ -291,20 +291,20 @@ public class GraphInteractionUtil {
         return ps.getPortByID(portID);
     }
 
-    public static List<VisualGraphObject> getHitObjects(VisualGraph graphView, Point pt, boolean ignoreGroups,
+    public static List<VisualGraphObject> getHitObjects(VisualGraph visualGraph, Point pt, boolean ignoreGroups,
             boolean ignoreNodes, boolean ignoreEdges) {
 
         List<VisualGraphObject> result = new ArrayList<VisualGraphObject>();
 
-        recursiveSearchForHitObject(graphView, pt, ignoreGroups, ignoreNodes, ignoreEdges, result);
+        recursiveSearchForHitObject(visualGraph, pt, ignoreGroups, ignoreNodes, ignoreEdges, result);
 
         return result;
     }
 
-    private static List<VisualGraphObject> recursiveSearchForHitObject(VisualGraph graphView, Point pt,
+    private static List<VisualGraphObject> recursiveSearchForHitObject(VisualGraph visualGraph, Point pt,
             boolean ignoreGroups, boolean ignoreNodes, boolean ignoreEdges, List<VisualGraphObject> hitList) {
 
-        VisualGraphObject hitObjects[] = graphView.getHitObjects(pt);
+        VisualGraphObject hitObjects[] = visualGraph.getHitObjects(pt);
 
         for (int i = hitObjects.length - 1; i >= 0; i--) {
             VisualGraphObject vgo = hitObjects[i];
@@ -327,18 +327,18 @@ public class GraphInteractionUtil {
     }
 
     /*
-     * private static GraphObjectView getFirstHitObjectInGroup( GraphView graphView, Point pt, boolean ignoreGroups,
-     * boolean ignoreNodes, boolean ignoreEdges) { GraphObjectView hitObjects[] = graphView.getHitObjects(pt); for
+     * private static GraphObjectView getFirstHitObjectInGroup( GraphView visualGraph, Point pt, boolean ignoreGroups,
+     * boolean ignoreNodes, boolean ignoreEdges) { GraphObjectView hitObjects[] = visualGraph.getHitObjects(pt); for
      * (int i = hitObjects.length - 1; i >= 0 ; i--) { GraphObjectView vgo = hitObjects[i]; if(vgo != null) {
      * if(!ignoreGroups && !ignoreNodes && !ignoreEdges ) return vgo; if(vgo instanceof EdgeView && !ignoreEdges) return
      * vgo; else if(vgo instanceof GraphView && !ignoreGroups) return vgo; else if(vgo instanceof NodeView &&
-     * !ignoreNodes) return vgo; } } return ignoreGroups || graphView.getLevel() == 0 ? null : graphView; } private
-     * static GraphObjectView getLastHitObjectInGroup( GraphView graphView, Point pt, boolean ignoreGroups, boolean
-     * ignoreNodes, boolean ignoreEdges) { GraphObjectView hitObjects[] = graphView.getHitObjects(pt); for (int i = 0;
+     * !ignoreNodes) return vgo; } } return ignoreGroups || visualGraph.getLevel() == 0 ? null : visualGraph; } private
+     * static GraphObjectView getLastHitObjectInGroup( GraphView visualGraph, Point pt, boolean ignoreGroups, boolean
+     * ignoreNodes, boolean ignoreEdges) { GraphObjectView hitObjects[] = visualGraph.getHitObjects(pt); for (int i = 0;
      * i < hitObjects.length ; i++) { GraphObjectView vgo = hitObjects[i]; if(vgo != null) { if(!ignoreGroups &&
      * !ignoreNodes && !ignoreEdges ) return vgo; if(vgo instanceof EdgeView && !ignoreEdges) return vgo; else if(vgo
      * instanceof GraphView && !ignoreGroups) return vgo; else if(vgo instanceof NodeView && !ignoreNodes) return vgo; }
-     * } return ignoreGroups|| graphView.getLevel() == 0 ? null : graphView; }
+     * } return ignoreGroups|| visualGraph.getLevel() == 0 ? null : visualGraph; }
      */
 
     /**
@@ -522,13 +522,13 @@ public class GraphInteractionUtil {
     /*
      * example final List<GraphObjectView> allObjects = new ArrayList<GraphObjectView>(); GraphVisitor visitor = new
      * GraphVisitor () { public void visit(GraphView subgraph, int level) {
-     * allObjects.add(subgraph.getGraphObjects(false)); } }; GraphUtil.visitSubgraphs(graphView, visitor, true, 0);
+     * allObjects.add(subgraph.getGraphObjects(false)); } }; GraphUtil.visitSubgraphs(visualGraph, visitor, true, 0);
      */
 
-    public static final void visitSubgraphs(VisualGraph graphView, GraphVisitor visitor, boolean preOrder,
+    public static final void visitSubgraphs(VisualGraph visualGraph, GraphVisitor visitor, boolean preOrder,
             int currentLevel) {
 
-        VisualGraphObject[] nodes = graphView.getNodes();
+        VisualGraphObject[] nodes = visualGraph.getNodes();
         for (int i = 0; i < nodes.length; i++) {
 
             if (nodes[i] instanceof VisualGraph) {

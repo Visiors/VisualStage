@@ -51,9 +51,9 @@ public class DefaultMultiLayerEditor implements MultiLayerEditor {
     }
 
     @Override
-    public Layer addLayer(int id, VisualGraph graphView) {
+    public Layer addLayer(int id, VisualGraph visualGraph) {
 
-        Layer layer = new DefaultLayer(id, layers.size(), graphView);
+        Layer layer = new DefaultLayer(id, layers.size(), visualGraph);
         layers.put(new Integer(id), layer);
         return layer;
     }
