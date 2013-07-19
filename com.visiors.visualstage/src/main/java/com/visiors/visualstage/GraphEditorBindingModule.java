@@ -17,9 +17,9 @@ import com.visiors.visualstage.handler.DefaultGroupingHandler;
 import com.visiors.visualstage.handler.GroupingHandler;
 import com.visiors.visualstage.handler.SelectionHandler;
 import com.visiors.visualstage.handler.UndoRedoHandler;
-import com.visiors.visualstage.handler.impl.VSClipboardHandler;
-import com.visiors.visualstage.handler.impl.VSSelectionHander;
-import com.visiors.visualstage.handler.impl.VSUndoRedoHandler;
+import com.visiors.visualstage.handler.impl.DefaultClipboardHandler;
+import com.visiors.visualstage.handler.impl.DefaultSelectionHander;
+import com.visiors.visualstage.handler.impl.DefaultUndoRedoHandler;
 import com.visiors.visualstage.stage.interaction.InteractionHandler;
 import com.visiors.visualstage.stage.interaction.impl.DefaultInteractionHandler;
 import com.visiors.visualstage.stage.layer.MultiLayerEditor;
@@ -33,7 +33,7 @@ import com.visiors.visualstage.transform.VSTransformer;
 import com.visiors.visualstage.validation.DefaultValidator;
 import com.visiors.visualstage.validation.Validator;
 
-public class GraphDocumentBindingModule extends BindingModule {
+public class GraphEditorBindingModule extends BindingModule {
 
     // binding the guava event bus
     public void bindEventBus(Binder binder) {
@@ -44,19 +44,19 @@ public class GraphDocumentBindingModule extends BindingModule {
     // binding the default clip board handler
     public void bindDefaultClipboardHandler(Binder binder) {
 
-        binder.bind(ClipboardHandler.class).to(VSClipboardHandler.class);
+        binder.bind(ClipboardHandler.class).to(DefaultClipboardHandler.class);
     }
 
     // binding the default redo-undo handler
     public void bindDefaultUndoRedoHandler(Binder binder) {
 
-        binder.bind(UndoRedoHandler.class).to(VSUndoRedoHandler.class);
+        binder.bind(UndoRedoHandler.class).to(DefaultUndoRedoHandler.class);
     }
 
     // binding the default selection handler
     public void bindDefaultSelectionHander(Binder binder) {
 
-        binder.bind(SelectionHandler.class).to(VSSelectionHander.class);
+        binder.bind(SelectionHandler.class).to(DefaultSelectionHander.class);
     }
 
     // binding the default transformer

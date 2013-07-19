@@ -52,7 +52,7 @@ public class SVGDefinition {
             return;
         }
 
-        init(GraphBuilder.propertyList2XML(pl, false));
+        init(GraphEditor.propertyList2XML(pl, false));
     }
 
     public SVGDefinition(String id, InputStream data) {
@@ -69,7 +69,7 @@ public class SVGDefinition {
             // end of svg-tag
             int e = svg.indexOf(">", s);
             String svgTag = svg.substring(s, e) + "/>";
-            PropertyList pl = GraphBuilder.XML2PropertyList(svgTag);
+            PropertyList pl = GraphEditor.XML2PropertyList(svgTag);
 
             PropertyList[] p = convertSVG2Symbol(pl);
             headerInfo = p[1];

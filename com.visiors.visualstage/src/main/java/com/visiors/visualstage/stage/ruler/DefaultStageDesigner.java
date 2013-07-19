@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.inject.Inject;
+import com.visiors.visualstage.document.GraphDocument;
 import com.visiors.visualstage.renderer.Device;
 import com.visiors.visualstage.renderer.RenderingContext.Resolution;
 import com.visiors.visualstage.stage.graph.GraphView;
@@ -48,7 +49,7 @@ public class DefaultStageDesigner implements StageDesigner {
     }
 
     @Override
-    public void setScope(VisualGraph visualGraph) {
+    public void setScope(GraphDocument graphDocument) {
 
         final Transformer transform = GraphView.getTransform();
         grid = new Grid(transform);

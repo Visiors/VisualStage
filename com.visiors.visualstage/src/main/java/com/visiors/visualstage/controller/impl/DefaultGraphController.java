@@ -5,12 +5,15 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.inject.Inject;
 import com.visiors.visualstage.controller.GraphController;
+import com.visiors.visualstage.factory.GraphEditor;
 import com.visiors.visualstage.graph.model.EdgeModel;
 import com.visiors.visualstage.graph.model.GraphModel;
 import com.visiors.visualstage.graph.model.impl.DefaultEdgeModel;
 import com.visiors.visualstage.graph.model.impl.DefaultGraphModel;
 import com.visiors.visualstage.graph.model.impl.DefaultNodeModel;
+import com.visiors.visualstage.graph.view.edge.EdgePoint;
 import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.graph.VisualGraph;
 import com.visiors.visualstage.graph.view.node.PortSet;
@@ -25,6 +28,8 @@ import com.visiors.visualstage.util.ConvertUtil;
 public class DefaultGraphController implements GraphController {
 
 	protected GraphModel graphModel;
+	@Inject
+	protected GraphEditor graphEditor;
 	private final List<VisualGraph> visualGraphs = new ArrayList<VisualGraph>();
 
 	public DefaultGraphController(GraphModel graphModel) {
@@ -68,8 +73,8 @@ public class DefaultGraphController implements GraphController {
 
 	private void createModelBasedOnView(VisualGraph visualGraph) {
 
-		List<VisualNode> vNodes = visualGraph.getNodes();
-		List<VisualEdge> vEdges = visualGraph.getEdges();
+		final List<VisualNode> vNodes = visualGraph.getNodes();
+		final List<VisualEdge> vEdges = visualGraph.getEdges();
 
 		if (graphModel == null) {
 			graphModel = new DefaultGraphModel();
@@ -77,15 +82,15 @@ public class DefaultGraphController implements GraphController {
 			graphModel.clear();
 		}
 
-		for (VisualNode visualNode : vNodes) {
+		for (final VisualNode visualNode : vNodes) {
 			graphModel.add(new DefaultNodeModel(visualNode.getID()));
 		}
 
-		for (VisualEdge visualEdge : vEdges) {
+		for (final VisualEdge visualEdge : vEdges) {
 
-			VisualNode sn = visualEdge.getSourceNode();
-			VisualNode tn = visualEdge.getTargetNode();
-			EdgeModel e = new DefaultEdgeModel(visualEdge.getID());
+			final VisualNode sn = visualEdge.getSourceNode();
+			final VisualNode tn = visualEdge.getTargetNode();
+			final EdgeModel e = new DefaultEdgeModel(visualEdge.getID());
 			graphModel.add(e);
 			if (sn != null) {
 				e.setSourceNode(graphModel.getNode(sn.getID()));
@@ -143,50 +148,50 @@ public class DefaultGraphController implements GraphController {
 		// gv.getUndoService().setEnabled(false);
 
 		// set graph properties
-		PropertyList graphProperties = (PropertyList) properties.get("Graph");
+		final PropertyList graphProperties = (PropertyList) properties.get("Graph");
 		p = (PropertyUnit) graphProperties.get("id");
 		id = ConvertUtil.object2long(p.getValue());
 		p = (PropertyUnit) graphProperties.get("name");
 		name = ConvertUtil.object2string(p.getValue());
-		VisualGraph gv = createVisualGraph(id, name);
+		final VisualGraph gv = createVisualGraph(id, name);
 		gv.setProperties(graphProperties);
 
 		/* creating of the nodes... */
-		PropertyList nodesProperties = (PropertyList) graphProperties.get("nodes");
+		final PropertyList nodesProperties = (PropertyList) graphProperties.get("nodes");
 		for (int i = 0; i < nodesProperties.size(); i++) {
-			PropertyList nodeProperties = (PropertyList) nodesProperties.get(i);
+			final PropertyList nodeProperties = (PropertyList) nodesProperties.get(i);
 			p = (PropertyUnit) nodeProperties.get("id");
 			id = ConvertUtil.object2long(p.getValue());
 			p = (PropertyUnit) nodeProperties.get("name");
 			name = ConvertUtil.object2string(p.getValue());
-			VisualNode nv = createVisualNode(id, name);
+			final VisualNode nv = createVisualNode(id, name);
 			gv.add(nv);
 			// set node's properties
 			nv.setProperties((PropertyList) nodeProperties.get("Setting"));
 
 			// PortSet
-			PropertyList PortsProperties = (PropertyList) graphProperties.get("Ports");
+			final PropertyList PortsProperties = (PropertyList) graphProperties.get("Ports");
 			if (PortsProperties != null) {
-				PortSet psv = createPortSet();
+				final PortSet psv = createPortSet();
 				psv.setProperties(PortsProperties);
 				nv.setPortSet(psv);
 			}
 		}
 
 		/* creating of the edges... */
-		PropertyList edgesProperties = (PropertyList) graphProperties.get("edges");
+		final PropertyList edgesProperties = (PropertyList) graphProperties.get("edges");
 		for (int i = 0; i < edgesProperties.size(); i++) {
-			PropertyList edgeProperties = (PropertyList) edgesProperties.get(i);
+			final PropertyList edgeProperties = (PropertyList) edgesProperties.get(i);
 			p = (PropertyUnit) edgeProperties.get("id");
 			id = ConvertUtil.object2long(p.getValue());
 			p = (PropertyUnit) edgeProperties.get("name");
 			name = ConvertUtil.object2string(p.getValue());
 
-			VisualEdge ev = createVisualEdge(id, name);
+			final VisualEdge ev = createVisualEdge(id, name);
 			gv.add(ev);
 			ev.setProperties((PropertyList) edgeProperties.get("Setting"));
 
-			PropertyList pathProperties = (PropertyList) edgeProperties.get("path");
+			final PropertyList pathProperties = (PropertyList) edgeProperties.get("path");
 			if (pathProperties != null) {
 				ev.setProperties(pathProperties);
 			}
@@ -200,36 +205,36 @@ public class DefaultGraphController implements GraphController {
 
 	private PropertyList getGraphViewProperties(VisualGraph visualGraph) {
 
-		PropertyList all = new DefaultPropertyList("GraphView");
+		final PropertyList all = new DefaultPropertyList("GraphView");
 
 		// graph id
-		long id = visualGraph.getID();
+		final long id = visualGraph.getID();
 		all.add(new DefaultPropertyUnit("id", new Long(id)));
 
 		// graph view properties
-		PropertyList graphProperties = new DefaultPropertyList("Graph");
-		PropertyList gp = visualGraph.getProperties();
+		final PropertyList graphProperties = new DefaultPropertyList("Graph");
+		final PropertyList gp = visualGraph.getProperties();
 		if (gp != null) {
 			graphProperties.add(gp);
 		}
 		all.add(graphProperties);
 
 		// edges properties
-		PropertyList edgesProperties = new DefaultPropertyList("edges");
+		final PropertyList edgesProperties = new DefaultPropertyList("edges");
 		graphProperties.add(edgesProperties);
 
-		List<VisualEdge> edges = visualGraph.getEdges();
-		for (VisualEdge edge : edges) {
-			PropertyList edgeProperties = new DefaultPropertyList("Edge");
+		final List<VisualEdge> edges = visualGraph.getEdges();
+		for (final VisualEdge edge : edges) {
+			final PropertyList edgeProperties = new DefaultPropertyList("Edge");
 			edgeProperties.add(new DefaultPropertyUnit("id", new Long(edge.getID())));
-			PropertyList ep = edge.getProperties();
+			final PropertyList ep = edge.getProperties();
 			if (ep != null) {
 				edgeProperties.add(ep);
 			}
 
-			PropertyList pathProperties = new DefaultPropertyList("path");
+			final PropertyList pathProperties = new DefaultPropertyList("path");
 			edgeProperties.add(pathProperties);
-			PropertyList epp = edge.getProperties();
+			final PropertyList epp = edge.getProperties();
 			if (ep != null) {
 				pathProperties.add(epp);
 			}
@@ -238,23 +243,23 @@ public class DefaultGraphController implements GraphController {
 		}
 
 		// nodes properties
-		PropertyList nodesProperties = new DefaultPropertyList("nodes");
+		final PropertyList nodesProperties = new DefaultPropertyList("nodes");
 		graphProperties.add(nodesProperties);
 
-		List<VisualNode> nodes = visualGraph.getNodes();
-		for (VisualNode node : nodes) {
-			PropertyList nodeProperties = new DefaultPropertyList("Node");
+		final List<VisualNode> nodes = visualGraph.getNodes();
+		for (final VisualNode node : nodes) {
+			final PropertyList nodeProperties = new DefaultPropertyList("Node");
 			nodeProperties.add(new DefaultPropertyUnit("id", new Long(node.getID())));
 			// node's properties
-			PropertyList np = node.getProperties();
+			final PropertyList np = node.getProperties();
 			if (np != null) {
 				nodeProperties.add(np);
 			}
 			// ports
-			PortSet ps = node.getPortSet();
+			final PortSet ps = node.getPortSet();
 			if (ps != null) {
 
-				PropertyList psp = new DefaultPropertyList("Ports");
+				final PropertyList psp = new DefaultPropertyList("Ports");
 				if (psp != null) {
 					nodeProperties.add(psp);
 				}
@@ -268,14 +273,14 @@ public class DefaultGraphController implements GraphController {
 
 	protected VisualGraph createVisualGraph(long id, String name) {
 
-		VisualGraph gv = GraphFactory.instance().createContainer(id, name);
+		final VisualGraph gv = graphEditor.createContainer(id, name);
 		gv.setBounds(new Rectangle(0, 0, 100, 100));
 		return gv;
 	}
 
 	protected VisualNode createVisualNode(long id, String name) {
 
-		VisualNode nv = GraphFactory.instance().createNode(id, name);
+		final VisualNode nv = graphEditor.createNode(id, name);
 		nv.setBounds(new Rectangle(0, 0, 100, 100));
 		nv.setPortSet(createPortSet());
 		return nv;
@@ -283,18 +288,17 @@ public class DefaultGraphController implements GraphController {
 
 	protected VisualEdge createVisualEdge(long id, String name) {
 
-		VisualEdge ev = GraphFactory.instance().createEdge(id, name);
-
-		Point[] edgePoints = new Point[2];
-		edgePoints[0] = new Point(0, 0);
-		edgePoints[1] = new Point(100, 100);
-		ev.getPath().setPoints(edgePoints);
-		return ev;
+		final VisualEdge visualEdge = graphEditor.createEdge(id, name);
+		final EdgePoint[] edgePoints = new EdgePoint[2];
+		edgePoints[0] = new EdgePoint(new Point( 0, 0));
+		edgePoints[1] = new EdgePoint(new Point( 100, 100));
+		visualEdge.getPath().setPoints(edgePoints, false);
+		return visualEdge;
 	}
 
 	protected PortSet createPortSet() {
 
-		PortSet ps = new DefaultPortSet();
+		final PortSet ps = new DefaultPortSet();
 		ps.createDefaultFourPortSet();
 		return ps;
 	}
@@ -319,7 +323,7 @@ public class DefaultGraphController implements GraphController {
 
 	protected void fireGraphModelChanged() {
 
-		for (GraphModelChangeListener l : graphModelChangelistener) {
+		for (final GraphModelChangeListener l : graphModelChangelistener) {
 			l.graphModelChanged();
 		}
 

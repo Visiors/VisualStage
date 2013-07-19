@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.inject.Inject;
+import com.visiors.visualstage.document.GraphDocument;
 import com.visiors.visualstage.graph.view.VisualGraphObject;
 import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.graph.VisualGraph;
@@ -33,9 +34,9 @@ public class DefaultGroupingHandler implements GroupingHandler {
 	}
 
 	@Override
-	public void setScope(VisualGraph visualGraph) {
+	public void setScope(GraphDocument graphDocument) {
 
-		this.visualGraph = visualGraph;
+		this.visualGraph = graphDocument;
 
 	}
 
@@ -145,7 +146,7 @@ public class DefaultGroupingHandler implements GroupingHandler {
 			return;
 		}
 
-		VisualGraph group = GraphFactory.instance().createContainer(-1, graphviewToUse);
+		VisualGraph group = GraphEditor.instance().createContainer(-1, graphviewToUse);
 
 		undoRedoHandler.stratOfGroupAction();
 		visualGraph.fireStartGrouping(group);

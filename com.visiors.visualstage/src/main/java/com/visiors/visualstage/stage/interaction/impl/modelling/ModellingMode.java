@@ -7,11 +7,14 @@ import java.util.List;
 
 import com.google.inject.Inject;
 import com.visiors.visualstage.constants.GraphStageConstants;
+import com.visiors.visualstage.factory.GraphEditor;
+import com.visiors.visualstage.graph.view.VisualGraphObject;
+import com.visiors.visualstage.graph.view.edge.VisualEdge;
+import com.visiors.visualstage.graph.view.graph.VisualGraph;
+import com.visiors.visualstage.graph.view.node.VisualNode;
 import com.visiors.visualstage.handler.UndoRedoHandler;
-import com.visiors.visualstage.io.GraphBuilder;
 import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.property.impl.DefaultPropertyList;
-import com.visiors.visualstage.stage.cache.GraphObjectView;
 import com.visiors.visualstage.stage.interaction.impl.BaseInteractionHandler;
 import com.visiors.visualstage.util.GraphInteractionUtil;
 
@@ -160,22 +163,22 @@ public class ModellingMode extends BaseInteractionHandler {
 		if (mousePressedPos.equals(pt)) {
 			/* only if mouse is released on the same object */
 			if (hitObject == GraphInteractionUtil.getFirstHitObjectAt(visualGraph, pt)) { /*
-																						 * invert
-																						 * selection
-																						 * if
-																						 * multi
-																						 * -
-																						 * selection
-																						 * -
-																						 * mode
-																						 * is
-																						 * active
-																						 * ;
-																						 * otherwise
-																						 * reset
-																						 * the
-																						 * selection
-																						 */
+			 * invert
+			 * selection
+			 * if
+			 * multi
+			 * -
+			 * selection
+			 * -
+			 * mode
+			 * is
+			 * active
+			 * ;
+			 * otherwise
+			 * reset
+			 * the
+			 * selection
+			 */
 
 				// TODO birng it to selectionMode
 				// if (hitObject != null && !hitObject.isSelected() &&
@@ -265,19 +268,19 @@ public class ModellingMode extends BaseInteractionHandler {
 
 		if (hitObject != null) {
 			if (!hitObject.isSelected()) { // always select objects that are
-										   // being dragged
+				// being dragged
 				visualGraph.clearSelection();
 				visualGraph.setSelection(hitObject);
 			}
 			if (manipulatoinIndex == ModellingMode.MOVE_OR_COPY_OBJECTS) { // Duplicate
-																		   // selection
+				// selection
 				if (isControlKeyPressed(functionKey)) {
 					duplicateSelection(pt);
 				}
 				manipulatoinIndex = ModellingMode.MOVE_OBJECTS;
 			} else if (manipulatoinIndex == ModellingMode.MOVE_OBJECTS) { // move
-																		  // selected
-																		  // objects
+				// selected
+				// objects
 				if (!wasManipulationNotified()) {
 					notifyActionBegin();
 				}
@@ -287,10 +290,10 @@ public class ModellingMode extends BaseInteractionHandler {
 			trackNodesHitByNode();
 			trackGroupHitByActiveObject(functionKey);
 			return manipulatoinIndex != ModellingMode.MOVE_OBJECTS; // let other
-																	// like Edge
-																	// creation
-																	// do their
-																	// job
+			// like Edge
+			// creation
+			// do their
+			// job
 		}
 		return false;
 	}
@@ -506,9 +509,9 @@ public class ModellingMode extends BaseInteractionHandler {
 			// selection.remove(hitObject);
 
 			PropertyList propertyList = new DefaultPropertyList();
-			GraphBuilder.visualObjects2ProperyList(selection.toArray(new VisualGraphObject[0]),
+			GraphEditor.visualObjects2ProperyList(selection.toArray(new VisualGraphObject[0]),
 					propertyList);
-			List<VisualGraphObject> duplicatedObjects = GraphBuilder.createGraphObjects(
+			List<VisualGraphObject> duplicatedObjects = GraphEditor.createGraphObjects(
 					propertyList, visualGraph, true);
 			visualGraph.setSelection(duplicatedObjects);
 			for (int i = 0; i < duplicatedObjects.size(); i++) {

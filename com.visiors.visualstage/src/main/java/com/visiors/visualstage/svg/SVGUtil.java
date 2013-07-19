@@ -89,7 +89,7 @@ public class SVGUtil {
 
     public static String setElementAttribute(String svg, String tag, String attribute, String value) {
 
-        PropertyList svgPl = GraphBuilder.XML2PropertyList(svg);
+        PropertyList svgPl = GraphEditor.XML2PropertyList(svg);
         PropertyList tagPl = PropertyUtil.getPropertyList(svgPl, tag);
         if (tagPl != null) {
             PropertyUnit pu = PropertyUtil.findPropertyUnit(tagPl, attribute);
@@ -97,7 +97,7 @@ public class SVGUtil {
 
                 pu.setValue(value);
 
-                return GraphBuilder.propertyList2XML(svgPl, false);
+                return GraphEditor.propertyList2XML(svgPl, false);
             }
         }
         return null;
@@ -105,7 +105,7 @@ public class SVGUtil {
 
     public static String getElementAttribute(String svg, String tag, String attribute) {
 
-        PropertyList svgPl = GraphBuilder.XML2PropertyList(svg);
+        PropertyList svgPl = GraphEditor.XML2PropertyList(svg);
         PropertyList tagPl = PropertyUtil.getPropertyList(svgPl, tag);
         if (tagPl != null) {
             String value = PropertyUtil.getProperty(tagPl, attribute, "");

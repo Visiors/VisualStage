@@ -1,7 +1,15 @@
 package com.visiors.visualstage.util;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
 
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.xml.sax.SAXException;
+
+import com.visiors.visualstage.io.XMLService;
 import com.visiors.visualstage.property.Property;
 import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.property.PropertyUnit;
@@ -11,6 +19,35 @@ public class PropertyUtil {
 
 	private static final String SEPARATOR = ":";
 
+	public static String propertyList2XML(PropertyList properties, boolean insertHeader) {
+
+		try {
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			XMLService xmlService = new XMLService();
+			xmlService.propertyList2XML(bos, properties, insertHeader);
+			bos.flush();
+			return bos.toString();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public static PropertyList XML2PropertyList(String strXML) {
+
+		try {
+			ByteArrayInputStream bis = new ByteArrayInputStream(strXML.getBytes());
+			XMLService xmlService = new XMLService();
+			return xmlService.XML2PropertyList(bis);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+		} catch (SAXException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	public static PropertyUnit findPropertyUnit(PropertyList pl, String fullPath) {
 		if (pl == null) {
 			return null;
@@ -95,71 +132,81 @@ public class PropertyUtil {
 	}
 
 
-	//	public static PropertyList getPropertyList(PropertyList parent, String name) {
-	//		return findPropertyList(parent, name);
-	//	}
-	//
-	//
-	//	public static int getProperty(PropertyList pl, String name, int defaultValue) {
-	//		PropertyUnit p = findPropertyUnit(pl, name);
-	//		if (p != null) {
-	//			try {
-	//				return ConvertUtil.object2int(p.getValue());
-	//			} catch (Exception e) {
-	//				/* return default */
-	//			}
-	//		}
-	//		//		System.err.println("Warning: used default value since " +name+ " could not be found in " + pl);
-	//		return defaultValue;
-	//	}
-	//
-	//	public static double getProperty(PropertyList pl, String name, double defaultValue) {
-	//		PropertyUnit p = findPropertyUnit(pl, name);
-	//		if (p != null) {
-	//			try {
-	//				return ConvertUtil.object2double(p.getValue());
-	//			} catch (Exception e) {
-	//				/* return default */
-	//			}
-	//		}
-	//		return defaultValue;
-	//	}
-	//
-	//	public static long getProperty(PropertyList pl, String name, long defaultValue) {
-	//		PropertyUnit p = findPropertyUnit(pl, name);
-	//		if (p != null) {
-	//			try {
-	//				return ConvertUtil.object2long(p.getValue());
-	//			} catch (Exception e) {
-	//				/* return default */
-	//			}
-	//		}
-	//		return defaultValue;
-	//	}
-	//
-	//	public static boolean getProperty(PropertyList pl, String name, boolean defaultValue) {
-	//		PropertyUnit p = findPropertyUnit(pl, name);
-	//		if (p != null) {
-	//			try {
-	//				return ConvertUtil.object2boolean(p.getValue());
-	//			} catch (Exception e) {
-	//				/* return default */
-	//			}
-	//		}
-	//		return defaultValue;
-	//	}
-	//
-	//	public static String getProperty(PropertyList pl, String name, String defaultValue) {
-	//		PropertyUnit p = findPropertyUnit(pl, name);
-	//		if (p != null) {
-	//			try {
-	//				return ConvertUtil.object2string(p.getValue());
-	//			} catch (Exception e) {
-	//				/* return default */
-	//			}
-	//		}
-	//		return defaultValue;
-	//	}
+
+
+	public static PropertyList getPropertyList(PropertyList parent, String name) {
+		return findPropertyList(parent, name);
+	}
+
+
+	public static Object getProperty(PropertyList pl, String name) {
+		PropertyUnit p = findPropertyUnit(pl, name);
+		if (p != null) {
+			return p.getValue();
+		}
+		return null;
+	}
+
+	public static int getProperty(PropertyList pl, String name, int defaultValue) {
+		PropertyUnit p = findPropertyUnit(pl, name);
+		if (p != null) {
+			try {
+				return ConvertUtil.object2int(p.getValue());
+			} catch (Exception e) {
+				/* return default */
+			}
+		}
+		//		System.err.println("Warning: used default value since " +name+ " could not be found in " + pl);
+		return defaultValue;
+	}
+
+	public static double getProperty(PropertyList pl, String name, double defaultValue) {
+		PropertyUnit p = findPropertyUnit(pl, name);
+		if (p != null) {
+			try {
+				return ConvertUtil.object2double(p.getValue());
+			} catch (Exception e) {
+				/* return default */
+			}
+		}
+		return defaultValue;
+	}
+
+	public static long getProperty(PropertyList pl, String name, long defaultValue) {
+		PropertyUnit p = findPropertyUnit(pl, name);
+		if (p != null) {
+			try {
+				return ConvertUtil.object2long(p.getValue());
+			} catch (Exception e) {
+				/* return default */
+			}
+		}
+		return defaultValue;
+	}
+
+	public static boolean getProperty(PropertyList pl, String name, boolean defaultValue) {
+		PropertyUnit p = findPropertyUnit(pl, name);
+		if (p != null) {
+			try {
+				return ConvertUtil.object2boolean(p.getValue());
+			} catch (Exception e) {
+				/* return default */
+			}
+		}
+		return defaultValue;
+	}
+
+	public static String getProperty(PropertyList pl, String name, String defaultValue) {
+		PropertyUnit p = findPropertyUnit(pl, name);
+		if (p != null) {
+			try {
+				return ConvertUtil.object2string(p.getValue());
+			} catch (Exception e) {
+				/* return default */
+			}
+		}
+		return defaultValue;
+	}
 	//
 	//
 	//	public static PropertyList setProperty(PropertyList pl, String fullPath, int value, String valueRange) {

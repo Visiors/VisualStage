@@ -242,7 +242,7 @@ public class EdgeCreationMode extends BaseInteractionHandler {
 		if (refPort != null && alignPort != null) {
 			int p1 = refPort.getID();
 			int p2 = alignPort.getID();
-			GraphFactory f = GraphFactory.instance();
+			GraphEditor f = GraphEditor.instance();
 			createdEdge = f.createEdge();
 			if (forward) {
 				createdEdge.setSourceNode(nodeToMate, p1);

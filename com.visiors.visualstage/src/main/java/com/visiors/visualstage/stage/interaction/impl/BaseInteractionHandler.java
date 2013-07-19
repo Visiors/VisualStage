@@ -4,22 +4,23 @@ import java.awt.Point;
 import java.awt.Rectangle;
 
 import com.visiors.visualstage.constants.GraphStageConstants;
+import com.visiors.visualstage.document.GraphDocument;
 import com.visiors.visualstage.stage.interaction.Interactable;
 import com.visiors.visualstage.stage.interaction.InteractionMode;
 
 public abstract class BaseInteractionHandler implements InteractionMode {
 
 	protected boolean active;
-	protected VisualGraph visualGraph;
+	protected GraphDocument graphDocument;
 
 	protected BaseInteractionHandler() {
 
 	}
 
 	@Override
-	public void setScope(VisualGraph visualGraph) {
+	public void setScope(GraphDocument graphDocument) {
 
-		this.visualGraph = visualGraph;
+		this.graphDocument = graphDocument;
 
 	}
 

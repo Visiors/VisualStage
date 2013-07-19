@@ -6,10 +6,16 @@ import java.util.List;
 
 import com.visiors.visualstage.graph.view.VisualGraphObject;
 import com.visiors.visualstage.graph.view.edge.VisualEdge;
+import com.visiors.visualstage.graph.view.graph.impl.GraphNodeVisitor;
 import com.visiors.visualstage.graph.view.graph.listener.GraphViewListener;
 import com.visiors.visualstage.graph.view.node.VisualNode;
 
 public interface VisualGraph extends VisualNode/* , LayoutableGraph */{
+
+
+	/** Traverse through all nodes in the current graph and contained subgraphs */
+	public void visitNodes(GraphNodeVisitor visitor,  boolean preOrder);
+
 	/**
 	 * Removes all nodes and edges from the graph
 	 */

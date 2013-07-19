@@ -23,8 +23,7 @@ import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.property.PropertyUnit;
 import com.visiors.visualstage.renderer.RenderingContext;
 
-public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph, VisualNodeListener,
-EdgeViewListener
+public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph, VisualNodeListener, EdgeViewListener
 
 {
 
@@ -615,9 +614,8 @@ EdgeViewListener
 
 		StringBuffer sb = new StringBuffer();
 
-		sb.append("GraphView (").append("id = ").append(getID()).append(", level = ")
-		.append(getDepth()).append(", objects = ")
-		.append(String.valueOf(getGraphObjects().size())).append(" ]");
+		sb.append("GraphView (").append("id = ").append(getID()).append(", level = ").append(getDepth())
+		.append(", objects = ").append(String.valueOf(getGraphObjects().size())).append(" ]");
 		return sb.toString();
 
 	}
@@ -672,6 +670,99 @@ EdgeViewListener
 
 		return svg.toString();
 	}
+
+	//
+	// private void example() {
+	//
+	// final List<GraphObjectView> allObjects = new
+	// ArrayList<GraphObjectView>();
+	// GraphVisitor visitor = new GraphVisitor() {
+	//
+	// public void visit(GraphView subgraph, int level) {
+	//
+	// allObjects.add(subgraph.getGraphObjects(false));
+	// }
+	// };
+	// GraphUtil.visitSubgraphs(visualGraph, visitor, true, 0);
+	//
+	// }
+
+	@Override
+	public void visitNodes(GraphNodeVisitor visitor, boolean preOrder) {
+
+		visitNodes(this, visitor, preOrder);
+	}
+
+
+	private boolean visitNodes(VisualGraph visualGraph, GraphNodeVisitor visitor, boolean preOrder) {
+
+		List<VisualNode> nodes = visualGraph.getNodes();
+		if (preOrder) {
+			for (VisualGraphObject node : nodes) {
+				if (node instanceof VisualGraph == false) {
+					if (!visitor.visit((VisualNode) node)) {
+						return false;
+					}
+				}
+			}
+			for (VisualGraphObject node : nodes) {
+				if (node instanceof VisualGraph) {
+					if (!visitNodes((VisualGraph) node, visitor, preOrder)) {
+						return false;
+					}
+				}
+			}
+		} else {
+			for (VisualGraphObject node : nodes) {
+				if (node instanceof VisualGraph) {
+					if (!visitNodes((VisualGraph) node, visitor, preOrder)) {
+						return false;
+					}
+				}
+			}
+			for (VisualGraphObject node : nodes) {
+				if (node instanceof VisualGraph == false) {
+					if (!visitor.visit((VisualNode) node)) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+
+
+	//	@Override
+	//	public void visitSubgraphs(GraphVisitor visitor, boolean preOrder) {
+	//
+	//		visitSubgraphs(this, visitor, preOrder);
+	//	}
+	//	
+	//	private boolean visitSubgraphs(VisualGraph visualGraph, GraphVisitor visitor, boolean preOrder) {
+	//
+	//		List<VisualNode> nodes = visualGraph.getNodes();
+	//		for (VisualGraphObject node : nodes) {
+	//			if (node instanceof VisualGraph) {
+	//				VisualGraph subgraph = (VisualGraph) node;
+	//				if (preOrder) {
+	//					if (!visitor.visit(subgraph)) {
+	//						return false;
+	//					}
+	//					if(!visitSubgraphs(subgraph, visitor, preOrder)) {
+	//						return false;
+	//					}
+	//				} else {
+	//					if(!visitSubgraphs(subgraph, visitor, preOrder)) {
+	//						return false;
+	//					}
+	//					if (!visitor.visit(subgraph)) {
+	//						return false;
+	//					}
+	//				}
+	//			}
+	//		}
+	//		return true;
+	//	}
 
 	// //
 	// ///////////////////////////////////////////////////////////////////////
@@ -923,7 +1014,6 @@ EdgeViewListener
 	@Override
 	public void edgeReconnected(VisualEdge edge, VisualNode oldSourceNode, int oldSourcePortID,
 			VisualNode oldTagetNode, int oldTargetPortID) {
-
 
 		if (!fireEvents) {
 			return;

@@ -1,7 +1,7 @@
 package com.visiors.visualstage.handler;
 
-import com.visiors.visualstage.graph.view.graph.VisualGraph;
+import com.visiors.visualstage.document.GraphDocument;
 
 public interface GraphViewHandler {
-    void setScope(VisualGraph visualGraph);
+    void setScope(GraphDocument graphDocument);
 }

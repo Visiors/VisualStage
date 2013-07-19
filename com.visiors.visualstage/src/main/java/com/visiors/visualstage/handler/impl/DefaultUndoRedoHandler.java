@@ -17,14 +17,14 @@ import com.visiors.visualstage.handler.Undoable;
  */
 
 @Singleton
-public class VSUndoRedoHandler implements UndoRedoHandler {
+public class DefaultUndoRedoHandler implements UndoRedoHandler {
 
     private final UndoStack     undoStack;
     private final List<Integer> bookmarks;
     private boolean             processUndoAction;
 
     @Inject
-    public VSUndoRedoHandler() {
+    public DefaultUndoRedoHandler() {
 
         undoStack = new UndoStack();
         bookmarks = new ArrayList<Integer>();

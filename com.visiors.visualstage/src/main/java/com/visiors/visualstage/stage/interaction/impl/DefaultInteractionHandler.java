@@ -9,6 +9,7 @@ import java.util.Map;
 
 import com.google.inject.Inject;
 import com.visiors.visualstage.constants.GraphStageConstants;
+import com.visiors.visualstage.document.GraphDocument;
 import com.visiors.visualstage.renderer.RenderingContext.Resolution;
 import com.visiors.visualstage.stage.interaction.InteractionHandler;
 import com.visiors.visualstage.stage.interaction.InteractionMode;
@@ -64,11 +65,11 @@ public class DefaultInteractionHandler implements InteractionHandler {
 	}
 
 	@Override
-	public void setScope(VisualGraph visualGraph) {
+	public void setScope(GraphDocument graphDocument) {
 
 		List<InteractionMode> regModes = getRegisteredModes();
 		for (InteractionMode interactionMode : regModes) {
-			interactionMode.setScope(visualGraph);
+			interactionMode.setScope(graphDocument);
 		}
 	}
 
@@ -104,8 +105,8 @@ public class DefaultInteractionHandler implements InteractionHandler {
 					modes.get(currentMode).setActive(false);
 				} else {
 					String[] names = interactionGroup.get(currentMode);
-					for (int i = 0; i < names.length; i++) {
-						modes.get(names[i]).setActive(false);
+					for (String name2 : names) {
+						modes.get(name2).setActive(false);
 					}
 				}
 			}
@@ -164,8 +165,8 @@ public class DefaultInteractionHandler implements InteractionHandler {
 			modes.get(currentMode).paintOnBackground(device, visibleScreenRect);
 		} else {
 			String[] names = interactionGroup.get(currentMode);
-			for (int i = 0; i < names.length; i++) {
-				modes.get(names[i]).paintOnBackground(device, visibleScreenRect);
+			for (String name : names) {
+				modes.get(name).paintOnBackground(device, visibleScreenRect);
 			}
 		}
 	}
@@ -180,8 +181,8 @@ public class DefaultInteractionHandler implements InteractionHandler {
 			modes.get(currentMode).paintOnTop(device, visibleScreenRect);
 		} else {
 			String[] names = interactionGroup.get(currentMode);
-			for (int i = 0; i < names.length; i++) {
-				modes.get(names[i]).paintOnTop(device, visibleScreenRect);
+			for (String name : names) {
+				modes.get(name).paintOnTop(device, visibleScreenRect);
 			}
 		}
 	}
@@ -269,8 +270,8 @@ public class DefaultInteractionHandler implements InteractionHandler {
 			ret = modes.get(currentMode).keyPressed(keyChar, keyCode);
 		} else {
 			String[] names = interactionGroup.get(currentMode);
-			for (int i = 0; i < names.length; i++) {
-				ret |= modes.get(names[i]).keyPressed(keyChar, keyCode);
+			for (String name : names) {
+				ret |= modes.get(name).keyPressed(keyChar, keyCode);
 			}
 		}
 		return ret;
@@ -284,8 +285,8 @@ public class DefaultInteractionHandler implements InteractionHandler {
 			ret = modes.get(currentMode).keyReleased(keyChar, keyCode);
 		} else {
 			String[] names = interactionGroup.get(currentMode);
-			for (int i = 0; i < names.length; i++) {
-				ret |= modes.get(names[i]).keyReleased(keyChar, keyCode);
+			for (String name : names) {
+				ret |= modes.get(name).keyReleased(keyChar, keyCode);
 			}
 		}
 		return ret;
@@ -298,8 +299,8 @@ public class DefaultInteractionHandler implements InteractionHandler {
 			modes.get(currentMode).cancelInteraction();
 		} else {
 			String[] names = interactionGroup.get(currentMode);
-			for (int i = 0; i < names.length; i++) {
-				modes.get(names[i]).cancelInteraction();
+			for (String name : names) {
+				modes.get(name).cancelInteraction();
 			}
 		}
 	}
@@ -311,8 +312,8 @@ public class DefaultInteractionHandler implements InteractionHandler {
 			modes.get(currentMode).terminateInteraction();
 		} else {
 			String[] names = interactionGroup.get(currentMode);
-			for (int i = 0; i < names.length; i++) {
-				modes.get(names[i]).terminateInteraction();
+			for (String name : names) {
+				modes.get(name).terminateInteraction();
 			}
 		}
 	}
@@ -325,8 +326,8 @@ public class DefaultInteractionHandler implements InteractionHandler {
 			ret = modes.get(currentMode).isInteracting();
 		} else {
 			String[] names = interactionGroup.get(currentMode);
-			for (int i = 0; i < names.length; i++) {
-				ret |= modes.get(names[i]).isInteracting();
+			for (String name : names) {
+				ret |= modes.get(name).isInteracting();
 			}
 		}
 		return ret;

@@ -1,590 +1,490 @@
 package com.visiors.visualstage.document.impl;
 
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.visiors.visualstage.GraphDocumentBindingModule;
+import com.google.inject.Inject;
 import com.visiors.visualstage.constants.PropertyConstants;
 import com.visiors.visualstage.document.GraphDocument;
-import com.visiors.visualstage.form.InplaceEdtiorService;
-import com.visiors.visualstage.form.InplaceTextditor;
-import com.visiors.visualstage.handler.ClipboardHandler;
-import com.visiors.visualstage.handler.GroupingHandler;
-import com.visiors.visualstage.handler.SelectionHandler;
+import com.visiors.visualstage.document.ViewListener;
+import com.visiors.visualstage.document.listener.GraphDocumentListener;
+import com.visiors.visualstage.graph.view.graph.VisualGraph;
+import com.visiors.visualstage.graph.view.graph.listener.GraphViewAdapter;
+import com.visiors.visualstage.graph.view.graph.listener.GraphViewListener;
 import com.visiors.visualstage.handler.UndoRedoHandler;
 import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.renderer.Device;
 import com.visiors.visualstage.renderer.RenderingContext;
 import com.visiors.visualstage.renderer.RenderingContext.Resolution;
 import com.visiors.visualstage.renderer.RenderingContext.Subject;
-import com.visiors.visualstage.stage.adapter.GraphViewAdapter;
-import com.visiors.visualstage.stage.graph.GraphView;
 import com.visiors.visualstage.stage.layer.Layer;
 import com.visiors.visualstage.stage.layer.impl.DefaultMultiLayerEditor;
-import com.visiors.visualstage.stage.listener.GraphDocumentListener;
-import com.visiors.visualstage.stage.listener.GraphViewListener;
-import com.visiors.visualstage.stage.listener.InteractionListener;
-import com.visiors.visualstage.stage.listener.ViewListener;
 import com.visiors.visualstage.stage.ruler.StageDesigner;
 import com.visiors.visualstage.stage.ruler.StageDesigner.ViewMode;
 import com.visiors.visualstage.transform.Transformer;
 import com.visiors.visualstage.util.PropertyUtil;
 import com.visiors.visualstage.validation.Validator;
-import com.visiors.visualstage.view.interaction.InteractionHandler;
 
 /**
  * This class contains all componets that are shared between all layers
  * 
- * @author Sharokh
+
  * 
  */
-public class DefaultGraphDocument implements GraphDocument, InteractionListener {
+public class DefaultGraphDocument implements GraphDocument {
 
-    private boolean fireEvents = true;
-    private boolean updateView;
-    private PropertyList properties;
-    private boolean enableImageBuffering;
-    private final boolean useSVGEmbeddedImage = true;
-    private final Injector injector;
+	private boolean fireEvents = true;
+	private boolean updateView;
+	private PropertyList properties;
+	private boolean enableImageBuffering;
+	private final boolean useSVGEmbeddedImage = true;
 
-    protected DefaultMultiLayerEditor layerManager;
 
-    protected InteractionHandler interactionHandler;
-    protected ClipboardHandler clipboardHandler;
-    protected StageDesigner stageDesigner;
-    protected UndoRedoHandler undoRedoHandler;
-    protected Validator validator;
-    protected SelectionHandler selectionHandler;
-    protected GroupingHandler groupingHandler;
+	protected DefaultMultiLayerEditor layerManager;
 
-    public DefaultGraphDocument() {
 
-        this(new GraphDocumentBindingModule());
-    }
 
-    public DefaultGraphDocument(GraphDocumentBindingModule module) {
+	@Inject
+	protected StageDesigner stageDesigner;
+	@Inject
+	protected UndoRedoHandler undoRedoHandler;
+	@Inject
+	protected Validator validator;
 
-        layerManager = new DefaultMultiLayerEditor();
 
-        injector = Guice.createInjector(module);
 
-        // create components shared by all graph editors
-        interactionHandler = injector.getInstance(InteractionHandler.class);
-        clipboardHandler = injector.getInstance(ClipboardHandler.class);
-        undoRedoHandler = injector.getInstance(UndoRedoHandler.class);
-        validator = injector.getInstance(Validator.class);
-        selectionHandler = injector.getInstance(SelectionHandler.class);
-        groupingHandler = injector.getInstance(GroupingHandler.class);
-        stageDesigner = injector.getInstance(StageDesigner.class);
-        stageDesigner.addViewListener(viewListener);
-        createNewLayer(0);
+	public DefaultGraphDocument() {
 
-        updateView = true;
-    }
 
-    @PostConstruct
-    protected void initProperties() {
+		layerManager = new DefaultMultiLayerEditor();
+		stageDesigner.addViewListener(viewListener);
 
-        // PropertyList pl = interactionHandler.getProperties();
-        // pl = PropertyUtil.setProperty(pl, PropertyConstants.GRAPH_PROPERTY_INNER_MARGIN, 2);
-        // pl = PropertyUtil.setProperty(pl, PropertyConstants.GRAPH_PROPERTY_FIT_TO_CONTENT, false);
-        // pl = PropertyUtil.setProperty(pl, PropertyConstants.GRAPH_PROPERTY_CONTENT_SELECTABEL, true);
-        // pl = PropertyUtil.setProperty(pl, PropertyConstants.GRAPH_PROPERTY_CONTENT_MOVABLE, true);
-        // PropertyUtil.makeVisible(pl, PropertyConstants.GRAPH_PROPERTY_FIT_TO_CONTENT, false);
-        // interactionHandler.setProperties(pl);
-    }
 
-    @Override
-    public PropertyList getProperties() {
+		// create components shared by all graph editors
+		createNewLayer(0);
 
-        properties = PropertyUtil.setProperty(properties, PropertyConstants.DOCUMENT_PROPERTY_ZOOM, 100);
-        properties = PropertyUtil.setProperty(properties, PropertyConstants.DOCUMENT_PROPERTY_X_SCROLL, 0);
-        properties = PropertyUtil.setProperty(properties, PropertyConstants.DOCUMENT_PROPERTY_Y_SCROLL, 0);
-        return properties.deepCopy();
-    }
+		updateView = true;
+	}
 
-    @Override
-    public void setProperties(PropertyList properties) {
+	@PostConstruct
+	protected void initProperties() {
 
-        this.properties = properties;
-    }
+		// PropertyList pl = interactionHandler.getProperties();
+		// pl = PropertyUtil.setProperty(pl,
+		// PropertyConstants.GRAPH_PROPERTY_INNER_MARGIN, 2);
+		// pl = PropertyUtil.setProperty(pl,
+		// PropertyConstants.GRAPH_PROPERTY_FIT_TO_CONTENT, false);
+		// pl = PropertyUtil.setProperty(pl,
+		// PropertyConstants.GRAPH_PROPERTY_CONTENT_SELECTABEL, true);
+		// pl = PropertyUtil.setProperty(pl,
+		// PropertyConstants.GRAPH_PROPERTY_CONTENT_MOVABLE, true);
+		// PropertyUtil.makeVisible(pl,
+		// PropertyConstants.GRAPH_PROPERTY_FIT_TO_CONTENT, false);
+		// interactionHandler.setProperties(pl);
+	}
 
-    //
-    // @Override
-    // public long getID() {
-    //
-    // return ??;
-    // }
+	@Override
+	public PropertyList getProperties() {
 
-    @Override
-    public void selectLayer(int id) {
+		properties = PropertyUtil.setProperty(properties, PropertyConstants.DOCUMENT_PROPERTY_ZOOM, 100);
+		properties = PropertyUtil.setProperty(properties, PropertyConstants.DOCUMENT_PROPERTY_X_SCROLL, 0);
+		properties = PropertyUtil.setProperty(properties, PropertyConstants.DOCUMENT_PROPERTY_Y_SCROLL, 0);
+		return properties.deepCopy();
+	}
 
-        layerManager.selectLayer(id);
-    }
+	@Override
+	public void setProperties(PropertyList properties) {
 
-    @Override
-    public Layer getCurrentLayer() {
+		this.properties = properties;
+	}
 
-        return layerManager.getSelectedLayer();
-    }
+	//
+	// @Override
+	// public long getID() {
+	//
+	// return ??;
+	// }
 
-    @Override
-    public Layer createNewLayer(int id) {
+	@Override
+	public void selectLayer(int id) {
 
-        VisualGraph graphViewer = injector.getInstance(VisualGraph.class);
+		layerManager.selectLayer(id);
+	}
 
-        graphViewer.addGraphViewListener(graphViewListener);
+	@Override
+	public Layer getCurrentLayer() {
 
-        graphViewer.fireEvents(fireEvents);
+		return layerManager.getSelectedLayer();
+	}
 
-        return layerManager.addLayer(id, graphViewer);
-    }
+	@Override
+	public Layer createNewLayer(int id) {
 
-    @Override
-    public Layer getLayer(int id) {
+		VisualGraph graphViewer = injector.getInstance(VisualGraph.class);
 
-        return layerManager.getLayer(id);
-    }
+		graphViewer.addGraphViewListener(graphViewListener);
 
-    @Override
-    public void removeLayer(int id) {
+		graphViewer.fireEvents(fireEvents);
 
-        layerManager.removeLayer(id);
-    }
+		return layerManager.addLayer(id, graphViewer);
+	}
 
-    @Override
-    public Layer[] getLayers() {
+	@Override
+	public Layer getLayer(int id) {
 
-        return layerManager.getLayers();
-    }
+		return layerManager.getLayer(id);
+	}
 
-    @Override
-    public VisualGraph getGraphView() {
+	@Override
+	public void removeLayer(int id) {
 
-        final Layer currentLayer = getCurrentLayer();
-        return currentLayer.getGraphView();
-    }
+		layerManager.removeLayer(id);
+	}
 
-    @Override
-    public void enableImageBuffering(boolean enable) {
+	@Override
+	public Layer[] getLayers() {
 
-        enableImageBuffering = enable;
-    }
+		return layerManager.getLayers();
+	}
 
-    @Override
-    public ClipboardHandler getClipboardHandler() {
+	@Override
+	public VisualGraph getGraphView() {
 
-        return clipboardHandler;
-    }
+		final Layer currentLayer = getCurrentLayer();
+		return currentLayer.getGraphView();
+	}
 
-    @Override
-    public InteractionHandler getInteractionHandler() {
+	@Override
+	public void enableImageBuffering(boolean enable) {
 
-        return interactionHandler;
-    }
+		enableImageBuffering = enable;
+	}
 
-    @Override
-    public SelectionHandler getSelectionHandler() {
 
-        return selectionHandler;
-    }
 
-    @Override
-    public GroupingHandler getGroupingHandler() {
 
-        return groupingHandler;
-    }
 
-    @Override
-    public boolean keyPressed(int keyChar, int keyCode) {
+	// ///////////////////////////////
+	// notifiying interaction listener
+	//
+	// protected List<InteractionClientListener> interactionListener = new
+	// ArrayList<InteractionClientListener>();
+	//
+	//
+	// @Override
+	// public void addInteractionListener(InteractionClientListener listener) {
+	// if (!interactionListener.contains(listener))
+	// interactionListener.add(listener);
+	// }
+	// @Override
+	// public void removeInteractionListener(InteractionClientListener listener)
+	// {
+	//
+	// interactionListener.remove(listener);
+	// }
 
-        return interactionHandler.keyPressed(keyChar, keyCode);
+	//
+	// @Override
+	// public void interactionModeChanged(int oldMode, int newMode) {
+	// for (InteractionClientListener l : interactionListener) {
+	// l.interactionModeChanged(oldMode, newMode);
+	// }
+	// fireViewChanged();
+	// }
 
-    }
+	// /////////////////////////////////////////////////
 
-    @Override
-    public boolean keyReleased(int keyChar, int keyCode) {
+	@Override
+	public void render(Device device, Rectangle visibleScreenRect, Resolution resolution) {
 
-        return interactionHandler.keyReleased(keyChar, keyCode);
-    }
+		if (!updateView) {
+			return;
+		}
 
-    @Override
-    public boolean mouseDoubleClicked(Point pt, int button, int functionKey) {
+		// context.clippingArea = transform.toGraph(visibleScreenRect);
 
-        return interactionHandler.mouseDoubleClicked(pt, button, functionKey);
-    }
+		stageDesigner.paintBackground(device, visibleScreenRect, resolution);
 
-    @Override
-    public boolean mouseDragged(Point pt, int button, int functionKey) {
+		final VisualGraph gv = getGraphView();
+		// keep always the main graph view fit to the screen
+		gv.setBounds(visibleScreenRect);
+		gv.enableImageBuffering(enableImageBuffering);
+		gv.useSVGEmbeddedImage(useSVGEmbeddedImage);
 
-        return interactionHandler.mouseDragged(pt, button, functionKey);
-    }
+		RenderingContext context = new RenderingContext(resolution, Subject.OBJECT, true);
+		gv.drawContent(device, context);
 
-    @Override
-    public boolean mouseMoved(Point pt, int button, int functionKey) {
+		stageDesigner.paintOnTop(device, visibleScreenRect, resolution);
+	}
 
-        return interactionHandler.mouseMoved(pt, button, functionKey);
-    }
+	@Override
+	public String getSVGDocument(Device device, RenderingContext context, double scale) {
 
-    @Override
-    public boolean mousePressed(Point pt, int button, int functionKey) {
+		context.subject = Subject.OBJECT;
+		return getGraphView().getSVGDocument(device, context, false, scale);
+	}
 
-        return interactionHandler.mousePressed(pt, button, functionKey);
-    }
+	@Override
+	public Rectangle getDocumentBoundary() {
 
-    @Override
-    public boolean mouseReleased(Point pt, int button, int functionKey) {
+		Rectangle r;
+		if (stageDesigner.getViewMode() == ViewMode.page) {
+			r = stageDesigner.getDocumentBoundary();
+			r.grow(0, 50);
+		} else {
+			r = getGraphView().getExtendedBoundary();
+		}
 
-        return interactionHandler.mouseReleased(pt, button, functionKey);
-    }
+		// r.grow(MARGIN, MARGIN);
 
-    @Override
-    public boolean isInteracting() {
+		if (stageDesigner.isRulerVisible()) {
+			int rulerSize = stageDesigner.getRulerSize();
+			r.x -= rulerSize;
+			r.y -= rulerSize;
+			r.width += rulerSize;
+			r.height += rulerSize;
+		}
+		return r;
+	}
 
-        return interactionHandler.isInteracting();
-    }
+	@Override
+	public void print(Device device, Rectangle rPage, Transformer t) {
 
-    @Override
-    public void cancelInteraction() {
+		Transformer currentTransform = getGraphView().getTransform();
+		getGraphView().setTransform(t);
+		try {
+			RenderingContext context = new RenderingContext(RenderingContext.Resolution.SCREEN, Subject.OBJECT, false);
+			context.subject = Subject.OBJECT;
 
-        interactionHandler.cancelInteraction();
-    }
+			// context.clippingArea = transform.toGraph(rPage);
 
-    @Override
-    public void terminateInteraction() {
+			getGraphView().drawContent(device, context);
 
-        interactionHandler.cancelInteraction();
-    }
+		} finally {
 
-    @Override
-    public int getPreferredCursor() {
+			getGraphView().setTransform(currentTransform);
+		}
 
-        return interactionHandler.getPreferredCursor();
-    }
+	}
 
-    // ///////////////////////////////
-    // notifiying interaction listener
-    //
-    // protected List<InteractionClientListener> interactionListener = new ArrayList<InteractionClientListener>();
-    //
-    //
-    // @Override
-    // public void addInteractionListener(InteractionClientListener listener) {
-    // if (!interactionListener.contains(listener))
-    // interactionListener.add(listener);
-    // }
-    // @Override
-    // public void removeInteractionListener(InteractionClientListener listener) {
-    //
-    // interactionListener.remove(listener);
-    // }
+	@Override
+	public StageDesigner getStageDesigner() {
 
-    //
-    // @Override
-    // public void interactionModeChanged(int oldMode, int newMode) {
-    // for (InteractionClientListener l : interactionListener) {
-    // l.interactionModeChanged(oldMode, newMode);
-    // }
-    // fireViewChanged();
-    // }
+		return stageDesigner;
+	}
 
-    // /////////////////////////////////////////////////
+	@Override
+	public void registerInplaceTextEditor(InplaceTextditor editor) {
 
-    @Override
-    public void render(Device device, Rectangle visibleScreenRect, Resolution resolution) {
+		InplaceEdtiorService.registerEditor(editor);
+	}
 
-        if (!updateView) {
-            return;
-        }
+	@Override
+	public void setBackground(String svgBackgroundID) {
 
-        // context.clippingArea = transform.toGraph(visibleScreenRect);
+		getGraphView().setBackground(svgBackgroundID);
+		fireViewChanged();
+	}
 
-        stageDesigner.paintBackground(device, visibleScreenRect, resolution);
+	@Override
+	public void setFilter(String svgFilterID) {
 
-        final VisualGraph gv = getGraphView();
-        // keep always the main graph view fit to the screen
-        gv.setBounds(visibleScreenRect);
-        gv.enableImageBuffering(enableImageBuffering);
-        gv.useSVGEmbeddedImage(useSVGEmbeddedImage);
+		interactionHandler.setFilter(svgFilterID);
+		fireViewChanged();
+	}
 
-        RenderingContext context = new RenderingContext(resolution, Subject.OBJECT, true);
-        gv.drawContent(device, context);
+	@Override
+	public void setTransformation(String svgTransformID) {
 
-        stageDesigner.paintOnTop(device, visibleScreenRect, resolution);
-    }
+		interactionHandler.svgTransformID(svgTransformID);
+		fireViewChanged();
+	}
 
-    @Override
-    public String getSVGDocument(Device device, RenderingContext context, double scale) {
 
-        context.subject = Subject.OBJECT;
-        return getGraphView().getSVGDocument(device, context, false, scale);
-    }
 
-    @Override
-    public Rectangle getDocumentBoundary() {
 
-        Rectangle r;
-        if (stageDesigner.getViewMode() == ViewMode.page) {
-            r = stageDesigner.getDocumentBoundary();
-            r.grow(0, 50);
-        } else {
-            r = getGraphView().getExtendedBoundary();
-        }
 
-        // r.grow(MARGIN, MARGIN);
 
-        if (stageDesigner.isRulerVisible()) {
-            int rulerSize = stageDesigner.getRulerSize();
-            r.x -= rulerSize;
-            r.y -= rulerSize;
-            r.width += rulerSize;
-            r.height += rulerSize;
-        }
-        return r;
-    }
+	// //////////////////////////////////////////////////////////////
+	// ////// Events
 
-    @Override
-    public void print(Device device, Rectangle rPage, Transformer t) {
+	@Override
+	public void fireEvents(boolean enabled) {
 
-        Transformer currentTransform = getGraphView().getTransform();
-        getGraphView().setTransform(t);
-        try {
-            RenderingContext context = new RenderingContext(RenderingContext.Resolution.SCREEN, Subject.OBJECT, false);
-            context.subject = Subject.OBJECT;
+		fireEvents = enabled;
+		getGraphView().fireEvents(enabled);
+	}
 
-            // context.clippingArea = transform.toGraph(rPage);
+	@Override
+	public boolean isFiringEvents() {
 
-            getGraphView().drawContent(device, context);
+		return fireEvents;
+	}
 
-        } finally {
+	@Override
+	public void setUpdateView(boolean update) {
 
-            getGraphView().setTransform(currentTransform);
-        }
+		updateView = update;
+		if (update) {
+			fireViewChanged();
+		}
+	}
 
-    }
+	@Override
+	public boolean getUpdateView() {
 
-    @Override
-    public StageDesigner getStageDesigner() {
+		return updateView;
+	}
 
-        return stageDesigner;
-    }
+	GraphViewListener graphViewListener = new GraphViewAdapter() {
 
-    @Override
-    public void registerInplaceTextEditor(InplaceTextditor editor) {
+		@Override
+		public void graphManipulated(VisualGraph graph) {
 
-        InplaceEdtiorService.registerEditor(editor);
-    }
+			fireGraphManipulated();
+		}
 
-    @Override
-    public void setBackground(String svgBackgroundID) {
+		@Override
+		public void viewChanged(VisualGraph graph) {
 
-        getGraphView().setBackground(svgBackgroundID);
-        fireViewChanged();
-    }
+			fireViewChanged();
+		}
 
-    @Override
-    public void setFilter(String svgFilterID) {
+		@Override
+		public void graphExpansionChanged(VisualGraph graph, Rectangle newExpansion) {
 
-        interactionHandler.setFilter(svgFilterID);
-        fireViewChanged();
-    }
+			fireGraphExpansionChanged(newExpansion);
+		}
 
-    @Override
-    public void setTransformation(String svgTransformID) {
+	};
 
-        interactionHandler.svgTransformID(svgTransformID);
-        fireViewChanged();
-    }
+	ViewListener viewListener = new ViewListener() {
 
-    @Override
-    public UndoRedoHandler getUndoRedoHandler() {
+		@Override
+		public void viewModeChanged() {
 
-        return undoRedoHandler;
+			fireGraphExpansionChanged(getDocumentBoundary());
+		}
 
-    }
+	};
 
-    // //////////////////////////////////////////////////////////////
-    // ////// Events
+	@Override
+	public void addGraphViewListener(GraphViewListener listener) {
 
-    @Override
-    public void fireEvents(boolean enabled) {
+		getGraphView().addGraphViewListener(listener);
+	}
 
-        fireEvents = enabled;
-        getGraphView().fireEvents(enabled);
-    }
+	@Override
+	public void removeGraphViewListener(GraphViewListener listener) {
 
-    @Override
-    public boolean isFiringEvents() {
+		getGraphView().removeGraphViewListener(listener);
+	}
 
-        return fireEvents;
-    }
+	protected List<GraphDocumentListener> graphDocumentListener = new ArrayList<GraphDocumentListener>();
 
-    @Override
-    public void setUpdateView(boolean update) {
+	@Override
+	public void addGraphDocumentListener(GraphDocumentListener listener) {
 
-        updateView = update;
-        if (update) {
-            fireViewChanged();
-        }
-    }
+		if (!graphDocumentListener.contains(listener)) {
+			graphDocumentListener.add(listener);
+		}
+	}
 
-    @Override
-    public boolean getUpdateView() {
+	@Override
+	public void removeGraphDocumentListener(GraphDocumentListener listener) {
 
-        return updateView;
-    }
+		graphDocumentListener.remove(listener);
+	}
 
-    GraphViewListener graphViewListener = new GraphViewAdapter() {
-        @Override
-        public void graphManipulated(VisualGraph graph) {
+	protected void fireViewChanged() {
 
-            fireGraphManipulated();
-        }
+		if (updateView) {
+			for (GraphDocumentListener l : graphDocumentListener) {
+				l.viewChanged();
+			}
+		}
+	}
 
-        @Override
-        public void viewChanged(VisualGraph graph) {
+	protected void fireGraphManipulated() {
 
-            fireViewChanged();
-        }
+		if (updateView) {
+			for (GraphDocumentListener l : graphDocumentListener) {
+				l.graphManipulated();
+			}
+		}
+	}
 
-        @Override
-        public void graphExpansionChanged(VisualGraph graph, Rectangle newExpansion) {
+	protected void fireGraphExpansionChanged(Rectangle r) {
 
-            fireGraphExpansionChanged(newExpansion);
-        }
+		for (GraphDocumentListener l : graphDocumentListener) {
+			l.graphExpansionChanged(r);
+		}
+	}
 
-    };
+	@Override
+	public void interactionModeChanged(String previousHandler, String currnetHandler) {
 
-    ViewListener viewListener = new ViewListener() {
+		fireViewChanged();
+	}
 
-        @Override
-        public void viewModeChanged() {
+	@Override
+	public Validator getValidator() {
 
-            fireGraphExpansionChanged(getDocumentBoundary());
-        }
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    };
+	// /////////////////////////////////////////////////////////////////
+	// // Redo / Undo
 
-    @Override
-    public void addGraphViewListener(GraphViewListener listener) {
+	// private static final String SELECTION_CHANGED = "selection changed";
+	// private static final String GROUP = "group";
+	// private static final String UNGROUP = "ungroup";
 
-        getGraphView().addGraphViewListener(listener);
-    }
+	@Override
+	public void undo(Object data) {
 
-    @Override
-    public void removeGraphViewListener(GraphViewListener listener) {
+		// PropertyList pl = (PropertyList) data;
+		//
+		// if (GROUP.equals(pl.getName())) {
+		// groupSelection(pl, true);
+		// } else if (UNGROUP.equals(pl.getName())) {
+		// }
 
-        getGraphView().removeGraphViewListener(listener);
-    }
+	}
 
-    protected List<GraphDocumentListener> graphDocumentListener = new ArrayList<GraphDocumentListener>();
+	@Override
+	public void redo(Object data) {
 
-    @Override
-    public void addGraphDocumentListener(GraphDocumentListener listener) {
+		// PropertyList pl = (PropertyList) data;
+		//
+		// if (GROUP.equals(pl.getName())) {
+		// groupSelection(pl, false);
+		// } else if (UNGROUP.equals(pl.getName())) {
+		// }
+	}
 
-        if (!graphDocumentListener.contains(listener)) {
-            graphDocumentListener.add(listener);
-        }
-    }
-
-    @Override
-    public void removeGraphDocumentListener(GraphDocumentListener listener) {
-
-        graphDocumentListener.remove(listener);
-    }
-
-    protected void fireViewChanged() {
-
-        if (updateView) {
-            for (GraphDocumentListener l : graphDocumentListener) {
-                l.viewChanged();
-            }
-        }
-    }
-
-    protected void fireGraphManipulated() {
-
-        if (updateView) {
-            for (GraphDocumentListener l : graphDocumentListener) {
-                l.graphManipulated();
-            }
-        }
-    }
-
-    protected void fireGraphExpansionChanged(Rectangle r) {
-
-        for (GraphDocumentListener l : graphDocumentListener) {
-            l.graphExpansionChanged(r);
-        }
-    }
-
-    @Override
-    public void interactionModeChanged(String previousHandler, String currnetHandler) {
-
-        fireViewChanged();
-    }
-
-    @Override
-    public Validator getValidator() {
-
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    // /////////////////////////////////////////////////////////////////
-    // // Redo / Undo
-
-    // private static final String SELECTION_CHANGED = "selection changed";
-    // private static final String GROUP = "group";
-    // private static final String UNGROUP = "ungroup";
-
-    @Override
-    public void undo(Object data) {
-
-        // PropertyList pl = (PropertyList) data;
-        //
-        // if (GROUP.equals(pl.getName())) {
-        // groupSelection(pl, true);
-        // } else if (UNGROUP.equals(pl.getName())) {
-        // }
-
-    }
-
-    @Override
-    public void redo(Object data) {
-
-        // PropertyList pl = (PropertyList) data;
-        //
-        // if (GROUP.equals(pl.getName())) {
-        // groupSelection(pl, false);
-        // } else if (UNGROUP.equals(pl.getName())) {
-        // }
-    }
-
-    //
-    // void registerGroupingSelection(String graphviewToUse){
-    // if (undoService.undoRedoInProcess())
-    // return;
-    // PropertyList data = new DefaultPropertyList(GROUP);
-    // data.add(new DefaultPropertyUnit("name", graphviewToUse));
-    // undoService.registerAction(this, data);
-    // }
-    //
-    // private void groupSelection(PropertyList pl, boolean undo) {
-    // if(undo){
-    // ungroupSelsection();
-    // }
-    // else{
-    // PropertyUnit p = (PropertyUnit) pl.get("name");
-    // String graphviewToUse = ConvertUtil.object2string(p.getValue());
-    // groupSelection(graphviewToUse);
-    // }
-    // }
+	//
+	// void registerGroupingSelection(String graphviewToUse){
+	// if (undoService.undoRedoInProcess())
+	// return;
+	// PropertyList data = new DefaultPropertyList(GROUP);
+	// data.add(new DefaultPropertyUnit("name", graphviewToUse));
+	// undoService.registerAction(this, data);
+	// }
+	//
+	// private void groupSelection(PropertyList pl, boolean undo) {
+	// if(undo){
+	// ungroupSelsection();
+	// }
+	// else{
+	// PropertyUnit p = (PropertyUnit) pl.get("name");
+	// String graphviewToUse = ConvertUtil.object2string(p.getValue());
+	// groupSelection(graphviewToUse);
+	// }
+	// }
 
 }
