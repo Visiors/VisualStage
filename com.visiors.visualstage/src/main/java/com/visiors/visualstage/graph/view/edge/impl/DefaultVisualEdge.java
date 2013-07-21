@@ -7,13 +7,14 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import com.google.inject.Inject;
 import com.visiors.visualstage.attribute.Attribute;
 import com.visiors.visualstage.graph.view.Constants;
 import com.visiors.visualstage.graph.view.DefaultVisualGraphObject;
 import com.visiors.visualstage.graph.view.edge.EdgePoint;
-import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.edge.Path;
 import com.visiors.visualstage.graph.view.edge.PathChangeListener;
+import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.edge.listener.EdgeViewListener;
 import com.visiors.visualstage.graph.view.graph.VisualGraph;
 import com.visiors.visualstage.graph.view.node.VisualNode;
@@ -22,9 +23,9 @@ import com.visiors.visualstage.graph.view.node.listener.VisualNodeListener;
 import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.renderer.RenderingContext;
 import com.visiors.visualstage.renderer.RenderingContext.Resolution;
-import com.visiors.visualstage.resource.SVGDefinition;
-import com.visiors.visualstage.resource.SVGDefinitionPool;
 import com.visiors.visualstage.stage.interaction.Interactable;
+import com.visiors.visualstage.store.SVDescriptorPool;
+import com.visiors.visualstage.svg.SVGDescriptor;
 
 public class DefaultVisualEdge extends DefaultVisualGraphObject implements VisualEdge, PathChangeListener/*
  * ,
@@ -40,20 +41,23 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 	private int manipulationID;
 	protected Attribute arrtribute;
 	protected PropertyList properties;
-	protected SVGDefinition svgLineDef;
-	protected SVGDefinition svgSelDef;
+	protected SVGDescriptor svgLineDef;
+	protected SVGDescriptor svgSelDef;
 	protected String presentationID;
 	protected String styleID;
 	protected String formID;
 
-	protected DefaultVisualEdge(String name) {
+	@Inject
+	protected SVDescriptorPool svgDescriptorPool; 
 
-		super(name);
+	protected DefaultVisualEdge() {
+
+		this(-1);
 	}
 
-	protected DefaultVisualEdge(String name, long id) {
+	protected DefaultVisualEdge(long id) {
 
-		super(name, id);
+		super(id);
 
 		sourcePortId = DefaultVisualGraphObject.NONE;
 		targetPortId = DefaultVisualGraphObject.NONE;
@@ -63,7 +67,7 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 
 	protected DefaultVisualEdge(VisualEdge edge, long id) {
 
-		super(edge.getName(), id);
+		this(id);
 
 		connect(edge.getSourceNode(), edge.getSourcePortId(), edge.getTargetNode(),
 				edge.getTargetPortId());
@@ -639,8 +643,8 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 		this.presentationID = presentationID;
 		// properties = PropertyUtil.setProperty(properties,
 		// PropertyConstants.EDGE_PROPERTY_PRESENTATION, presentationID);
-		svgLineDef = SVGDefinitionPool.get(presentationID);
-		svgSelDef = SVGDefinitionPool.get(Constants.DEFAULT_EDGE_SELECTION_MARKER);
+		svgLineDef = svgDescriptorPool.get(presentationID);
+		svgSelDef = svgDescriptorPool.get(Constants.DEFAULT_EDGE_SELECTION_MARKER);
 	}
 
 	@Override

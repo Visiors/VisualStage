@@ -27,14 +27,14 @@ public abstract class DefaultVisualGraphObject extends BaseCompositeShape implem
 	// @Inject
 	// protected UndoRedoHandler undoRedoHandler;
 
-	protected DefaultVisualGraphObject(String name) {
+	protected DefaultVisualGraphObject() {
 
-		this(name, -1);
+		this(-1);
 	}
 
-	protected DefaultVisualGraphObject(String name, long id) {
+	protected DefaultVisualGraphObject(long id) {
 
-		super(name, id);
+		super(id);
 		this.properties = new DefaultPropertyList();
 		this.attributes = new DefaultAttribute();
 	}

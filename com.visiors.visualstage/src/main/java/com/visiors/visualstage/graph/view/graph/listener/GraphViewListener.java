@@ -29,13 +29,13 @@ public interface GraphViewListener {
 
 	void nodeBoundaryChangning(VisualNode node);
 
-	void nodeStoppedChangingBoundary(VisualNode node, Rectangle oldBoundary);
+	void nodeStoppedChangingBoundary(VisualNode node, Rectangle previousBoundary);
 
 	public void edgeStartedChangingPath(VisualEdge edge);
 
 	public void edgePathChanging(VisualEdge edge);
 
-	public void edgeStoppedChangingPath(VisualEdge edge, EdgePoint[] oldPath);
+	public void edgeStoppedChangingPath(VisualEdge edge, EdgePoint[] previousPath);
 
 	public void nodeSelectionChanged(VisualNode node);
 
@@ -43,10 +43,10 @@ public interface GraphViewListener {
 
 	public void edgeRemoved(VisualEdge edge);
 
-	public void edgeReassigned(VisualEdge edge, VisualNode oldConnecedNod, int oldPort,
-			boolean sourceNode);
+	public void edgeReassigned(VisualEdge edge, VisualNode previousSourceNode, int previousSourcePort,
+			VisualNode previousTagetNode, int previousTargetPort);
 
-	public void edgePortReassigned(VisualEdge edge, int oldPortID, boolean sourcePortChanged);
+	public void edgePortReassigned(VisualEdge edge, int previousPort, boolean sourcePortChanged);
 
 	public void edgeSelectionChanged(VisualEdge edge);
 

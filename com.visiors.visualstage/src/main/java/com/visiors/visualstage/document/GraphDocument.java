@@ -6,7 +6,7 @@ import com.visiors.visualstage.document.listener.GraphDocumentListener;
 import com.visiors.visualstage.graph.view.graph.VisualGraph;
 import com.visiors.visualstage.graph.view.graph.listener.GraphViewListener;
 import com.visiors.visualstage.handler.Undoable;
-import com.visiors.visualstage.property.PropertyList;
+import com.visiors.visualstage.property.PropertyOwner;
 import com.visiors.visualstage.renderer.Device;
 import com.visiors.visualstage.renderer.RenderingContext;
 import com.visiors.visualstage.renderer.RenderingContext.Resolution;
@@ -14,25 +14,21 @@ import com.visiors.visualstage.stage.ruler.StageDesigner;
 import com.visiors.visualstage.transform.Transformer;
 import com.visiors.visualstage.validation.Validator;
 
-public interface GraphDocument extends MultiLayerDocument, Undoable {
+public interface GraphDocument extends MultiLayerDocument, PropertyOwner, Undoable {
 
-	public String getName();
+	public String getTitle();
 
-	public void setName(String name);
+	public void setTitle(String title);
 
-	public VisualGraph getGraphView();
-
-
-
-	public void useSVGEmbeddedImage(boolean useSVGEmbeddedImage);
+	public VisualGraph getGraph();
 
 	public String getSVGDocument(Device device, RenderingContext context, boolean embeddedingImageAllowed, double scale);
 
 	public void svgTransformID(String svgTransformID);
 
-	StageDesigner getStageDesigner();
+	public StageDesigner getStageDesigner();
 
-	String getSVGDocument(Device device, RenderingContext context, double scale);
+	public String getSVGDocument(Device device, RenderingContext context, double scale);
 
 	public Validator getValidator();
 
@@ -56,13 +52,7 @@ public interface GraphDocument extends MultiLayerDocument, Undoable {
 
 	public void setTransformation(String svgDefID);
 
-	public void setProperties(PropertyList properties);
-
-	public PropertyList getProperties();
-
 	public Rectangle getDocumentBoundary();
-
-	public void registerInplaceTextEditor(InplaceTextditor editor);
 
 	public void addGraphDocumentListener(GraphDocumentListener listener);
 

@@ -9,6 +9,7 @@ import com.visiors.visualstage.graph.view.shape.LayoutData;
 import com.visiors.visualstage.graph.view.shape.Shape;
 import com.visiors.visualstage.graph.view.transform.Transformer;
 import com.visiors.visualstage.property.PropertyList;
+import com.visiors.visualstage.util.PropertyUtil;
 
 public abstract class BaseShape implements Shape {
 
@@ -29,12 +30,12 @@ public abstract class BaseShape implements Shape {
 	protected PropertyList properties;
 	private LayoutData layoutData;
 
-	protected BaseShape(String name) {
+	protected BaseShape() {
 
-		this(name, -1);
+		this(-1);
 	}
 
-	protected BaseShape(String name, long id) {
+	protected BaseShape( long id) {
 
 		if (id == -1) {
 			id = UIDGen.getInstance().getNextId();
@@ -42,7 +43,6 @@ public abstract class BaseShape implements Shape {
 			UIDGen.getInstance().considerExternalId(id);
 		}
 		this.id = id;
-		this.name = name;
 		this.boundary = new Rectangle();
 	}
 
@@ -55,7 +55,7 @@ public abstract class BaseShape implements Shape {
 	@Override
 	public String getName() {
 
-		return name;
+		return (String) PropertyUtil.getProperty(properties, "name");
 	}
 
 	@Override

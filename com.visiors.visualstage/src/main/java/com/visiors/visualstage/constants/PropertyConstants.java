@@ -5,6 +5,7 @@ public class PropertyConstants {
 	public static String XML_HEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 	public static String XML_CHAR_SET = "UTF-8";
 	public static String SEPARATOR = ":";
+	public static String DOCUMENT_PROPERTY_DOCUMENT = "VisualStageDocument";
 	public static String DOCUMENT_PROPERTY_PREFIX = "graphDocument";
 	public static String DOCUMENT_PROPERTY_SETTING = "setting";
 	public static String DOCUMENT_PROPERTY_ZOOM = DOCUMENT_PROPERTY_PREFIX + SEPARATOR
@@ -13,6 +14,10 @@ public class PropertyConstants {
 			+ "setting:x-scroll_pos";
 	public static String DOCUMENT_PROPERTY_Y_SCROLL = DOCUMENT_PROPERTY_PREFIX + SEPARATOR
 			+ "setting:y-scroll_pos";
+
+
+	public static String DOCUMENT_PROPERTY_GRAPH = DOCUMENT_PROPERTY_PREFIX + SEPARATOR
+			+ "setting:graph";
 	public static String NODE_PROPERTY_PREFIX = "node";
 	public static String NODE_PROPERTY_X = NODE_PROPERTY_PREFIX + SEPARATOR + "geomentry:x";
 	public static String NODE_PROPERTY_Y = NODE_PROPERTY_PREFIX + SEPARATOR + "geomentry:y";
@@ -23,7 +28,6 @@ public class PropertyConstants {
 	public static String NODE_PROPERTY_PRESENTATION = NODE_PROPERTY_PREFIX + SEPARATOR
 			+ "presentation";
 	public static String NODE_PROPERTY_STYLE = NODE_PROPERTY_PREFIX + SEPARATOR + "style";
-	public static String NODE_PROPERTY_FORM = NODE_PROPERTY_PREFIX + SEPARATOR + "form";
 	public static String NODE_PROPERTY_NAME = NODE_PROPERTY_PREFIX + SEPARATOR + "name";
 	public static String NODE_PROPERTY_ID = NODE_PROPERTY_PREFIX + SEPARATOR + "id";
 	public static String NODE_PROPERTY_PARENT_ID = NODE_PROPERTY_PREFIX + SEPARATOR + "parent_id";
@@ -38,7 +42,6 @@ public class PropertyConstants {
 	public static String EDGE_PROPERTY_PRESENTATION = EDGE_PROPERTY_PREFIX + SEPARATOR
 			+ "presentation";
 	public static String EDGE_PROPERTY_STYLE = EDGE_PROPERTY_PREFIX + SEPARATOR + "style";
-	public static String EDGE_PROPERTY_FORM = EDGE_PROPERTY_PREFIX + SEPARATOR + "form";
 	public static String EDGE_PROPERTY_SOURCE = EDGE_PROPERTY_PREFIX + SEPARATOR + "source_node";
 	public static String EDGE_PROPERTY_TARGET = EDGE_PROPERTY_PREFIX + SEPARATOR + "target_node";
 	public static String EDGE_PROPERTY_SOURCE_PORT = EDGE_PROPERTY_PREFIX + SEPARATOR
@@ -80,13 +83,9 @@ public class PropertyConstants {
 	public static String NODE_SECTION_TAG = "nodes";
 	public static String EDGE_SECTION_TAG = "edges";
 	public static String SUBGRAPH_SECTION_TAG = "subgraphs";
-	public static String SVG_DEFINITION_SECTION_TAG = "definitions";
-	public static String SVG_FORMS_SECTION_TAG = "forms";
-	public static String SVG_FORM_SECTION_TAG = "form";
 
 	public static String PORTS_PROPERTY = "ports";
 	public static String PORT_PROPERTY = "port";
-	public static String FORM_PROPERTY = "form";
 	public static String FORM_COMPONENT_PROPERTY = "component";
 
 	// PRESENTATION_TAG = "presentation";public static String

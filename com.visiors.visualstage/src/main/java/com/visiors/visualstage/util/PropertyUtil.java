@@ -14,6 +14,8 @@ import com.visiors.visualstage.property.Property;
 import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.property.PropertyUnit;
 import com.visiors.visualstage.property.impl.DefaultPropertyList;
+import com.visiors.visualstage.property.impl.DefaultPropertyUnit;
+import com.visiors.visualstage.property.impl.PropertyType;
 
 public class PropertyUtil {
 
@@ -207,76 +209,76 @@ public class PropertyUtil {
 		}
 		return defaultValue;
 	}
-	//
-	//
-	//	public static PropertyList setProperty(PropertyList pl, String fullPath, int value, String valueRange) {
-	//		return setProperty(pl, fullPath, new Integer(value), PropertyType.INTEGER);
-	//	}
-	//	public static PropertyList setProperty(PropertyList pl, String fullPath, int value) {
-	//		return setProperty(pl, fullPath, new Integer(value), PropertyType.INTEGER);
-	//	}
-	//
-	//	public static PropertyList setProperty(PropertyList pl, String fullPath, long value) {
-	//		return setProperty(pl, fullPath, new Long(value), PropertyType.LONG);
-	//	}
-	//
-	//	public static PropertyList setProperty(PropertyList pl, String fullPath, String value) {
-	//		return setProperty(pl, fullPath, (Object)value, PropertyType.STRING);
-	//	}
-	//
-	//	public static PropertyList setProperty(PropertyList pl, String fullPath, String value, PropertyType type) {
-	//		return setProperty(pl, fullPath, (Object)value, type);
-	//	}
-	//
-	//	public static PropertyList setProperty(PropertyList pl, String fullPath, boolean value) {
-	//		return setProperty(pl, fullPath, new Boolean(value), PropertyType.BOOLEAN);
-	//	}
-	//
-	//	public static PropertyList setProperty(PropertyList pl, String fullPath, double value) {
-	//		return setProperty(pl, fullPath, new Double(value), PropertyType.DOUBLE);
-	//	}
-	//
-	//	public static PropertyList setProperty(PropertyList pl, String fullPath, Object value) {
-	//		return setProperty(pl, fullPath, value, PropertyType.OBJECT);
-	//	}
-	//
-	//	public static PropertyList setProperty(PropertyList root, String fullPath, Object value, PropertyType type) {
-	//
-	//		String name = extractName(fullPath);
-	//		String[] path = extractPath(fullPath);
-	//		PropertyList next = root;
-	//
-	//		// create the property chain according to path if not exists already
-	//		for (int i = 0; i < path.length; i++) {
-	//			if (root == null) {
-	//				root = new DefaultPropertyList(path[0]);
-	//				next = root;
-	//			} else if (!next.getName().equalsIgnoreCase(path[i])) {
-	//				Property li = next.get(path[i]);
-	//				if (li != null) {
-	//					if (isPropertyUnit(li)) {
-	//						throw new IllegalArgumentException(path[i]
-	//								+ " already exists as a PropertyUnit "
-	//								+ "while a PropertyList is expected!");
-	//					}
-	//
-	//					next = (PropertyList) next.get(path[i]);
-	//					continue;
-	//				}
-	//
-	//				// append list
-	//				DefaultPropertyList newList = new DefaultPropertyList(path[i]);
-	//				next.add(newList);
-	//				next = newList;
-	//				// add unit or list
-	//			}
-	//		}
-	//
-	//		insertOrUpdateProperty(next, name, value, type);
-	//
-	//		return root;
-	//
-	//	}
+
+
+	public static PropertyList setProperty(PropertyList pl, String fullPath, int value, String valueRange) {
+		return setProperty(pl, fullPath, new Integer(value), PropertyType.INTEGER);
+	}
+	public static PropertyList setProperty(PropertyList pl, String fullPath, int value) {
+		return setProperty(pl, fullPath, new Integer(value), PropertyType.INTEGER);
+	}
+
+	public static PropertyList setProperty(PropertyList pl, String fullPath, long value) {
+		return setProperty(pl, fullPath, new Long(value), PropertyType.LONG);
+	}
+
+	public static PropertyList setProperty(PropertyList pl, String fullPath, String value) {
+		return setProperty(pl, fullPath, (Object)value, PropertyType.STRING);
+	}
+
+	public static PropertyList setProperty(PropertyList pl, String fullPath, String value, PropertyType type) {
+		return setProperty(pl, fullPath, (Object)value, type);
+	}
+
+	public static PropertyList setProperty(PropertyList pl, String fullPath, boolean value) {
+		return setProperty(pl, fullPath, new Boolean(value), PropertyType.BOOLEAN);
+	}
+
+	public static PropertyList setProperty(PropertyList pl, String fullPath, double value) {
+		return setProperty(pl, fullPath, new Double(value), PropertyType.DOUBLE);
+	}
+
+	public static PropertyList setProperty(PropertyList pl, String fullPath, Object value) {
+		return setProperty(pl, fullPath, value, PropertyType.OBJECT);
+	}
+
+	public static PropertyList setProperty(PropertyList root, String fullPath, Object value, PropertyType type) {
+
+		String name = extractName(fullPath);
+		String[] path = extractPath(fullPath);
+		PropertyList next = root;
+
+		// create the property chain according to path if not exists already
+		for (int i = 0; i < path.length; i++) {
+			if (root == null) {
+				root = new DefaultPropertyList(path[0]);
+				next = root;
+			} else if (!next.getName().equalsIgnoreCase(path[i])) {
+				Property li = next.get(path[i]);
+				if (li != null) {
+					if (isPropertyUnit(li)) {
+						throw new IllegalArgumentException(path[i]
+								+ " already exists as a PropertyUnit "
+								+ "while a PropertyList is expected!");
+					}
+
+					next = (PropertyList) next.get(path[i]);
+					continue;
+				}
+
+				// append list
+				DefaultPropertyList newList = new DefaultPropertyList(path[i]);
+				next.add(newList);
+				next = newList;
+				// add unit or list
+			}
+		}
+
+		insertOrUpdateProperty(next, name, value, type);
+
+		return root;
+
+	}
 
 	public static String[] extractPath(String fullPath) {
 		if (fullPath.indexOf(SEPARATOR) == -1) {
@@ -296,41 +298,41 @@ public class PropertyUtil {
 		return fullPath.substring(n + 1);
 	}
 
-	//
-	//	public static PropertyList insertOrUpdateProperty(PropertyList pl, String name, Object value, PropertyType type) {
-	//
-	//		if (pl == null) {
-	//			throw new IllegalArgumentException("PropertyList must not be null!");
-	//		}
-	//
-	//		Property p = pl.get(name);
-	//		if (p != null) {
-	//			if (isPropertyUnit(pl)) {
-	//				// error
-	//				throw new IllegalArgumentException(name + " already exists as a PropertyUnit "
-	//						+ "while a PropertyList is expected!");
-	//			} else { // update value
-	//				((PropertyUnit) p).setValue(value);
-	//			}
-	//		} else {
-	//			if(value instanceof PropertyList) {
-	//				DefaultPropertyList newList = new DefaultPropertyList(name);
-	//				pl.add(newList);
-	//				newList.add((PropertyList) value);
-	//			} else {
-	//				pl.add(new DefaultPropertyUnit(name, value, type));
-	//			}
-	//		}
-	//		return pl;
-	//	}
-	//
-	//	private static boolean isPropertyList(Property p) {
-	//		return p instanceof PropertyList;
-	//	}
-	//
-	//	private static boolean isPropertyUnit(Property p) {
-	//		return p instanceof PropertyUnit;
-	//	}
+
+	public static PropertyList insertOrUpdateProperty(PropertyList pl, String name, Object value, PropertyType type) {
+
+		if (pl == null) {
+			throw new IllegalArgumentException("PropertyList must not be null!");
+		}
+
+		Property p = pl.get(name);
+		if (p != null) {
+			if (isPropertyUnit(pl)) {
+				// error
+				throw new IllegalArgumentException(name + " already exists as a PropertyUnit "
+						+ "while a PropertyList is expected!");
+			} else { // update value
+				((PropertyUnit) p).setValue(value);
+			}
+		} else {
+			if(value instanceof PropertyList) {
+				DefaultPropertyList newList = new DefaultPropertyList(name);
+				pl.add(newList);
+				newList.add((PropertyList) value);
+			} else {
+				pl.add(new DefaultPropertyUnit(name, value, type));
+			}
+		}
+		return pl;
+	}
+
+	private static boolean isPropertyList(Property p) {
+		return p instanceof PropertyList;
+	}
+
+	private static boolean isPropertyUnit(Property p) {
+		return p instanceof PropertyUnit;
+	}
 
 	public static String toString(List<PropertyList> path, PropertyUnit property ) {
 

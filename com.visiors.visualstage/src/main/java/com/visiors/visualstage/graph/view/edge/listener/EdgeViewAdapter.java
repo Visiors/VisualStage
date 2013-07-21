@@ -27,13 +27,13 @@ public class EdgeViewAdapter implements EdgeViewListener {
 	}
 
 	@Override
-	public void edgeReconnected(VisualEdge edge, VisualNode oldConnecedNode, int oldPortID,
-			boolean sourceNodeChanged) {
+	public void edgeStoppedChangingPath(VisualEdge edge, EdgePoint[] oldPath) {
 
 	}
 
 	@Override
-	public void edgeStoppedChangingPath(VisualEdge edge, EdgePoint[] oldPath) {
+	public void edgeReconnected(VisualEdge edge, VisualNode oldSourceNode, int oldSourcePortID,
+			VisualNode oldTagetNode, int oldTargetPortID) {
 
 	}
 

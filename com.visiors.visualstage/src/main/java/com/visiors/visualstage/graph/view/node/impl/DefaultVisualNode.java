@@ -9,16 +9,17 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import com.google.inject.Inject;
 import com.visiors.visualstage.constants.PropertyConstants;
 import com.visiors.visualstage.graph.view.Constants;
 import com.visiors.visualstage.graph.view.DefaultVisualGraphObject;
-import com.visiors.visualstage.graph.view.VisualGraphObject;
 import com.visiors.visualstage.graph.view.ViewConstants;
+import com.visiors.visualstage.graph.view.VisualGraphObject;
 import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.graph.VisualGraph;
-import com.visiors.visualstage.graph.view.node.VisualNode;
 import com.visiors.visualstage.graph.view.node.Port;
 import com.visiors.visualstage.graph.view.node.PortSet;
+import com.visiors.visualstage.graph.view.node.VisualNode;
 import com.visiors.visualstage.graph.view.node.listener.VisualNodeListener;
 import com.visiors.visualstage.graph.view.shape.Shape;
 import com.visiors.visualstage.property.PropertyList;
@@ -27,9 +28,9 @@ import com.visiors.visualstage.property.impl.DefaultPropertyUnit;
 import com.visiors.visualstage.property.impl.PropertyBinder;
 import com.visiors.visualstage.renderer.RenderingContext;
 import com.visiors.visualstage.renderer.RenderingContext.Resolution;
-import com.visiors.visualstage.resource.SVGDefinition;
-import com.visiors.visualstage.resource.SVGDefinitionPool;
 import com.visiors.visualstage.stage.interaction.Interactable;
+import com.visiors.visualstage.store.SVDescriptorPool;
+import com.visiors.visualstage.svg.SVGDescriptor;
 import com.visiors.visualstage.util.PropertyUtil;
 
 public class DefaultVisualNode extends DefaultVisualGraphObject implements VisualNode{
@@ -50,23 +51,24 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 	private Rectangle oldRect;
 	private boolean illuminatePorts;
 	private int actionMode = DefaultVisualGraphObject.NONE;
-	protected SVGDefinition selDef;
-	protected SVGDefinition portDef;
-	protected SVGDefinition portHLDef;
-	protected SVGDefinition svgDef;
+	protected SVGDescriptor selDef;
+	protected SVGDescriptor portDef;
+	protected SVGDescriptor portHLDef;
+	protected SVGDescriptor svgDef;
 	private PropertyBinder propertyBinder;
-
+	@Inject
+	private SVDescriptorPool svgDescriptorPool;
 	// private final VisualObjectPreviewGenerator previewCreator;
 	// private final List<CachedImage> cachedImage;
 
-	protected DefaultVisualNode(String name) {
+	protected DefaultVisualNode() {
 
-		super(name);
+		this(-1);
 	}
 
-	protected DefaultVisualNode(String name, long id) {
+	protected DefaultVisualNode(long id) {
 
-		super(name, id);
+		super(id);
 
 		/* this.name = name; */
 		this.portSet = new DefaultPortSet();
@@ -80,7 +82,7 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 
 	protected DefaultVisualNode(VisualNode node, long id) {
 
-		this(node.getName(), id);
+		this(id);
 
 		this.setBounds(node.getBounds()); // TODO deep copy
 		this.SetAttributes(node.getAttributes());
@@ -854,29 +856,6 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 
 		switch (context.subject) {
 		case OBJECT:
-			//
-			//			if (false/* useEmbeddedImage */) {
-			//				String imageData = ImageToString((BufferedImage) getPreview(context, null));
-			//				if (imageData != null) {
-			//					final Rectangle b = transformer.transformToScreen(boundary);
-			//					final double tx = transformer.getTranslateX();
-			//					final double ty = transformer.getTranslateY();
-			//					final StringBuffer svg = new StringBuffer();
-			//					svg.append("<image x='");
-			//					svg.append(b.x - tx);
-			//					svg.append("' y='");
-			//					svg.append(b.y - ty);
-			//					svg.append("' width='");
-			//					svg.append(b.width);
-			//					svg.append("' height='");
-			//					svg.append(b.height);
-			//					svg.append("' xlink:href='data:image/png;base64,");
-			//					svg.append(imageData);
-			//					svg.append("'/>");
-			//					return svg.toString();
-			//				}
-			//			}
-
 			return getNodeViewDescriptor(context);
 		case SELECTION_INDICATORS:
 			if (context.resolution == Resolution.SCREEN) {
@@ -894,7 +873,7 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 	// public String[][] getSVGDocumentAttributes() {
 	//
 	// if (svgDef == null) {
-	// svgDef = SVGDefinitionPool.get(presentationID);
+	// svgDef = svgDescriptorPool.get(presentationID);
 	// }
 	// if (svgDef != null) {
 	// return svgDef.getDocumentAttributes();
@@ -925,7 +904,7 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 		final StringBuffer desc = new StringBuffer();
 		if (presentationID != null) {
 			if (svgDef == null) {
-				svgDef = SVGDefinitionPool.get(presentationID);
+				svgDef = svgDescriptorPool.get(presentationID);
 			}
 			if (svgDef != null) {
 				final Rectangle b = transformer.transformToScreen(boundary);
@@ -998,7 +977,7 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 
 		StringBuffer desc = new StringBuffer();
 		if (selDef == null) {
-			selDef = SVGDefinitionPool.get(getSelectionDesriptorID());
+			selDef = svgDescriptorPool.get(getSelectionDesriptorID());
 		}
 		if (selDef != null) {
 			Rectangle b = transformer.transformToScreen(boundary);
@@ -1013,7 +992,7 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 			 * selection markers
 			 */
 			if (svgDef == null) {
-				svgDef = SVGDefinitionPool.get(presentationID);
+				svgDef = svgDescriptorPool.get(presentationID);
 			}
 			if (svgDef != null && !svgDef.keepRatio) {
 				appendSelectionMarkDescriotor(desc, b.x + b.width / 2 - selDef.width / 2, b.y - selDef.height - 2);// N
@@ -1058,7 +1037,7 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 		if (illuminatePorts && portSet != null) {
 
 			if (portDef == null) {
-				portDef = SVGDefinitionPool.get(getPortDesriptorID());
+				portDef = svgDescriptorPool.get(getPortDesriptorID());
 			}
 			if (portDef == null) {
 				System.err
@@ -1088,7 +1067,7 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 	private void appendPortIndicatorDescriotor(StringBuffer desc, double x, double y, boolean highlighted) {
 
 		if (portHLDef == null) {
-			portHLDef = SVGDefinitionPool.get(getPortHighlighingDesriptorID());
+			portHLDef = svgDescriptorPool.get(getPortHighlighingDesriptorID());
 		}
 
 		if (highlighted) {

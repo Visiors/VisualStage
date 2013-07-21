@@ -2,16 +2,17 @@ package com.visiors.visualstage.graph.view.edge.impl.orthogonal;
 
 import java.awt.Point;
 
-import org.apache.batik.ext.awt.image.codec.util.PropertyUtil;
-
-import com.visiors.visualstage.generics.attribute.PropertyList;
-import com.visiors.visualstage.generics.interaction.Interactable;
+import com.visiors.visualstage.constants.Constants;
+import com.visiors.visualstage.constants.GraphStageConstants;
+import com.visiors.visualstage.constants.PropertyConstants;
 import com.visiors.visualstage.graph.view.DefaultVisualGraphObject;
 import com.visiors.visualstage.graph.view.ViewConstants;
 import com.visiors.visualstage.graph.view.edge.VisualEdge;
-import com.visiors.visualstage.graph.view.edge.impl.curved.polyline.PolygonalEdgeView;
-import com.visiors.visualstage.resource.SVGDefinition;
-import com.visiors.visualstage.resource.SVGDefinitionPool;
+import com.visiors.visualstage.graph.view.edge.impl.polyline.PolygonalEdgeView;
+import com.visiors.visualstage.property.PropertyList;
+import com.visiors.visualstage.stage.interaction.Interactable;
+import com.visiors.visualstage.svg.SVGDescriptor;
+import com.visiors.visualstage.util.PropertyUtil;
 
 public class OrthogonalEdge extends PolygonalEdgeView {
 
@@ -27,16 +28,16 @@ public class OrthogonalEdge extends PolygonalEdgeView {
 	private int outputDirection;
 	private int inputDirection;
 	private int manipulationID;
-	protected SVGDefinition svgManDef;
+	protected SVGDescriptor svgManDef;
 
-	public OrthogonalEdge(String name) {
+	public OrthogonalEdge() {
 
-		super(name);
+		super(-1);
 	}
 
 	protected OrthogonalEdge(String name, long id) {
 
-		super(name, id);
+		super(id);
 	}
 
 	protected OrthogonalEdge(VisualEdge edge, long id) {
@@ -48,7 +49,7 @@ public class OrthogonalEdge extends PolygonalEdgeView {
 	protected void init() {
 
 		super.init();
-		svgManDef = SVGDefinitionPool.get(Constants.DEFAULT_EDGE_MANIPULATION_HANDEL);
+		svgManDef = svgDescriptorPool.get(Constants.DEFAULT_EDGE_MANIPULATION_HANDEL);
 
 		properties = PropertyUtil.setProperty(properties, PropertyConstants.EDGE_PROPERTY_TYPE,
 				PropertyConstants.EDGE_PROPERTY_TYPE_ORTHOGONAL);
@@ -76,25 +77,25 @@ public class OrthogonalEdge extends PolygonalEdgeView {
 				if (index != DefaultVisualGraphObject.NONE) {
 					if (index == 0) {
 						manipulationID = OrthogonalEdge.FIRST_EDGE_POINT_INDEX; /*
-																				 * start
-																				 * point
-																				 * hit
-																				 */
+						 * start
+						 * point
+						 * hit
+						 */
 					} else if (index == size - 1) {
 						manipulationID = OrthogonalEdge.LAST_EDGE_POINT_INDEX; /*
-																			    * end
-																			    * point
-																			    * hit
-																			    */
+						 * end
+						 * point
+						 * hit
+						 */
 					} else {
 						manipulationID = OrthogonalEdge.CORNER_POINT_START_INDEX + index; /*
-																						   * one
-																						   * of
-																						   * the
-																						   * corner
-																						   * points
-																						   * hit
-																						   */
+						 * one
+						 * of
+						 * the
+						 * corner
+						 * points
+						 * hit
+						 */
 					}
 				}
 
@@ -103,9 +104,9 @@ public class OrthogonalEdge extends PolygonalEdgeView {
 				if (hitSegmentindex != DefaultVisualGraphObject.NONE) {
 
 					if (altKeyPressed) { /*
-										  * make sure we always hit a segment
-										  * while inserting new points
-										  */
+					 * make sure we always hit a segment
+					 * while inserting new points
+					 */
 						manipulationID = OrthogonalEdge.SEGMENT_START_INDEX + hitSegmentindex;
 					} else if (hitSegmentindex > 0 && hitSegmentindex < size - 2) {
 						Point pt1 = path.getPointAt(hitSegmentindex);

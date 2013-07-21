@@ -40,11 +40,12 @@ public class DefaultGraphDocument implements GraphDocument {
 	private boolean updateView;
 	private PropertyList properties;
 	private boolean enableImageBuffering;
-	private final boolean useSVGEmbeddedImage = true;
+
 
 
 	protected DefaultMultiLayerEditor layerManager;
 
+	private  String title;
 
 
 	@Inject
@@ -56,9 +57,10 @@ public class DefaultGraphDocument implements GraphDocument {
 
 
 
-	public DefaultGraphDocument() {
+	public DefaultGraphDocument(String title) {
 
 
+		this.title = title;
 		layerManager = new DefaultMultiLayerEditor();
 		stageDesigner.addViewListener(viewListener);
 
@@ -67,6 +69,19 @@ public class DefaultGraphDocument implements GraphDocument {
 		createNewLayer(0);
 
 		updateView = true;
+	}
+
+
+	@Override
+	public String getTitle() {
+
+		return title;
+	}
+
+	@Override
+	public void setTitle(String title) {
+
+		this.title = title;
 	}
 
 	@PostConstruct
@@ -151,7 +166,7 @@ public class DefaultGraphDocument implements GraphDocument {
 	}
 
 	@Override
-	public VisualGraph getGraphView() {
+	public VisualGraph getGraph() {
 
 		final Layer currentLayer = getCurrentLayer();
 		return currentLayer.getGraphView();
@@ -208,11 +223,11 @@ public class DefaultGraphDocument implements GraphDocument {
 
 		stageDesigner.paintBackground(device, visibleScreenRect, resolution);
 
-		final VisualGraph gv = getGraphView();
+		final VisualGraph gv = getGraph();
 		// keep always the main graph view fit to the screen
 		gv.setBounds(visibleScreenRect);
 		gv.enableImageBuffering(enableImageBuffering);
-		gv.useSVGEmbeddedImage(useSVGEmbeddedImage);
+
 
 		RenderingContext context = new RenderingContext(resolution, Subject.OBJECT, true);
 		gv.drawContent(device, context);
@@ -224,7 +239,7 @@ public class DefaultGraphDocument implements GraphDocument {
 	public String getSVGDocument(Device device, RenderingContext context, double scale) {
 
 		context.subject = Subject.OBJECT;
-		return getGraphView().getSVGDocument(device, context, false, scale);
+		return getGraph().getSVGDocument(device, context, false, scale);
 	}
 
 	@Override
@@ -235,7 +250,7 @@ public class DefaultGraphDocument implements GraphDocument {
 			r = stageDesigner.getDocumentBoundary();
 			r.grow(0, 50);
 		} else {
-			r = getGraphView().getExtendedBoundary();
+			r = getGraph().getExtendedBoundary();
 		}
 
 		// r.grow(MARGIN, MARGIN);
@@ -253,19 +268,19 @@ public class DefaultGraphDocument implements GraphDocument {
 	@Override
 	public void print(Device device, Rectangle rPage, Transformer t) {
 
-		Transformer currentTransform = getGraphView().getTransform();
-		getGraphView().setTransform(t);
+		Transformer currentTransform = getGraph().getTransform();
+		getGraph().setTransform(t);
 		try {
 			RenderingContext context = new RenderingContext(RenderingContext.Resolution.SCREEN, Subject.OBJECT, false);
 			context.subject = Subject.OBJECT;
 
 			// context.clippingArea = transform.toGraph(rPage);
 
-			getGraphView().drawContent(device, context);
+			getGraph().drawContent(device, context);
 
 		} finally {
 
-			getGraphView().setTransform(currentTransform);
+			getGraph().setTransform(currentTransform);
 		}
 
 	}
@@ -285,7 +300,7 @@ public class DefaultGraphDocument implements GraphDocument {
 	@Override
 	public void setBackground(String svgBackgroundID) {
 
-		getGraphView().setBackground(svgBackgroundID);
+		getGraph().setBackground(svgBackgroundID);
 		fireViewChanged();
 	}
 
@@ -315,7 +330,7 @@ public class DefaultGraphDocument implements GraphDocument {
 	public void fireEvents(boolean enabled) {
 
 		fireEvents = enabled;
-		getGraphView().fireEvents(enabled);
+		getGraph().fireEvents(enabled);
 	}
 
 	@Override
@@ -374,13 +389,13 @@ public class DefaultGraphDocument implements GraphDocument {
 	@Override
 	public void addGraphViewListener(GraphViewListener listener) {
 
-		getGraphView().addGraphViewListener(listener);
+		getGraph().addGraphViewListener(listener);
 	}
 
 	@Override
 	public void removeGraphViewListener(GraphViewListener listener) {
 
-		getGraphView().removeGraphViewListener(listener);
+		getGraph().removeGraphViewListener(listener);
 	}
 
 	protected List<GraphDocumentListener> graphDocumentListener = new ArrayList<GraphDocumentListener>();

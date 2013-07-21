@@ -243,7 +243,7 @@ public class EdgeCreationMode extends BaseInteractionHandler {
 			int p1 = refPort.getID();
 			int p2 = alignPort.getID();
 			GraphEditor f = GraphEditor.instance();
-			createdEdge = f.createEdge();
+			createdEdge = f.createDefaultEdge();
 			if (forward) {
 				createdEdge.setSourceNode(nodeToMate, p1);
 				createdEdge.setTargetNode(draggingNode, p2);

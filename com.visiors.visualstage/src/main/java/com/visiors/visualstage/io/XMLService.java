@@ -16,6 +16,7 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.visiors.visualstage.constants.PropertyConstants;
+import com.visiors.visualstage.exception.XMLDocumentReadException;
 import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.property.PropertyUnit;
 import com.visiors.visualstage.property.impl.DefaultPropertyList;
@@ -96,8 +97,7 @@ public class XMLService {
 		return space.toString();
 	}
 
-	public PropertyList XML2PropertyList(String properties) throws IOException, ParserConfigurationException,
-	SAXException {
+	public PropertyList XML2PropertyList(String properties){
 
 		SAXParser parser = null;
 		SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -105,14 +105,20 @@ public class XMLService {
 		DefaultHandler defaultHandler = new XMPParserDefaultHandler();
 		indentLevel = 0;
 
+
+		// Parsing input
 		try {
-			// Parsing input
 			parser = factory.newSAXParser();
 			parser.parse(properties, defaultHandler);
-			return currentPropertyList;
+		} catch (ParserConfigurationException e) {
+			throw new XMLDocumentReadException("Document could not be parsed: ", e );
+		} catch (SAXException e) {
+			throw new XMLDocumentReadException("Document could not be parsed: ", e );
 		} catch (IOException e) {
-			throw new IOException(e.getMessage());
+			throw new XMLDocumentReadException("Document could not be read: ", e );
 		}
+
+		return currentPropertyList;
 	}
 
 	class XMPParserDefaultHandler extends DefaultHandler {

@@ -6,8 +6,13 @@ import java.awt.Rectangle;
 import java.awt.image.ImageObserver;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.visiors.visualstage.constants.PropertyConstants;
 import com.visiors.visualstage.graph.view.Constants;
 import com.visiors.visualstage.graph.view.DefaultVisualGraphObject;
 import com.visiors.visualstage.graph.view.VisualGraphObject;
@@ -21,7 +26,10 @@ import com.visiors.visualstage.graph.view.node.impl.DefaultVisualNode;
 import com.visiors.visualstage.graph.view.node.listener.VisualNodeListener;
 import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.property.PropertyUnit;
+import com.visiors.visualstage.property.impl.DefaultPropertyList;
 import com.visiors.visualstage.renderer.RenderingContext;
+import com.visiors.visualstage.store.ShapeTemplatePool;
+import com.visiors.visualstage.util.PropertyUtil;
 
 public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph, VisualNodeListener, EdgeViewListener
 
@@ -39,19 +47,29 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	protected boolean contentMovable = true;
 	protected boolean contentDeletable = true;;
 
+	@Inject
+	ShapeTemplatePool graphObjectPool;
+
+	@Inject
+	protected Provider<VisualNode> visualNodeProvider;
+	@Inject
+	protected Provider<VisualEdge> visualEdgeProvider;
+	@Inject
+	protected Provider<VisualGraph> visualGraphProvider;
+
 	// private UndoRedoHandler undoRedoHandler;
 	// private SVGDocumentBuilder svgDoc;
 
 	// private Validator validator;
 
-	protected DefaultVisualGraph(String name) {
+	protected DefaultVisualGraph() {
 
-		super(name);
+		this(-1);
 	}
 
-	protected DefaultVisualGraph(String name, long id) {
+	protected DefaultVisualGraph(long id) {
 
-		super(name, id);
+		super(id);
 
 		depot = new Depot(this);
 		// graphViewUndoHelper = new GraphViewUndoHelper(this);
@@ -61,7 +79,7 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 
 	protected DefaultVisualGraph(VisualGraph visualGraph, long id) {
 
-		super(visualGraph.getName(), id);
+		this(id);
 
 		this.setBounds(visualGraph.getBounds());
 		this.SetAttributes(visualGraph.getAttributes());
@@ -82,12 +100,12 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	@Override
 	public void add(VisualGraphObject... graphObjects) {
 
-		for (VisualGraphObject go : graphObjects) {
+		for (final VisualGraphObject go : graphObjects) {
 			if (go instanceof VisualNode) {
 				addNode((VisualNode) go);
 			}
 		}
-		for (VisualGraphObject go : graphObjects) {
+		for (final VisualGraphObject go : graphObjects) {
 			if (go instanceof VisualEdge) {
 				addEdge((VisualEdge) go);
 			}
@@ -99,17 +117,136 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 
 		// undoRedoHandler.stratOfGroupAction();
 
-		for (VisualGraphObject go : graphObjects) {
+		for (final VisualGraphObject go : graphObjects) {
 			if (go instanceof VisualNode) {
 				removeNode((VisualNode) go);
 			}
 		}
-		for (VisualGraphObject go : graphObjects) {
+		for (final VisualGraphObject go : graphObjects) {
 			if (go instanceof VisualEdge) {
 				removeEdge((VisualEdge) go);
 			}
 		}
 		// undoRedoHandler.endOfGroupAction();
+	}
+
+	@Override
+	public VisualNode createNode(long id, String type) {
+
+		if (!graphObjectPool.contains(type)) {
+			throw new IllegalArgumentException("The node '" + type
+					+ "' cannot be created beause the associated template could not be found.  "
+					+ "Please load the node's descriptor, or registere the associated node.");
+		}
+
+		return createNode(graphObjectPool.get(type));
+	}
+
+	@Override
+	public VisualNode createNode(PropertyList properties) {
+
+		final VisualNode visualNode = visualNodeProvider.get();
+		visualNode.setProperties(properties);
+		addNode(visualNode);
+		return visualNode;
+	}
+
+	@Override
+	public VisualEdge createEdge(long id, String type) {
+
+		if (!graphObjectPool.contains(type)) {
+			throw new IllegalArgumentException("The edge '" + type
+					+ "' cannot be created beause the associated template could not be found.  "
+					+ "Please load the edge's descriptor, or registere the associated edge.");
+		}
+		return createEdge(graphObjectPool.get(type));
+	}
+
+	@Override
+	public VisualEdge createEdge(PropertyList properties) {
+
+		final VisualEdge visualEdge = visualEdgeProvider.get();
+		visualEdge.setProperties(properties);
+		addEdge(visualEdge);
+		return visualEdge;
+	}
+
+	@Override
+	public VisualGraph createSubgraph(long id, String type) {
+
+		if (!graphObjectPool.contains(type)) {
+			throw new IllegalArgumentException("The subgraph '" + type
+					+ "' cannot be created beause the associated template could not be found.  "
+					+ "Please load the subgraph's descriptor, or registere the associated object.");
+		}
+
+		return createSubgraph(graphObjectPool.get(type));
+	}
+
+	@Override
+	public VisualGraph createSubgraph(PropertyList properties) {
+
+		final VisualGraph visualGraph = visualGraphProvider.get();
+		visualGraph.setProperties(properties);
+		addNode(visualGraph);
+		return visualGraph;
+	}
+
+	@Override
+	public void createGraphObjects(PropertyList properties) {
+
+		/*
+		 * The Objects' id might change if the stored ids are in use. This map
+		 * keeps track of changed stored ids and the real current ids so the edges can find their connections
+		 */
+		final Map<Long, Long> idMappings = new HashMap<Long, Long>();
+
+		final PropertyList edgesProperties = (PropertyList) properties.get(PropertyConstants.EDGE_SECTION_TAG);
+		final PropertyList nodesProperties = (PropertyList) properties.get(PropertyConstants.NODE_SECTION_TAG);
+		final PropertyList groupsProperties = (PropertyList) properties.get(PropertyConstants.SUBGRAPH_SECTION_TAG);
+
+		if (groupsProperties != null) {
+			for (int i = 0; i < groupsProperties.size(); i++) {
+				final PropertyList graphProperties = (PropertyList) groupsProperties.get(i);
+				final VisualGraph graph = createSubgraph(graphProperties);
+				final long previousID = PropertyUtil.getProperty(graphProperties, PropertyConstants.NODE_PROPERTY_ID,
+						-1L);
+				idMappings.put(previousID, graph.getID());
+			}
+		}
+		if (nodesProperties != null) {
+			for (int i = 0; i < nodesProperties.size(); i++) {
+				final PropertyList nodeProperties = (PropertyList) nodesProperties.get(i);
+				final VisualNode node = createNode(nodeProperties);
+				final long previousID = PropertyUtil.getProperty(nodeProperties, PropertyConstants.NODE_PROPERTY_ID,
+						-1L);
+				idMappings.put(previousID, node.getID());
+			}
+		}
+		if (edgesProperties != null) {
+			for (int i = 0; i < edgesProperties.size(); i++) {
+				final PropertyList edgeProperties = (PropertyList) edgesProperties.get(i);
+				final VisualEdge edge = createEdge(edgeProperties);
+				// connect edge
+				final PropertyUnit source = PropertyUtil.findPropertyUnit(edgeProperties,
+						PropertyConstants.EDGE_PROPERTY_SOURCE);
+				final PropertyUnit target = PropertyUtil.findPropertyUnit(edgeProperties,
+						PropertyConstants.EDGE_PROPERTY_TARGET);
+				final int sourcePort = PropertyUtil.getProperty(edgeProperties,
+						PropertyConstants.EDGE_PROPERTY_SOURCE_PORT, NONE);
+				final int targetPort = PropertyUtil.getProperty(edgeProperties,
+						PropertyConstants.EDGE_PROPERTY_TARGET_PORT, NONE);
+				VisualNode sourceNode = null;
+				VisualNode targetNode = null;
+				if (source != null) {
+					sourceNode = getNode(idMappings.get(source));
+				}
+				if (target != null) {
+					targetNode = getNode(idMappings.get(target));
+				}
+				edge.connect(sourceNode, sourcePort, targetNode, targetPort);
+			}
+		}
 	}
 
 	protected void addNode(VisualNode node) {
@@ -118,19 +255,12 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 			throw new IllegalArgumentException("The node cannot be added into the graph. "
 					+ "Reason: an object with the id " + node.getID() + " already exists.");
 		}
-
 		depot.add(node);
-
 		node.setParentGraph(this);
-
 		node.setTransformer(transformer);
-
-		// node.fireEvents(fireEvents);
-
 		node.addNodeViewListener(this);
-
+		// node.fireEvents(fireEvents);
 		fireNodeAdded(node);
-
 		// graphViewUndoHelper.registerNodeCreation(node);
 	}
 
@@ -138,13 +268,11 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	public void setParentGraph(VisualGraph parentgraph) {
 
 		super.setParentGraph(parentgraph);
-
 		if (parentgraph instanceof DefaultVisualGraph) {
 			eventMediator.setParentView((DefaultVisualGraph) parentgraph);
 		} else {
 			eventMediator.setParentView(null);
 		}
-
 		// properties = PropertyUtil.setProperty(properties,
 		// PropertyConstants.GRAPH_PROPERTY_PARENT_ID,
 		// (parentgraph != null ? parentgraph.getID() : -1));
@@ -155,24 +283,18 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 		depot.remove(node);
 		node.removeNodeViewListener(this);
 		final List<VisualEdge> ies = new ArrayList<VisualEdge>(node.getIncomingEdges());
-		for (VisualEdge e : ies) {
+		for (final VisualEdge e : ies) {
 			e.connect(e.getSourceNode(), e.getSourcePortId(), null, DefaultVisualGraphObject.NONE);
 		}
 		final List<VisualEdge> oes = new ArrayList<VisualEdge>(node.getOutgoingEdges());
-		for (VisualEdge e : oes) {
+		for (final VisualEdge e : oes) {
 			e.connect(null, DefaultVisualGraphObject.NONE, e.getTargetNode(), e.getTargetPortId());
 		}
 		fireNodeRemoved(node);
-
 		// graphViewUndoHelper.registerNodeRemoval(node);
 	}
 
 	protected void addEdge(VisualEdge edge) {
-
-		if (depot.getObject(edge.getID()) != null) {
-			throw new IllegalArgumentException("The edge cannot be added into the graph. "
-					+ "Reason: an object with the id " + edge.getID() + " already exists.");
-		}
 
 		depot.add(edge);
 		edge.setParentGraph(this);
@@ -244,7 +366,7 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	@Override
 	public void clear() {
 
-		VisualGraphObject[] objects = depot.getObjects();
+		final VisualGraphObject[] objects = depot.getObjects();
 		if (objects != null) {
 			remove(objects);
 		}
@@ -261,8 +383,8 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	@Override
 	public List<VisualGraphObject> getSelection() {
 
-		List<VisualGraphObject> selection = new ArrayList<VisualGraphObject>();
-		for (VisualGraphObject vo : getGraphObjects()) {
+		final List<VisualGraphObject> selection = new ArrayList<VisualGraphObject>();
+		for (final VisualGraphObject vo : getGraphObjects()) {
 			if (vo.isSelected()) {
 				selection.add(vo);
 			}
@@ -274,7 +396,7 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	@Override
 	public void setSelection(List<VisualGraphObject> selection) {
 
-		for (VisualGraphObject vo : getGraphObjects()) {
+		for (final VisualGraphObject vo : getGraphObjects()) {
 			vo.setSelected(selection.contains(vo));
 		}
 	}
@@ -282,7 +404,7 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	@Override
 	public void setSelection(VisualGraphObject selection) {
 
-		for (VisualGraphObject vo : getGraphObjects()) {
+		for (final VisualGraphObject vo : getGraphObjects()) {
 			vo.setSelected(vo.equals(selection));
 		}
 	}
@@ -290,7 +412,7 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	@Override
 	public void clearSelection() {
 
-		for (VisualGraphObject vo : getGraphObjects()) {
+		for (final VisualGraphObject vo : getGraphObjects()) {
 			vo.setSelected(false);
 		}
 	}
@@ -300,19 +422,17 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 		// move content
 		if (dx != 0 || dy != 0 && !movingContent) {
 			movingContent = true;
-			VisualGraphObject[] objects = depot.getObjects();
-
-			for (VisualGraphObject vgo : objects) {
+			final VisualGraphObject[] objects = depot.getObjects();
+			for (final VisualGraphObject vgo : objects) {
 				if (!(vgo instanceof VisualNode)) {
 					vgo.move(dx, dy);
 				}
 			}
-			for (VisualGraphObject vgo : objects) {
+			for (final VisualGraphObject vgo : objects) {
 				if ((vgo instanceof VisualNode)) {
 					vgo.move(dx, dy);
 				}
 			}
-
 			movingContent = false;
 		}
 	}
@@ -321,8 +441,8 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	public void startManipulating() {
 
 		super.startManipulating();
-		VisualGraphObject[] objects = depot.getObjects();
-		for (VisualGraphObject vgo : objects) {
+		final VisualGraphObject[] objects = depot.getObjects();
+		for (final VisualGraphObject vgo : objects) {
 			vgo.startManipulating();
 		}
 	}
@@ -330,8 +450,8 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	@Override
 	public void endManipulating() {
 
-		VisualGraphObject[] objects = depot.getObjects();
-		for (VisualGraphObject vgo : objects) {
+		final VisualGraphObject[] objects = depot.getObjects();
+		for (final VisualGraphObject vgo : objects) {
 			vgo.endManipulating();
 		}
 		super.endManipulating();
@@ -390,7 +510,7 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	@Override
 	public int getDepth() {
 
-		VisualGraph parent = getParentGraph();
+		final VisualGraph parent = getParentGraph();
 		return parent == null ? 0 : parent.getDepth() + 1;
 	}
 
@@ -400,7 +520,6 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 		if (parent == null) {
 			return depot.getExpansion();
 		}
-
 		return super.getExtendedBoundary();
 	}
 
@@ -412,23 +531,6 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 		} else {
 			super.setBounds(bounds);
 		}
-	}
-
-	@Override
-	public PropertyList getProperties() {
-
-		// if (properties == null) {
-		// return null;
-		// }
-		//
-		// if (properties.get(PropertyConstants.PORTS_PROPERTY) == null) {
-		// PropertyList portsProperties = portSet.getProperties();
-		// if (portsProperties != null) {
-		// properties.add(portsProperties);
-		// }
-		// }
-		//
-		// return properties.deepCopy();
 	}
 
 	@Override
@@ -475,35 +577,75 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 		// properties.addPropertyListener(this);
 	}
 
-	@Override
-	public void propertyChanged(List<PropertyList> path, PropertyUnit property) {
+	// @Override
+	// public void propertyChanged(List<PropertyList> path, PropertyUnit
+	// property) {
+	//
+	// // try {
+	// // super.propertyChanged(path, property);
+	// // String str = PropertyUtil.toString(path, property);
+	// //
+	// // if (PropertyConstants.GRAPH_PROPERTY_INNER_MARGIN.equals(str)) {
+	// // margin = ConvertUtil.object2int(property.getValue());
+	// // } else if
+	// // (PropertyConstants.GRAPH_PROPERTY_FIT_TO_CONTENT.equals(str)) {
+	// // fitToContent = ConvertUtil.object2boolean(property.getValue());
+	// // } else if
+	// // (PropertyConstants.GRAPH_PROPERTY_CONTENT_SELECTABEL.equals(str)) {
+	// // contentSelectable = ConvertUtil.object2boolean(property.getValue());
+	// // } else if
+	// // (PropertyConstants.GRAPH_PROPERTY_CONTENT_MOVABLE.equals(str)) {
+	// // contentMovable = ConvertUtil.object2boolean(property.getValue());
+	// // } else if
+	// // (PropertyConstants.GRAPH_PROPERTY_CONTENT_DELETABLE.equals(str)) {
+	// // contentDeletable = ConvertUtil.object2boolean(property.getValue());
+	// // } else if (PropertyConstants.GRAPH_PROPERTY_PRESENTATION.equals(str))
+	// // {
+	// // presentationID = ConvertUtil.object2string(property.getValue());
+	// // }
+	// // } catch (Exception e) {
+	// // System.err.println("Error. The value " + property.getValue()
+	// // + "is incompatible with the property " + property.getName());
+	// // }
+	// }
 
-		// try {
-		// super.propertyChanged(path, property);
-		// String str = PropertyUtil.toString(path, property);
-		//
-		// if (PropertyConstants.GRAPH_PROPERTY_INNER_MARGIN.equals(str)) {
-		// margin = ConvertUtil.object2int(property.getValue());
-		// } else if
-		// (PropertyConstants.GRAPH_PROPERTY_FIT_TO_CONTENT.equals(str)) {
-		// fitToContent = ConvertUtil.object2boolean(property.getValue());
-		// } else if
-		// (PropertyConstants.GRAPH_PROPERTY_CONTENT_SELECTABEL.equals(str)) {
-		// contentSelectable = ConvertUtil.object2boolean(property.getValue());
-		// } else if
-		// (PropertyConstants.GRAPH_PROPERTY_CONTENT_MOVABLE.equals(str)) {
-		// contentMovable = ConvertUtil.object2boolean(property.getValue());
-		// } else if
-		// (PropertyConstants.GRAPH_PROPERTY_CONTENT_DELETABLE.equals(str)) {
-		// contentDeletable = ConvertUtil.object2boolean(property.getValue());
-		// } else if (PropertyConstants.GRAPH_PROPERTY_PRESENTATION.equals(str))
-		// {
-		// presentationID = ConvertUtil.object2string(property.getValue());
-		// }
-		// } catch (Exception e) {
-		// System.err.println("Error. The value " + property.getValue()
-		// + "is incompatible with the property " + property.getName());
-		// }
+	@Override
+	public PropertyList getProperties(boolean childrenIncluded) {
+
+		final PropertyList graphProperties = getProperties();
+
+		if (childrenIncluded) {
+			appendChildrenProperties(this, graphProperties);
+		}
+		return graphProperties;
+	}
+
+	private void appendChildrenProperties(VisualGraph visualGraph, PropertyList properties) {
+
+		final PropertyList edgesProperties = new DefaultPropertyList(PropertyConstants.EDGE_SECTION_TAG);
+		final PropertyList nodesProperties = new DefaultPropertyList(PropertyConstants.NODE_SECTION_TAG);
+		final PropertyList subgraphProperties = new DefaultPropertyList(PropertyConstants.SUBGRAPH_SECTION_TAG);
+
+		for (final VisualGraphObject vgo : visualGraph.getGraphObjects()) {
+			if (vgo instanceof VisualGraph) {
+				appendChildrenProperties((VisualGraph) vgo, vgo.getProperties());
+				subgraphProperties.add(subgraphProperties);
+			} else if (vgo instanceof VisualNode) {
+
+				nodesProperties.add(vgo.getProperties());
+			} else if (vgo instanceof VisualEdge) {
+				edgesProperties.add(vgo.getProperties());
+			}
+		}
+		if (edgesProperties.size() != 0) {
+			properties.add(edgesProperties);
+		}
+		if (nodesProperties.size() != 0) {
+			properties.add(nodesProperties);
+		}
+		if (subgraphProperties.size() != 0) {
+			properties.add(subgraphProperties);
+		}
 	}
 
 	@Override
@@ -559,6 +701,7 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 		// PropertyUtil.makeEditable(properties,
 		// PropertyConstants.GRAPH_PROPERTY_NAME, false);
 
+		createGraphObjects(properties);
 	}
 
 	@Override
@@ -612,7 +755,7 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	@Override
 	public String toString() {
 
-		StringBuffer sb = new StringBuffer();
+		final StringBuffer sb = new StringBuffer();
 
 		sb.append("GraphView (").append("id = ").append(getID()).append(", level = ").append(getDepth())
 		.append(", objects = ").append(String.valueOf(getGraphObjects().size())).append(" ]");
@@ -629,39 +772,30 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	@Override
 	public Image getPreview(RenderingContext ctx, ImageObserver observer) {
 
-		Image preview = super.getPreview(ctx, observer);
+		final Image preview = super.getPreview(ctx, observer);
 
 		return preview;
 	}
 
 	@Override
-	public String getViewDescriptor(RenderingContext context/*
-	 * , boolean
-	 * useEmbeddedImage
-	 */, boolean standalone) {
+	public String getViewDescriptor(RenderingContext context, boolean standalone) {
 
-		VisualGraphObject[] objects = depot.getObjects();
+		final VisualGraphObject[] objects = depot.getObjects();
 		if (objects.length == 0) {
-			return super.getViewDescriptor(context/* , useEmbeddedImage */, true);
+			return super.getViewDescriptor(context, true);
 		}
 
 		final StringBuffer svg = new StringBuffer();
-		String subgraphDesc = super.getViewDescriptor(context/*
-		 * ,
-		 * useEmbeddedImage
-		 */, true);
+		final String subgraphDesc = super.getViewDescriptor(context, true);
 		if (subgraphDesc != null) {
 			svg.append(subgraphDesc);
 		}
 
 		svg.append("\n<g>\n");
 
-		for (VisualGraphObject vgo : objects) {
+		for (final VisualGraphObject vgo : objects) {
 
-			String description = vgo.getViewDescriptor(context/*
-			 * ,
-			 * useEmbeddedImage
-			 */, true);
+			final String description = vgo.getViewDescriptor(context , true);
 			if (description != null && !description.isEmpty()) {
 				svg.append(description);
 			}
@@ -693,19 +827,18 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 		visitNodes(this, visitor, preOrder);
 	}
 
-
 	private boolean visitNodes(VisualGraph visualGraph, GraphNodeVisitor visitor, boolean preOrder) {
 
-		List<VisualNode> nodes = visualGraph.getNodes();
+		final List<VisualNode> nodes = visualGraph.getNodes();
 		if (preOrder) {
-			for (VisualGraphObject node : nodes) {
+			for (final VisualGraphObject node : nodes) {
 				if (node instanceof VisualGraph == false) {
 					if (!visitor.visit((VisualNode) node)) {
 						return false;
 					}
 				}
 			}
-			for (VisualGraphObject node : nodes) {
+			for (final VisualGraphObject node : nodes) {
 				if (node instanceof VisualGraph) {
 					if (!visitNodes((VisualGraph) node, visitor, preOrder)) {
 						return false;
@@ -713,14 +846,14 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 				}
 			}
 		} else {
-			for (VisualGraphObject node : nodes) {
+			for (final VisualGraphObject node : nodes) {
 				if (node instanceof VisualGraph) {
 					if (!visitNodes((VisualGraph) node, visitor, preOrder)) {
 						return false;
 					}
 				}
 			}
-			for (VisualGraphObject node : nodes) {
+			for (final VisualGraphObject node : nodes) {
 				if (node instanceof VisualGraph == false) {
 					if (!visitor.visit((VisualNode) node)) {
 						return false;
@@ -731,38 +864,38 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 		return true;
 	}
 
-
-	//	@Override
-	//	public void visitSubgraphs(GraphVisitor visitor, boolean preOrder) {
+	// @Override
+	// public void visitSubgraphs(GraphVisitor visitor, boolean preOrder) {
 	//
-	//		visitSubgraphs(this, visitor, preOrder);
-	//	}
-	//	
-	//	private boolean visitSubgraphs(VisualGraph visualGraph, GraphVisitor visitor, boolean preOrder) {
+	// visitSubgraphs(this, visitor, preOrder);
+	// }
 	//
-	//		List<VisualNode> nodes = visualGraph.getNodes();
-	//		for (VisualGraphObject node : nodes) {
-	//			if (node instanceof VisualGraph) {
-	//				VisualGraph subgraph = (VisualGraph) node;
-	//				if (preOrder) {
-	//					if (!visitor.visit(subgraph)) {
-	//						return false;
-	//					}
-	//					if(!visitSubgraphs(subgraph, visitor, preOrder)) {
-	//						return false;
-	//					}
-	//				} else {
-	//					if(!visitSubgraphs(subgraph, visitor, preOrder)) {
-	//						return false;
-	//					}
-	//					if (!visitor.visit(subgraph)) {
-	//						return false;
-	//					}
-	//				}
-	//			}
-	//		}
-	//		return true;
-	//	}
+	// private boolean visitSubgraphs(VisualGraph visualGraph, GraphVisitor
+	// visitor, boolean preOrder) {
+	//
+	// List<VisualNode> nodes = visualGraph.getNodes();
+	// for (VisualGraphObject node : nodes) {
+	// if (node instanceof VisualGraph) {
+	// VisualGraph subgraph = (VisualGraph) node;
+	// if (preOrder) {
+	// if (!visitor.visit(subgraph)) {
+	// return false;
+	// }
+	// if(!visitSubgraphs(subgraph, visitor, preOrder)) {
+	// return false;
+	// }
+	// } else {
+	// if(!visitSubgraphs(subgraph, visitor, preOrder)) {
+	// return false;
+	// }
+	// if (!visitor.visit(subgraph)) {
+	// return false;
+	// }
+	// }
+	// }
+	// }
+	// return true;
+	// }
 
 	// //
 	// ///////////////////////////////////////////////////////////////////////
@@ -813,7 +946,7 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 		if (!fireEvents) {
 			return;
 		}
-		for (GraphViewListener l : graphViewListener) {
+		for (final GraphViewListener l : graphViewListener) {
 			l.nodeAdded(n);
 		}
 		fireGraphManipulated();
@@ -824,7 +957,7 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 		if (!fireEvents) {
 			return;
 		}
-		for (GraphViewListener l : graphViewListener) {
+		for (final GraphViewListener l : graphViewListener) {
 			l.nodeRemoved(n);
 		}
 		fireGraphManipulated();
@@ -835,7 +968,7 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 		if (!fireEvents) {
 			return;
 		}
-		for (GraphViewListener l : graphViewListener) {
+		for (final GraphViewListener l : graphViewListener) {
 			l.edgeAdded(e);
 		}
 		fireGraphManipulated();
@@ -846,7 +979,7 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 		if (!fireEvents) {
 			return;
 		}
-		for (GraphViewListener l : graphViewListener) {
+		for (final GraphViewListener l : graphViewListener) {
 			l.edgeRemoved(e);
 		}
 		fireGraphManipulated();
@@ -854,14 +987,14 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 
 	protected void fireStartGrouping(VisualGraph group) {
 
-		for (GraphViewListener l : graphViewListener) {
+		for (final GraphViewListener l : graphViewListener) {
 			l.startGrouping(group);
 		}
 	}
 
 	protected void fireEndGrouping(VisualGraph group) {
 
-		for (GraphViewListener l : graphViewListener) {
+		for (final GraphViewListener l : graphViewListener) {
 			l.endGrouping(group);
 		}
 	}
@@ -871,7 +1004,7 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 		if (!fireEvents) {
 			return;
 		}
-		for (GraphViewListener l : graphViewListener) {
+		for (final GraphViewListener l : graphViewListener) {
 			l.graphManipulated(this);
 		}
 		updateView();
@@ -883,7 +1016,7 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 		if (!fireEvents) {
 			return;
 		}
-		for (GraphViewListener l : graphViewListener) {
+		for (final GraphViewListener l : graphViewListener) {
 			l.viewChanged(this);
 		}
 	}
@@ -893,7 +1026,7 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 		if (!fireEvents) {
 			return;
 		}
-		for (GraphViewListener l : graphViewListener) {
+		for (final GraphViewListener l : graphViewListener) {
 			l.graphExpansionChanged(this, newExpansion);
 		}
 	}
@@ -907,7 +1040,7 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 		if (!fireEvents) {
 			return;
 		}
-		for (GraphViewListener l : graphViewListener) {
+		for (final GraphViewListener l : graphViewListener) {
 			l.nodeStartedChangingBoundary(node);
 		}
 	}
@@ -918,20 +1051,20 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 		if (!fireEvents) {
 			return;
 		}
-		for (GraphViewListener l : graphViewListener) {
+		for (final GraphViewListener l : graphViewListener) {
 			l.nodeBoundaryChangning(node);
 		}
 		fireGraphManipulated();
 	}
 
 	@Override
-	public void nodeStoppedChangingBoundary(VisualNode node, Rectangle oldBoundary) {
+	public void nodeStoppedChangingBoundary(VisualNode node, Rectangle previousBoundary) {
 
 		if (!fireEvents) {
 			return;
 		}
-		for (GraphViewListener l : graphViewListener) {
-			l.nodeStoppedChangingBoundary(node, oldBoundary);
+		for (final GraphViewListener l : graphViewListener) {
+			l.nodeStoppedChangingBoundary(node, previousBoundary);
 		}
 		fireGraphManipulated();
 	}
@@ -961,7 +1094,7 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 		if (!fireEvents) {
 			return;
 		}
-		for (GraphViewListener l : graphViewListener) {
+		for (final GraphViewListener l : graphViewListener) {
 			l.nodeSelectionChanged(node);
 		}
 		updateView();
@@ -982,7 +1115,7 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 		if (!fireEvents) {
 			return;
 		}
-		for (GraphViewListener l : graphViewListener) {
+		for (final GraphViewListener l : graphViewListener) {
 			l.edgeStartedChangingPath(edge);
 		}
 	}
@@ -993,35 +1126,35 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 		if (!fireEvents) {
 			return;
 		}
-		for (GraphViewListener l : graphViewListener) {
+		for (final GraphViewListener l : graphViewListener) {
 			l.edgePathChanging(edge);
 		}
 		fireGraphManipulated();
 	}
 
 	@Override
-	public void edgeStoppedChangingPath(VisualEdge edge, EdgePoint[] oldPath) {
+	public void edgeStoppedChangingPath(VisualEdge edge, EdgePoint[] previousPath) {
 
 		if (!fireEvents) {
 			return;
 		}
-		for (GraphViewListener l : graphViewListener) {
-			l.edgeStoppedChangingPath(edge, oldPath);
+		for (final GraphViewListener l : graphViewListener) {
+			l.edgeStoppedChangingPath(edge, previousPath);
 		}
 		fireGraphManipulated();
 	}
 
 	@Override
-	public void edgeReconnected(VisualEdge edge, VisualNode oldSourceNode, int oldSourcePortID,
-			VisualNode oldTagetNode, int oldTargetPortID) {
+	public void edgeReconnected(VisualEdge edge, VisualNode previousSourceNode, int previousSourcePort,
+			VisualNode previousTagetNode, int previousTargetPort) {
 
 		if (!fireEvents) {
 			return;
 		}
-		for (GraphViewListener l : graphViewListener) {
-			l.edgeReassigned(edge, oldConnecedNode, oldPortID, sourceNodeChanged);
+		for (final GraphViewListener l : graphViewListener) {
+			l.edgeReassigned(edge, previousSourceNode, previousSourcePort, previousTagetNode, previousTargetPort);
 		}
-		// graphViewUndoHandler.registerPortReassigned(edge, oldPortID,
+		// graphViewUndoHandler.registerPortReassigned(edge, previousPort,
 		// sourceNodeChanged);
 		fireGraphManipulated();
 	}
@@ -1034,7 +1167,7 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 		if (!fireEvents) {
 			return;
 		}
-		for (GraphViewListener l : graphViewListener) {
+		for (final GraphViewListener l : graphViewListener) {
 			l.edgeSelectionChanged(edge);
 		}
 		updateView();

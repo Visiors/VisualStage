@@ -9,17 +9,44 @@ import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.graph.impl.GraphNodeVisitor;
 import com.visiors.visualstage.graph.view.graph.listener.GraphViewListener;
 import com.visiors.visualstage.graph.view.node.VisualNode;
+import com.visiors.visualstage.property.PropertyList;
 
 public interface VisualGraph extends VisualNode/* , LayoutableGraph */{
 
-
 	/** Traverse through all nodes in the current graph and contained subgraphs */
-	public void visitNodes(GraphNodeVisitor visitor,  boolean preOrder);
+	public void visitNodes(GraphNodeVisitor visitor, boolean preOrder);
 
 	/**
 	 * Removes all nodes and edges from the graph
 	 */
 	public void clear();
+
+	/**
+	 * Creates a new {@link VisualNode} and add it to the graph. by cloning the
+	 * master-node identified by the given <code>name</code>.
+	 * 
+	 * @param type
+	 *            Identifies the node that si to be used as a template for
+	 *            creating the new node.
+	 * @param id
+	 *            The identifier for the new node. The id must be unique within
+	 *            the graph. If the id is -1, an unique id will be assign to
+	 *            automatically .
+	 * @return The created instance of {@link VisualNode}.
+	 */
+	public VisualNode createNode(long id, String type);
+
+	public VisualEdge createEdge(long id, String type);
+
+	public VisualGraph createSubgraph(long id, String type);
+
+	public VisualNode createNode(PropertyList properties);
+
+	public VisualEdge createEdge(PropertyList properties);
+
+	public VisualGraph createSubgraph(PropertyList properties);
+
+	public void createGraphObjects(PropertyList properties);
 
 	/**
 	 * Adds the given graph-objects (edges, nodes) to the graph.
@@ -109,5 +136,7 @@ public interface VisualGraph extends VisualNode/* , LayoutableGraph */{
 	public void addGraphViewListener(GraphViewListener listener);
 
 	public void removeGraphViewListener(GraphViewListener listener);
+
+	public PropertyList getProperties(boolean childrenIncluded);
 
 }

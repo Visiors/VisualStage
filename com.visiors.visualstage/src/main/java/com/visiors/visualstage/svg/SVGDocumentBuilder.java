@@ -8,8 +8,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import com.visiors.visualstage.resource.SVGDefinition;
-import com.visiors.visualstage.resource.SVGDefinitionPool;
+import com.google.inject.Inject;
+import com.visiors.visualstage.store.SVDescriptorPool;
 import com.visiors.visualstage.transform.Transformer;
 
 public class SVGDocumentBuilder {
@@ -22,6 +22,8 @@ public class SVGDocumentBuilder {
 	private final boolean             formated           = true;
 	private int                       groups;
 	private final Map<String, String> documentAttributes = new HashMap<String, String>();
+	@Inject
+	private SVDescriptorPool svgDescriptorPool; 
 
 	public SVGDocumentBuilder() {
 
@@ -100,7 +102,7 @@ public class SVGDocumentBuilder {
 
 				// Transform
 				if (xformID != null) {
-					SVGDefinition def = SVGDefinitionPool.get(xformID);
+					SVGDescriptor def = svgDescriptorPool.get(xformID);
 					String xf = def.getAttribute("transform");
 					if (xf != null) {
 						svg.append(" transform='" + xf + "'");
@@ -173,7 +175,7 @@ public class SVGDocumentBuilder {
 		defTag.append("\n<defs>");
 
 		for (int i = 0; i < usedReferences.size(); i++) {
-			SVGDefinition def = SVGDefinitionPool.get(usedReferences.get(i));
+			SVGDescriptor def = svgDescriptorPool.get(usedReferences.get(i));
 			if (def == null) {
 
 				// System.err.println("Warning: The variable '" + usedReferences.get(i) +
@@ -188,12 +190,12 @@ public class SVGDocumentBuilder {
 		svg.replace(idx, idx + 5, defTag.toString());
 	}
 
-	private void addReferredDefiniton(SVGDefinition def, StringBuilder defs) {
+	private void addReferredDefiniton(SVGDescriptor def, StringBuilder defs) {
 
 		String ref[] = getReferenceIDs(def.definition);
-		SVGDefinition svgdef;
+		SVGDescriptor svgdef;
 		for (String r : ref) {
-			svgdef = SVGDefinitionPool.get(r);
+			svgdef = svgDescriptorPool.get(r);
 			if (svgdef == null) {
 				// System.err.println("SVGDocumentBuilder: Error while building the svg document: id: '" + r +
 				// "' Reason: the reference '" +svgdef+"' does not exists in the definition-pool");

@@ -12,13 +12,13 @@ public abstract class BaseCompositeShape extends BaseShape implements CompositeS
 	protected List<Shape> children;
 	protected CompositeLayout compositeLayout;
 
-	protected BaseCompositeShape(String name) {
+	protected BaseCompositeShape() {
 
-		super(name);
+		super(-1);
 	}
 
-	protected BaseCompositeShape(String name, long id) {
-		super(name, id);
+	protected BaseCompositeShape( long id) {
+		super( id);
 	}
 
 

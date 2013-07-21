@@ -6,24 +6,26 @@ import java.awt.geom.Path2D;
 
 import org.apache.batik.ext.awt.image.codec.util.PropertyUtil;
 
+import com.visiors.visualstage.constants.Constants;
+import com.visiors.visualstage.constants.PropertyConstants;
 import com.visiors.visualstage.graph.view.edge.VisualEdge;
-import com.visiors.visualstage.graph.view.edge.impl.curved.polyline.PolygonalEdgeView;
-import com.visiors.visualstage.resource.SVGDefinition;
-import com.visiors.visualstage.resource.SVGDefinitionPool;
+import com.visiors.visualstage.graph.view.edge.impl.polyline.PolygonalEdgeView;
+import com.visiors.visualstage.svg.SVGDescriptor;
+import com.visiors.visualstage.svg.SVGUtil;
 
 /* The quadratic Bézier curve  */
 public class CurvedPolygonalEdge extends PolygonalEdgeView {
 
-	private SVGDefinition baselineDef;
+	private SVGDescriptor baselineDef;
 
-	public CurvedPolygonalEdge(String name) {
+	public CurvedPolygonalEdge() {
 
-		super(name);
+		super(-1);
 	}
 
-	protected CurvedPolygonalEdge(String name, long id) {
+	protected CurvedPolygonalEdge(long id) {
 
-		super(name, id);
+		super(id);
 	}
 
 	protected CurvedPolygonalEdge(VisualEdge edge, long id) {
@@ -35,7 +37,7 @@ public class CurvedPolygonalEdge extends PolygonalEdgeView {
 	protected void init() {
 
 		super.init();
-		baselineDef = SVGDefinitionPool.get(Constants.DEFAULT_EDGE_BASELINE);
+		baselineDef = svgDescriptorPool.get(Constants.DEFAULT_EDGE_BASELINE);
 
 		properties = PropertyUtil.setProperty(properties, PropertyConstants.EDGE_PROPERTY_TYPE,
 				PropertyConstants.EDGE_PROPERTY_TYPE_CURVED_POLYGONAL);
@@ -53,7 +55,7 @@ public class CurvedPolygonalEdge extends PolygonalEdgeView {
 	protected String getLineDescriptor() {
 
 		if (presentationID != null) {
-			SVGDefinition def = SVGDefinitionPool.get(presentationID);
+			SVGDescriptor def = svgDescriptorPool.get(presentationID);
 			if (def != null) {
 				StringBuffer svg = new StringBuffer();
 				svg.append("<g transform='scale(");

@@ -6,14 +6,16 @@ import java.awt.geom.Path2D;
 
 import org.apache.batik.ext.awt.image.codec.util.PropertyUtil;
 
+import com.visiors.visualstage.constants.PropertyConstants;
 import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.edge.impl.orthogonal.OrthogonalEdge;
-import com.visiors.visualstage.resource.SVGDefinition;
-import com.visiors.visualstage.resource.SVGDefinitionPool;
+import com.visiors.visualstage.svg.SVGDescriptor;
+import com.visiors.visualstage.svg.SVGUtil;
 
 public class CurvedOrthogonalEdge extends OrthogonalEdge {
 
-	private SVGDefinition baselineDef;
+	private SVGDescriptor baselineDef;
+
 
 	public CurvedOrthogonalEdge(String name) {
 
@@ -34,7 +36,7 @@ public class CurvedOrthogonalEdge extends OrthogonalEdge {
 	protected void init() {
 
 		super.init();
-		baselineDef = SVGDefinitionPool.get(Constants.DEFAULT_EDGE_BASELINE);
+		baselineDef = svgDescriptorPool.get(Constants.DEFAULT_EDGE_BASELINE);
 
 		properties = PropertyUtil.setProperty(properties, PropertyConstants.EDGE_PROPERTY_TYPE,
 				PropertyConstants.EDGE_PROPERTY_TYPE_CURVED_ORTHOGONAL);
