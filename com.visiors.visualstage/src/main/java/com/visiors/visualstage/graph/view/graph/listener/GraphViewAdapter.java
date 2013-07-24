@@ -39,11 +39,6 @@ public class GraphViewAdapter implements GraphViewListener {
 
 	}
 
-	@Override
-	public void edgeReassigned(VisualEdge edge, VisualNode oldConnectnode, int oldPortID,
-			boolean sourceNode) {
-
-	}
 
 	@Override
 	public void edgeRemoved(VisualEdge edge) {
@@ -107,6 +102,12 @@ public class GraphViewAdapter implements GraphViewListener {
 
 	@Override
 	public void endGrouping(VisualGraph group) {
+
+	}
+
+	@Override
+	public void edgeReassigned(VisualEdge edge, VisualNode previousSourceNode, int previousSourcePort,
+			VisualNode previousTagetNode, int previousTargetPort) {
 
 	}
 }

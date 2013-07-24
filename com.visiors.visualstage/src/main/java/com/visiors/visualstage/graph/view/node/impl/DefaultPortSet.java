@@ -13,11 +13,13 @@ public class DefaultPortSet implements PortSet {
 
 	protected Port[] ports;
 	protected PropertyList properties;
+	private Positioning positioning;
 
 
 	public DefaultPortSet() {
 
 		this.ports = new DefaultPort[0];
+		positioning = Positioning.FLOATING;
 	}
 
 	public DefaultPortSet(Port[] ports) {
@@ -153,6 +155,18 @@ public class DefaultPortSet implements PortSet {
 			}
 		}
 		return properties;
+	}
+
+	@Override
+	public Positioning getPositioning() {
+
+		return positioning;
+	}
+
+	@Override
+	public void setPositioning(Positioning positioning) {
+
+		this.positioning = positioning;		
 	}
 
 }

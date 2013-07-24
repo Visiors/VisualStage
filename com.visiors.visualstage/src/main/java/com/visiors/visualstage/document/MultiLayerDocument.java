@@ -1,18 +1,22 @@
 package com.visiors.visualstage.document;
 
-import com.visiors.visualstage.stage.layer.Layer;
+import java.util.List;
+
+import com.visiors.visualstage.document.layer.Layer;
 
 public interface MultiLayerDocument {
 
-    public Layer getCurrentLayer();
+	public Layer getCurrentLayer();
 
-    public void selectLayer(int id);
+	public void setActiveLayer(int id);
 
-    public Layer createNewLayer(int id);
+	public Layer createDrawingLayer(int id);
 
-    public void removeLayer(int id);
+	public void removeLayer(int id);
 
-    public Layer getLayer(int id);
+	public Layer getLayer(int id);
 
-    public Layer[] getLayers();
+	public List<Layer> getLayers();
+
+	public int getLayerCount();
 }

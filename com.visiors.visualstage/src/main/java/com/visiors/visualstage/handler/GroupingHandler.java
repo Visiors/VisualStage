@@ -1,7 +1,7 @@
 package com.visiors.visualstage.handler;
 
 
-public interface GroupingHandler extends ScopeAware {
+public interface GroupingHandler extends ScopeAwareHandler {
 
     boolean canGroup();
 

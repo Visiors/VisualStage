@@ -9,8 +9,8 @@ import com.visiors.visualstage.graph.view.DefaultVisualGraphObject;
 import com.visiors.visualstage.graph.view.ViewConstants;
 import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.edge.impl.polyline.PolygonalEdgeView;
+import com.visiors.visualstage.interaction.Interactable;
 import com.visiors.visualstage.property.PropertyList;
-import com.visiors.visualstage.stage.interaction.Interactable;
 import com.visiors.visualstage.svg.SVGDescriptor;
 import com.visiors.visualstage.util.PropertyUtil;
 
@@ -46,9 +46,9 @@ public class OrthogonalEdge extends PolygonalEdgeView {
 	}
 
 	@Override
-	protected void init() {
+	protected void initProperties() {
 
-		super.init();
+		super.initProperties();
 		svgManDef = svgDescriptorPool.get(Constants.DEFAULT_EDGE_MANIPULATION_HANDEL);
 
 		properties = PropertyUtil.setProperty(properties, PropertyConstants.EDGE_PROPERTY_TYPE,

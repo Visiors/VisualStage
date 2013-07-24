@@ -4,7 +4,7 @@ import com.visiors.visualstage.attribute.Attributable;
 import com.visiors.visualstage.graph.CustomData;
 import com.visiors.visualstage.graph.view.graph.VisualGraph;
 import com.visiors.visualstage.graph.view.shape.CompositeShape;
-import com.visiors.visualstage.stage.interaction.Manipulatable;
+import com.visiors.visualstage.interaction.Manipulatable;
 
 /**
  * This interface defines methods that are common in all visual graph objects;

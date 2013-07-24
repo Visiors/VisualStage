@@ -8,7 +8,7 @@ import com.visiors.visualstage.graph.view.DefaultVisualGraphObject;
 import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.edge.impl.DefaultVisualEdge;
 import com.visiors.visualstage.graph.view.node.VisualNode;
-import com.visiors.visualstage.stage.interaction.Interactable;
+import com.visiors.visualstage.interaction.Interactable;
 import com.visiors.visualstage.svg.SVGDescriptor;
 import com.visiors.visualstage.svg.SVGUtil;
 import com.visiors.visualstage.util.PropertyUtil;
@@ -35,9 +35,9 @@ public class PolygonalEdgeView extends DefaultVisualEdge {
 	}
 
 	@Override
-	protected void init() {
+	protected void initProperties() {
 
-		super.init();
+		super.initProperties();
 		properties = PropertyUtil.setProperty(properties, PropertyConstants.EDGE_PROPERTY_TYPE,
 				PropertyConstants.EDGE_PROPERTY_TYPE_POLYGONAL);
 		PropertyUtil.makeEditable(properties, PropertyConstants.EDGE_PROPERTY_TYPE, false);

@@ -1,6 +1,6 @@
 package com.visiors.visualstage.handler.impl;
 
-import com.visiors.visualstage.stage.layer.Layer;
+import com.visiors.visualstage.document.layer.Layer;
 
 public class LayerChangedEvent {
 

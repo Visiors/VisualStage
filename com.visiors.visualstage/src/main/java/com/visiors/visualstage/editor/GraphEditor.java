@@ -10,24 +10,22 @@ import java.util.Map;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.visiors.visualstage.BindingModule;
-import com.visiors.visualstage.GraphEditorBindingModule;
 import com.visiors.visualstage.constants.PropertyConstants;
 import com.visiors.visualstage.document.GraphDocument;
 import com.visiors.visualstage.document.listener.GraphDocumentListener;
 import com.visiors.visualstage.exception.DocumentExistsException;
 import com.visiors.visualstage.exception.DocumentNotFoundException;
 import com.visiors.visualstage.exception.DocumentSaveException;
+import com.visiors.visualstage.export.XMLService;
 import com.visiors.visualstage.handler.ClipboardHandler;
 import com.visiors.visualstage.handler.GroupingHandler;
 import com.visiors.visualstage.handler.SelectionHandler;
 import com.visiors.visualstage.handler.UndoRedoHandler;
-import com.visiors.visualstage.io.XMLService;
+import com.visiors.visualstage.interaction.InteractionHandler;
+import com.visiors.visualstage.interaction.listener.InteractionListener;
+import com.visiors.visualstage.pool.ShapeTemplatePool;
 import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.property.impl.DefaultPropertyList;
-import com.visiors.visualstage.stage.interaction.InteractionHandler;
-import com.visiors.visualstage.stage.interaction.listener.InteractionListener;
-import com.visiors.visualstage.store.ShapeTemplatePool;
 import com.visiors.visualstage.util.PropertyUtil;
 
 public class GraphEditor implements Editor, GraphDocumentListener, InteractionListener {
@@ -161,6 +159,8 @@ public class GraphEditor implements Editor, GraphDocumentListener, InteractionLi
 		return new ArrayList<GraphDocument>(documents.values());
 	}
 
+
+
 	@Override
 	public ShapeTemplatePool getGraphObjectTemplateStore() {
 
@@ -267,7 +267,7 @@ public class GraphEditor implements Editor, GraphDocumentListener, InteractionLi
 
 	@Override
 	public void interactionModeChanged(String previousHandler, String currnetHandler) {
-
+		// update view
 	}
 
 	@Override

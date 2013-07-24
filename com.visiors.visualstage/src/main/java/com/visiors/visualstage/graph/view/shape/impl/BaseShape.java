@@ -7,8 +7,8 @@ import java.awt.Rectangle;
 import com.visiors.visualstage.graph.UIDGen;
 import com.visiors.visualstage.graph.view.shape.LayoutData;
 import com.visiors.visualstage.graph.view.shape.Shape;
-import com.visiors.visualstage.graph.view.transform.Transformer;
 import com.visiors.visualstage.property.PropertyList;
+import com.visiors.visualstage.transform.Transformer;
 import com.visiors.visualstage.util.PropertyUtil;
 
 public abstract class BaseShape implements Shape {

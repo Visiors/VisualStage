@@ -1,7 +1,6 @@
 package com.visiors.visualstage.graph;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.Random;
@@ -95,10 +94,9 @@ public class GraphModel_Test {
 		assertEquals(edgeB.getTargetNode(), nodeC);
 	}
 
-	@Test
+	@Test (timeout = 4000)
 	public void performanceTest() {
 		Random randomGenerator = new Random();
-		long start = System.currentTimeMillis();
 		GraphModel graph = new DefaultGraphModel();
 
 		final int n = 1000000;
@@ -117,10 +115,5 @@ public class GraphModel_Test {
 			edge.setSourceNode(nodes.get(s));
 			edge.setSourceNode(nodes.get(t));
 		}
-
-		long duration = System.currentTimeMillis() - start;
-		System.err.println("Total time for creating " + n + " nodes and " + e + " edges: "
-				+ duration + " ms");
-		assertTrue(duration < 4000);
 	}
 }

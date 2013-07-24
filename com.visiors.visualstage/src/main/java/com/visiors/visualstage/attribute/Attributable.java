@@ -1,6 +1,5 @@
 package com.visiors.visualstage.attribute;
 
-import com.visiors.visualstage.util.AttributeUtil;
 
 /**
  * This interface defines attributes of visual objects that implements

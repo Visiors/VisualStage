@@ -5,10 +5,13 @@ import com.visiors.visualstage.handler.ClipboardHandler;
 import com.visiors.visualstage.handler.GroupingHandler;
 import com.visiors.visualstage.handler.SelectionHandler;
 import com.visiors.visualstage.handler.UndoRedoHandler;
-import com.visiors.visualstage.stage.interaction.Interactable;
-import com.visiors.visualstage.store.ShapeTemplatePool;
+import com.visiors.visualstage.interaction.Interactable;
+import com.visiors.visualstage.pool.ShapeTemplatePool;
+import com.visiors.visualstage.renderer.Device;
 
 public interface Editor extends Interactable {
+
+	public void addCanvas(Device device);
 
 	public GraphDocument newDocument(String title);
 
@@ -35,6 +38,9 @@ public interface Editor extends Interactable {
 	public UndoRedoHandler getUndoRedoHandler();
 
 	public ClipboardHandler getClipboardHandler();
+
+
+
 
 	// public void registerInplaceTextEditor(InplaceTextditor editor);
 

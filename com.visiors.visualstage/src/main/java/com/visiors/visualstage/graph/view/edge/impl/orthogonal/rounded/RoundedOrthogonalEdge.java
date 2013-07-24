@@ -30,9 +30,9 @@ public class RoundedOrthogonalEdge extends OrthogonalEdge {
 	}
 
 	@Override
-	protected void init() {
+	protected void initProperties() {
 
-		super.init();
+		super.initProperties();
 		properties = PropertyUtil.setProperty(properties, PropertyConstants.EDGE_PROPERTY_TYPE,
 				PropertyConstants.EDGE_PROPERTY_TYPE_CURVED_ORTHOGONAL);
 		PropertyUtil.makeEditable(properties, PropertyConstants.EDGE_PROPERTY_TYPE, false);

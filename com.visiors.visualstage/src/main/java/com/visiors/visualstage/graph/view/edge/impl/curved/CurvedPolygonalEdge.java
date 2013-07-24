@@ -34,9 +34,9 @@ public class CurvedPolygonalEdge extends PolygonalEdgeView {
 	}
 
 	@Override
-	protected void init() {
+	protected void initProperties() {
 
-		super.init();
+		super.initProperties();
 		baselineDef = svgDescriptorPool.get(Constants.DEFAULT_EDGE_BASELINE);
 
 		properties = PropertyUtil.setProperty(properties, PropertyConstants.EDGE_PROPERTY_TYPE,

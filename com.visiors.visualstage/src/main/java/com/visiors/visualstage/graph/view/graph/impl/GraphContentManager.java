@@ -53,9 +53,8 @@ class GraphContentManager {
 	void fitToContent(Rectangle newExpansion) {
 
 		if (newExpansion.isEmpty()) {
-			// graphview.getParent().deleteGraphObject(graphview);
 		} else {
-			newExpansion.grow(graphview.margin, graphview.margin);
+			//			newExpansion.grow(graphview.margin, graphview.margin);
 			graphview.setBounds(newExpansion);
 		}
 	}

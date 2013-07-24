@@ -7,14 +7,14 @@ import com.visiors.visualstage.util.PropertyUtil;
 
 public class StraightEdge extends DefaultVisualEdge {
 
-	public StraightEdge(String name) {
+	public StraightEdge() {
 
-		super(name);
+		super(-1);
 	}
 
-	protected StraightEdge(String name, long id) {
+	protected StraightEdge(long id) {
 
-		super(name, id);
+		super(id);
 	}
 
 	protected StraightEdge(VisualEdge edge, long id) {
@@ -23,12 +23,12 @@ public class StraightEdge extends DefaultVisualEdge {
 	}
 
 	@Override
-	protected void init() {
+	protected void initProperties() {
 
-		super.init();
+		super.initProperties();
 		properties = PropertyUtil.setProperty(properties, PropertyConstants.EDGE_PROPERTY_TYPE,
 				PropertyConstants.EDGE_PROPERTY_TYPE_STRAIGHT);
-		PropertyUtil.makeEditable(properties, PropertyConstants.EDGE_PROPERTY_TYPE, false);
+
 	}
 
 	@Override

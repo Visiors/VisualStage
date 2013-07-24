@@ -6,7 +6,7 @@ import java.io.InputStream;
 import org.apache.commons.io.IOUtils;
 
 import com.visiors.visualstage.constants.PropertyConstants;
-import com.visiors.visualstage.io.XMLService;
+import com.visiors.visualstage.export.XMLService;
 import com.visiors.visualstage.property.Property;
 import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.property.PropertyUnit;

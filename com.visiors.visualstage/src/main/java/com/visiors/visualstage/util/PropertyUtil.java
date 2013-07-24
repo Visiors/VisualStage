@@ -9,7 +9,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
-import com.visiors.visualstage.io.XMLService;
+import com.visiors.visualstage.export.XMLService;
 import com.visiors.visualstage.property.Property;
 import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.property.PropertyUnit;

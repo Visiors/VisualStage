@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.google.inject.Inject;
 import com.visiors.visualstage.document.GraphDocument;
+import com.visiors.visualstage.editor.GraphEditor;
 import com.visiors.visualstage.graph.view.VisualGraphObject;
 import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.graph.VisualGraph;

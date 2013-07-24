@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import com.google.inject.Inject;
-import com.visiors.visualstage.store.SVDescriptorPool;
+import com.visiors.visualstage.pool.SVDescriptorPool;
 import com.visiors.visualstage.transform.Transformer;
 
 public class SVGDocumentBuilder {

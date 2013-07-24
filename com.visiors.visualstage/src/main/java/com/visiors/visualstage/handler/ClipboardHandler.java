@@ -1,7 +1,7 @@
 package com.visiors.visualstage.handler;
 
 
-public interface ClipboardHandler extends ScopeAware {
+public interface ClipboardHandler extends ScopeAwareHandler {
 
     /**
      * Copying is only possible if all objects coming from the same level, i.e. all given object have the same parent

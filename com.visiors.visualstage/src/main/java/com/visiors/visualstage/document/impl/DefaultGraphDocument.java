@@ -10,67 +10,61 @@ import com.google.inject.Inject;
 import com.visiors.visualstage.constants.PropertyConstants;
 import com.visiors.visualstage.document.GraphDocument;
 import com.visiors.visualstage.document.ViewListener;
+import com.visiors.visualstage.document.layer.Layer;
+import com.visiors.visualstage.document.layer.impl.DefaultMultiLayerEditor;
 import com.visiors.visualstage.document.listener.GraphDocumentListener;
+import com.visiors.visualstage.exception.InvalidLayerRemovalException;
 import com.visiors.visualstage.graph.view.graph.VisualGraph;
 import com.visiors.visualstage.graph.view.graph.listener.GraphViewAdapter;
 import com.visiors.visualstage.graph.view.graph.listener.GraphViewListener;
 import com.visiors.visualstage.handler.UndoRedoHandler;
 import com.visiors.visualstage.property.PropertyList;
+import com.visiors.visualstage.property.impl.DefaultPropertyList;
+import com.visiors.visualstage.property.impl.PropertyBinder;
 import com.visiors.visualstage.renderer.Device;
 import com.visiors.visualstage.renderer.RenderingContext;
-import com.visiors.visualstage.renderer.RenderingContext.Resolution;
 import com.visiors.visualstage.renderer.RenderingContext.Subject;
-import com.visiors.visualstage.stage.layer.Layer;
-import com.visiors.visualstage.stage.layer.impl.DefaultMultiLayerEditor;
-import com.visiors.visualstage.stage.ruler.StageDesigner;
-import com.visiors.visualstage.stage.ruler.StageDesigner.ViewMode;
+import com.visiors.visualstage.stage.StageDesigner;
+import com.visiors.visualstage.stage.StageDesigner.ViewMode;
+import com.visiors.visualstage.svg.SVGDocumentBuilder;
 import com.visiors.visualstage.transform.Transformer;
-import com.visiors.visualstage.util.PropertyUtil;
 import com.visiors.visualstage.validation.Validator;
 
 /**
  * This class contains all componets that are shared between all layers
  * 
-
+ * 
  * 
  */
 public class DefaultGraphDocument implements GraphDocument {
 
-	private boolean fireEvents = true;
-	private boolean updateView;
+	// private boolean fireEvents = true;
+
+	private String title;
+	private boolean doDrawing = true;
 	private PropertyList properties;
 	private boolean enableImageBuffering;
 
+	protected SVGDocumentBuilder svgDocumentBuilder = new SVGDocumentBuilder();
+	protected DefaultMultiLayerEditor layerManager = new DefaultMultiLayerEditor();;
 
-
-	protected DefaultMultiLayerEditor layerManager;
-
-	private  String title;
-
-
+	private PropertyBinder propertyBinder;
 	@Inject
 	protected StageDesigner stageDesigner;
 	@Inject
 	protected UndoRedoHandler undoRedoHandler;
 	@Inject
 	protected Validator validator;
-
-
+	private String svgBackgroundId;
+	private String svgFilterId;
+	private String svgTransformId;
 
 	public DefaultGraphDocument(String title) {
 
-
 		this.title = title;
-		layerManager = new DefaultMultiLayerEditor();
 		stageDesigner.addViewListener(viewListener);
-
-
-		// create components shared by all graph editors
-		createNewLayer(0);
-
-		updateView = true;
+		createDrawingLayer(0);
 	}
-
 
 	@Override
 	public String getTitle() {
@@ -87,27 +81,18 @@ public class DefaultGraphDocument implements GraphDocument {
 	@PostConstruct
 	protected void initProperties() {
 
-		// PropertyList pl = interactionHandler.getProperties();
-		// pl = PropertyUtil.setProperty(pl,
-		// PropertyConstants.GRAPH_PROPERTY_INNER_MARGIN, 2);
-		// pl = PropertyUtil.setProperty(pl,
-		// PropertyConstants.GRAPH_PROPERTY_FIT_TO_CONTENT, false);
-		// pl = PropertyUtil.setProperty(pl,
-		// PropertyConstants.GRAPH_PROPERTY_CONTENT_SELECTABEL, true);
-		// pl = PropertyUtil.setProperty(pl,
-		// PropertyConstants.GRAPH_PROPERTY_CONTENT_MOVABLE, true);
-		// PropertyUtil.makeVisible(pl,
-		// PropertyConstants.GRAPH_PROPERTY_FIT_TO_CONTENT, false);
-		// interactionHandler.setProperties(pl);
+		// create the properties definition
+		PropertyList properties = new DefaultPropertyList(PropertyConstants.DOCUMENT_PROPERTY_PREFIX);
+		//		properties.add(new DefaultPropertyUnit(PropertyConstants.DOCUMENT_PROPERTY_ZOOM, getZoom()));
+		//		properties.add(new DefaultPropertyUnit(PropertyConstants.DOCUMENT_PROPERTY_X_SCROLL, getXScrollPosition()));
+		//		properties.add(new DefaultPropertyUnit(PropertyConstants.DOCUMENT_PROPERTY_Y_SCROLL, getYScrollPosition()));
+
+		propertyBinder = new PropertyBinder(this);
 	}
 
 	@Override
 	public PropertyList getProperties() {
-
-		properties = PropertyUtil.setProperty(properties, PropertyConstants.DOCUMENT_PROPERTY_ZOOM, 100);
-		properties = PropertyUtil.setProperty(properties, PropertyConstants.DOCUMENT_PROPERTY_X_SCROLL, 0);
-		properties = PropertyUtil.setProperty(properties, PropertyConstants.DOCUMENT_PROPERTY_Y_SCROLL, 0);
-		return properties.deepCopy();
+		return properties;
 	}
 
 	@Override
@@ -116,17 +101,18 @@ public class DefaultGraphDocument implements GraphDocument {
 		this.properties = properties;
 	}
 
-	//
-	// @Override
-	// public long getID() {
-	//
-	// return ??;
-	// }
 
 	@Override
-	public void selectLayer(int id) {
+	public void setActiveLayer(int id) {
 
-		layerManager.selectLayer(id);
+		final Layer previousActiveLayer = layerManager.getSelectedLayer();
+		if (previousActiveLayer != null) {
+			final VisualGraph visualGraph = previousActiveLayer.getVisualGraph();
+			visualGraph.removeGraphViewListener(graphViewListener);
+		}
+		final Layer newActivelayer = layerManager.selectLayer(id);
+		final VisualGraph visualGraph = newActivelayer.getVisualGraph();
+		visualGraph.addGraphViewListener(graphViewListener);
 	}
 
 	@Override
@@ -136,15 +122,41 @@ public class DefaultGraphDocument implements GraphDocument {
 	}
 
 	@Override
-	public Layer createNewLayer(int id) {
+	public Layer createDrawingLayer(int id) {
 
-		VisualGraph graphViewer = injector.getInstance(VisualGraph.class);
+		final Layer newLayer = layerManager.addLayer(id);
+		setActiveLayer(id);
+		return newLayer;
+	}
 
-		graphViewer.addGraphViewListener(graphViewListener);
+	@Override
+	public void removeLayer(int id) {
 
-		graphViewer.fireEvents(fireEvents);
+		if (layerManager.getLayerCount() == 0) {
+			new InvalidLayerRemovalException("No layer available!");
+		}
+		if (layerManager.getLayerCount() == 1) {
+			new InvalidLayerRemovalException("The only existing layer cannot be removed!");
+		}
 
-		return layerManager.addLayer(id, graphViewer);
+		final Layer layerToRemove = layerManager.getLayer(id);
+		final List<Layer> allLayers = layerManager.getLayers();
+		for (int i = 0, len = allLayers.size(); i < len; i++) {
+			if (allLayers.get(i).getID() == layerToRemove.getID()) {
+				if (i < len - 1) {
+					setActiveLayer(allLayers.get(i + 1).getID());
+				} else {
+					setActiveLayer(allLayers.get(i - 1).getID());
+				}
+			}
+			layerManager.removeLayer(id);
+		}
+	}
+
+	@Override
+	public List<Layer> getLayers() {
+
+		return layerManager.getLayers();
 	}
 
 	@Override
@@ -154,22 +166,17 @@ public class DefaultGraphDocument implements GraphDocument {
 	}
 
 	@Override
-	public void removeLayer(int id) {
+	public int getLayerCount() {
 
-		layerManager.removeLayer(id);
+		return layerManager.getLayerCount();
 	}
 
-	@Override
-	public Layer[] getLayers() {
-
-		return layerManager.getLayers();
-	}
 
 	@Override
 	public VisualGraph getGraph() {
 
 		final Layer currentLayer = getCurrentLayer();
-		return currentLayer.getGraphView();
+		return currentLayer.getVisualGraph();
 	}
 
 	@Override
@@ -179,67 +186,46 @@ public class DefaultGraphDocument implements GraphDocument {
 	}
 
 
+	@Override
+	public void enableDrawing(boolean doDrawing) {
 
+		this.doDrawing = doDrawing;
+		if (doDrawing) {
+			fireViewChanged();
+		}
+	}
 
-
-	// ///////////////////////////////
-	// notifiying interaction listener
-	//
-	// protected List<InteractionClientListener> interactionListener = new
-	// ArrayList<InteractionClientListener>();
-	//
-	//
-	// @Override
-	// public void addInteractionListener(InteractionClientListener listener) {
-	// if (!interactionListener.contains(listener))
-	// interactionListener.add(listener);
-	// }
-	// @Override
-	// public void removeInteractionListener(InteractionClientListener listener)
-	// {
-	//
-	// interactionListener.remove(listener);
-	// }
-
-	//
-	// @Override
-	// public void interactionModeChanged(int oldMode, int newMode) {
-	// for (InteractionClientListener l : interactionListener) {
-	// l.interactionModeChanged(oldMode, newMode);
-	// }
-	// fireViewChanged();
-	// }
 
 	// /////////////////////////////////////////////////
 
 	@Override
-	public void render(Device device, Rectangle visibleScreenRect, Resolution resolution) {
+	public void draw(Device device) {
 
-		if (!updateView) {
+		if (!doDrawing) {
 			return;
 		}
 
 		// context.clippingArea = transform.toGraph(visibleScreenRect);
 
-		stageDesigner.paintBackground(device, visibleScreenRect, resolution);
+		stageDesigner.paintBehind(device);
 
-		final VisualGraph gv = getGraph();
+		final VisualGraph graph = getGraph();
 		// keep always the main graph view fit to the screen
-		gv.setBounds(visibleScreenRect);
-		gv.enableImageBuffering(enableImageBuffering);
+		graph.setBounds(device.getCanvasBounds());
 
+		// graph.enableImageBuffering(enableImageBuffering);
+		final RenderingContext context = new RenderingContext(Subject.OBJECT);
 
-		RenderingContext context = new RenderingContext(resolution, Subject.OBJECT, true);
-		gv.drawContent(device, context);
+		graph.getViewDescriptor(context, device.getResolution());
 
-		stageDesigner.paintOnTop(device, visibleScreenRect, resolution);
+		stageDesigner.paintOnTop(device);
 	}
 
 	@Override
 	public String getSVGDocument(Device device, RenderingContext context, double scale) {
 
 		context.subject = Subject.OBJECT;
-		return getGraph().getSVGDocument(device, context, false, scale);
+		return null;//getGraph().getSVGDocument(device, context, false, scale);
 	}
 
 	@Override
@@ -256,7 +242,7 @@ public class DefaultGraphDocument implements GraphDocument {
 		// r.grow(MARGIN, MARGIN);
 
 		if (stageDesigner.isRulerVisible()) {
-			int rulerSize = stageDesigner.getRulerSize();
+			final int rulerSize = stageDesigner.getRulerSize();
 			r.x -= rulerSize;
 			r.y -= rulerSize;
 			r.width += rulerSize;
@@ -266,22 +252,24 @@ public class DefaultGraphDocument implements GraphDocument {
 	}
 
 	@Override
-	public void print(Device device, Rectangle rPage, Transformer t) {
+	public void print(Device device, Rectangle rPage, Transformer printTransformer) {
 
-		Transformer currentTransform = getGraph().getTransform();
-		getGraph().setTransform(t);
-		try {
-			RenderingContext context = new RenderingContext(RenderingContext.Resolution.SCREEN, Subject.OBJECT, false);
-			context.subject = Subject.OBJECT;
-
-			// context.clippingArea = transform.toGraph(rPage);
-
-			getGraph().drawContent(device, context);
-
-		} finally {
-
-			getGraph().setTransform(currentTransform);
-		}
+		//		final VisualGraph visualGraph = getGraph();
+		//		final Transformer viewTransform = visualGraph.getTransformer();
+		//		visualGraph.setTransformer(printTransformer);
+		//		try {
+		//			final RenderingContext context = new RenderingContext(RenderingContext.Resolution.SCREEN, Subject.OBJECT,
+		//					false);
+		//			context.subject = Subject.OBJECT;
+		//
+		//			// context.clippingArea = transform.toGraph(rPage);
+		//
+		//			visualGraph.drawContent(device, context);
+		//
+		//		} finally {
+		//
+		//			visualGraph.setTransformer(viewTransform);
+		//		}
 
 	}
 
@@ -292,66 +280,36 @@ public class DefaultGraphDocument implements GraphDocument {
 	}
 
 	@Override
-	public void registerInplaceTextEditor(InplaceTextditor editor) {
+	public void setSvgBackground(String svgBackgroundId) {
 
-		InplaceEdtiorService.registerEditor(editor);
-	}
-
-	@Override
-	public void setBackground(String svgBackgroundID) {
-
-		getGraph().setBackground(svgBackgroundID);
+		this.svgBackgroundId = svgBackgroundId;
+		// getGraph().setBackground(svgBackgroundId);
 		fireViewChanged();
 	}
 
 	@Override
-	public void setFilter(String svgFilterID) {
+	public void setSvgFilter(String svgFilterId) {
 
-		interactionHandler.setFilter(svgFilterID);
+		this.svgFilterId = svgFilterId;
+		// interactionHandler.setFilter(svgFilterId);
 		fireViewChanged();
 	}
 
 	@Override
-	public void setTransformation(String svgTransformID) {
+	public void setSvgTransformation(String svgTransformId) {
 
-		interactionHandler.svgTransformID(svgTransformID);
+		this.svgTransformId = svgTransformId;
+		// interactionHandler.svgTransformID(svgTransformId);
 		fireViewChanged();
 	}
-
-
-
-
-
 
 	// //////////////////////////////////////////////////////////////
 	// ////// Events
 
 	@Override
-	public void fireEvents(boolean enabled) {
+	public boolean isDrawingEnabled() {
 
-		fireEvents = enabled;
-		getGraph().fireEvents(enabled);
-	}
-
-	@Override
-	public boolean isFiringEvents() {
-
-		return fireEvents;
-	}
-
-	@Override
-	public void setUpdateView(boolean update) {
-
-		updateView = update;
-		if (update) {
-			fireViewChanged();
-		}
-	}
-
-	@Override
-	public boolean getUpdateView() {
-
-		return updateView;
+		return doDrawing;
 	}
 
 	GraphViewListener graphViewListener = new GraphViewAdapter() {
@@ -416,8 +374,8 @@ public class DefaultGraphDocument implements GraphDocument {
 
 	protected void fireViewChanged() {
 
-		if (updateView) {
-			for (GraphDocumentListener l : graphDocumentListener) {
+		if (doDrawing) {
+			for (final GraphDocumentListener l : graphDocumentListener) {
 				l.viewChanged();
 			}
 		}
@@ -425,8 +383,8 @@ public class DefaultGraphDocument implements GraphDocument {
 
 	protected void fireGraphManipulated() {
 
-		if (updateView) {
-			for (GraphDocumentListener l : graphDocumentListener) {
+		if (doDrawing) {
+			for (final GraphDocumentListener l : graphDocumentListener) {
 				l.graphManipulated();
 			}
 		}
@@ -434,15 +392,9 @@ public class DefaultGraphDocument implements GraphDocument {
 
 	protected void fireGraphExpansionChanged(Rectangle r) {
 
-		for (GraphDocumentListener l : graphDocumentListener) {
+		for (final GraphDocumentListener l : graphDocumentListener) {
 			l.graphExpansionChanged(r);
 		}
-	}
-
-	@Override
-	public void interactionModeChanged(String previousHandler, String currnetHandler) {
-
-		fireViewChanged();
 	}
 
 	@Override

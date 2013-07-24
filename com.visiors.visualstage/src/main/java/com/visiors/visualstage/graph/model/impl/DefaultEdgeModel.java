@@ -3,7 +3,7 @@ package com.visiors.visualstage.graph.model.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.visiors.visualstage.exception.DuplicateIdentifierException;
+import com.visiors.visualstage.exception.IDInvalidException;
 import com.visiors.visualstage.graph.model.EdgeModel;
 import com.visiors.visualstage.graph.model.EdgeModelListener;
 import com.visiors.visualstage.graph.model.NodeModel;
@@ -23,7 +23,7 @@ public class DefaultEdgeModel extends AbstractGraphObject implements EdgeModel {
 	 * Creates a new edge with the given <code>id</code>. The specified
 	 * <code>id</code> must be unique within the entire <code>graph</code>
 	 * hierarchy<br>
-	 * An {@link DuplicateIdentifierException} will be thrown if the given
+	 * An {@link IDInvalidException} will be thrown if the given
 	 * <code>id</code> is not unique.
 	 * 
 	 * @param id

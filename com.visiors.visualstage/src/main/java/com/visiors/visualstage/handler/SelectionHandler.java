@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.visiors.visualstage.graph.view.VisualGraphObject;
 
-public interface SelectionHandler extends ScopeAware {
+public interface SelectionHandler extends ScopeAwareHandler {
 
 	public void setMuliSelectionMode(boolean multiselection);
 

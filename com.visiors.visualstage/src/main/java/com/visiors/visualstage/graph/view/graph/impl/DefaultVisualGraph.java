@@ -24,11 +24,15 @@ import com.visiors.visualstage.graph.view.graph.listener.GraphViewListener;
 import com.visiors.visualstage.graph.view.node.VisualNode;
 import com.visiors.visualstage.graph.view.node.impl.DefaultVisualNode;
 import com.visiors.visualstage.graph.view.node.listener.VisualNodeListener;
+import com.visiors.visualstage.handler.UndoRedoHandler;
+import com.visiors.visualstage.pool.ShapeTemplatePool;
 import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.property.PropertyUnit;
 import com.visiors.visualstage.property.impl.DefaultPropertyList;
+import com.visiors.visualstage.property.impl.DefaultPropertyUnit;
+import com.visiors.visualstage.property.impl.PropertyBinder;
 import com.visiors.visualstage.renderer.RenderingContext;
-import com.visiors.visualstage.store.ShapeTemplatePool;
+import com.visiors.visualstage.renderer.Resolution;
 import com.visiors.visualstage.util.PropertyUtil;
 
 public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph, VisualNodeListener, EdgeViewListener
@@ -38,26 +42,25 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	private final Depot depot;
 	// private final GraphViewUndoHelper graphViewUndoHelper;
 	private boolean movingContent;
-	// private PropertyList properties;
 	private final SubgraphEventMediator eventMediator;
 
-	protected int margin = 4;
 	protected boolean fitToContent = true;
 	protected boolean contentSelectable = true;
 	protected boolean contentMovable = true;
 	protected boolean contentDeletable = true;;
+	private PropertyBinder propertyBinder;
 
 	@Inject
 	ShapeTemplatePool graphObjectPool;
-
 	@Inject
 	protected Provider<VisualNode> visualNodeProvider;
 	@Inject
 	protected Provider<VisualEdge> visualEdgeProvider;
 	@Inject
 	protected Provider<VisualGraph> visualGraphProvider;
+	@Inject
+	protected UndoRedoHandler undoRedoHandler;
 
-	// private UndoRedoHandler undoRedoHandler;
 	// private SVGDocumentBuilder svgDoc;
 
 	// private Validator validator;
@@ -197,7 +200,8 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 
 		/*
 		 * The Objects' id might change if the stored ids are in use. This map
-		 * keeps track of changed stored ids and the real current ids so the edges can find their connections
+		 * keeps track of changed stored ids and the real current ids so the
+		 * edges can find their connections
 		 */
 		final Map<Long, Long> idMappings = new HashMap<Long, Long>();
 
@@ -273,9 +277,6 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 		} else {
 			eventMediator.setParentView(null);
 		}
-		// properties = PropertyUtil.setProperty(properties,
-		// PropertyConstants.GRAPH_PROPERTY_PARENT_ID,
-		// (parentgraph != null ? parentgraph.getID() : -1));
 	}
 
 	protected void removeNode(VisualNode node) {
@@ -534,80 +535,73 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	}
 
 	@Override
-	protected void init() {
+	protected void initPropertyList() {
 
-		super.init();
+		// create the properties definition
+		PropertyList properties = new DefaultPropertyList(PropertyConstants.GRAPH_PROPERTY_PREFIX);
+		properties.add(new DefaultPropertyUnit(PropertyConstants.GRAPH_PROPERTY_ID, getID()));
+		properties.add(new DefaultPropertyUnit(PropertyConstants.GRAPH_PROPERTY_NAME, getName()));
+		properties.add(new DefaultPropertyUnit(PropertyConstants.GRAPH_PROPERTY_X, getX()));
+		properties.add(new DefaultPropertyUnit(PropertyConstants.GRAPH_PROPERTY_Y, getY()));
+		properties.add(new DefaultPropertyUnit(PropertyConstants.GRAPH_PROPERTY_WIDTH, getWidth()));
+		properties.add(new DefaultPropertyUnit(PropertyConstants.GRAPH_PROPERTY_HEIGHT, getHeight()));
+		properties.add(new DefaultPropertyUnit(PropertyConstants.GRAPH_PROPERTY_PRESENTATION, presentationID));
+		properties.add(new DefaultPropertyUnit(PropertyConstants.GRAPH_PROPERTY_PARENT_ID, getParentGraphID()));
 
-		// properties = PropertyUtil.setProperty(properties,
-		// PropertyConstants.GRAPH_PROPERTY_ID, id);
-		// PropertyUtil.makeEditable(properties,
-		// PropertyConstants.GRAPH_PROPERTY_ID, false);
-		// properties = PropertyUtil.setProperty(properties,
-		// PropertyConstants.GRAPH_PROPERTY_NAME,
-		// getName());
-		// PropertyUtil.makeEditable(properties,
-		// PropertyConstants.GRAPH_PROPERTY_NAME, false);
-		//
-		// properties = PropertyUtil.setProperty(properties,
-		// PropertyConstants.GRAPH_PROPERTY_X,
-		// boundary.x);
-		// properties = PropertyUtil.setProperty(properties,
-		// PropertyConstants.GRAPH_PROPERTY_Y,
-		// boundary.y);
-		// properties = PropertyUtil.setProperty(properties,
-		// PropertyConstants.GRAPH_PROPERTY_WIDTH,
-		// boundary.width);
-		// properties = PropertyUtil.setProperty(properties,
-		// PropertyConstants.GRAPH_PROPERTY_HEIGHT,
-		// boundary.height);
-		// properties = PropertyUtil.setProperty(properties,
-		// PropertyConstants.GRAPH_PROPERTY_ID, id);
-		//
-		// properties = PropertyUtil.setProperty(properties,
-		// PropertyConstants.GRAPH_PROPERTY_INNER_MARGIN, 4);
-		// properties = PropertyUtil.setProperty(properties,
-		// PropertyConstants.GRAPH_PROPERTY_FIT_TO_CONTENT, true);
-		// properties = PropertyUtil.setProperty(properties,
-		// PropertyConstants.GRAPH_PROPERTY_CONTENT_SELECTABEL, true);
-		// properties = PropertyUtil.setProperty(properties,
-		// PropertyConstants.GRAPH_PROPERTY_CONTENT_MOVABLE, true);
-		// properties = PropertyUtil.setProperty(properties,
-		// PropertyConstants.GRAPH_PROPERTY_CONTENT_DELETABLE, true);
-		//
-		// properties.addPropertyListener(this);
+		properties.add(new DefaultPropertyUnit(PropertyConstants.GRAPH_PROPERTY_FIT_TO_CONTENT, fitToContent));
+		properties.add(new DefaultPropertyUnit(PropertyConstants.GRAPH_PROPERTY_CONTENT_SELECTABEL, contentSelectable));
+		properties.add(new DefaultPropertyUnit(PropertyConstants.GRAPH_PROPERTY_CONTENT_MOVABLE, contentMovable));
+		properties.add(new DefaultPropertyUnit(PropertyConstants.GRAPH_PROPERTY_CONTENT_DELETABLE, contentDeletable));
+
+		PropertyList portsProperties = portSet.getProperties();
+		properties.add(portsProperties);
+
+		propertyBinder = new PropertyBinder(this);
+		propertyBinder.setHandler(portsProperties.getName(), portSet);
+
+		setProperties(properties);
 	}
 
-	// @Override
-	// public void propertyChanged(List<PropertyList> path, PropertyUnit
-	// property) {
-	//
-	// // try {
-	// // super.propertyChanged(path, property);
-	// // String str = PropertyUtil.toString(path, property);
-	// //
-	// // if (PropertyConstants.GRAPH_PROPERTY_INNER_MARGIN.equals(str)) {
-	// // margin = ConvertUtil.object2int(property.getValue());
-	// // } else if
-	// // (PropertyConstants.GRAPH_PROPERTY_FIT_TO_CONTENT.equals(str)) {
-	// // fitToContent = ConvertUtil.object2boolean(property.getValue());
-	// // } else if
-	// // (PropertyConstants.GRAPH_PROPERTY_CONTENT_SELECTABEL.equals(str)) {
-	// // contentSelectable = ConvertUtil.object2boolean(property.getValue());
-	// // } else if
-	// // (PropertyConstants.GRAPH_PROPERTY_CONTENT_MOVABLE.equals(str)) {
-	// // contentMovable = ConvertUtil.object2boolean(property.getValue());
-	// // } else if
-	// // (PropertyConstants.GRAPH_PROPERTY_CONTENT_DELETABLE.equals(str)) {
-	// // contentDeletable = ConvertUtil.object2boolean(property.getValue());
-	// // } else if (PropertyConstants.GRAPH_PROPERTY_PRESENTATION.equals(str))
-	// // {
-	// // presentationID = ConvertUtil.object2string(property.getValue());
-	// // }
-	// // } catch (Exception e) {
-	// // System.err.println("Error. The value " + property.getValue()
-	// // + "is incompatible with the property " + property.getName());
-	// // }
-	// }
+	public void setFitToContent(boolean fitToContent) {
+
+		this.fitToContent = fitToContent;
+	}
+
+	public boolean getFitToContent() {
+
+		return fitToContent;
+	}
+
+	public void setContentMovable(boolean contentMovable) {
+
+		this.contentMovable = contentMovable;
+	}
+
+	public boolean getContentMovable(boolean contentMovable) {
+
+		return this.contentMovable;
+	}
+
+	public void setContentSelectable(boolean contentSelectable) {
+
+		this.contentSelectable = contentSelectable;
+	}
+
+	public boolean getContentSelectable() {
+
+		return this.contentSelectable;
+	}
+
+	public void setContentDeletable(boolean contentDeletable) {
+
+		this.contentDeletable = contentDeletable;
+	}
+
+	public boolean getContentDeletable() {
+
+		return this.contentDeletable;
+	}
+
 
 	@Override
 	public PropertyList getProperties(boolean childrenIncluded) {
@@ -651,55 +645,8 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	@Override
 	public void setProperties(PropertyList propertyList) {
 
-		// properties = propertyList.deepCopy();
-		// Rectangle r = new Rectangle();
-		// r.x = PropertyUtil.getProperty(properties,
-		// PropertyConstants.GRAPH_PROPERTY_X, 0);
-		// r.y = PropertyUtil.getProperty(properties,
-		// PropertyConstants.GRAPH_PROPERTY_Y, 0);
-		// r.width = PropertyUtil.getProperty(properties,
-		// PropertyConstants.GRAPH_PROPERTY_WIDTH, 50);
-		// r.height = PropertyUtil
-		// .getProperty(properties, PropertyConstants.GRAPH_PROPERTY_HEIGHT,
-		// 50);
-		// setBounds(r);
-		//
-		// margin = PropertyUtil.getProperty(properties,
-		// PropertyConstants.GRAPH_PROPERTY_INNER_MARGIN, 0);
-		// fitToContent = PropertyUtil.getProperty(properties,
-		// PropertyConstants.GRAPH_PROPERTY_FIT_TO_CONTENT, true);
-		// contentSelectable = PropertyUtil.getProperty(properties,
-		// PropertyConstants.GRAPH_PROPERTY_CONTENT_SELECTABEL, true);
-		// contentMovable = PropertyUtil.getProperty(properties,
-		// PropertyConstants.GRAPH_PROPERTY_CONTENT_MOVABLE, true);
-		// contentDeletable = PropertyUtil.getProperty(properties,
-		// PropertyConstants.GRAPH_PROPERTY_CONTENT_DELETABLE, true);
-		//
-		// presentationID = PropertyUtil.getProperty(properties,
-		// PropertyConstants.GRAPH_PROPERTY_PRESENTATION, null);
-		//
-		// PropertyList portsProperties =
-		// PropertyUtil.getPropertyList(properties,
-		// PropertyConstants.PORTS_PROPERTY);
-		// if (portsProperties != null) {
-		// portSet.setProperties(portsProperties);
-		// // updatePortPosition();
-		// }
-		// // never accept the given id and name
-		// properties = PropertyUtil.setProperty(properties,
-		// PropertyConstants.GRAPH_PROPERTY_ID, id);
-		// PropertyUtil.makeEditable(properties,
-		// PropertyConstants.GRAPH_PROPERTY_ID, false);
-		// properties = PropertyUtil.setProperty(properties,
-		// PropertyConstants.GRAPH_PROPERTY_PARENT_ID, (parent != null ?
-		// parent.getID() : -1));
-		// PropertyUtil.makeEditable(properties,
-		// PropertyConstants.GRAPH_PROPERTY_PARENT_ID, false);
-		// properties = PropertyUtil.setProperty(properties,
-		// PropertyConstants.GRAPH_PROPERTY_NAME,
-		// getName());
-		// PropertyUtil.makeEditable(properties,
-		// PropertyConstants.GRAPH_PROPERTY_NAME, false);
+		super.setProperties(properties);
+		propertyBinder.loadAll();
 
 		createGraphObjects(properties);
 	}
@@ -719,14 +666,6 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 		// boundary.height);
 	}
 
-	@Override
-	public void setPresentationID(String presentationID) {
-
-		this.presentationID = presentationID;
-
-		// properties = PropertyUtil.setProperty(properties,
-		// PropertyConstants.GRAPH_PROPERTY_PRESENTATION, presentationID);
-	}
 
 	@Override
 	protected String getSelectionDesriptorID() {
@@ -778,15 +717,15 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	}
 
 	@Override
-	public String getViewDescriptor(RenderingContext context, boolean standalone) {
+	public String getViewDescriptor(RenderingContext context, Resolution resolution) {
 
 		final VisualGraphObject[] objects = depot.getObjects();
 		if (objects.length == 0) {
-			return super.getViewDescriptor(context, true);
+			return super.getViewDescriptor(context, resolution);
 		}
 
 		final StringBuffer svg = new StringBuffer();
-		final String subgraphDesc = super.getViewDescriptor(context, true);
+		final String subgraphDesc = super.getViewDescriptor(context, resolution);
 		if (subgraphDesc != null) {
 			svg.append(subgraphDesc);
 		}
@@ -795,7 +734,7 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 
 		for (final VisualGraphObject vgo : objects) {
 
-			final String description = vgo.getViewDescriptor(context , true);
+			final String description = vgo.getViewDescriptor(context, resolution);
 			if (description != null && !description.isEmpty()) {
 				svg.append(description);
 			}

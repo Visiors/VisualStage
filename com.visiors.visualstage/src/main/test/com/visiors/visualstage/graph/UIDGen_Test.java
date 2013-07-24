@@ -7,7 +7,7 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
-import com.visiors.visualstage.exception.DuplicateIdentifierException;
+import com.visiors.visualstage.exception.IDInvalidException;
 
 public class UIDGen_Test {
 
@@ -23,7 +23,7 @@ public class UIDGen_Test {
 		long currentID = UIDGen.getInstance().getNextId();
 		assertEquals(currentID, firstID + n + 1);
 
-		// expect a DuplicateIdentifierException exception for using and
+		// expect a IDInvalidException exception for using and
 		// external id that has already been used
 		long exteranlId = currentID;
 		Throwable caught = null;
@@ -33,7 +33,7 @@ public class UIDGen_Test {
 			caught = t;
 		}
 		assertNotNull(caught);
-		assertSame(DuplicateIdentifierException.class, caught.getClass());
+		assertSame(IDInvalidException.class, caught.getClass());
 
 		// push an external id that is not used and expect no exception
 		exteranlId = currentID + 2;
@@ -52,7 +52,7 @@ public class UIDGen_Test {
 			caught = t;
 		}
 		assertNotNull(caught);
-		assertSame(DuplicateIdentifierException.class, caught.getClass());
+		assertSame(IDInvalidException.class, caught.getClass());
 
 		// must skip currentID + 2 as it was defined as an external id
 		assertEquals(UIDGen.getInstance().getNextId(), currentID + 1);

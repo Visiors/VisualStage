@@ -13,6 +13,7 @@ import com.visiors.visualstage.graph.model.GraphModel;
 import com.visiors.visualstage.graph.model.impl.DefaultEdgeModel;
 import com.visiors.visualstage.graph.model.impl.DefaultGraphModel;
 import com.visiors.visualstage.graph.model.impl.DefaultNodeModel;
+import com.visiors.visualstage.graph.model.listener.GraphModelChangeListener;
 import com.visiors.visualstage.graph.view.edge.EdgePoint;
 import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.graph.VisualGraph;

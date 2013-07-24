@@ -4,10 +4,11 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
 
-import com.visiors.visualstage.graph.view.transform.Transformer;
+import com.visiors.visualstage.interaction.Interactable;
 import com.visiors.visualstage.property.PropertyOwner;
 import com.visiors.visualstage.renderer.RenderingContext;
-import com.visiors.visualstage.stage.interaction.Interactable;
+import com.visiors.visualstage.renderer.Resolution;
+import com.visiors.visualstage.transform.Transformer;
 
 public interface Shape extends Interactable, PropertyOwner {
 
@@ -31,7 +32,7 @@ public interface Shape extends Interactable, PropertyOwner {
 
 	public Transformer getTransformer();
 
-	public String getViewDescriptor(RenderingContext context, boolean standalone);
+	public String getViewDescriptor(RenderingContext context, Resolution resolution);
 
 	public void setBounds(Rectangle bounds);
 

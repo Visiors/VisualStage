@@ -6,7 +6,7 @@ public class PropertyConstants {
 	public static String XML_CHAR_SET = "UTF-8";
 	public static String SEPARATOR = ":";
 	public static String DOCUMENT_PROPERTY_DOCUMENT = "VisualStageDocument";
-	public static String DOCUMENT_PROPERTY_PREFIX = "graphDocument";
+	public static String DOCUMENT_PROPERTY_PREFIX = "Document";
 	public static String DOCUMENT_PROPERTY_SETTING = "setting";
 	public static String DOCUMENT_PROPERTY_ZOOM = DOCUMENT_PROPERTY_PREFIX + SEPARATOR
 			+ "setting:zoom";

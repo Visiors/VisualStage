@@ -1,6 +1,7 @@
 package com.visiors.visualstage.graph;
 
-import com.visiors.visualstage.exception.DuplicateIdentifierException;
+import com.visiors.visualstage.exception.IDInvalidException;
+
 
 /**
  * This class generates unique ids that can used throughout the graph framework.<br>
@@ -51,13 +52,13 @@ public class UIDGen {
 	 * Considers the given id to make sure that this id is not proposed in
 	 * future.
 	 * 
-	 * @throws DuplicateIdentifierException
+	 * @throws IDInvalidException
 	 *             if the given id is already in use.
 	 */
 	public void considerExternalId(long id) {
 
 		if (exists(id)) {
-			throw new DuplicateIdentifierException();
+			throw new IDInvalidException("The given id '" + id + "' exsits already!");
 		}
 		trackExternalId(id);
 	}

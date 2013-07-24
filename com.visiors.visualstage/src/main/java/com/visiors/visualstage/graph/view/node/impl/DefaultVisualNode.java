@@ -22,14 +22,14 @@ import com.visiors.visualstage.graph.view.node.PortSet;
 import com.visiors.visualstage.graph.view.node.VisualNode;
 import com.visiors.visualstage.graph.view.node.listener.VisualNodeListener;
 import com.visiors.visualstage.graph.view.shape.Shape;
+import com.visiors.visualstage.interaction.Interactable;
+import com.visiors.visualstage.pool.SVDescriptorPool;
 import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.property.impl.DefaultPropertyList;
 import com.visiors.visualstage.property.impl.DefaultPropertyUnit;
 import com.visiors.visualstage.property.impl.PropertyBinder;
 import com.visiors.visualstage.renderer.RenderingContext;
-import com.visiors.visualstage.renderer.RenderingContext.Resolution;
-import com.visiors.visualstage.stage.interaction.Interactable;
-import com.visiors.visualstage.store.SVDescriptorPool;
+import com.visiors.visualstage.renderer.Resolution;
 import com.visiors.visualstage.svg.SVGDescriptor;
 import com.visiors.visualstage.util.PropertyUtil;
 
@@ -101,7 +101,7 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 	}
 
 	@PostConstruct
-	protected void init() {
+	protected void initPropertyList() {
 
 		// create the property definition
 		PropertyList properties = new DefaultPropertyList(PropertyConstants.NODE_PROPERTY_PREFIX);
@@ -115,7 +115,7 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 		properties.add(new DefaultPropertyUnit(PropertyConstants.NODE_PROPERTY_STYLE, getStyleID()));
 		properties.add(new DefaultPropertyUnit(PropertyConstants.NODE_PROPERTY_PARENT_ID, getParentGraphID()));
 
-		// TODO add  children , layout
+		// TODO add  layout
 
 		// add posts properties
 		PropertyList portsProperties = portSet.getProperties();
@@ -852,17 +852,17 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 	// }
 
 	@Override
-	public String getViewDescriptor(RenderingContext context, boolean standalone) {
+	public String getViewDescriptor(RenderingContext context, Resolution resolution) {
 
 		switch (context.subject) {
 		case OBJECT:
-			return getNodeViewDescriptor(context);
+			return getNodeViewDescriptor(context, resolution);
 		case SELECTION_INDICATORS:
-			if (context.resolution == Resolution.SCREEN) {
+			if (resolution == Resolution.SCREEN) {
 				return getSelectionViewDescriptor(boundary);
 			}
 		case PORTS:
-			if (context.resolution == Resolution.SCREEN) {
+			if (resolution == Resolution.SCREEN) {
 				return getPortsViewDescriptor(boundary);
 			}
 		}
@@ -896,10 +896,10 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 	//		return null;
 	//	}
 
-	protected String getNodeViewDescriptor(RenderingContext context) {
+	protected String getNodeViewDescriptor(RenderingContext context, Resolution resolution) {
 
-		boolean includeChildren = context.resolution != Resolution.SCREEN_LOW_DETAIL
-				&& context.resolution != Resolution.PREVIEW;
+		boolean includeChildren = resolution != Resolution.SCREEN_LOW_DETAIL
+				&& resolution != Resolution.PREVIEW;
 
 		final StringBuffer desc = new StringBuffer();
 		if (presentationID != null) {
@@ -929,7 +929,7 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 				desc.append(b.height);
 				desc.append("'/>");
 				if(includeChildren) {
-					appendChildrenViewDescriptor(context, desc);
+					appendChildrenViewDescriptor(context, resolution,desc);
 				}
 				if (styleID != null) {
 					desc.append("</g>");
@@ -945,17 +945,17 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 		return desc.toString();
 	}
 
-	protected void appendChildrenViewDescriptor(RenderingContext context, StringBuffer desc) {
+	protected void appendChildrenViewDescriptor(RenderingContext context, Resolution resolution, StringBuffer desc) {
 
 		for (Shape shape : children) {
-			appendChildViewDescriptor(context, desc, shape);
+			appendChildViewDescriptor(context, resolution,desc, shape);
 		}
 
 	}
 
-	protected void appendChildViewDescriptor(RenderingContext context, StringBuffer desc, Shape shape) {
+	protected void appendChildViewDescriptor(RenderingContext context, Resolution resolution, StringBuffer desc, Shape shape) {
 
-		String shapeDesc = shape.getViewDescriptor(context, false);
+		String shapeDesc = shape.getViewDescriptor(context, resolution);
 		//TODO move to the right position
 
 	}

@@ -9,8 +9,7 @@ import com.visiors.visualstage.handler.Undoable;
 import com.visiors.visualstage.property.PropertyOwner;
 import com.visiors.visualstage.renderer.Device;
 import com.visiors.visualstage.renderer.RenderingContext;
-import com.visiors.visualstage.renderer.RenderingContext.Resolution;
-import com.visiors.visualstage.stage.ruler.StageDesigner;
+import com.visiors.visualstage.stage.StageDesigner;
 import com.visiors.visualstage.transform.Transformer;
 import com.visiors.visualstage.validation.Validator;
 
@@ -22,35 +21,32 @@ public interface GraphDocument extends MultiLayerDocument, PropertyOwner, Undoab
 
 	public VisualGraph getGraph();
 
-	public String getSVGDocument(Device device, RenderingContext context, boolean embeddedingImageAllowed, double scale);
-
-	public void svgTransformID(String svgTransformID);
+	public String getSVGDocument(Device device, RenderingContext context, double scale);
 
 	public StageDesigner getStageDesigner();
-
-	public String getSVGDocument(Device device, RenderingContext context, double scale);
 
 	public Validator getValidator();
 
 	public void enableImageBuffering(boolean enable);
 
-	public void setUpdateView(boolean update);
+	public void enableDrawing(boolean doPainting);
 
-	public boolean getUpdateView();
+	public boolean isDrawingEnabled();
 
-	public void fireEvents(boolean enable);
+	//
+	// public void fireEvents(boolean enable);
+	//
+	// public boolean isFiringEvents();
 
-	public boolean isFiringEvents();
-
-	public void render(Device device, Rectangle visibleScreenRect, Resolution resolution);
+	public void draw(Device device);
 
 	public void print(Device device, Rectangle rPage, Transformer transform);
 
-	public void setBackground(String svgDefID);
+	public void setSvgBackground(String svgDefID);
 
-	public void setFilter(String svgDefID);
+	public void setSvgFilter(String svgDefID);
 
-	public void setTransformation(String svgDefID);
+	public void setSvgTransformation(String svgTransformId);
 
 	public Rectangle getDocumentBoundary();
 

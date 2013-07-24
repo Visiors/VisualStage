@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 
 import com.google.inject.Inject;
 import com.visiors.visualstage.attribute.Attribute;
+import com.visiors.visualstage.constants.PropertyConstants;
 import com.visiors.visualstage.graph.view.Constants;
 import com.visiors.visualstage.graph.view.DefaultVisualGraphObject;
 import com.visiors.visualstage.graph.view.edge.EdgePoint;
@@ -20,11 +21,14 @@ import com.visiors.visualstage.graph.view.graph.VisualGraph;
 import com.visiors.visualstage.graph.view.node.VisualNode;
 import com.visiors.visualstage.graph.view.node.listener.NodeViewAdapter;
 import com.visiors.visualstage.graph.view.node.listener.VisualNodeListener;
+import com.visiors.visualstage.interaction.Interactable;
+import com.visiors.visualstage.pool.SVDescriptorPool;
 import com.visiors.visualstage.property.PropertyList;
+import com.visiors.visualstage.property.impl.DefaultPropertyList;
+import com.visiors.visualstage.property.impl.DefaultPropertyUnit;
+import com.visiors.visualstage.property.impl.PropertyBinder;
 import com.visiors.visualstage.renderer.RenderingContext;
-import com.visiors.visualstage.renderer.RenderingContext.Resolution;
-import com.visiors.visualstage.stage.interaction.Interactable;
-import com.visiors.visualstage.store.SVDescriptorPool;
+import com.visiors.visualstage.renderer.Resolution;
 import com.visiors.visualstage.svg.SVGDescriptor;
 
 public class DefaultVisualEdge extends DefaultVisualGraphObject implements VisualEdge, PathChangeListener/*
@@ -48,7 +52,8 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 	protected String formID;
 
 	@Inject
-	protected SVDescriptorPool svgDescriptorPool; 
+	protected SVDescriptorPool svgDescriptorPool;
+	private PropertyBinder propertyBinder;
 
 	protected DefaultVisualEdge() {
 
@@ -69,8 +74,7 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 
 		this(id);
 
-		connect(edge.getSourceNode(), edge.getSourcePortId(), edge.getTargetNode(),
-				edge.getTargetPortId());
+		connect(edge.getSourceNode(), edge.getSourcePortId(), edge.getTargetNode(), edge.getTargetPortId());
 		setProperties(edge.getProperties());
 		setPath(edge.getPath().deepCopy());
 		SetAttributes(edge.getAttributes().deepCopy());
@@ -82,28 +86,27 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 	}
 
 	@PostConstruct
-	protected void init() {
+	protected void initProperties() {
 
-		// properties = PropertyUtil.setProperty(properties,
-		// PropertyConstants.EDGE_PROPERTY_ID, id);
-		// PropertyUtil.makeEditable(properties,
-		// PropertyConstants.EDGE_PROPERTY_ID, false);
-		// properties = PropertyUtil.setProperty(properties,
-		// PropertyConstants.EDGE_PROPERTY_NAME,
-		// name);
-		// PropertyUtil.makeEditable(properties,
-		// PropertyConstants.EDGE_PROPERTY_NAME, false);
-		// properties.addPropertyListener(this);
+		// create the property definition
+		PropertyList properties = new DefaultPropertyList(PropertyConstants.EDGE_PROPERTY_PREFIX);
+		properties.add(new DefaultPropertyUnit(PropertyConstants.EDGE_PROPERTY_ID, getID()));
+		properties.add(new DefaultPropertyUnit(PropertyConstants.EDGE_PROPERTY_NAME, getName()));
+		properties.add(new DefaultPropertyUnit(PropertyConstants.EDGE_PROPERTY_PRESENTATION, getPresentationID()));
+		properties.add(new DefaultPropertyUnit(PropertyConstants.EDGE_PROPERTY_STYLE, getStyleID()));
+		properties.add(new DefaultPropertyUnit(PropertyConstants.EDGE_PROPERTY_PARENT_ID,
+				getParentGraph() != null ? getParentGraph().getID() : NONE));
+
+		propertyBinder = new PropertyBinder(this);
+
+		setProperties(properties);
 	}
 
 	@Override
 	public void setParentGraph(VisualGraph graph) {
 
 		super.setParentGraph(graph);
-		//
-		// properties = PropertyUtil.setProperty(properties,
-		// PropertyConstants.EDGE_PROPERTY_PARENT_ID, (graph != null ?
-		// graph.getID() : -1));
+		propertyBinder.save(PropertyConstants.EDGE_PROPERTY_PARENT_ID);
 	}
 
 	@Override
@@ -118,13 +121,11 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 		return targetNode;
 	}
 
-
-
 	@Override
 	public void connect(VisualNode source, int sourcePortId, VisualNode target, int targetPortId) {
 
-		if (sourceNode.equals(source) && this.sourcePortId != sourcePortId
-				&& targetNode.equals(target) && this.targetPortId != targetPortId) {
+		if (sourceNode.equals(source) && this.sourcePortId != sourcePortId && targetNode.equals(target)
+				&& this.targetPortId != targetPortId) {
 			return;
 		}
 
@@ -205,14 +206,16 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 	//
 	// cachedImage = null;
 	// }
+
+
 	@Override
-	public String getViewDescriptor(RenderingContext context, boolean standalone) {
+	public String getViewDescriptor(RenderingContext context, Resolution resolution) {
 
 		switch (context.subject) {
 		case OBJECT:
 			return styledLineDescriptor();
 		case SELECTION_INDICATORS:
-			if (context.resolution == Resolution.SCREEN) {
+			if (resolution == Resolution.SCREEN) {
 				return getSelectionDescriptor();
 			}
 		}
@@ -248,8 +251,8 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 			final double sy = transformer.getScaleY();
 			for (EdgePoint edgePoint : points) {
 				final Point point = edgePoint.getPoint();
-				createSelectionMarkDescriotor(sb, (point.x * sx) - svgSelDef.width / 2,
-						(point.y * sy) - svgSelDef.height / 2);
+				createSelectionMarkDescriotor(sb, (point.x * sx) - svgSelDef.width / 2, (point.y * sy)
+						- svgSelDef.height / 2);
 			}
 			return sb.toString();
 		}
@@ -347,95 +350,11 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 	@Override
 	public void setProperties(PropertyList propertyList) {
 
-		// properties = propertyList.deepCopy();
-		//
-		// String str = PropertyUtil.getProperty(properties,
-		// PropertyConstants.EDGE_PROPERTY_COORDINATES, "");
-		// String[] tstr = str.split(" ");
-		// Point[] points = new Point[tstr.length / 2];
-		// for (int i = 0, n = 0; i < tstr.length - 1; i += 2, n++) {
-		// int x = Integer.parseInt(tstr[i]);
-		// int y = Integer.parseInt(tstr[i + 1]);
-		// points[n] = new Point(x, y);
-		// }
-		// path.setPoints(points, true);
-		//
-		// setPresentationID(PropertyUtil.getProperty(properties,
-		// PropertyConstants.EDGE_PROPERTY_PRESENTATION, null));
-		// setFormID(PropertyUtil.getProperty(properties,
-		// PropertyConstants.EDGE_PROPERTY_FORM, null));
-		//
-		// // never accept the given id and name
-		// properties = PropertyUtil.setProperty(properties,
-		// PropertyConstants.EDGE_PROPERTY_ID, id);
-		// PropertyUtil.makeEditable(properties,
-		// PropertyConstants.EDGE_PROPERTY_ID,
-		// false);
-		// properties = PropertyUtil.setProperty(properties,
-		// PropertyConstants.EDGE_PROPERTY_PARENT_ID, (parent != null ?
-		// parent.getID() : -1));
-		// PropertyUtil.makeEditable(properties,
-		// PropertyConstants.EDGE_PROPERTY_PARENT_ID, false);
-		// properties = PropertyUtil.setProperty(properties,
-		// PropertyConstants.EDGE_PROPERTY_NAME,
-		// name);
-		// PropertyUtil.makeEditable(properties,
-		// PropertyConstants.EDGE_PROPERTY_NAME, false);
+		super.setProperties(propertyList);
+
+		propertyBinder.loadAll();
 	}
 
-	@Override
-	public PropertyList getProperties() {
-
-		//
-		// Point[] points = path.getPoints();
-		// int len = points.length;
-		// StringBuffer str = new StringBuffer(len * 4);
-		// Point pt;
-		// for (int i = 0; i < len; i++) {
-		// pt = points[i];
-		// str.append(pt.x);
-		// str.append(' ');
-		// str.append(pt.y);
-		// str.append(' ');
-		// }
-		//
-		// properties = PropertyUtil.setProperty(properties,
-		// PropertyConstants.EDGE_PROPERTY_COORDINATES, str.toString());
-		// PropertyUtil.makeEditable(properties,
-		// PropertyConstants.EDGE_PROPERTY_COORDINATES, false);
-		//
-		// properties = PropertyUtil.setProperty(properties,
-		// PropertyConstants.EDGE_PROPERTY_TARGET,
-		// targetNode != null ? targetNode.getID() :
-		// DefaultGraphObjectView.NONE);
-		// properties = PropertyUtil.setProperty(properties,
-		// PropertyConstants.EDGE_PROPERTY_TARGET_PORT, targetPortId);
-		// properties = PropertyUtil.setProperty(properties,
-		// PropertyConstants.EDGE_PROPERTY_SOURCE,
-		// sourceNode != null ? sourceNode.getID() :
-		// DefaultGraphObjectView.NONE);
-		// properties = PropertyUtil.setProperty(properties,
-		// PropertyConstants.EDGE_PROPERTY_SOURCE_PORT, sourcePortId);
-		//
-		// return properties.deepCopy();
-		return null;
-	}
-
-	//
-	// @Override
-	// public void propertyChanged(List<PropertyList> path, PropertyUnit
-	// property) {
-	//
-	// try {
-	// String str = PropertyUtil.toString(path, property);
-	// if (PropertyConstants.EDGE_PROPERTY_PARENT_ID.equals(str)) {
-	// setPresentationID(ConvertUtil.object2string(property.getValue()));
-	// }
-	// } catch (Exception e) {
-	// System.err.println("Error. The value " + property.getValue()
-	// + "is incompatible with the property " + property.getName());
-	// }
-	// }
 	// ///////////////////////////////////////////////////////////////////////
 	// implementation of VisualObject interface
 	@Override
@@ -641,10 +560,8 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 	public void setPresentationID(String presentationID) {
 
 		this.presentationID = presentationID;
-		// properties = PropertyUtil.setProperty(properties,
-		// PropertyConstants.EDGE_PROPERTY_PRESENTATION, presentationID);
-		svgLineDef = svgDescriptorPool.get(presentationID);
-		svgSelDef = svgDescriptorPool.get(Constants.DEFAULT_EDGE_SELECTION_MARKER);
+
+		propertyBinder.save(PropertyConstants.EDGE_PROPERTY_PRESENTATION);
 	}
 
 	@Override
@@ -663,47 +580,10 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 	public void setStyleID(String styleID) {
 
 		this.styleID = styleID;
-		// properties = PropertyUtil.setProperty(properties,
-		// PropertyConstants.EDGE_PROPERTY_STYLE,
-		// styleID);
+		propertyBinder.save(PropertyConstants.EDGE_PROPERTY_STYLE);
+
 	}
 
-	/* DockingBase!! */
-	// @Override
-	// public String getFormID() {
-	//
-	// return formID;
-	// }
-	//
-	// @Override
-	// public void setFormID(String formID) {
-	//
-	// this.formID = formID;
-	// properties = PropertyUtil.setProperty(properties,
-	// PropertyConstants.EDGE_PROPERTY_FORM,
-	// formID);
-	// }
-	//
-	// @Override
-	// public Form getForm() {
-	//
-	// // TODO Auto-generated method stub
-	// return null;
-	// }
-	//
-	// @Override
-	// public Point getSlotLocation(String id) {
-	//
-	// // TODO Auto-generated method stub
-	// return null;
-	// }
-	//
-	// @Override
-	// public String[] getSlots() {
-	//
-	// // TODO Auto-generated method stub
-	// return null;
-	// }
 	@Override
 	public String toString() {
 
@@ -711,8 +591,7 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 		sb.append("EdgeView (").append("id= ").append(getID()).append(", source node= ")
 		.append(getSourceNode() != null ? String.valueOf(getSourceNode().getID()) : "Nil")
 		.append(", target node= ")
-		.append(getTargetNode() != null ? String.valueOf(getTargetNode().getID()) : "Nil")
-		.append(" ]");
+		.append(getTargetNode() != null ? String.valueOf(getTargetNode().getID()) : "Nil").append(" ]");
 		return sb.toString();
 	}
 
@@ -749,8 +628,8 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 	// return fireEvents;
 	// }
 
-	protected void fireEdgeReconnected(VisualNode oldSourceNode, int oldSourcePortID,
-			VisualNode oldTagetNode, int oldTargetPortID) {
+	protected void fireEdgeReconnected(VisualNode oldSourceNode, int oldSourcePortID, VisualNode oldTagetNode,
+			int oldTargetPortID) {
 
 		if (!fireEvents) {
 			return;
