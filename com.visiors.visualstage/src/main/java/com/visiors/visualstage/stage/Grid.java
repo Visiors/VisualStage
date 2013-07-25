@@ -3,8 +3,8 @@ package com.visiors.visualstage.stage;
 import java.awt.Color;
 import java.awt.Rectangle;
 
-import com.visiors.visualstage.renderer.Device;
-import com.visiors.visualstage.transform.Transformer;
+import com.visiors.visualstage.renderer.Canvas;
+import com.visiors.visualstage.transform.Transform;
 
 public class Grid {
 
@@ -18,16 +18,16 @@ public class Grid {
 
     /* Centimetre unit */
     private static final int CROSS_SIZE = 4;
-    private final Transformer transformer;
+    private final Transform transformer;
 
-    public Grid(Transformer transformer) {
+    public Grid(Transform transformer) {
 
         this.transformer = transformer;
         lineColor = new Color(0xD8E5E5);// UIManager.getColor("MinuetLnF.Ruler.Line.Color");
         sublineColor = new Color(0xEBF2F2); // UIManager.getColor("MinuetLnF.Ruler.Subline.Color");
     }
 
-    public void draw(Device device, Rectangle r, double pixelsPreUnit, GridStyle style) {
+    public void draw(Canvas canvas, Rectangle r, double pixelsPreUnit, GridStyle style) {
 
         double transUnit = transformer.getScale() * pixelsPreUnit;
 
@@ -49,55 +49,55 @@ public class Grid {
             yOffset += transUnit;
         }
 
-        device.setStroke(1.0f);
+        canvas.setStroke(1.0f);
         switch (style) {
             case Line:
 
-                device.setColor(sublineColor);
+                canvas.setColor(sublineColor);
                 for (double x = r.x + xOffset + transUnit / 2; x < r.x + r.width; x += transUnit) {
-                    device.drawLine((int) x, r.y, (int) x, r.y + r.height);
+                    canvas.drawLine((int) x, r.y, (int) x, r.y + r.height);
                 }
 
                 for (double y = r.y + yOffset + transUnit / 2; y < r.y + r.height; y += transUnit) {
-                    device.drawLine(r.x, (int) y, r.x + r.width, (int) y);
+                    canvas.drawLine(r.x, (int) y, r.x + r.width, (int) y);
                 }
 
-                device.setColor(lineColor);
+                canvas.setColor(lineColor);
                 int test = 0;
                 for (double x = r.x + xOffset; x < r.x + r.width; x += transUnit, test++) {
-                    device.drawLine((int) x, r.y, (int) x, r.y + r.height);
+                    canvas.drawLine((int) x, r.y, (int) x, r.y + r.height);
                     // System.err.println("Number of drawn lines: " + test);
                 }
 
                 for (double y = r.y + yOffset; y < r.y + r.height; y += transUnit) {
-                    device.drawLine(r.x, (int) y, r.x + r.width, (int) y);
+                    canvas.drawLine(r.x, (int) y, r.x + r.width, (int) y);
                 }
 
                 break;
             case Dot:
-                device.setColor(lineColor);
+                canvas.setColor(lineColor);
                 for (double y = r.y + yOffset; y < r.y + r.height; y += transUnit) {
                     for (double x = r.x + xOffset; x < r.x + r.width; x += transUnit) {
-                        device.drawRect((int) x, (int) y, 1, 1);
+                        canvas.drawRect((int) x, (int) y, 1, 1);
                     }
                 }
                 break;
             case Cross:
-                device.setColor(lineColor);
+                canvas.setColor(lineColor);
                 for (double x = r.x + xOffset; x < r.x + r.width; x += transUnit) {
                     for (double y = r.y + yOffset - Grid.CROSS_SIZE; y < r.y + r.height; y += transUnit) {
-                        device.drawLine((int) x, (int) y - Grid.CROSS_SIZE, (int) x, (int) y + Grid.CROSS_SIZE);
+                        canvas.drawLine((int) x, (int) y - Grid.CROSS_SIZE, (int) x, (int) y + Grid.CROSS_SIZE);
                     }
                 }
                 for (double y = r.y + yOffset - Grid.CROSS_SIZE; y < r.y + r.height; y += transUnit) {
                     for (double x = r.x + xOffset; x < r.x + r.width; x += transUnit) {
-                        device.drawLine((int) x - Grid.CROSS_SIZE, (int) y, (int) x + Grid.CROSS_SIZE, (int) y);
+                        canvas.drawLine((int) x - Grid.CROSS_SIZE, (int) y, (int) x + Grid.CROSS_SIZE, (int) y);
                     }
                 }
         }
 
-        device.setColor(lineColor);
-        device.drawRect(r.x, r.y, r.width, r.height);
+        canvas.setColor(lineColor);
+        canvas.drawRect(r.x, r.y, r.width, r.height);
     }
 
 }

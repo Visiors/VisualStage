@@ -205,17 +205,17 @@ public class FormComposeMode extends BaseInteractionHandler {
 	}
 
 	@Override
-	public void paintOnBackground(Device device, Rectangle visibleScreenRect) {
+	public void paintOnBackground(Canvas canvas, Rectangle visibleScreenRect) {
 
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void paintOnTop(Device device, Rectangle visibleScreenRect) {
+	public void paintOnTop(Canvas canvas, Rectangle visibleScreenRect) {
 
 		final VisualNode[] nodes = visualGraph.getNodes();
-		final Transformer xform = visualGraph.getTransform();
+		final Transform xform = visualGraph.getTransform();
 		boolean slotUsed;
 		Point pt;
 		for (VisualNode node : nodes) {
@@ -224,15 +224,15 @@ public class FormComposeMode extends BaseInteractionHandler {
 				pt = node.getSlotLocation(slot);
 				pt = xform.transformToScreen(pt);
 				slotUsed = slotUsed(node, slot);
-				drawSlot(device, pt, slotUsed);
+				drawSlot(canvas, pt, slotUsed);
 				if (hitComponent != null && slotUsed) {
-					drawOrientations(device, pt);
+					drawOrientations(canvas, pt);
 				}
 			}
 		}
 
 		if (hitComponent != null) {
-			drawInfo(device);
+			drawInfo(canvas);
 		}
 	}
 
@@ -250,72 +250,72 @@ public class FormComposeMode extends BaseInteractionHandler {
 		return false;
 	}
 
-	private void drawOrientations(Device device, Point pt) {
+	private void drawOrientations(Canvas canvas, Point pt) {
 
 		final int r = 10;
 
-		device.setColor(new Color(0x8fff0000, true));
+		canvas.setColor(new Color(0x8fff0000, true));
 
-		device.drawLine(pt.x + margin, pt.y, pt.x + r, pt.y);
-		device.drawLine(pt.x + r - 1, pt.y - 1, pt.x + r - 1, pt.y + 1);
+		canvas.drawLine(pt.x + margin, pt.y, pt.x + r, pt.y);
+		canvas.drawLine(pt.x + r - 1, pt.y - 1, pt.x + r - 1, pt.y + 1);
 
-		device.drawLine(pt.x - r, pt.y, pt.x - margin, pt.y);
-		device.drawLine(pt.x - r + 1, pt.y - 1, pt.x - r + 1, pt.y + 1);
+		canvas.drawLine(pt.x - r, pt.y, pt.x - margin, pt.y);
+		canvas.drawLine(pt.x - r + 1, pt.y - 1, pt.x - r + 1, pt.y + 1);
 
-		device.drawLine(pt.x, pt.y - r, pt.x, pt.y - margin);
-		device.drawLine(pt.x - 1, pt.y - r + 1, pt.x + 1, pt.y - r + 1);
+		canvas.drawLine(pt.x, pt.y - r, pt.x, pt.y - margin);
+		canvas.drawLine(pt.x - 1, pt.y - r + 1, pt.x + 1, pt.y - r + 1);
 
-		device.drawLine(pt.x, pt.y + margin, pt.x, pt.y + r);
-		device.drawLine(pt.x - 1, pt.y + r - 1, pt.x + 1, pt.y + r - 1);
+		canvas.drawLine(pt.x, pt.y + margin, pt.x, pt.y + r);
+		canvas.drawLine(pt.x - 1, pt.y + r - 1, pt.x + 1, pt.y + r - 1);
 
-		device.drawLine(pt.x + margin, pt.y + margin, pt.x + r, pt.y + r);
-		device.drawLine(pt.x + r - 1, pt.y + r, pt.x + r, pt.y + r - 1);
-		device.drawLine(pt.x + r - 2, pt.y + r, pt.x + r, pt.y + r - 2);
+		canvas.drawLine(pt.x + margin, pt.y + margin, pt.x + r, pt.y + r);
+		canvas.drawLine(pt.x + r - 1, pt.y + r, pt.x + r, pt.y + r - 1);
+		canvas.drawLine(pt.x + r - 2, pt.y + r, pt.x + r, pt.y + r - 2);
 
-		device.drawLine(pt.x - r, pt.y - r, pt.x - margin, pt.y - margin);
-		device.drawLine(pt.x - r + 1, pt.y - r, pt.x - r, pt.y - r + 1);
-		device.drawLine(pt.x - r + 2, pt.y - r, pt.x - r, pt.y - r + 2);
+		canvas.drawLine(pt.x - r, pt.y - r, pt.x - margin, pt.y - margin);
+		canvas.drawLine(pt.x - r + 1, pt.y - r, pt.x - r, pt.y - r + 1);
+		canvas.drawLine(pt.x - r + 2, pt.y - r, pt.x - r, pt.y - r + 2);
 
-		device.drawLine(pt.x - r, pt.y + r, pt.x - margin, pt.y + margin);
-		device.drawLine(pt.x - r, pt.y + r - 1, pt.x - r + 1, pt.y + r);
-		device.drawLine(pt.x - r, pt.y + r - 2, pt.x - r + 2, pt.y + r);
+		canvas.drawLine(pt.x - r, pt.y + r, pt.x - margin, pt.y + margin);
+		canvas.drawLine(pt.x - r, pt.y + r - 1, pt.x - r + 1, pt.y + r);
+		canvas.drawLine(pt.x - r, pt.y + r - 2, pt.x - r + 2, pt.y + r);
 
-		device.drawLine(pt.x + margin, pt.y - margin, pt.x + r, pt.y - r);
-		device.drawLine(pt.x + r - 1, pt.y - r, pt.x + r, pt.y - r + 1);
-		device.drawLine(pt.x + r - 2, pt.y - r, pt.x + r, pt.y - r + 2);
+		canvas.drawLine(pt.x + margin, pt.y - margin, pt.x + r, pt.y - r);
+		canvas.drawLine(pt.x + r - 1, pt.y - r, pt.x + r, pt.y - r + 1);
+		canvas.drawLine(pt.x + r - 2, pt.y - r, pt.x + r, pt.y - r + 2);
 	}
 
-	private void drawSlot(Device device, Point pt, boolean highlighted) {
+	private void drawSlot(Canvas canvas, Point pt, boolean highlighted) {
 
-		device.setColor(new Color(0x8fff0000, true));
+		canvas.setColor(new Color(0x8fff0000, true));
 		if (highlighted) {
-			device.fillRect(pt.x - margin, pt.y - margin, margin * 2, margin * 2);
+			canvas.fillRect(pt.x - margin, pt.y - margin, margin * 2, margin * 2);
 		}
-		device.drawRect(pt.x - margin, pt.y - margin, margin * 2, margin * 2);
+		canvas.drawRect(pt.x - margin, pt.y - margin, margin * 2, margin * 2);
 	}
 
-	private void drawInfo(Device device) {
+	private void drawInfo(Canvas canvas) {
 
 		final String slot = hitComponent.getSlot();
 		final Dimension size = hitComponent.getSize();
 		final Point offset = hitComponent.getOffset();
-		Transformer xform = visualGraph.getTransform();
+		Transform xform = visualGraph.getTransform();
 		final Rectangle b = xform.transformToScreen(hitNode.getBounds());
 		final Point pt = new Point(b.x, b.y - size.height - 50);
 
 		pt.x -= 40;
 		pt.y -= 10;
 
-		device.setColor(Color.black);
-		device.drawRect(pt.x - 20, pt.y - 20, 220, 60);
-		device.setColor(new Color(0xb0ffffff, true));
-		device.fillRect(pt.x - 20, pt.y - 20, 220, 60);
+		canvas.setColor(Color.black);
+		canvas.drawRect(pt.x - 20, pt.y - 20, 220, 60);
+		canvas.setColor(new Color(0xb0ffffff, true));
+		canvas.fillRect(pt.x - 20, pt.y - 20, 220, 60);
 
-		device.setColor(Color.black);
-		device.drawString("Slot to attach: " + slot, pt.x, pt.y);
-		device.drawString("Expanding direction: " + hitComponent.getAnchor(), pt.x, pt.y + 15);
+		canvas.setColor(Color.black);
+		canvas.drawString("Slot to attach: " + slot, pt.x, pt.y);
+		canvas.drawString("Expanding direction: " + hitComponent.getAnchor(), pt.x, pt.y + 15);
 		if (offset.x != 0 || offset.y != 0) {
-			device.drawString("Additional offset to slot : x=" + offset.x + ", y=" + offset.y,
+			canvas.drawString("Additional offset to slot : x=" + offset.x + ", y=" + offset.y,
 					pt.x, pt.y + 30);
 		}
 

@@ -27,7 +27,8 @@ import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.property.impl.DefaultPropertyList;
 import com.visiors.visualstage.property.impl.DefaultPropertyUnit;
 import com.visiors.visualstage.property.impl.PropertyBinder;
-import com.visiors.visualstage.renderer.RenderingContext;
+import com.visiors.visualstage.renderer.DrawingContext;
+import com.visiors.visualstage.renderer.DrawingSubject;
 import com.visiors.visualstage.renderer.Resolution;
 import com.visiors.visualstage.svg.SVGDescriptor;
 
@@ -191,7 +192,7 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 	}
 
 	// @Override
-	// public Image getPreview(RenderingContext ctx, final ImageObserver
+	// public Image getPreview(DrawingContext ctx, final ImageObserver
 	// observer) {
 	//
 	// // if(cachedImage != null)
@@ -209,17 +210,18 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 
 
 	@Override
-	public String getViewDescriptor(RenderingContext context, Resolution resolution) {
+	public String getViewDescriptor(DrawingContext context, DrawingSubject subject) {
 
-		switch (context.subject) {
-		case OBJECT:
+		if (subject == DrawingSubject.OBJECT) {
+
 			return styledLineDescriptor();
-		case SELECTION_INDICATORS:
-			if (resolution == Resolution.SCREEN) {
-				return getSelectionDescriptor();
-			}
 		}
-		return null;
+		if (subject == DrawingSubject.SELECTION_INDICATORS && context.getResolution() == Resolution.SCREEN) {
+
+			return getSelectionDescriptor();
+		}
+		throw new IllegalArgumentException("Unknown subject: " +subject);
+
 	}
 
 	private String styledLineDescriptor() {

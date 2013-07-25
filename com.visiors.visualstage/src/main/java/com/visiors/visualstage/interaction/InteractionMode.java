@@ -3,7 +3,7 @@ package com.visiors.visualstage.interaction;
 import java.awt.Rectangle;
 
 import com.visiors.visualstage.handler.ScopeAwareHandler;
-import com.visiors.visualstage.renderer.Device;
+import com.visiors.visualstage.renderer.Canvas;
 
 public interface InteractionMode extends Interactable, ScopeAwareHandler {
 
@@ -13,8 +13,8 @@ public interface InteractionMode extends Interactable, ScopeAwareHandler {
 
 	public boolean isActive();
 
-	public void paintOnBackground(Device device, Rectangle visibleScreenRect);
+	public void paintOnBackground(Canvas canvas, Rectangle visibleScreenRect);
 
-	public void paintOnTop(Device device, Rectangle visibleScreenRect);
+	public void paintOnTop(Canvas canvas, Rectangle visibleScreenRect);
 
 }

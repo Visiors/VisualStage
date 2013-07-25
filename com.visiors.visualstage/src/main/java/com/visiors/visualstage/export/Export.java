@@ -16,7 +16,7 @@ public class Export {
 	public OutputStream exportToSVG() {
 
 //		TransformerFactory factory = TransformerFactory.newInstance();
-//		Transformer trans;
+//		Transform trans;
 //		try {
 //			trans = factory.newTransformer();
 //			Source src = new DOMSource(graphDocument.getSVGDocument());

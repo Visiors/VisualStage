@@ -37,7 +37,7 @@ public class DefaultGroupingHandler implements GroupingHandler {
 	@Override
 	public void setScope(GraphDocument graphDocument) {
 
-		this.visualGraph = graphDocument;
+		this.visualGraph = graphDocument.getGraph();
 
 	}
 
@@ -128,7 +128,7 @@ public class DefaultGroupingHandler implements GroupingHandler {
 		List<VisualGraphObject> objects = visualGraph.getSelection();
 		if (objects.size() > 0) {
 
-			VisualGraph parent = objects.get(0).getParentGraphGraph();
+			VisualGraph parent = objects.get(0).getParentGraph();
 			for (int i = 1; i < objects.size(); i++) {
 				if (objects.get(i).getParentGraph() != parent) {
 					return null;
@@ -152,22 +152,22 @@ public class DefaultGroupingHandler implements GroupingHandler {
 		undoRedoHandler.stratOfGroupAction();
 		visualGraph.fireStartGrouping(group);
 
-		parentGraph.addGraphObject(group);
+		parentGraph.add(group);
 		List<VisualGraphObject> objectsToBeGroupped = parentGraph.getSelection();
 		objectsToBeGroupped
-				.addAll(expandToNotIncludedConnections(objectsToBeGroupped, parentGraph));
+		.addAll(expandToNotIncludedConnections(objectsToBeGroupped, parentGraph));
 
 		saveEdgeConnectionInfo(objectsToBeGroupped);
 		// delete edges first then nodes. This is needed for undo to create
 		// edges with exiting nodes
 		for (VisualGraphObject vgo : objectsToBeGroupped) {
 			if (vgo instanceof VisualEdge) {
-				parentGraph.deleteGraphObject(vgo);
+				parentGraph.remove(vgo);
 			}
 		}
 		for (VisualGraphObject vgo : objectsToBeGroupped) {
 			if (vgo instanceof VisualNode) {
-				parentGraph.deleteGraphObject(vgo);
+				parentGraph.remove(vgo);
 			}
 		}
 
@@ -176,12 +176,12 @@ public class DefaultGroupingHandler implements GroupingHandler {
 		// add nodes first
 		for (VisualGraphObject vgo : objectsToBeGroupped) {
 			if (vgo instanceof VisualNode) {
-				group.addGraphObject(vgo);
+				group.add(vgo);
 			}
 		}
 		for (VisualGraphObject vgo : objectsToBeGroupped) {
 			if (vgo instanceof VisualEdge) {
-				group.addGraphObject(vgo);
+				group.add(vgo);
 			}
 		}
 

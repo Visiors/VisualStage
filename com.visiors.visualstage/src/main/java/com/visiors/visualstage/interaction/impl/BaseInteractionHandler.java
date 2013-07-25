@@ -104,12 +104,12 @@ public abstract class BaseInteractionHandler implements InteractionMode {
 	}
 
 	@Override
-	public void paintOnBackground(Device device, Rectangle visibleScreenRect) {
+	public void paintOnBackground(Canvas canvas, Rectangle visibleScreenRect) {
 
 	}
 
 	@Override
-	public void paintOnTop(Device device, Rectangle visibleScreenRect) {
+	public void paintOnTop(Canvas canvas, Rectangle visibleScreenRect) {
 
 	}
 

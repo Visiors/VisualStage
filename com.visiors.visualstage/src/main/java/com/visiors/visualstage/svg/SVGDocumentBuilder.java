@@ -10,7 +10,7 @@ import java.util.Set;
 
 import com.google.inject.Inject;
 import com.visiors.visualstage.pool.SVDescriptorPool;
-import com.visiors.visualstage.transform.Transformer;
+import com.visiors.visualstage.transform.Transform;
 
 public class SVGDocumentBuilder {
 
@@ -36,18 +36,18 @@ public class SVGDocumentBuilder {
 		createDocument(width, height, null, null, null, null);
 	}
 
-	public void createDocument(int width, int height, Transformer transform) {
+	public void createDocument(int width, int height, Transform transform) {
 
 		createDocument(width, height, transform, null, null, null);
 	}
 
-	public void createDocument(int width, int height, Transformer xform, String svgBackgroundID, String svgFilterID,
+	public void createDocument(int width, int height, Transform xform, String svgBackgroundID, String svgFilterID,
 			String svgTransformID) {
 
 		createDocument(new Rectangle(0, 0, width, height), xform, svgBackgroundID, svgFilterID, svgTransformID);
 	}
 
-	public void createDocument(Rectangle viewBox, Transformer xform, String svgBackgroundID, String svgFilterID,
+	public void createDocument(Rectangle viewBox, Transform xform, String svgBackgroundID, String svgFilterID,
 			String svgTransformID) {
 
 		svg.setLength(0);
@@ -59,7 +59,7 @@ public class SVGDocumentBuilder {
 		appendInternalTransform(xform);
 	}
 
-	private void appendInternalTransform(Transformer xform) {
+	private void appendInternalTransform(Transform xform) {
 
 		if (xform == null) {
 			return;

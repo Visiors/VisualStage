@@ -7,11 +7,11 @@ import com.visiors.visualstage.handler.SelectionHandler;
 import com.visiors.visualstage.handler.UndoRedoHandler;
 import com.visiors.visualstage.interaction.Interactable;
 import com.visiors.visualstage.pool.ShapeTemplatePool;
-import com.visiors.visualstage.renderer.Device;
+import com.visiors.visualstage.renderer.Canvas;
 
 public interface Editor extends Interactable {
 
-	public void addCanvas(Device device);
+	public void addCanvas(Canvas canvas);
 
 	public GraphDocument newDocument(String title);
 
@@ -28,6 +28,9 @@ public interface Editor extends Interactable {
 	public void setActiveDocument(String title);
 
 	public GraphDocument getActiveDocument();
+
+	public boolean closeDocument(String title);
+
 
 	public ShapeTemplatePool getGraphObjectTemplateStore();
 

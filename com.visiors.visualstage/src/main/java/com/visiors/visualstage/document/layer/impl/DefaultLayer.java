@@ -9,7 +9,7 @@ import com.visiors.visualstage.graph.view.graph.VisualGraph;
 
 public class DefaultLayer implements Layer {
 
-	private int id;
+	private final int id;
 	private boolean visible = true;
 	private Color bkColor;
 	private int order;
@@ -32,11 +32,6 @@ public class DefaultLayer implements Layer {
 		return id;
 	}
 
-	@Override
-	public void setID(int id) {
-
-		this.id = id;
-	}
 
 	@Override
 	public boolean isVisible() {

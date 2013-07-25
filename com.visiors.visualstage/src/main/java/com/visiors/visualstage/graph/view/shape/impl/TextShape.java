@@ -1,17 +1,20 @@
 package com.visiors.visualstage.graph.view.shape.impl;
 
 import com.visiors.visualstage.graph.view.shape.Shape;
+import com.visiors.visualstage.renderer.DrawingContext;
+import com.visiors.visualstage.renderer.DrawingSubject;
 
 public class TextShape extends BaseShape implements Shape {
 
-	protected TextShape(String name) {
+	protected TextShape() {
 
-		super(name);
+		super(-1);
 	}
 
-	protected TextShape(String name, long id) {
+	@Override
+	public String getViewDescriptor(DrawingContext context, DrawingSubject subject) {
 
-		super(name, id);
+		return "";
 	}
 
 }

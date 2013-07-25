@@ -2,16 +2,16 @@ package com.visiors.visualstage.renderer.cache;
 
 import java.awt.Image;
 
-import com.visiors.visualstage.renderer.RenderingContext;
+import com.visiors.visualstage.renderer.Context;
 
 public class CachedImage {
 
     double           scale;
-    RenderingContext ctx;
+    Context ctx;
     Image            img;
     boolean          valid;
 
-    public CachedImage(RenderingContext ctx, double scale, Image img) {
+    public CachedImage(Context ctx, double scale, Image img) {
 
         this.ctx = ctx;
         this.scale = scale;
@@ -29,7 +29,7 @@ public class CachedImage {
         return scale;
     }
 
-    public RenderingContext getContext() {
+    public Context getContext() {
 
         return ctx;
 

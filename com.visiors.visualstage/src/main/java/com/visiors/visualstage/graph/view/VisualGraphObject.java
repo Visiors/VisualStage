@@ -34,7 +34,7 @@ public interface VisualGraphObject extends CompositeShape, Manipulatable, Attrib
 	// /////////////////////////////////////////////////
 	// //// for internal use only
 
-	// public Image getPreview(RenderingContext ctx, ImageObserver observer);
+	// public Image getPreview(DrawingContext ctx, ImageObserver observer);
 
 	// public String[][] getSVGDocumentAttributes();
 

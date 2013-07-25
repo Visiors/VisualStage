@@ -4,10 +4,12 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.visiors.visualstage.constants.PropertyConstants;
@@ -26,6 +28,7 @@ import com.visiors.visualstage.interaction.listener.InteractionListener;
 import com.visiors.visualstage.pool.ShapeTemplatePool;
 import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.property.impl.DefaultPropertyList;
+import com.visiors.visualstage.renderer.Canvas;
 import com.visiors.visualstage.util.PropertyUtil;
 
 public class GraphEditor implements Editor, GraphDocumentListener, InteractionListener {
@@ -39,13 +42,14 @@ public class GraphEditor implements Editor, GraphDocumentListener, InteractionLi
 	protected final ClipboardHandler clipboardHandler;
 	protected final ShapeTemplatePool shapeTemplatePool;
 
-	private final Map<String, GraphDocument> documents = new HashMap<String, GraphDocument>();
+	private final Map<String, GraphDocument> documents = Maps.newHashMap();
+	private final Set<Canvas> canvases = Sets.newHashSet();
 
 
 
 	public GraphEditor() {
 
-		this(new GraphEditorBindingModule());
+		this(new DefaultGraphEditorBindingModule());
 	}
 
 	public GraphEditor(BindingModule module) {
@@ -65,11 +69,7 @@ public class GraphEditor implements Editor, GraphDocumentListener, InteractionLi
 		if (documents.containsKey(title)) {
 			throw new DocumentExistsException("A document with the name '" + title + "' already exists!");
 		}
-		final GraphDocument document = injector.getInstance(GraphDocument.class);
-		document.addGraphDocumentListener(this);
-		documents.put(title, document);
-		setActiveDocument(title);
-		return document;
+		return  createDocumentInstance(title);
 	}
 
 	@Override
@@ -85,14 +85,37 @@ public class GraphEditor implements Editor, GraphDocumentListener, InteractionLi
 		if (documents.containsKey(name)) {
 			throw new DocumentExistsException("A document with the name '" + name + "' already exists!");
 		}
-		final GraphDocument document = injector.getInstance(GraphDocument.class);
+		final GraphDocument document = createDocumentInstance(name);		
 		document.setProperties(documentProperties);
-		document.setTitle(name);
 		document.getGraph().setProperties(graphObjectProperties);
-		document.addGraphDocumentListener(this);
-		documents.put(document.getTitle(), document);
-		setActiveDocument(name);
 		return document;
+
+	}
+
+	GraphDocument createDocumentInstance(String title){
+		final GraphDocument document = injector.getInstance(GraphDocument.class);
+		document.setCanvasSet(canvases);
+		document.addGraphDocumentListener(this);
+		document.setTitle(title);
+		documents.put(document.getTitle(), document);
+		setActiveDocument(title);
+		return document;
+	}
+
+	@Override
+	public boolean closeDocument(String title) {
+		if (documents.containsKey(title)) {
+			throw new DocumentExistsException("A document with the name '" + title + "' could not be found!");
+		}
+		GraphDocument document = documents.remove(title);
+		document.removeGraphDocumentListener(this);
+		return true;
+	}
+
+	@Override
+	public void addCanvas(Canvas canvas) {
+
+		this.canvases .add(canvas);
 
 	}
 
@@ -138,7 +161,7 @@ public class GraphEditor implements Editor, GraphDocumentListener, InteractionLi
 	public void printDocument(String title) {
 
 		final GraphDocument document = getDocument(title);
-		//document.print(device, rPage, transform);
+		//document.print(canvas, rPage, transform);
 	}
 
 	@Override
@@ -297,4 +320,5 @@ public class GraphEditor implements Editor, GraphDocumentListener, InteractionLi
 		// TODO Auto-generated method stub
 
 	}
+
 }

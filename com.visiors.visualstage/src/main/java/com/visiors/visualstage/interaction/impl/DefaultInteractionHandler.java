@@ -1,7 +1,6 @@
 package com.visiors.visualstage.interaction.impl;
 
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +20,7 @@ import com.visiors.visualstage.interaction.impl.portedit.PortEditingMode;
 import com.visiors.visualstage.interaction.impl.readonlymode.ReadOnlyMode;
 import com.visiors.visualstage.interaction.impl.snap.AutoSnapMode;
 import com.visiors.visualstage.interaction.listener.InteractionListener;
-import com.visiors.visualstage.renderer.RenderingContext.Resolution;
+import com.visiors.visualstage.renderer.DrawingContext.Resolution;
 
 /**
  * This class allows registering different {@link InteractionMode}s and
@@ -156,33 +155,33 @@ public class DefaultInteractionHandler implements InteractionHandler {
 	/* Delegate all mouse and key events to currently active interaction-handler */
 
 	@Override
-	public void paintOnBackground(Device device, Rectangle visibleScreenRect, Resolution resolution) {
+	public void paintOnBackground(Canvas canvas) {
 
 		if (resolution != Resolution.SCREEN) {
 			return;
 		}
 		if (!combinedAction) {
-			modes.get(currentMode).paintOnBackground(device, visibleScreenRect);
+			modes.get(currentMode).paintOnBackground(canvas, visibleScreenRect);
 		} else {
 			String[] names = interactionGroup.get(currentMode);
 			for (String name : names) {
-				modes.get(name).paintOnBackground(device, visibleScreenRect);
+				modes.get(name).paintOnBackground(canvas, visibleScreenRect);
 			}
 		}
 	}
 
 	@Override
-	public void paintOnTop(Device device, Rectangle visibleScreenRect, Resolution resolution) {
+	public void paintOnTop(Canvas canvas) {
 
 		if (resolution != Resolution.SCREEN) {
 			return;
 		}
 		if (!combinedAction) {
-			modes.get(currentMode).paintOnTop(device);
+			modes.get(currentMode).paintOver(canvas);
 		} else {
 			String[] names = interactionGroup.get(currentMode);
 			for (String name : names) {
-				modes.get(name).paintOnTop(device);
+				modes.get(name).paintOver(canvas);
 			}
 		}
 	}

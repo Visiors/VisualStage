@@ -19,12 +19,12 @@ import com.visiors.visualstage.stage.DefaultStageDesigner;
 import com.visiors.visualstage.stage.StageDesigner;
 import com.visiors.visualstage.system.DefaultSystemUnitService;
 import com.visiors.visualstage.system.SystemUnit;
-import com.visiors.visualstage.transform.Transformer;
-import com.visiors.visualstage.transform.VSTransformer;
+import com.visiors.visualstage.transform.Transform;
+import com.visiors.visualstage.transform.DefaultTransformer;
 import com.visiors.visualstage.validation.DefaultValidator;
 import com.visiors.visualstage.validation.Validator;
 
-public class GraphEditorBindingModule extends BindingModule {
+public class DefaultGraphEditorBindingModule extends BindingModule {
 
 	// binding the guava event bus
 	public void bindEventBus(Binder binder) {
@@ -53,7 +53,7 @@ public class GraphEditorBindingModule extends BindingModule {
 	// binding the default transformer
 	public void bindAffineTransform(Binder binder) {
 
-		binder.bind(Transformer.class).to(VSTransformer.class);
+		binder.bind(Transform.class).to(DefaultTransformer.class);
 	}
 
 	// binding the default transformer

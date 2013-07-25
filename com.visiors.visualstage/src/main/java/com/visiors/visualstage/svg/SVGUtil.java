@@ -7,7 +7,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 
 import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
+import javax.xml.transform.Transform;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -120,7 +120,7 @@ public class SVGUtil {
 	public static String documentToStr(SVGDocument svgDocument) {
 
 		TransformerFactory factory = TransformerFactory.newInstance();
-		Transformer transformer;
+		Transform transformer;
 		try {
 			transformer = factory.newTransformer();
 			Source src = new DOMSource(svgDocument);

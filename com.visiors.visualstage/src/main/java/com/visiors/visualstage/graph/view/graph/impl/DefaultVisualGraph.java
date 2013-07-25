@@ -1,9 +1,7 @@
 package com.visiors.visualstage.graph.view.graph.impl;
 
-import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.image.ImageObserver;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -31,8 +29,8 @@ import com.visiors.visualstage.property.PropertyUnit;
 import com.visiors.visualstage.property.impl.DefaultPropertyList;
 import com.visiors.visualstage.property.impl.DefaultPropertyUnit;
 import com.visiors.visualstage.property.impl.PropertyBinder;
-import com.visiors.visualstage.renderer.RenderingContext;
-import com.visiors.visualstage.renderer.Resolution;
+import com.visiors.visualstage.renderer.DrawingContext;
+import com.visiors.visualstage.renderer.DrawingSubject;
 import com.visiors.visualstage.util.PropertyUtil;
 
 public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph, VisualNodeListener, EdgeViewListener
@@ -707,25 +705,25 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 
 		return new DefaultVisualGraph(this, id);
 	}
+	//
+	//	@Override
+	//	public Image getPreview(Context ctx, ImageObserver observer) {
+	//
+	//		final Image preview = super.getPreview(ctx, observer);
+	//
+	//		return preview;
+	//	}
 
 	@Override
-	public Image getPreview(RenderingContext ctx, ImageObserver observer) {
-
-		final Image preview = super.getPreview(ctx, observer);
-
-		return preview;
-	}
-
-	@Override
-	public String getViewDescriptor(RenderingContext context, Resolution resolution) {
+	public String getViewDescriptor(DrawingContext context, DrawingSubject subject) {
 
 		final VisualGraphObject[] objects = depot.getObjects();
 		if (objects.length == 0) {
-			return super.getViewDescriptor(context, resolution);
+			return super.getViewDescriptor(context, subject);
 		}
 
 		final StringBuffer svg = new StringBuffer();
-		final String subgraphDesc = super.getViewDescriptor(context, resolution);
+		final String subgraphDesc = super.getViewDescriptor(context, subject);
 		if (subgraphDesc != null) {
 			svg.append(subgraphDesc);
 		}
@@ -734,7 +732,7 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 
 		for (final VisualGraphObject vgo : objects) {
 
-			final String description = vgo.getViewDescriptor(context, resolution);
+			final String description = vgo.getViewDescriptor(context, null);
 			if (description != null && !description.isEmpty()) {
 				svg.append(description);
 			}
@@ -743,22 +741,6 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 
 		return svg.toString();
 	}
-
-	//
-	// private void example() {
-	//
-	// final List<GraphObjectView> allObjects = new
-	// ArrayList<GraphObjectView>();
-	// GraphVisitor visitor = new GraphVisitor() {
-	//
-	// public void visit(GraphView subgraph, int level) {
-	//
-	// allObjects.add(subgraph.getGraphObjects(false));
-	// }
-	// };
-	// GraphUtil.visitSubgraphs(visualGraph, visitor, true, 0);
-	//
-	// }
 
 	@Override
 	public void visitNodes(GraphNodeVisitor visitor, boolean preOrder) {

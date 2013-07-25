@@ -6,8 +6,14 @@ import java.awt.Rectangle;
 import java.util.List;
 
 import com.visiors.visualstage.constants.GraphStageConstants;
+import com.visiors.visualstage.graph.view.VisualGraphObject;
+import com.visiors.visualstage.graph.view.node.Port;
+import com.visiors.visualstage.graph.view.node.PortSet;
+import com.visiors.visualstage.graph.view.node.VisualNode;
+import com.visiors.visualstage.graph.view.node.impl.DefaultPort;
+import com.visiors.visualstage.graph.view.node.impl.DefaultPortSet;
 import com.visiors.visualstage.interaction.impl.BaseInteractionHandler;
-import com.visiors.visualstage.renderer.cache.GraphObjectView;
+import com.visiors.visualstage.renderer.Canvas;
 
 public class PortEditingMode extends BaseInteractionHandler {
 
@@ -298,48 +304,48 @@ public class PortEditingMode extends BaseInteractionHandler {
 	}
 
 	@Override
-	public void paintOnBackground(Device device, Rectangle r) {
+	public void paintOnBackground(Canvas canvas, Rectangle r) {
 
 		if (subject == null || portID == -1) {
 			return;
 		}
 
 		// Guide lines
-		device.setColor(Color.lightGray);
+		canvas.setColor(Color.lightGray);
 
 		Rectangle b = subject.getBounds();
 		b = visualGraph.getTransform().transformToScreen(b);
-		// device.drawLine(b.x - 50,
+		// canvas.drawLine(b.x - 50,
 		// b.y + b.height / 2,
 		// b.x + b.width + 50,
 		// b.y + b.height / 2);
-		// device.drawLine(b.x + b.width /2,
+		// canvas.drawLine(b.x + b.width /2,
 		// b.y - 50,
 		// b.x + b.width / 2,
 		// b.y + b.height + 50);
 
 		// write ratio
-		device.setColor(Color.black);
+		canvas.setColor(Color.black);
 		Port port = subject.getPortSet().getPortByID(portID);
-		device.drawString("x-ratio: " + port.getXRatio() + "%", b.x + b.width / 2 + 10, b.y
+		canvas.drawString("x-ratio: " + port.getXRatio() + "%", b.x + b.width / 2 + 10, b.y
 				+ b.height + 50);
-		device.drawString("y-ratio: " + port.getYRatio() + "%", b.x + b.width / 2 + 10, b.y
+		canvas.drawString("y-ratio: " + port.getYRatio() + "%", b.x + b.width / 2 + 10, b.y
 				+ b.height + 60);
 	}
 
 	@Override
-	public void paintOnTop(Device device, Rectangle r) {
+	public void paintOnTop(Canvas canvas, Rectangle r) {
 
-		drawPortsAcceptingInterval(device);
+		drawPortsAcceptingInterval(canvas);
 
 	}
 
-	private void drawPortsAcceptingInterval(Device device) {
+	private void drawPortsAcceptingInterval(Canvas canvas) {
 
 		if (subject == null) {
 			return;
 		}
-		device.setColor(Color.gray);
+		canvas.setColor(Color.gray);
 		Port[] ports = subject.getPortSet().getPorts();
 		double r = 50;
 		for (int i = 0; i < ports.length; i++) {
@@ -351,15 +357,15 @@ public class PortEditingMode extends BaseInteractionHandler {
 			double start = Math.toRadians(angles[0]);
 			double end = Math.toRadians(angles[1]);
 			Point pt = visualGraph.getTransform().transformToScreen(port.getPosition());
-			device.setColor(Color.black);
+			canvas.setColor(Color.black);
 
 			int dx1 = (int) (6 * Math.cos(start));
 			int dy1 = (int) (6 * Math.sin(start));
 			int dx2 = (int) (r * Math.cos(start));
 			int dy2 = (int) (r * Math.sin(start));
-			device.drawLine(pt.x + dx1, pt.y - dy1, pt.x + dx2, pt.y - dy2);
+			canvas.drawLine(pt.x + dx1, pt.y - dy1, pt.x + dx2, pt.y - dy2);
 			angleStartHandle.setBounds(pt.x + dx2 - 4, pt.y - dy2 - 4, 7, 7);
-			device.fillOval(angleStartHandle.x, angleStartHandle.y, angleStartHandle.width,
+			canvas.fillOval(angleStartHandle.x, angleStartHandle.y, angleStartHandle.width,
 					angleStartHandle.height);
 
 			dx1 = (int) (6 * Math.cos(end));
@@ -367,21 +373,21 @@ public class PortEditingMode extends BaseInteractionHandler {
 			dx2 = (int) (r * Math.cos(end));
 			dy2 = (int) (r * Math.sin(end));
 
-			device.drawLine(pt.x + dx1, pt.y - dy1, pt.x + dx2, pt.y - dy2);
+			canvas.drawLine(pt.x + dx1, pt.y - dy1, pt.x + dx2, pt.y - dy2);
 
 			angleEndHandle.setBounds(pt.x + dx2 - 4, pt.y - dy2 - 4, 7, 7);
-			device.fillOval(angleEndHandle.x, angleEndHandle.y, angleEndHandle.width,
+			canvas.fillOval(angleEndHandle.x, angleEndHandle.y, angleEndHandle.width,
 					angleEndHandle.height);
 			dx2 = (int) ((r + 15) * Math.cos(start));
 			dy2 = (int) ((r + 15) * Math.sin(start));
-			device.drawString("start: " + angles[0] + "°", pt.x + dx2, pt.y - dy2);
+			canvas.drawString("start: " + angles[0] + "°", pt.x + dx2, pt.y - dy2);
 			int offset = 0;
 			if ((angles[0] == 0 && angles[1] == 360)) {
 				offset -= 12;
 			}
 			dx2 = (int) ((r + 15) * Math.cos(end));
 			dy2 = (int) ((r + 15) * Math.sin(end)) + offset;
-			device.drawString("end: " + angles[1] + "°", pt.x + dx2, pt.y - dy2);
+			canvas.drawString("end: " + angles[1] + "°", pt.x + dx2, pt.y - dy2);
 
 		}
 	}

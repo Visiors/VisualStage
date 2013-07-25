@@ -5,7 +5,7 @@ import java.awt.print.PrinterJob;
 
 import com.visiors.visualstage.document.ViewListener;
 import com.visiors.visualstage.handler.ScopeAwareHandler;
-import com.visiors.visualstage.renderer.Device;
+import com.visiors.visualstage.renderer.DrawingContext;
 
 public interface StageDesigner extends ScopeAwareHandler {
 
@@ -13,9 +13,9 @@ public interface StageDesigner extends ScopeAwareHandler {
 		page, plane, none
 	}
 
-	public void paintBehind(Device device);
+	public void paintBehind(DrawingContext context);
 
-	public void paintOnTop(Device device);
+	public void paintOver(DrawingContext context);
 
 	public PrinterJob getPrinterJob();
 

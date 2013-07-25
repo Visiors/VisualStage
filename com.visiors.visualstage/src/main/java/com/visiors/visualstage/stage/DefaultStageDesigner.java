@@ -10,12 +10,14 @@ import java.util.List;
 
 import com.google.inject.Inject;
 import com.visiors.visualstage.document.GraphDocument;
+import com.visiors.visualstage.document.ViewListener;
 import com.visiors.visualstage.graph.view.graph.VisualGraph;
-import com.visiors.visualstage.renderer.Device;
+import com.visiors.visualstage.renderer.Canvas;
+import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.renderer.Resolution;
 import com.visiors.visualstage.stage.Grid.GridStyle;
 import com.visiors.visualstage.system.SystemUnit;
-import com.visiors.visualstage.transform.Transformer;
+import com.visiors.visualstage.transform.Transform;
 import com.visiors.visualstage.util.PrinterUtil;
 
 public class DefaultStageDesigner implements StageDesigner {
@@ -50,7 +52,7 @@ public class DefaultStageDesigner implements StageDesigner {
 	@Override
 	public void setScope(GraphDocument graphDocument) {
 
-		final Transformer transform = GraphView.getTransform();
+		final Transform transform = GraphView.getTransformer();
 		grid = new Grid(transform);
 		hRuler = new Ruler(Ruler.HORIZONTAL, transform, rulerSize);
 		vRuler = new Ruler(Ruler.VERTICAL, transform, rulerSize);
@@ -130,41 +132,41 @@ public class DefaultStageDesigner implements StageDesigner {
 	}
 
 	@Override
-	public void paintBehind(Device device) {
+	public void paintBehind(DrawingContext context) {
 
-		final Rectangle canvasBounds = device.getCanvasBounds();
+		final Rectangle canvasBounds = context.getCanvasBounds();
 
 		if (pageView == ViewMode.page) {
-			drawPages(device, canvasBounds, device.getResolution());
+			drawPages(context, canvasBounds, context.getResolution());
 		} else if (pageView == ViewMode.plane) {
-			fillBackground(device, canvasBounds, Color.white);
-			if (showGrid && device.getResolution() == Resolution.SCREEN) {
-				grid.draw(device, canvasBounds, systemUnit.getPixelsPerUnit(), GridStyle.Line);
+			fillBackground(context, canvasBounds, Color.white);
+			if (showGrid && context.getResolution() == Resolution.SCREEN) {
+				grid.draw(context, canvasBounds, systemUnit.getPixelsPerUnit(), GridStyle.Line);
 			}
 
 		}
 	}
 
 	@Override
-	public void paintOnTop(Device device) {
+	public void paintOver(DrawingContext context) {
 
-		if (showRuler && device.getResolution() == Resolution.SCREEN) {
-			paintRulers(device);
+		if (showRuler && context.getResolution() == Resolution.SCREEN) {
+			paintRulers(context);
 		}
 	}
 
-	private void paintRulers(Device device) {
+	private void paintRulers(Canvas canvas) {
 
-		final Rectangle canvasBounds = device.getCanvasBounds();
-		hRuler.draw(device, canvasBounds, systemUnit.getPixelsPerUnit(), 5, "cm");
-		vRuler.draw(device, canvasBounds, systemUnit.getPixelsPerUnit(), 5, "cm");
-		cornerButton.draw(device, canvasBounds);
+		final Rectangle canvasBounds = canvas.getCanvasBounds();
+		hRuler.draw(canvas, canvasBounds, systemUnit.getPixelsPerUnit(), 5, "cm");
+		vRuler.draw(canvas, canvasBounds, systemUnit.getPixelsPerUnit(), 5, "cm");
+		cornerButton.draw(canvas, canvasBounds);
 	}
 
-	private void drawPages(Device device, Rectangle canvasBounds, Resolution resolution) {
+	private void drawPages(Canvas canvas, Rectangle canvasBounds, Resolution resolution) {
 
 		// required space
-		final Transformer transform = GraphView.getTransform();
+		final Transform transform = GraphView.getTransformer();
 		final double wImageable = pageFormat.getImageableWidth();
 		final double hImageable = pageFormat.getImageableHeight();
 		final double leftMargin = pageFormat.getImageableX();
@@ -224,16 +226,16 @@ public class DefaultStageDesigner implements StageDesigner {
 				(int) (topMargin + totalImageableHeight + bottomMargin));
 		Rectangle rPage = transform.transformToScreen(rPageBoundary);
 		// paper
-		device.setColor(Color.white);
-		device.fillRect(rPage.x, rPage.y, rPage.width, rPage.height);
+		canvas.setColor(Color.white);
+		canvas.fillRect(rPage.x, rPage.y, rPage.width, rPage.height);
 
 		// shadow
-		device.setColor(pageShadowColor);
-		device.fillRect(rPage.x + rPage.width + 1, rPage.y + 4, 4, rPage.height - 3);
-		device.fillRect(rPage.x + 4, rPage.y + rPage.height + 1, rPage.width + 1, 4);
+		canvas.setColor(pageShadowColor);
+		canvas.fillRect(rPage.x + rPage.width + 1, rPage.y + 4, 4, rPage.height - 3);
+		canvas.fillRect(rPage.x + 4, rPage.y + rPage.height + 1, rPage.width + 1, 4);
 
 		// page frame
-		device.drawRect(rPage.x, rPage.y, rPage.width, rPage.height);
+		canvas.drawRect(rPage.x, rPage.y, rPage.width, rPage.height);
 
 		if (showGrid && resolution == Resolution.SCREEN) {
 			final Rectangle rVisible = transform.transformToScreen(new Rectangle((int) (xPage + leftMargin),
@@ -245,37 +247,37 @@ public class DefaultStageDesigner implements StageDesigner {
 			// x2 = Math.min(a, b)
 			// rVisible.width = Math.min(rVisible.width, r.x + r.width - rVisible.x);
 			// rVisible.y = Math.max(rVisible.y, r.y - (int) ((r.y - rVisible.y) % transUnit)) ;
-			grid.draw(device, rVisible, systemUnit.getPixelsPerUnit(), GridStyle.Line);
-			device.drawRect(rVisible.x, rVisible.y, rVisible.width, rVisible.height);
+			grid.draw(canvas, rVisible, systemUnit.getPixelsPerUnit(), GridStyle.Line);
+			canvas.drawRect(rVisible.x, rVisible.y, rVisible.width, rVisible.height);
 		}
 
 		// page divider
 		if (columns > 1 || rows > 1) {
 
-			device.setStroke(1.0f, new float[] { 1, 2 });
-			device.setColor(Color.darkGray);
+			canvas.setStroke(1.0f, new float[] { 1, 2 });
+			canvas.setColor(Color.darkGray);
 
 			double scale = transform.getScale();
 			int x = (int) (rPage.x + (leftMargin + wImageable) * scale) - 2;
 			int y = rPage.y;
 			for (int i = 1; i < columns; i++, x += wImageable * scale) {
-				device.drawLine(x, y, x, (int) (y + (totalImageableHeight + topMargin + bottomMargin) * scale));
+				canvas.drawLine(x, y, x, (int) (y + (totalImageableHeight + topMargin + bottomMargin) * scale));
 			}
 			x = rPage.x;
 			y = (int) (rPage.y + (topMargin + hImageable) * scale) - 2;
 			for (int i = 1; i < rows; i++, y += hImageable * scale) {
-				device.drawLine(x, y, (int) (x + (totalImageableWith + leftMargin + rightMargin) * scale), y);
+				canvas.drawLine(x, y, (int) (x + (totalImageableWith + leftMargin + rightMargin) * scale), y);
 			}
 		}
 	}
 
-	private void fillBackground(Device device, Rectangle r, Color color) {
+	private void fillBackground(Canvas canvas, Rectangle r, Color color) {
 
 		// screen
 		final Rectangle rScreen = new Rectangle(r);
 		Rectangle rg = (rScreen);
-		device.setColor(color);
-		device.fillRect(rg.x, rg.y, rg.width, rg.height);
+		canvas.setColor(color);
+		canvas.fillRect(rg.x, rg.y, rg.width, rg.height);
 	}
 
 	@Override

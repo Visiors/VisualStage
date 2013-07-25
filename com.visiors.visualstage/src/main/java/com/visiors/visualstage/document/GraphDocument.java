@@ -1,16 +1,17 @@
 package com.visiors.visualstage.document;
 
 import java.awt.Rectangle;
+import java.util.Set;
 
 import com.visiors.visualstage.document.listener.GraphDocumentListener;
 import com.visiors.visualstage.graph.view.graph.VisualGraph;
 import com.visiors.visualstage.graph.view.graph.listener.GraphViewListener;
 import com.visiors.visualstage.handler.Undoable;
 import com.visiors.visualstage.property.PropertyOwner;
-import com.visiors.visualstage.renderer.Device;
-import com.visiors.visualstage.renderer.RenderingContext;
+import com.visiors.visualstage.renderer.Canvas;
+import com.visiors.visualstage.renderer.DrawingSubject;
 import com.visiors.visualstage.stage.StageDesigner;
-import com.visiors.visualstage.transform.Transformer;
+import com.visiors.visualstage.transform.Transform;
 import com.visiors.visualstage.validation.Validator;
 
 public interface GraphDocument extends MultiLayerDocument, PropertyOwner, Undoable {
@@ -21,7 +22,7 @@ public interface GraphDocument extends MultiLayerDocument, PropertyOwner, Undoab
 
 	public VisualGraph getGraph();
 
-	public String getSVGDocument(Device device, RenderingContext context, double scale);
+	public String getSVGDocument(DrawingSubject context);
 
 	public StageDesigner getStageDesigner();
 
@@ -38,9 +39,9 @@ public interface GraphDocument extends MultiLayerDocument, PropertyOwner, Undoab
 	//
 	// public boolean isFiringEvents();
 
-	public void draw(Device device);
+	public void draw();
 
-	public void print(Device device, Rectangle rPage, Transformer transform);
+	public void print(Canvas canvas, Rectangle rPage, Transform transform);
 
 	public void setSvgBackground(String svgDefID);
 
@@ -57,5 +58,7 @@ public interface GraphDocument extends MultiLayerDocument, PropertyOwner, Undoab
 	public void addGraphViewListener(GraphViewListener listener);
 
 	public void removeGraphViewListener(GraphViewListener listener);
+
+	public void setCanvasSet(Set<Canvas> canvases);
 
 }

@@ -1,13 +1,11 @@
 package com.visiors.visualstage.interaction;
 
-import java.awt.Rectangle;
 import java.util.List;
 
 import com.visiors.visualstage.handler.GraphViewHandler;
 import com.visiors.visualstage.handler.ScopeAwareHandler;
 import com.visiors.visualstage.interaction.listener.InteractionListener;
-import com.visiors.visualstage.renderer.Device;
-import com.visiors.visualstage.renderer.RenderingContext.Resolution;
+import com.visiors.visualstage.renderer.Canvas;
 
 public interface InteractionHandler extends Interactable, GraphViewHandler, ScopeAwareHandler {
 
@@ -27,8 +25,8 @@ public interface InteractionHandler extends Interactable, GraphViewHandler, Scop
 
 	public void combineModes(String[] modes, String alias);
 
-	public void paintOnBackground(Device device, Rectangle visibleScreenRect, Resolution resolution);
+	public void paintOnBackground(Canvas canvas);
 
-	public void paintOnTop(Device device, Rectangle visibleScreenRect, Resolution resolution);
+	public void paintOnTop(Canvas canvas);
 
 }

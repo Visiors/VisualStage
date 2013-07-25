@@ -3,7 +3,7 @@ package com.visiors.visualstage.stage;
 import java.awt.Color;
 import java.awt.Rectangle;
 
-import com.visiors.visualstage.renderer.Device;
+import com.visiors.visualstage.renderer.Canvas;
 
 public class CornerButton {
 
@@ -24,15 +24,15 @@ public class CornerButton {
         lineColor = new Color(0x4b5d6f);// UIManager.getColor("MinuetLnF.Ruler.Button");
     }
 
-    public void draw(Device device, Rectangle r) {
+    public void draw(Canvas canvas, Rectangle r) {
 
-        device.setColor(bkCorner);
-        device.fillRect(r.x, r.y, size, size);
+        canvas.setColor(bkCorner);
+        canvas.fillRect(r.x, r.y, size, size);
 
-        device.setColor(lineColor);
-        // device.drawRect(r.x, r.y, size, size);
-        device.drawLine(r.x, r.y + size, r.x + size, r.y + size);
-        device.drawLine(r.x + size / 2 - 3, r.y + size / 2 - 3, r.x + size / 2 + 3, r.y + size / 2 + 3);
+        canvas.setColor(lineColor);
+        // canvas.drawRect(r.x, r.y, size, size);
+        canvas.drawLine(r.x, r.y + size, r.x + size, r.y + size);
+        canvas.drawLine(r.x + size / 2 - 3, r.y + size / 2 - 3, r.x + size / 2 + 3, r.y + size / 2 + 3);
     }
 
 }

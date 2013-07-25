@@ -6,9 +6,9 @@ import java.awt.Rectangle;
 
 import com.visiors.visualstage.interaction.Interactable;
 import com.visiors.visualstage.property.PropertyOwner;
-import com.visiors.visualstage.renderer.RenderingContext;
-import com.visiors.visualstage.renderer.Resolution;
-import com.visiors.visualstage.transform.Transformer;
+import com.visiors.visualstage.renderer.DrawingContext;
+import com.visiors.visualstage.renderer.DrawingSubject;
+import com.visiors.visualstage.transform.Transform;
 
 public interface Shape extends Interactable, PropertyOwner {
 
@@ -28,11 +28,11 @@ public interface Shape extends Interactable, PropertyOwner {
 
 	public String getStyleID();
 
-	public void setTransformer(Transformer transform);
+	public void setTransformer(Transform transform);
 
-	public Transformer getTransformer();
+	public Transform getTransformer();
 
-	public String getViewDescriptor(RenderingContext context, Resolution resolution);
+	public String getViewDescriptor(DrawingContext context, DrawingSubject subject);
 
 	public void setBounds(Rectangle bounds);
 

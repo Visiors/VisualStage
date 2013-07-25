@@ -43,7 +43,7 @@ public class MarqueeSelectionMode extends BaseInteractionHandler {
 
 		VisualGraphObject[] hit = visualGraph.getHitObjects(pt);
 		if (hit.length == 0) {
-			final Transformer transformer = visualGraph.getTransform();
+			final Transform transformer = visualGraph.getTransform();
 			mousePressedPos = transformer.transformToScreen(pt);
 		}
 		return false;
@@ -65,7 +65,7 @@ public class MarqueeSelectionMode extends BaseInteractionHandler {
 	public boolean mouseDragged(Point pt, int button, int functionKey) {
 
 		if (mousePressedPos != null) {
-			final Transformer transformer = visualGraph.getTransform();
+			final Transform transformer = visualGraph.getTransform();
 			setMarqueeRect(mousePressedPos, transformer.transformToScreen(pt));
 			visualGraph.updateView();
 		}
@@ -94,7 +94,7 @@ public class MarqueeSelectionMode extends BaseInteractionHandler {
 		Rectangle robj;
 		VisualGraphObject[] objects = visualGraph.getGraphObjects();
 
-		final Transformer transformer = visualGraph.getTransform();
+		final Transform transformer = visualGraph.getTransform();
 		for (int i = 0; i < objects.length; i++) {
 			vobj = objects[i];
 			robj = transformer.transformToScreen(vobj.getBounds());
@@ -135,16 +135,16 @@ public class MarqueeSelectionMode extends BaseInteractionHandler {
 	}
 
 	@Override
-	public void paintOnBackground(Device device, Rectangle r) {
+	public void paintOnBackground(Canvas canvas, Rectangle r) {
 
 		if (!marqueeRect.isEmpty()) {
 
-			device.setStroke(1.0f, new float[] { 3, 1 });
-			device.setColor(lineColor);
-			// device.setXORMode(new Color(200, 220, 255));
-			device.drawRect(marqueeRect.x, marqueeRect.y, marqueeRect.width - 1,
+			canvas.setStroke(1.0f, new float[] { 3, 1 });
+			canvas.setColor(lineColor);
+			// canvas.setXORMode(new Color(200, 220, 255));
+			canvas.drawRect(marqueeRect.x, marqueeRect.y, marqueeRect.width - 1,
 					marqueeRect.height - 1);
-			// device.setPaintMode();
+			// canvas.setPaintMode();
 		}
 	}
 }

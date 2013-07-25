@@ -5,18 +5,19 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.image.ImageObserver;
 
-import com.visiors.visualstage.renderer.RenderingContext;
-import com.visiors.visualstage.renderer.RenderingContext.Subject;
+import com.visiors.visualstage.renderer.Context;
+import com.visiors.visualstage.renderer.DrawingSubject;
+import com.visiors.visualstage.renderer.DrawingContext.Subject;
 import com.visiors.visualstage.svg.SVGDocumentBuilder;
 import com.visiors.visualstage.svg.SVGUtil;
-import com.visiors.visualstage.transform.Transformer;
+import com.visiors.visualstage.transform.Transform;
 
 public class VisualObjectPreviewGenerator implements Runnable {
 
     private final VisualGraphObject vgo;
     private String[][]              svgAttributes;
     private Thread                  t;
-    private RenderingContext        context;
+    private DrawingSubject        context;
     private ImageObserver           observer;
 
     public VisualObjectPreviewGenerator(VisualGraphObject vgo) {
@@ -24,7 +25,7 @@ public class VisualObjectPreviewGenerator implements Runnable {
         this.vgo = vgo;
     }
 
-    public synchronized void createPreview(RenderingContext context, ImageObserver observer) {
+    public synchronized void createPreview(DrawingSubject context, ImageObserver observer) {
 
         this.context = context;
         this.observer = observer;
@@ -34,14 +35,14 @@ public class VisualObjectPreviewGenerator implements Runnable {
         t.start();
     }
 
-    public synchronized Image createPreview(RenderingContext context) {
+    public synchronized Image createPreview(Context context) {
 
         String desc = vgo.getSVGDescription(context, false);
         if (desc == null) {
             return null;
         }
         svgAttributes = vgo.getSVGDocumentAttributes();
-        Transformer transform = vgo.getTransform();
+        Transform transform = vgo.getTransform();
         final Rectangle viewBox = transform.transformToScreen(vgo.getExtendedBoundary());
         viewBox.x -= transform.getTranslateX();
         viewBox.y -= transform.getTranslateY();

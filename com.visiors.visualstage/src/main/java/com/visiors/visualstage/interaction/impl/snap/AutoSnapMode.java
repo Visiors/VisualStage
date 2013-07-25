@@ -75,7 +75,7 @@ public class AutoSnapMode extends BaseInteractionHandler {
 		}
 
 		if (isShowPositionLines()) {
-			final Transformer transform = visualGraph.getTransform();
+			final Transform transform = visualGraph.getTransform();
 			cursor = transform.transformToScreen(pt);
 			visualGraph.updateView();
 		}
@@ -94,7 +94,7 @@ public class AutoSnapMode extends BaseInteractionHandler {
 		}
 
 		if (isShowPositionLines()) {
-			final Transformer transform = visualGraph.getTransform();
+			final Transform transform = visualGraph.getTransform();
 			cursor = transform.transformToScreen(pt);
 			visualGraph.updateView();
 		}
@@ -112,23 +112,23 @@ public class AutoSnapMode extends BaseInteractionHandler {
 	}
 
 	@Override
-	public void paintOnBackground(Device device, Rectangle r) {
+	public void paintOnBackground(Canvas canvas, Rectangle r) {
 
 	}
 
 	@Override
-	public void paintOnTop(Device device, Rectangle r) {
+	public void paintOnTop(Canvas canvas, Rectangle r) {
 
 		if (showPositionLines && cursor != null) {
-			paintPositionLines(device, r);
+			paintPositionLines(canvas, r);
 		}
 	}
 
-	private void paintPositionLines(Device device, Rectangle r) {
+	private void paintPositionLines(Canvas canvas, Rectangle r) {
 
-		device.setColor(Color.red);
-		device.drawLine(r.x, cursor.y, r.x + r.width, cursor.y);
-		device.drawLine(cursor.x, r.y, cursor.x, r.y + r.height);
+		canvas.setColor(Color.red);
+		canvas.drawLine(r.x, cursor.y, r.x + r.width, cursor.y);
+		canvas.drawLine(cursor.x, r.y, cursor.x, r.y + r.height);
 	}
 
 	void snapToGrid(VisualNode node) {

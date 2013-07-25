@@ -3,9 +3,11 @@ package com.visiors.visualstage.document.impl;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
+import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.visiors.visualstage.constants.PropertyConstants;
 import com.visiors.visualstage.document.GraphDocument;
@@ -21,13 +23,14 @@ import com.visiors.visualstage.handler.UndoRedoHandler;
 import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.property.impl.DefaultPropertyList;
 import com.visiors.visualstage.property.impl.PropertyBinder;
-import com.visiors.visualstage.renderer.Device;
-import com.visiors.visualstage.renderer.RenderingContext;
-import com.visiors.visualstage.renderer.RenderingContext.Subject;
+import com.visiors.visualstage.renderer.Canvas;
+import com.visiors.visualstage.renderer.DefaultDrawingContext;
+import com.visiors.visualstage.renderer.DrawingContext;
+import com.visiors.visualstage.renderer.DrawingSubject;
 import com.visiors.visualstage.stage.StageDesigner;
 import com.visiors.visualstage.stage.StageDesigner.ViewMode;
 import com.visiors.visualstage.svg.SVGDocumentBuilder;
-import com.visiors.visualstage.transform.Transformer;
+import com.visiors.visualstage.transform.Transform;
 import com.visiors.visualstage.validation.Validator;
 
 /**
@@ -58,6 +61,7 @@ public class DefaultGraphDocument implements GraphDocument {
 	private String svgBackgroundId;
 	private String svgFilterId;
 	private String svgTransformId;
+	private Set<Canvas> canvases = Sets.newHashSet();
 
 	public DefaultGraphDocument(String title) {
 
@@ -83,15 +87,22 @@ public class DefaultGraphDocument implements GraphDocument {
 
 		// create the properties definition
 		PropertyList properties = new DefaultPropertyList(PropertyConstants.DOCUMENT_PROPERTY_PREFIX);
-		//		properties.add(new DefaultPropertyUnit(PropertyConstants.DOCUMENT_PROPERTY_ZOOM, getZoom()));
-		//		properties.add(new DefaultPropertyUnit(PropertyConstants.DOCUMENT_PROPERTY_X_SCROLL, getXScrollPosition()));
-		//		properties.add(new DefaultPropertyUnit(PropertyConstants.DOCUMENT_PROPERTY_Y_SCROLL, getYScrollPosition()));
+		// properties.add(new
+		// DefaultPropertyUnit(PropertyConstants.DOCUMENT_PROPERTY_ZOOM,
+		// getZoom()));
+		// properties.add(new
+		// DefaultPropertyUnit(PropertyConstants.DOCUMENT_PROPERTY_X_SCROLL,
+		// getXScrollPosition()));
+		// properties.add(new
+		// DefaultPropertyUnit(PropertyConstants.DOCUMENT_PROPERTY_Y_SCROLL,
+		// getYScrollPosition()));
 
 		propertyBinder = new PropertyBinder(this);
 	}
 
 	@Override
 	public PropertyList getProperties() {
+
 		return properties;
 	}
 
@@ -101,6 +112,12 @@ public class DefaultGraphDocument implements GraphDocument {
 		this.properties = properties;
 	}
 
+	@Override
+	public void setCanvasSet(Set<Canvas> canvases) {
+
+		this.canvases = canvases;
+
+	}
 
 	@Override
 	public void setActiveLayer(int id) {
@@ -171,7 +188,6 @@ public class DefaultGraphDocument implements GraphDocument {
 		return layerManager.getLayerCount();
 	}
 
-
 	@Override
 	public VisualGraph getGraph() {
 
@@ -185,7 +201,6 @@ public class DefaultGraphDocument implements GraphDocument {
 		enableImageBuffering = enable;
 	}
 
-
 	@Override
 	public void enableDrawing(boolean doDrawing) {
 
@@ -195,37 +210,42 @@ public class DefaultGraphDocument implements GraphDocument {
 		}
 	}
 
-
 	// /////////////////////////////////////////////////
 
 	@Override
-	public void draw(Device device) {
+	public void draw() {
 
-		if (!doDrawing) {
-			return;
+		if (doDrawing) {
+			for (Canvas canvas : canvases) {
+				draw(canvas);
+			}
 		}
+	}
 
-		// context.clippingArea = transform.toGraph(visibleScreenRect);
+	protected void draw(Canvas canvas) {
 
-		stageDesigner.paintBehind(device);
+		DrawingContext context = new DefaultDrawingContext(canvas);
+
+		stageDesigner.paintBehind(context);
 
 		final VisualGraph graph = getGraph();
 		// keep always the main graph view fit to the screen
-		graph.setBounds(device.getCanvasBounds());
+		graph.setBounds(context.getBounds());
 
-		// graph.enableImageBuffering(enableImageBuffering);
-		final RenderingContext context = new RenderingContext(Subject.OBJECT);
+		graph.getViewDescriptor(context, DrawingSubject.OBJECT);
+		graph.getViewDescriptor(context, DrawingSubject.SELECTION_INDICATORS);
+		graph.getViewDescriptor(context, DrawingSubject.PORTS);
 
-		graph.getViewDescriptor(context, device.getResolution());
+		stageDesigner.paintOver(context);
 
-		stageDesigner.paintOnTop(device);
+		canvas.draw(0, 0, context.getOffscreenImage());
 	}
 
 	@Override
-	public String getSVGDocument(Device device, RenderingContext context, double scale) {
+	public String getSVGDocument(DrawingSubject context) {
 
-		context.subject = Subject.OBJECT;
-		return null;//getGraph().getSVGDocument(device, context, false, scale);
+
+		return null;// getGraph().getSVGDocument(canvas, context, false, scale);
 	}
 
 	@Override
@@ -252,24 +272,25 @@ public class DefaultGraphDocument implements GraphDocument {
 	}
 
 	@Override
-	public void print(Device device, Rectangle rPage, Transformer printTransformer) {
+	public void print(Canvas canvas, Rectangle rPage, Transform printTransformer) {
 
-		//		final VisualGraph visualGraph = getGraph();
-		//		final Transformer viewTransform = visualGraph.getTransformer();
-		//		visualGraph.setTransformer(printTransformer);
-		//		try {
-		//			final RenderingContext context = new RenderingContext(RenderingContext.Resolution.SCREEN, Subject.OBJECT,
-		//					false);
-		//			context.subject = Subject.OBJECT;
+		// final VisualGraph visualGraph = getGraph();
+		// final Transform viewTransform = visualGraph.getTransformer();
+		// visualGraph.setTransformer(printTransformer);
+		// try {
+		// final DrawingContext context = new
+		// DrawingContext(DrawingContext.Resolution.SCREEN, Subject.OBJECT,
+		// false);
+		// context.subject = Subject.OBJECT;
 		//
-		//			// context.clippingArea = transform.toGraph(rPage);
+		// // context.clippingArea = transform.toGraph(rPage);
 		//
-		//			visualGraph.drawContent(device, context);
+		// visualGraph.drawContent(canvas, context);
 		//
-		//		} finally {
+		// } finally {
 		//
-		//			visualGraph.setTransformer(viewTransform);
-		//		}
+		// visualGraph.setTransformer(viewTransform);
+		// }
 
 	}
 

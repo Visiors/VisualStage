@@ -8,7 +8,7 @@ import com.visiors.visualstage.graph.UIDGen;
 import com.visiors.visualstage.graph.view.shape.LayoutData;
 import com.visiors.visualstage.graph.view.shape.Shape;
 import com.visiors.visualstage.property.PropertyList;
-import com.visiors.visualstage.transform.Transformer;
+import com.visiors.visualstage.transform.Transform;
 import com.visiors.visualstage.util.PropertyUtil;
 
 public abstract class BaseShape implements Shape {
@@ -18,7 +18,7 @@ public abstract class BaseShape implements Shape {
 	protected String name;
 	protected boolean selected;
 	protected boolean highlighted;
-	protected Transformer transformer;
+	protected Transform transformer;
 	protected Rectangle boundary;
 	protected Insets margin;
 	protected final Unit widthUnit = Unit.PERCENT;
@@ -84,13 +84,13 @@ public abstract class BaseShape implements Shape {
 	}
 
 	@Override
-	public Transformer getTransformer() {
+	public Transform getTransformer() {
 
 		return transformer;
 	}
 
 	@Override
-	public void setTransformer(Transformer transform) {
+	public void setTransformer(Transform transform) {
 
 		this.transformer = transform;
 	}
