@@ -1,6 +1,6 @@
 package com.visiors.visualstage.property;
 
-import java.beans.*;
+import java.beans.PropertyChangeListener;
 
 public interface IPropertyChangeSupport {
 
