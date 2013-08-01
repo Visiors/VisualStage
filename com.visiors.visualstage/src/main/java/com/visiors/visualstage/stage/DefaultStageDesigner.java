@@ -44,7 +44,6 @@ public class DefaultStageDesigner implements StageDesigner {
 	@Inject
 	SystemUnit systemUnit;
 
-	@Inject
 	public DefaultStageDesigner() {
 
 	}
@@ -132,7 +131,7 @@ public class DefaultStageDesigner implements StageDesigner {
 	}
 
 	@Override
-	public void paintBehind(DrawingContext context) {
+	public void paintBehind(Canvas  canvas, DrawingContext context) {
 
 		final Rectangle canvasBounds = context.getCanvasBounds();
 
@@ -148,7 +147,7 @@ public class DefaultStageDesigner implements StageDesigner {
 	}
 
 	@Override
-	public void paintOver(DrawingContext context) {
+	public void paintOver(Canvas canvas, DrawingContext context) {
 
 		if (showRuler && context.getResolution() == Resolution.SCREEN) {
 			paintRulers(context);

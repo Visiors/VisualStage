@@ -32,17 +32,7 @@ public abstract class BaseShape implements Shape {
 
 	protected BaseShape() {
 
-		this(-1);
-	}
-
-	protected BaseShape( long id) {
-
-		if (id == -1) {
-			id = UIDGen.getInstance().getNextId();
-		} else {
-			UIDGen.getInstance().considerExternalId(id);
-		}
-		this.id = id;
+		this.id = UIDGen.getInstance().getNextId();
 		this.boundary = new Rectangle();
 	}
 

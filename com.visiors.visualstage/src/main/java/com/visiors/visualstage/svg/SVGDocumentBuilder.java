@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import com.google.inject.Inject;
-import com.visiors.visualstage.pool.SVDescriptorPool;
+import com.visiors.visualstage.pool.SVGDescriptorCollection;
 import com.visiors.visualstage.transform.Transform;
 
 public class SVGDocumentBuilder {
@@ -23,7 +23,7 @@ public class SVGDocumentBuilder {
 	private int                       groups;
 	private final Map<String, String> documentAttributes = new HashMap<String, String>();
 	@Inject
-	private SVDescriptorPool svgDescriptorPool; 
+	private SVGDescriptorCollection svgDescriptorPool; 
 
 	public SVGDocumentBuilder() {
 

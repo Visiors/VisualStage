@@ -5,6 +5,7 @@ import java.awt.print.PrinterJob;
 
 import com.visiors.visualstage.document.ViewListener;
 import com.visiors.visualstage.handler.ScopeAwareHandler;
+import com.visiors.visualstage.renderer.Canvas;
 import com.visiors.visualstage.renderer.DrawingContext;
 
 public interface StageDesigner extends ScopeAwareHandler {
@@ -13,9 +14,9 @@ public interface StageDesigner extends ScopeAwareHandler {
 		page, plane, none
 	}
 
-	public void paintBehind(DrawingContext context);
+	public void paintBehind(Canvas  canvas, DrawingContext context);
 
-	public void paintOver(DrawingContext context);
+	public void paintOver(Canvas canvas, DrawingContext context);
 
 	public PrinterJob getPrinterJob();
 

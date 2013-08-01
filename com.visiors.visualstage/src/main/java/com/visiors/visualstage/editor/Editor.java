@@ -6,7 +6,7 @@ import com.visiors.visualstage.handler.GroupingHandler;
 import com.visiors.visualstage.handler.SelectionHandler;
 import com.visiors.visualstage.handler.UndoRedoHandler;
 import com.visiors.visualstage.interaction.Interactable;
-import com.visiors.visualstage.pool.ShapeTemplatePool;
+import com.visiors.visualstage.pool.ShapeDefinitionCollection;
 import com.visiors.visualstage.renderer.Canvas;
 
 public interface Editor extends Interactable {
@@ -32,7 +32,7 @@ public interface Editor extends Interactable {
 	public boolean closeDocument(String title);
 
 
-	public ShapeTemplatePool getGraphObjectTemplateStore();
+	public ShapeDefinitionCollection getShapesCollection();
 
 	public SelectionHandler getSelectionHandler();
 

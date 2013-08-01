@@ -1,9 +1,8 @@
 package com.visiors.visualstage.interaction;
 
-import java.awt.Rectangle;
-
 import com.visiors.visualstage.handler.ScopeAwareHandler;
 import com.visiors.visualstage.renderer.Canvas;
+import com.visiors.visualstage.renderer.DrawingContext;
 
 public interface InteractionMode extends Interactable, ScopeAwareHandler {
 
@@ -13,8 +12,8 @@ public interface InteractionMode extends Interactable, ScopeAwareHandler {
 
 	public boolean isActive();
 
-	public void paintOnBackground(Canvas canvas, Rectangle visibleScreenRect);
+	public void paintOnBackground(Canvas canvas, DrawingContext context);
 
-	public void paintOnTop(Canvas canvas, Rectangle visibleScreenRect);
+	public void paintOnTop(Canvas canvas, DrawingContext context);
 
 }

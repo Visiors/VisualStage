@@ -2,7 +2,7 @@ package com.visiors.visualstage.document.layer;
 
 import java.util.List;
 
-public interface MultiLayerEditor {
+public interface LayerManager {
 
 	public Layer selectLayer(int id);
 

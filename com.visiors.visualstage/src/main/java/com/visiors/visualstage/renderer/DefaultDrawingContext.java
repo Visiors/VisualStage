@@ -1,8 +1,6 @@
 package com.visiors.visualstage.renderer;
 
-import java.awt.Image;
 import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
 
 import com.google.common.base.Objects;
 import com.visiors.visualstage.transform.DefaultTransformer;
@@ -13,19 +11,20 @@ public class DefaultDrawingContext implements DrawingContext {
 	private Resolution resolution;
 	private Rectangle bounds;
 	private Transform transform;
-	private Image outputImage;
 
-	public DefaultDrawingContext(Canvas canvas) {
-
-		this(canvas.getResolution(), canvas.getCanvasBounds(), canvas.getTransform());
-	}
+	//
+	// public DefaultDrawingContext(Canvas canvas) {
+	//
+	// this(canvas.getResolution(), canvas.getCanvasBounds(),
+	// canvas.getTransform());
+	// }
 
 	public DefaultDrawingContext(Resolution resolution, Rectangle bounds, Transform transform) {
 
 		this.resolution = resolution;
 		this.bounds = new Rectangle(bounds);
 		this.transform = new DefaultTransformer((DefaultTransformer) transform);
-		this.outputImage = new BufferedImage(bounds.width, bounds.height, BufferedImage.TYPE_INT_ARGB);
+
 	}
 
 	@Override
@@ -68,19 +67,6 @@ public class DefaultDrawingContext implements DrawingContext {
 	}
 
 	@Override
-	public Image getOffscreenImage() {
-
-		return outputImage;
-	}
-
-	@Override
-	public void setOffscreenImage(Image image) {
-
-		this.outputImage = image;
-
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 
 		if (obj instanceof DefaultDrawingContext) {
@@ -100,7 +86,7 @@ public class DefaultDrawingContext implements DrawingContext {
 	@Override
 	public String toString() {
 
-		return "Subject: " + subject.toString() + ", Resoluton: " + resolution.toString();
+		return "Resoluton: " + resolution.toString();
 	}
 	//
 	// @Override

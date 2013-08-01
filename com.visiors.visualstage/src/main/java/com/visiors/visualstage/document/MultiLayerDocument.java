@@ -10,7 +10,7 @@ public interface MultiLayerDocument {
 
 	public void setActiveLayer(int id);
 
-	public Layer createDrawingLayer(int id);
+	public Layer addLayer(int id);
 
 	public void removeLayer(int id);
 

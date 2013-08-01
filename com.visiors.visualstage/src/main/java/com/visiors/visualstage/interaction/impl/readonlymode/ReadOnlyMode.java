@@ -4,7 +4,6 @@ import java.awt.Point;
 
 import com.visiors.visualstage.constants.GraphStageConstants;
 import com.visiors.visualstage.interaction.impl.BaseInteractionHandler;
-import com.visiors.visualstage.renderer.cache.GraphObjectView;
 
 public class ReadOnlyMode extends BaseInteractionHandler {
 
@@ -24,18 +23,12 @@ public class ReadOnlyMode extends BaseInteractionHandler {
 
 		super.setActive(activated);
 
-		unselectGraph(visualGraph);
+		unselectGraph();
 	}
 
-	private void unselectGraph(VisualGraph gv) {
+	private void unselectGraph() {
 
-		VisualGraphObject[] objects = gv.getGraphObjects();
-		for (int i = 0; i < objects.length; i++) {
-			objects[i].setSelected(false);
-			if (objects[i] instanceof VisualGraph) {
-				unselectGraph((VisualGraph) objects[i]);
-			}
-		}
+		graphDocument.getGraph().clearSelection();
 	}
 
 	@Override

@@ -1,5 +1,7 @@
 package com.visiors.visualstage.graph.view;
 
+import java.awt.Image;
+
 import com.visiors.visualstage.attribute.Attribute;
 import com.visiors.visualstage.attribute.DefaultAttribute;
 import com.visiors.visualstage.graph.CustomData;
@@ -7,6 +9,13 @@ import com.visiors.visualstage.graph.view.graph.VisualGraph;
 import com.visiors.visualstage.graph.view.shape.impl.BaseCompositeShape;
 import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.property.impl.DefaultPropertyList;
+import com.visiors.visualstage.renderer.Canvas;
+import com.visiors.visualstage.renderer.DrawingContext;
+import com.visiors.visualstage.renderer.DrawingSubject;
+import com.visiors.visualstage.renderer.VisualObjectSnapshotGenerator;
+import com.visiors.visualstage.renderer.cache.DefaultViewCache;
+import com.visiors.visualstage.renderer.cache.GraphObjectImageProvider;
+import com.visiors.visualstage.renderer.cache.ViewCache;
 import com.visiors.visualstage.validation.Validator;
 
 /**
@@ -14,7 +23,8 @@ import com.visiors.visualstage.validation.Validator;
  * nodes, sub-graphs).
  * 
  */
-public abstract class DefaultVisualGraphObject extends BaseCompositeShape implements VisualGraphObject {
+public abstract class DefaultVisualGraphObject extends BaseCompositeShape implements VisualGraphObject,
+GraphObjectImageProvider {
 
 	protected static final int NONE = -1;
 	protected long id;
@@ -23,20 +33,19 @@ public abstract class DefaultVisualGraphObject extends BaseCompositeShape implem
 	protected Validator validator;
 	protected Attribute attributes;
 	protected PropertyList properties;
+	protected boolean modified;
+	protected final ViewCache viewCache;
 
 	// @Inject
 	// protected UndoRedoHandler undoRedoHandler;
 
 	protected DefaultVisualGraphObject() {
 
-		this(-1);
-	}
+		super();
 
-	protected DefaultVisualGraphObject(long id) {
-
-		super(id);
 		this.properties = new DefaultPropertyList();
 		this.attributes = new DefaultAttribute();
+		this.viewCache = new DefaultViewCache(this);
 	}
 
 	@Override
@@ -49,6 +58,18 @@ public abstract class DefaultVisualGraphObject extends BaseCompositeShape implem
 	public CustomData getCustomData() {
 
 		return customData;
+	}
+
+	@Override
+	public void setModified(boolean modified) {
+
+		this.modified = modified;
+	}
+
+	@Override
+	public boolean isModified() {
+
+		return modified;
 	}
 
 	@Override
@@ -83,6 +104,21 @@ public abstract class DefaultVisualGraphObject extends BaseCompositeShape implem
 	public void setValidator(Validator validator) {
 
 		this.validator = validator;
+	}
+
+	@Override
+	public void draw(Canvas canvas, DrawingContext context, DrawingSubject subject) {
+
+		Image image = viewCache.get(context, subject);
+		if (image != null) {
+			canvas.draw(0, 0, image);
+		}
+	}
+
+	@Override
+	public Image provide(DrawingContext context, DrawingSubject subject) {
+
+		return VisualObjectSnapshotGenerator.createSnapshot(this, context, subject);
 	}
 
 }

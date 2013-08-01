@@ -1,12 +1,13 @@
 package com.visiors.visualstage.interaction.impl;
 
 import java.awt.Point;
-import java.awt.Rectangle;
 
 import com.visiors.visualstage.constants.GraphStageConstants;
 import com.visiors.visualstage.document.GraphDocument;
 import com.visiors.visualstage.interaction.Interactable;
 import com.visiors.visualstage.interaction.InteractionMode;
+import com.visiors.visualstage.renderer.Canvas;
+import com.visiors.visualstage.renderer.DrawingContext;
 
 public abstract class BaseInteractionHandler implements InteractionMode {
 
@@ -104,12 +105,12 @@ public abstract class BaseInteractionHandler implements InteractionMode {
 	}
 
 	@Override
-	public void paintOnBackground(Canvas canvas, Rectangle visibleScreenRect) {
+	public void paintOnBackground(Canvas canvas, DrawingContext context) {
 
 	}
 
 	@Override
-	public void paintOnTop(Canvas canvas, Rectangle visibleScreenRect) {
+	public void paintOnTop(Canvas canvas, DrawingContext context) {
 
 	}
 

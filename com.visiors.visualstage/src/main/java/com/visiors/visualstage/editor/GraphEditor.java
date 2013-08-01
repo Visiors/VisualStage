@@ -25,7 +25,8 @@ import com.visiors.visualstage.handler.SelectionHandler;
 import com.visiors.visualstage.handler.UndoRedoHandler;
 import com.visiors.visualstage.interaction.InteractionHandler;
 import com.visiors.visualstage.interaction.listener.InteractionListener;
-import com.visiors.visualstage.pool.ShapeTemplatePool;
+import com.visiors.visualstage.pool.ShapeDefinitionCollection;
+import com.visiors.visualstage.pool.ShapeDefinitionCollection;
 import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.property.impl.DefaultPropertyList;
 import com.visiors.visualstage.renderer.Canvas;
@@ -40,9 +41,9 @@ public class GraphEditor implements Editor, GraphDocumentListener, InteractionLi
 	protected final SelectionHandler selectionHandler;
 	protected final GroupingHandler groupingHandler;
 	protected final ClipboardHandler clipboardHandler;
-	protected final ShapeTemplatePool shapeTemplatePool;
+	protected final ShapeDefinitionCollection shapeDefinitionCollection;
 
-	private final Map<String, GraphDocument> documents = Maps.newHashMap();
+	private final Map<String, GraphDocument> documents = Maps.newTreeMap();
 	private final Set<Canvas> canvases = Sets.newHashSet();
 
 
@@ -60,7 +61,7 @@ public class GraphEditor implements Editor, GraphDocumentListener, InteractionLi
 		this.selectionHandler = injector.getInstance(SelectionHandler.class);
 		this.groupingHandler = injector.getInstance(GroupingHandler.class);
 		this.clipboardHandler = injector.getInstance(ClipboardHandler.class);
-		this.shapeTemplatePool = injector.getInstance(ShapeTemplatePool.class);
+		this.shapeDefinitionCollection = injector.getInstance(ShapeDefinitionCollection.class);
 	}
 
 	@Override
@@ -104,10 +105,24 @@ public class GraphEditor implements Editor, GraphDocumentListener, InteractionLi
 
 	@Override
 	public boolean closeDocument(String title) {
-		if (documents.containsKey(title)) {
+		if (!documents.containsKey(title)) {
 			throw new DocumentExistsException("A document with the name '" + title + "' could not be found!");
 		}
-		GraphDocument document = documents.remove(title);
+		GraphDocument document;
+		if(documents.size() == 1){
+			setActiveDocument(null);
+			document = documents.remove(title);
+		}else{
+			List<GraphDocument> existingDocuments = getDocuments();
+			document = documents.remove(title);
+			int docIndex = existingDocuments.indexOf(document);
+			if(docIndex < existingDocuments.size()-1) {
+				setActiveDocument(existingDocuments.get(docIndex+1).getTitle());
+			} else {
+				setActiveDocument(existingDocuments.get(docIndex-1).getTitle());
+			}
+
+		}
 		document.removeGraphDocumentListener(this);
 		return true;
 	}
@@ -140,11 +155,13 @@ public class GraphEditor implements Editor, GraphDocumentListener, InteractionLi
 	@Override
 	public void setActiveDocument(String title) {
 
-		activeDocument = getDocument(title);
-		interactionHandler.setScope(activeDocument);
-		clipboardHandler.setScope(activeDocument);
-		selectionHandler.setScope(activeDocument);
-		groupingHandler.setScope(activeDocument);
+		activeDocument = title == null ? null: getDocument(title);
+		if(activeDocument != null){
+			interactionHandler.setScope(activeDocument);
+			clipboardHandler.setScope(activeDocument);
+			selectionHandler.setScope(activeDocument);
+			groupingHandler.setScope(activeDocument);
+		}
 	}
 
 	@Override
@@ -177,7 +194,7 @@ public class GraphEditor implements Editor, GraphDocumentListener, InteractionLi
 		return activeDocument;
 	}
 
-	public List<GraphDocument> getAllDocuments() {
+	public List<GraphDocument> getDocuments() {
 
 		return new ArrayList<GraphDocument>(documents.values());
 	}
@@ -185,9 +202,9 @@ public class GraphEditor implements Editor, GraphDocumentListener, InteractionLi
 
 
 	@Override
-	public ShapeTemplatePool getGraphObjectTemplateStore() {
+	public ShapeDefinitionCollection getShapesCollection() {
 
-		return shapeTemplatePool;
+		return shapeDefinitionCollection;
 	}
 
 	@Override

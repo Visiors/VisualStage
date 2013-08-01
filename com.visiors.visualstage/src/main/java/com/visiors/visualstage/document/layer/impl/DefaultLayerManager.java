@@ -10,20 +10,24 @@ import java.util.Map;
 
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
+import com.visiors.visualstage.document.VisualGraphProvider;
 import com.visiors.visualstage.document.layer.Layer;
-import com.visiors.visualstage.document.layer.MultiLayerEditor;
+import com.visiors.visualstage.document.layer.LayerManager;
 import com.visiors.visualstage.handler.impl.LayerChangedEvent;
 
-public class DefaultMultiLayerEditor implements MultiLayerEditor {
-
-	@Inject
-	EventBus eventbus;
+public class DefaultLayerManager implements LayerManager {
 
 	private final Map<Integer, Layer> layers = new HashMap<Integer, Layer>();;
 
 	private Layer currentLayer;
 
-	public DefaultMultiLayerEditor() {
+	@Inject
+	private EventBus eventbus;
+
+	@Inject
+	private VisualGraphProvider visualGraphProvider;
+
+	public DefaultLayerManager() {
 
 	}
 
@@ -41,6 +45,7 @@ public class DefaultMultiLayerEditor implements MultiLayerEditor {
 	public Layer selectLayer(int id) {
 
 		currentLayer = getLayer(id);
+		currentLayer.getVisualGraph();
 		eventbus.post(new LayerChangedEvent(currentLayer));
 		return currentLayer;
 	}
@@ -48,16 +53,16 @@ public class DefaultMultiLayerEditor implements MultiLayerEditor {
 	@Override
 	public Layer getSelectedLayer() {
 
-		if (currentLayer == null) {
-			throw new RuntimeException("No layer was selected!");
-		}
+		// if (currentLayer == null) {
+		// throw new RuntimeException("No layer was selected!");
+		// }
 		return currentLayer;
 	}
 
 	@Override
 	public Layer addLayer(int id) {
 
-		final Layer layer = new DefaultLayer(id, layers.size());
+		final Layer layer = new DefaultLayer(id, layers.size(), visualGraphProvider.get());
 		layers.put(new Integer(id), layer);
 		return layer;
 	}
@@ -65,8 +70,7 @@ public class DefaultMultiLayerEditor implements MultiLayerEditor {
 	@Override
 	public void removeLayer(int id) {
 
-		final Layer layer = getLayer(id);
-		layers.remove(layer);
+		layers.remove(id);
 	}
 
 	@Override
@@ -100,5 +104,4 @@ public class DefaultMultiLayerEditor implements MultiLayerEditor {
 		});
 		return list;
 	}
-
 }

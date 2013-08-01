@@ -8,13 +8,20 @@ public class TextShape extends BaseShape implements Shape {
 
 	protected TextShape() {
 
-		super(-1);
+		super();
 	}
 
 	@Override
 	public String getViewDescriptor(DrawingContext context, DrawingSubject subject) {
 
 		return "";
+	}
+
+	@Override
+	public Object deepCopy() {
+
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

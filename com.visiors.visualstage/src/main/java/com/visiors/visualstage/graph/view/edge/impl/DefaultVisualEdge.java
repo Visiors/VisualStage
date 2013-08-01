@@ -22,7 +22,7 @@ import com.visiors.visualstage.graph.view.node.VisualNode;
 import com.visiors.visualstage.graph.view.node.listener.NodeViewAdapter;
 import com.visiors.visualstage.graph.view.node.listener.VisualNodeListener;
 import com.visiors.visualstage.interaction.Interactable;
-import com.visiors.visualstage.pool.SVDescriptorPool;
+import com.visiors.visualstage.pool.SVGDescriptorCollection;
 import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.property.impl.DefaultPropertyList;
 import com.visiors.visualstage.property.impl.DefaultPropertyUnit;
@@ -53,17 +53,12 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 	protected String formID;
 
 	@Inject
-	protected SVDescriptorPool svgDescriptorPool;
+	protected SVGDescriptorCollection svgDescriptorPool;
 	private PropertyBinder propertyBinder;
 
-	protected DefaultVisualEdge() {
+	public DefaultVisualEdge() {
 
-		this(-1);
-	}
-
-	protected DefaultVisualEdge(long id) {
-
-		super(id);
+		super();
 
 		sourcePortId = DefaultVisualGraphObject.NONE;
 		targetPortId = DefaultVisualGraphObject.NONE;
@@ -71,9 +66,9 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 		path.addPathListener(this);
 	}
 
-	protected DefaultVisualEdge(VisualEdge edge, long id) {
+	protected DefaultVisualEdge(VisualEdge edge) {
 
-		this(id);
+		this();
 
 		connect(edge.getSourceNode(), edge.getSourcePortId(), edge.getTargetNode(), edge.getTargetPortId());
 		setProperties(edge.getProperties());
@@ -186,9 +181,9 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 	}
 
 	@Override
-	public VisualEdge deepCopy(long id) {
+	public Object deepCopy() {
 
-		return new DefaultVisualEdge(this, id);
+		return new DefaultVisualEdge(this);
 	}
 
 	// @Override

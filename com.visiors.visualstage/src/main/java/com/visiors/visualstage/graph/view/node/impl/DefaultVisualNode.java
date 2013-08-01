@@ -12,7 +12,6 @@ import com.visiors.visualstage.constants.PropertyConstants;
 import com.visiors.visualstage.graph.view.Constants;
 import com.visiors.visualstage.graph.view.DefaultVisualGraphObject;
 import com.visiors.visualstage.graph.view.ViewConstants;
-import com.visiors.visualstage.graph.view.VisualGraphObject;
 import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.graph.VisualGraph;
 import com.visiors.visualstage.graph.view.node.Port;
@@ -21,7 +20,7 @@ import com.visiors.visualstage.graph.view.node.VisualNode;
 import com.visiors.visualstage.graph.view.node.listener.VisualNodeListener;
 import com.visiors.visualstage.graph.view.shape.Shape;
 import com.visiors.visualstage.interaction.Interactable;
-import com.visiors.visualstage.pool.SVDescriptorPool;
+import com.visiors.visualstage.pool.SVGDescriptorCollection;
 import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.property.impl.DefaultPropertyList;
 import com.visiors.visualstage.property.impl.DefaultPropertyUnit;
@@ -56,19 +55,14 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 	protected SVGDescriptor svgDef;
 	private PropertyBinder propertyBinder;
 	@Inject
-	private SVDescriptorPool svgDescriptorPool;
+	private SVGDescriptorCollection svgDescriptorPool;
 
-	// private final VisualObjectPreviewGenerator previewCreator;
+	// private final VisualObjectSnapshotGenerator previewCreator;
 	// private final List<CachedImage> cachedImage;
 
-	protected DefaultVisualNode() {
+	public DefaultVisualNode() {
 
-		this(-1);
-	}
-
-	protected DefaultVisualNode(long id) {
-
-		super(id);
+		super();
 
 		/* this.name = name; */
 		this.portSet = new DefaultPortSet();
@@ -76,13 +70,13 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 		this.outgoingEdges = new ArrayList<VisualEdge>();
 		this.boundary = new Rectangle(0, 0, 80, 50);
 
-		// previewCreator = new VisualObjectPreviewGenerator(this);
+		// previewCreator = new VisualObjectSnapshotGenerator(this);
 		// cachedImage = new ArrayList<CachedImage>();
 	}
 
-	protected DefaultVisualNode(VisualNode node, long id) {
+	protected DefaultVisualNode(VisualNode node) {
 
-		this(id);
+		this();
 
 		this.setBounds(node.getBounds()); // TODO deep copy
 		this.SetAttributes(node.getAttributes());
@@ -748,6 +742,7 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 		}
 	}
 
+
 	// private synchronized void invalidatePreview() {
 	//
 	// for (CachedImage cImg : cachedImage) {
@@ -1125,10 +1120,11 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 		return "";// name;
 	}
 
-	@Override
-	public VisualGraphObject deepCopy(long id) {
 
-		return new DefaultVisualNode(this, id);
+	@Override
+	public Object deepCopy() {
+
+		return new DefaultVisualNode(this);
 	}
 
 	// ///////////////////////////////////////////////////////////////////////

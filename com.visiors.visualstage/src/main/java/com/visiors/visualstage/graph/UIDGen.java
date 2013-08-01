@@ -38,7 +38,7 @@ public class UIDGen {
 	/**
 	 * @return the next unique id.
 	 */
-	public long getNextId() {
+	public synchronized long getNextId() {
 
 		long id = nextId + 1;
 		while (exists(id)) {

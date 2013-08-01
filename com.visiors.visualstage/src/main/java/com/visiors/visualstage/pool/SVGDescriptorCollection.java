@@ -12,7 +12,7 @@ import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.svg.SVGDescriptor;
 
 @Singleton
-public class SVDescriptorPool {
+public class SVGDescriptorCollection {
 
 	private final Map<String, SVGDescriptor> svgDefinition = new HashMap<String, SVGDescriptor>();
 

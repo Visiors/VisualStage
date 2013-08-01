@@ -27,18 +27,14 @@ public interface VisualGraph extends VisualNode/* , LayoutableGraph */{
 	 * 
 	 * @param type
 	 *            Identifies the node that si to be used as a template for
-	 *            creating the new node.
-	 * @param id
-	 *            The identifier for the new node. The id must be unique within
-	 *            the graph. If the id is -1, an unique id will be assign to
-	 *            automatically .
+	 *            creating the new node.ly .
 	 * @return The created instance of {@link VisualNode}.
 	 */
-	public VisualNode createNode(long id, String type);
+	public VisualNode createNode(String type);
 
-	public VisualEdge createEdge(long id, String type);
+	public VisualEdge createEdge(String type);
 
-	public VisualGraph createSubgraph(long id, String type);
+	public VisualGraph createSubgraph(String type);
 
 	public VisualNode createNode(PropertyList properties);
 
@@ -46,7 +42,7 @@ public interface VisualGraph extends VisualNode/* , LayoutableGraph */{
 
 	public VisualGraph createSubgraph(PropertyList properties);
 
-	public void createGraphObjects(PropertyList properties);
+	public List<VisualGraphObject> createGraphObjects(PropertyList properties);
 
 	/**
 	 * Adds the given graph-objects (edges, nodes) to the graph.

@@ -14,6 +14,7 @@ import com.visiors.visualstage.graph.view.node.impl.DefaultPort;
 import com.visiors.visualstage.graph.view.node.impl.DefaultPortSet;
 import com.visiors.visualstage.interaction.impl.BaseInteractionHandler;
 import com.visiors.visualstage.renderer.Canvas;
+import com.visiors.visualstage.renderer.DrawingContext;
 
 public class PortEditingMode extends BaseInteractionHandler {
 
@@ -304,7 +305,7 @@ public class PortEditingMode extends BaseInteractionHandler {
 	}
 
 	@Override
-	public void paintOnBackground(Canvas canvas, Rectangle r) {
+	public void paintOnBackground(Canvas canvas, DrawingContext r) {
 
 		if (subject == null || portID == -1) {
 			return;
@@ -334,7 +335,7 @@ public class PortEditingMode extends BaseInteractionHandler {
 	}
 
 	@Override
-	public void paintOnTop(Canvas canvas, Rectangle r) {
+	public void paintOnTop(Canvas canvas, DrawingContext r) {
 
 		drawPortsAcceptingInterval(canvas);
 

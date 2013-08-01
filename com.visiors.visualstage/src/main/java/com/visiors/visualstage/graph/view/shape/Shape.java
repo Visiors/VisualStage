@@ -10,7 +10,7 @@ import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.renderer.DrawingSubject;
 import com.visiors.visualstage.transform.Transform;
 
-public interface Shape extends Interactable, PropertyOwner {
+public interface Shape extends Interactable, PropertyOwner, Duplicatable {
 
 	enum Unit {
 		PIXEL, PERCENT

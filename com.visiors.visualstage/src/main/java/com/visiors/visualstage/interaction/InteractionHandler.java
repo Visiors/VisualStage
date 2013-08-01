@@ -6,6 +6,7 @@ import com.visiors.visualstage.handler.GraphViewHandler;
 import com.visiors.visualstage.handler.ScopeAwareHandler;
 import com.visiors.visualstage.interaction.listener.InteractionListener;
 import com.visiors.visualstage.renderer.Canvas;
+import com.visiors.visualstage.renderer.DrawingContext;
 
 public interface InteractionHandler extends Interactable, GraphViewHandler, ScopeAwareHandler {
 
@@ -25,8 +26,8 @@ public interface InteractionHandler extends Interactable, GraphViewHandler, Scop
 
 	public void combineModes(String[] modes, String alias);
 
-	public void paintOnBackground(Canvas canvas);
+	public void paintOnBackground(Canvas canvas, DrawingContext context);
 
-	public void paintOnTop(Canvas canvas);
+	public void paintOnTop(Canvas canvas, DrawingContext context);
 
 }

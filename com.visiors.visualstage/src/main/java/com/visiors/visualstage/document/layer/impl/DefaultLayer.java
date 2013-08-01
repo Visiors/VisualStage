@@ -2,8 +2,7 @@ package com.visiors.visualstage.document.layer.impl;
 
 import java.awt.Color;
 
-import com.google.inject.Inject;
-import com.google.inject.Provider;
+import com.google.common.base.Objects;
 import com.visiors.visualstage.document.layer.Layer;
 import com.visiors.visualstage.graph.view.graph.VisualGraph;
 
@@ -13,17 +12,13 @@ public class DefaultLayer implements Layer {
 	private boolean visible = true;
 	private Color bkColor;
 	private int order;
-	protected final VisualGraph visualGraph;
+	protected VisualGraph visualGraph;
 
-	@Inject
-	protected Provider<VisualGraph> visualGraphProvider;
-
-
-	public DefaultLayer(int id, int order) {
+	public DefaultLayer(int id, int order, VisualGraph visualGraph) {
 
 		this.id = id;
 		this.order = order;
-		this.visualGraph =  visualGraphProvider.get();
+		this.visualGraph = visualGraph;
 	}
 
 	@Override
@@ -73,5 +68,23 @@ public class DefaultLayer implements Layer {
 	public VisualGraph getVisualGraph() {
 
 		return visualGraph;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+
+		return Objects.equal(this, obj);
+	}
+
+	@Override
+	public int hashCode() {
+
+		return Objects.hashCode(id);
+	}
+
+	@Override
+	public String toString() {
+
+		return "id: " + id + ", order: "+ order + "("+(isVisible() ? " visible": " invisible"  )+ ")";
 	}
 }

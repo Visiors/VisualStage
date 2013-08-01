@@ -16,7 +16,7 @@ import com.visiors.visualstage.handler.SelectionHandler;
 public class DefaultSelectionHander extends GraphViewAdapter implements GraphViewListener, SelectionHandler {
 
 	protected boolean multiselection;
-	protected VisualGraph visualGraph;
+	protected GraphDocument graphDocument;
 	private boolean processing;
 	private volatile List<VisualGraphObject> listOfSelectedObjects;
 
@@ -28,7 +28,7 @@ public class DefaultSelectionHander extends GraphViewAdapter implements GraphVie
 	@Override
 	public void setScope(GraphDocument graphDocument) {
 
-		this.visualGraph = graphDocument;
+		this.graphDocument = graphDocument;
 		graphDocument.addGraphViewListener(this);
 		listOfSelectedObjects = new ArrayList<VisualGraphObject>();
 	}
@@ -81,7 +81,7 @@ public class DefaultSelectionHander extends GraphViewAdapter implements GraphVie
 	@Override
 	public void invertObjectSelection(VisualGraphObject graphObject) {
 
-		final List<VisualGraphObject> objects = visualGraph.getGraphObjects();
+		final List<VisualGraphObject> objects = graphDocument.getGraph().getGraphObjects();
 		for (final VisualGraphObject vobj : objects) {
 			if (vobj == graphObject) {
 				vobj.setSelected(!vobj.isSelected() || !multiselection);
@@ -102,7 +102,7 @@ public class DefaultSelectionHander extends GraphViewAdapter implements GraphVie
 	@Override
 	public void select(VisualGraphObject graphObject, boolean selected) {
 
-		List<VisualGraphObject> objects = visualGraph.getGraphObjects();
+		List<VisualGraphObject> objects = graphDocument.getGraph().getGraphObjects();
 
 		for (final VisualGraphObject vobj : objects) {
 			if (vobj == graphObject) {
@@ -154,8 +154,8 @@ public class DefaultSelectionHander extends GraphViewAdapter implements GraphVie
 
 		listOfSelectedObjects.clear();
 
-		visualGraph.clearSelection();
-		List<VisualGraphObject> vgos = visualGraph.getGraphObjects();
+		graphDocument.getGraph().clearSelection();
+		List<VisualGraphObject> vgos = graphDocument.getGraph().getGraphObjects();
 
 		for (final VisualGraphObject visualGraphObject : vgos) {
 

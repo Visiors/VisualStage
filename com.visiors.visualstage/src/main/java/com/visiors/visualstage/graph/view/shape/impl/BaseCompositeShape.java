@@ -14,11 +14,7 @@ public abstract class BaseCompositeShape extends BaseShape implements CompositeS
 
 	protected BaseCompositeShape() {
 
-		super(-1);
-	}
-
-	protected BaseCompositeShape( long id) {
-		super( id);
+		super();
 	}
 
 

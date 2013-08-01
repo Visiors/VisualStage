@@ -3,16 +3,21 @@ package com.visiors.visualstage.pool;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.inject.Singleton;
 import com.visiors.visualstage.constants.PropertyConstants;
 import com.visiors.visualstage.property.Property;
 import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.util.PropertyUtil;
 
-public class ShapeTemplatePool {
 
-	private final Map<String, PropertyList> registeredGraphObjects = new HashMap<String, PropertyList>();
+@Singleton
+public class ShapeDefinitionCollection  {
 
-	public ShapeTemplatePool() {
+	private final Map<String, PropertyList> shapesDefinitionMap = new HashMap<String, PropertyList>();
+
+
+
+	public ShapeDefinitionCollection() {
 
 	}
 
@@ -24,39 +29,44 @@ public class ShapeTemplatePool {
 	// * @param properties
 	// * A concrete implementation of {@link PropertyList}
 	// */
-	public void add(PropertyList properties) {
+	/* (non-Javadoc)
+	 * @see com.visiors.visualstage.pool.ShapeDefinitionCollection#add(com.visiors.visualstage.property.PropertyList)
+	 */
 
-		registeredGraphObjects.put(properties.getName(), properties);
+
+	public synchronized void add(PropertyList properties) {
+
+		shapesDefinitionMap.put(properties.getName(), properties);
 	}
+
+
+
+	public synchronized PropertyList remove( String name) {
+
+		return shapesDefinitionMap.remove(name);
+	}
+
+
 
 	// /**
 	// * Returns true if the graph object specified by <code>name</code> is
 	// * already registered; otherwise false.
 	// */
-	public boolean contains(String type) {
 
-		return registeredGraphObjects.containsKey(type);
+	public synchronized boolean contains(String name) {
+
+		return shapesDefinitionMap.containsKey(name);
 	}
 
-	public PropertyList get(String type) {
 
-		return registeredGraphObjects.get(type);
+
+	public synchronized PropertyList get(String name) {
+
+		return shapesDefinitionMap.get(name);
 	}
 
-	/**
-	 * This method reads the given xml and extract definitions for VisualNodes,
-	 * VisualEdges, VisualGraphs and Shapes. The extracted object definitions
-	 * can be used as master copies for constructing similar objects.
-	 * 
-	 * @param xml
-	 *            XML definition of graph objects such as visual nodes, edges,
-	 *            subgraph etc.
-	 * 
-	 * @see {@link #createEdge(long, String)}, {@link #createEdge(long, String)}
-	 *      , {@link #createContainer(long, String)}
-	 */
 
-	public void loadAndPool(String xmlContent) {
+	public synchronized void loadAndPool(String xmlContent) {
 
 		final PropertyList properties = PropertyUtil.XML2PropertyList(xmlContent);
 		for (final Property property : properties) {

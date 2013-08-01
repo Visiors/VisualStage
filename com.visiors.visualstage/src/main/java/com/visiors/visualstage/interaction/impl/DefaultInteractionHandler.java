@@ -11,16 +11,14 @@ import com.visiors.visualstage.constants.GraphStageConstants;
 import com.visiors.visualstage.document.GraphDocument;
 import com.visiors.visualstage.interaction.InteractionHandler;
 import com.visiors.visualstage.interaction.InteractionMode;
-import com.visiors.visualstage.interaction.impl.attachnemt.FormComposeMode;
 import com.visiors.visualstage.interaction.impl.edgecreation.EdgeCreationMode;
-import com.visiors.visualstage.interaction.impl.marquee.MarqueeSelectionMode;
 import com.visiors.visualstage.interaction.impl.modelling.ModellingMode;
 import com.visiors.visualstage.interaction.impl.nodecreateion.NodeCreationMode;
-import com.visiors.visualstage.interaction.impl.portedit.PortEditingMode;
 import com.visiors.visualstage.interaction.impl.readonlymode.ReadOnlyMode;
-import com.visiors.visualstage.interaction.impl.snap.AutoSnapMode;
 import com.visiors.visualstage.interaction.listener.InteractionListener;
-import com.visiors.visualstage.renderer.DrawingContext.Resolution;
+import com.visiors.visualstage.renderer.Canvas;
+import com.visiors.visualstage.renderer.DrawingContext;
+import com.visiors.visualstage.renderer.Resolution;
 
 /**
  * This class allows registering different {@link InteractionMode}s and
@@ -47,19 +45,19 @@ public class DefaultInteractionHandler implements InteractionHandler {
 
 		/* Register the basic modes */
 		registerMode(new ReadOnlyMode());
-		registerMode(new ModellingMode());
-		registerMode(new EdgeCreationMode());
-		registerMode(new NodeCreationMode());
-		registerMode(new AutoSnapMode());
-		registerMode(new MarqueeSelectionMode());
-		registerMode(new PortEditingMode());
-		registerMode(new FormComposeMode());
-
-		combineModes(new String[] { GraphStageConstants.MODE_MODELING,
-				GraphStageConstants.MODE_EDGE_CREATION, GraphStageConstants.MODE_MARQUEE_SELECTION,
-				GraphStageConstants.MODE_AUTO_ALIGNMENT }, GraphStageConstants.MODE_EDIT);
-
-		setActiveMode(GraphStageConstants.MODE_EDIT);
+		//		registerMode(new ModellingMode());
+		//		registerMode(new EdgeCreationMode());
+		//		registerMode(new NodeCreationMode());
+		//		registerMode(new AutoSnapMode());
+		//		registerMode(new MarqueeSelectionMode());
+		//		registerMode(new PortEditingMode());
+		//		registerMode(new FormComposeMode());
+		//
+		//		combineModes(new String[] { GraphStageConstants.MODE_MODELING,
+		//				GraphStageConstants.MODE_EDGE_CREATION, GraphStageConstants.MODE_MARQUEE_SELECTION,
+		//				GraphStageConstants.MODE_AUTO_ALIGNMENT }, GraphStageConstants.MODE_EDIT);
+		//
+		//		setActiveMode(GraphStageConstants.MODE_EDIT);
 
 	}
 
@@ -155,33 +153,33 @@ public class DefaultInteractionHandler implements InteractionHandler {
 	/* Delegate all mouse and key events to currently active interaction-handler */
 
 	@Override
-	public void paintOnBackground(Canvas canvas) {
+	public void paintOnBackground(Canvas canvas, DrawingContext context) {
 
-		if (resolution != Resolution.SCREEN) {
+		if (context.getResolution() != Resolution.SCREEN) {
 			return;
 		}
 		if (!combinedAction) {
-			modes.get(currentMode).paintOnBackground(canvas, visibleScreenRect);
+			modes.get(currentMode).paintOnBackground(canvas, context);
 		} else {
 			String[] names = interactionGroup.get(currentMode);
 			for (String name : names) {
-				modes.get(name).paintOnBackground(canvas, visibleScreenRect);
+				modes.get(name).paintOnBackground(canvas, context);
 			}
 		}
 	}
 
 	@Override
-	public void paintOnTop(Canvas canvas) {
+	public void paintOnTop(Canvas canvas, DrawingContext context) {
 
-		if (resolution != Resolution.SCREEN) {
+		if (context.getResolution() != Resolution.SCREEN) {
 			return;
 		}
 		if (!combinedAction) {
-			modes.get(currentMode).paintOver(canvas);
+			modes.get(currentMode).paintOnTop(canvas, context);
 		} else {
 			String[] names = interactionGroup.get(currentMode);
 			for (String name : names) {
-				modes.get(name).paintOver(canvas);
+				modes.get(name).paintOnTop(canvas, context);
 			}
 		}
 	}

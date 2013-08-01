@@ -10,6 +10,7 @@ import com.google.inject.Inject;
 import com.visiors.visualstage.constants.GraphStageConstants;
 import com.visiors.visualstage.handler.UndoRedoHandler;
 import com.visiors.visualstage.interaction.impl.BaseInteractionHandler;
+import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.renderer.cache.GraphObjectView;
 
 public class MarqueeSelectionMode extends BaseInteractionHandler {
@@ -135,7 +136,7 @@ public class MarqueeSelectionMode extends BaseInteractionHandler {
 	}
 
 	@Override
-	public void paintOnBackground(Canvas canvas, Rectangle r) {
+	public void paintOnBackground(Canvas canvas, DrawingContext r) {
 
 		if (!marqueeRect.isEmpty()) {
 

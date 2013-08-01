@@ -5,8 +5,8 @@ import java.awt.Rectangle;
 import java.util.List;
 
 import com.google.inject.Inject;
+import com.visiors.visualstage.constants.PropertyConstants;
 import com.visiors.visualstage.document.GraphDocument;
-import com.visiors.visualstage.editor.GraphEditor;
 import com.visiors.visualstage.graph.view.VisualGraphObject;
 import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.graph.VisualGraph;
@@ -23,13 +23,10 @@ public class DefaultClipboardHandler implements ClipboardHandler {
 	private int localPasteOffset;
 	protected static String clipboardContent;
 
-	@Inject
-	protected GraphEditor graphEditor;
-
 	// @Inject
 	// EventBus eventbus;
 
-	private VisualGraph visualGraph;
+	private GraphDocument graphDocument;
 
 	@Inject
 	private UndoRedoHandler undoRedoHandler;
@@ -43,14 +40,15 @@ public class DefaultClipboardHandler implements ClipboardHandler {
 	@Override
 	public void setScope(GraphDocument graphDocument) {
 
-		this.visualGraph = graphDocument;
+		this.graphDocument = graphDocument;
 
 	}
 
 	// @Subscribe
 	// public void handleLayerChange(LayerChangedEvent event) {
 	//
-	// selectionHandler = event.getLayer().getGraphViewer().getSelectionHandler();
+	// selectionHandler =
+	// event.getLayer().getGraphViewer().getSelectionHandler();
 	// }
 
 	@Override
@@ -62,7 +60,7 @@ public class DefaultClipboardHandler implements ClipboardHandler {
 	@Override
 	public boolean canCopy() {
 
-		final List<VisualGraphObject> selection = visualGraph.getSelection();
+		final List<VisualGraphObject> selection = graphDocument.getGraph().getSelection();
 		return selection.size() != 0;
 	}
 
@@ -75,12 +73,13 @@ public class DefaultClipboardHandler implements ClipboardHandler {
 	@Override
 	public void copySelection() {
 
-		final List<VisualGraphObject> selection = visualGraph.getSelection();
+		final List<VisualGraphObject> selection = graphDocument.getGraph().getSelection();
 		if (selection.size() == 0) {
 			return;
 		} else if (selection.size() > 0) {
 			PropertyList properties = new DefaultPropertyList();
-			graphEditor.visualObjects2ProperyList(selection, properties);
+			visualObjects2ProperyList(selection, properties);
+
 			DefaultClipboardHandler.clipboardContent = PropertyUtil.propertyList2XML(properties, true);
 		}
 		localPasteOffset = DefaultClipboardHandler.PASTE_OFFSET_STEP;
@@ -90,24 +89,25 @@ public class DefaultClipboardHandler implements ClipboardHandler {
 	public void paste() {
 
 		if (DefaultClipboardHandler.clipboardContent != null) {
-			PropertyList propertes = PropertyUtil.XML2PropertyList(DefaultClipboardHandler.clipboardContent);
-			if (propertes != null) {
+			final PropertyList properties = PropertyUtil.XML2PropertyList(DefaultClipboardHandler.clipboardContent);
+			if (properties != null) {
 				try {
 					undoRedoHandler.stratOfGroupAction();
-					visualGraph.clearSelection();
+					graphDocument.getGraph().clearSelection();
 
-					Rectangle rGraph = visualGraph.getBounds();
-					List<VisualGraphObject> objects = graphEditor.createGraphObjects(propertes, visualGraph, true);
-					Rectangle r = getObjectsArea(objects);
+					Rectangle rGraph = graphDocument.getGraph().getBounds();
+
+					List<VisualGraphObject> newGraphObjects = graphDocument.getGraph().createGraphObjects(properties);
+					Rectangle r = getObjectsArea(newGraphObjects);
 					if (!r.union(rGraph).equals(rGraph)) {
 						r.x = rGraph.x;
 						r.y = rGraph.y;
 					}
 					Point at = r.getLocation();
 					at.translate(localPasteOffset, localPasteOffset);
-					moveObjectsToTargetLocation(objects, at);
+					moveObjectsToTargetLocation(newGraphObjects, at);
 
-					visualGraph.setSelection(objects);
+					graphDocument.getGraph().setSelection(newGraphObjects);
 
 					localPasteOffset += DefaultClipboardHandler.PASTE_OFFSET_STEP;
 
@@ -158,6 +158,34 @@ public class DefaultClipboardHandler implements ClipboardHandler {
 				int dy = -r.y + at.y;
 				n.move(dx, dy);
 			}
+		}
+	}
+
+	private void visualObjects2ProperyList(List<VisualGraphObject> objects, PropertyList properties) {
+
+		final PropertyList edgesProperties = new DefaultPropertyList(PropertyConstants.EDGE_SECTION_TAG);
+		final PropertyList nodesProperties = new DefaultPropertyList(PropertyConstants.NODE_SECTION_TAG);
+		final PropertyList subgraphProperties = new DefaultPropertyList(PropertyConstants.SUBGRAPH_SECTION_TAG);
+
+		for (final VisualGraphObject vgo : objects) {
+			if (vgo instanceof VisualGraph) {
+				visualObjects2ProperyList(((VisualGraph) vgo).getGraphObjects(), vgo.getProperties());
+				subgraphProperties.add(subgraphProperties);
+			} else if (vgo instanceof VisualNode) {
+
+				nodesProperties.add(vgo.getProperties());
+			} else if (vgo instanceof VisualEdge) {
+				edgesProperties.add(vgo.getProperties());
+			}
+		}
+		if (edgesProperties.size() != 0) {
+			properties.add(edgesProperties);
+		}
+		if (nodesProperties.size() != 0) {
+			properties.add(nodesProperties);
+		}
+		if (subgraphProperties.size() != 0) {
+			properties.add(subgraphProperties);
 		}
 	}
 

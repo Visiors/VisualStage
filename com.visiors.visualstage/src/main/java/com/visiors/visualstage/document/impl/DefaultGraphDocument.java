@@ -13,7 +13,7 @@ import com.visiors.visualstage.constants.PropertyConstants;
 import com.visiors.visualstage.document.GraphDocument;
 import com.visiors.visualstage.document.ViewListener;
 import com.visiors.visualstage.document.layer.Layer;
-import com.visiors.visualstage.document.layer.impl.DefaultMultiLayerEditor;
+import com.visiors.visualstage.document.layer.LayerManager;
 import com.visiors.visualstage.document.listener.GraphDocumentListener;
 import com.visiors.visualstage.exception.InvalidLayerRemovalException;
 import com.visiors.visualstage.graph.view.graph.VisualGraph;
@@ -24,7 +24,6 @@ import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.property.impl.DefaultPropertyList;
 import com.visiors.visualstage.property.impl.PropertyBinder;
 import com.visiors.visualstage.renderer.Canvas;
-import com.visiors.visualstage.renderer.DefaultDrawingContext;
 import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.renderer.DrawingSubject;
 import com.visiors.visualstage.stage.StageDesigner;
@@ -49,25 +48,28 @@ public class DefaultGraphDocument implements GraphDocument {
 	private boolean enableImageBuffering;
 
 	protected SVGDocumentBuilder svgDocumentBuilder = new SVGDocumentBuilder();
-	protected DefaultMultiLayerEditor layerManager = new DefaultMultiLayerEditor();;
+	protected LayerManager layerManager;
 
 	private PropertyBinder propertyBinder;
-	@Inject
 	protected StageDesigner stageDesigner;
-	@Inject
+
 	protected UndoRedoHandler undoRedoHandler;
-	@Inject
+
 	protected Validator validator;
 	private String svgBackgroundId;
 	private String svgFilterId;
 	private String svgTransformId;
 	private Set<Canvas> canvases = Sets.newHashSet();
 
-	public DefaultGraphDocument(String title) {
+	@Inject
+	public DefaultGraphDocument(LayerManager layerManager, StageDesigner stageDesigner, Validator validator) {
 
-		this.title = title;
+		this.stageDesigner = stageDesigner;
+		this.validator = validator;
+		this.layerManager = layerManager;
+
 		stageDesigner.addViewListener(viewListener);
-		createDrawingLayer(0);
+		addLayer(0);
 	}
 
 	@Override
@@ -139,7 +141,7 @@ public class DefaultGraphDocument implements GraphDocument {
 	}
 
 	@Override
-	public Layer createDrawingLayer(int id) {
+	public Layer addLayer(int id) {
 
 		final Layer newLayer = layerManager.addLayer(id);
 		setActiveLayer(id);
@@ -150,14 +152,16 @@ public class DefaultGraphDocument implements GraphDocument {
 	public void removeLayer(int id) {
 
 		if (layerManager.getLayerCount() == 0) {
-			new InvalidLayerRemovalException("No layer available!");
+			throw new InvalidLayerRemovalException("No layer available!");
 		}
 		if (layerManager.getLayerCount() == 1) {
-			new InvalidLayerRemovalException("The only existing layer cannot be removed!");
+			throw  new InvalidLayerRemovalException(
+					"The layer cannot be removed because the document must have at least one layer!");
 		}
 
 		final Layer layerToRemove = layerManager.getLayer(id);
 		final List<Layer> allLayers = layerManager.getLayers();
+
 		for (int i = 0, len = allLayers.size(); i < len; i++) {
 			if (allLayers.get(i).getID() == layerToRemove.getID()) {
 				if (i < len - 1) {
@@ -213,38 +217,26 @@ public class DefaultGraphDocument implements GraphDocument {
 	// /////////////////////////////////////////////////
 
 	@Override
-	public void draw() {
+	public void draw(Canvas canvas, DrawingContext context) {
 
-		if (doDrawing) {
-			for (Canvas canvas : canvases) {
-				draw(canvas);
-			}
-		}
-	}
-
-	protected void draw(Canvas canvas) {
-
-		DrawingContext context = new DefaultDrawingContext(canvas);
-
-		stageDesigner.paintBehind(context);
+		stageDesigner.paintBehind(canvas, context);
 
 		final VisualGraph graph = getGraph();
 		// keep always the main graph view fit to the screen
 		graph.setBounds(context.getBounds());
 
-		graph.getViewDescriptor(context, DrawingSubject.OBJECT);
-		graph.getViewDescriptor(context, DrawingSubject.SELECTION_INDICATORS);
-		graph.getViewDescriptor(context, DrawingSubject.PORTS);
+		graph.draw(canvas, context, DrawingSubject.OBJECT);
+		graph.draw(canvas, context, DrawingSubject.SELECTION_INDICATORS);
+		graph.draw(canvas, context, DrawingSubject.PORTS);
 
-		stageDesigner.paintOver(context);
-
-		canvas.draw(0, 0, context.getOffscreenImage());
+		stageDesigner.paintOver(canvas, context);
 	}
 
 	@Override
-	public String getSVGDocument(DrawingSubject context) {
+	public String getSVGDocument(DrawingContext context) {
 
-
+		String content = getGraph().getViewDescriptor(context, DrawingSubject.OBJECT);
+		// add header, filter and transformation using SVGGraphBuilder
 		return null;// getGraph().getSVGDocument(canvas, context, false, scale);
 	}
 
@@ -322,6 +314,12 @@ public class DefaultGraphDocument implements GraphDocument {
 		this.svgTransformId = svgTransformId;
 		// interactionHandler.svgTransformID(svgTransformId);
 		fireViewChanged();
+	}
+
+	@Override
+	public String toString() {
+
+		return getTitle();
 	}
 
 	// //////////////////////////////////////////////////////////////

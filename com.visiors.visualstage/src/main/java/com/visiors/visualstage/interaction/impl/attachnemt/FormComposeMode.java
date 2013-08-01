@@ -9,6 +9,7 @@ import java.util.List;
 import com.visiors.visualstage.constants.GraphStageConstants;
 import com.visiors.visualstage.form.FormItem;
 import com.visiors.visualstage.interaction.impl.BaseInteractionHandler;
+import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.util.GraphInteractionUtil;
 
 public class FormComposeMode extends BaseInteractionHandler {
@@ -205,14 +206,14 @@ public class FormComposeMode extends BaseInteractionHandler {
 	}
 
 	@Override
-	public void paintOnBackground(Canvas canvas, Rectangle visibleScreenRect) {
+	public void paintOnBackground(Canvas canvas, DrawingContext context) {
 
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void paintOnTop(Canvas canvas, Rectangle visibleScreenRect) {
+	public void paintOnTop(Canvas canvas, DrawingContext context) {
 
 		final VisualNode[] nodes = visualGraph.getNodes();
 		final Transform xform = visualGraph.getTransform();

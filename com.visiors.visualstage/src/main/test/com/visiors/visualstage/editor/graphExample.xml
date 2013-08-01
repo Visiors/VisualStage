@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+	<nodes>
+		<node name="NodeA"  presentation="Presentaion1">
+			<geomentry width="80" height="80" />
+			<form layout=lane>
+				<shape name=text width="100%" height="10" x=0 y=0 layout_info="1 1"/>
+				<shape name=text width="100%" height="10" x=0 y=0 layout_info="2 1"/>
+				<composite layout=lane name=rectangle width="100%" height="10"  layout_info="3 1">
+					<shape name=rectangle width="50%" height="50%"  layout_info="1 1"/>
+					<shape name=rectangle width="50%" height="50%"  layout_info="1 2" />
+					<shape name=rectangle width="50%" height="50%"  layout_info="2 1" />
+					<shape name=rectangle width="50%" height="50%"  layout_info="2 2" />			
+				</composite>				
+			</form>			
+		</node>
+		<node name="NodeB"  presentation="Presentaion2">
+			<geomentry width="80" height="80" />
+		</node>
+	</nodes>
+	
+	<edges>
+		<edge  name="StraightEdge" type="Straight" Coordinates="0 60 100 0 "  presentation="lineElement"> </edge>
+	</edges>
+	
+	
+	<definitions>
+		<!-- straight edges  -->
+		<line id="lineElement" marker-end="url(#EndMarker)" style="fill:none;stroke:#143250;stroke-width:1.5" />		
+	</definitions>
+	
+	
+	<definitions>
+		<linearGradient id="defaultFlowChartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+			<stop offset="0.0" stop-color="#AAC7ED"/> 
+			<stop offset="1.0" stop-color="#74A0DD"/>
+		</linearGradient>
+
+		<!-- standard marker -->		 
+	    <marker id="EndMarker1" viewBox="0 0 10 5" refX="8" refY="5" 
+	      markerUnits="strokeWidth" markerWidth="8" markerHeight="10" orient="auto">
+	      <path d="M 0 0 L 10 5 L 0 10 z" />
+	    </marker>
+		
+	    <style type="text/css" id="default_flowchart_style">
+	    	<![CDATA[
+		      g.default_flowchart_style{ fill:url(#defaultFlowChartGradient); stroke: #3C6489; stroke-width: 1;  }	      
+	    	]]>
+	    </style>
+
+    
+		<!-- symbols -->
+	
+		<symbol id="Presentation1">
+			<rect x="0" y="0" width="99.9%" height="99.9%" />
+		</symbol>
+		
+		<symbol id="Presentation2" viewBox="0 0 80 50" preserveAspectRatio ="none">
+			<path d="M 1 26 L 39 1 L 79 26 L 39 49 z" />
+		</symbol>	
+		
+		<symbol id="Presentation3" >
+			<rect x="0" y="0" width="99.9%" height="99.9%" />
+			<line x1="10%" y1="0" x2="10%" y2="99%" />
+			<line x1="90%" y1="0" x2="90%" y2="99%" />
+		</symbol>
+		
+	<definitions>
+</templates>

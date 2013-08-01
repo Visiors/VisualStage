@@ -9,13 +9,20 @@ public class RectangleShape extends BaseCompositeShape implements CompositeShape
 
 	protected RectangleShape() {
 
-		super(-1);
+		super();
 	}
 
 	@Override
 	public String getViewDescriptor(DrawingContext context, DrawingSubject subject) {
 
 		return "";
+	}
+
+	@Override
+	public Object deepCopy() {
+
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

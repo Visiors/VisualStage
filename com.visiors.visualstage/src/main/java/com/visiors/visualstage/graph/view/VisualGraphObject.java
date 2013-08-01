@@ -5,16 +5,19 @@ import com.visiors.visualstage.graph.CustomData;
 import com.visiors.visualstage.graph.view.graph.VisualGraph;
 import com.visiors.visualstage.graph.view.shape.CompositeShape;
 import com.visiors.visualstage.interaction.Manipulatable;
+import com.visiors.visualstage.renderer.Canvas;
+import com.visiors.visualstage.renderer.DrawingContext;
+import com.visiors.visualstage.renderer.DrawingSubject;
+import com.visiors.visualstage.renderer.cache.Cacheable;
 
 /**
  * This interface defines methods that are common in all visual graph objects;
  * i.e. edges, nodes, and sub-graphs
  * 
  */
-public interface VisualGraphObject extends CompositeShape, Manipulatable, Attributable{
+public interface VisualGraphObject extends CompositeShape, Manipulatable, Attributable, Cacheable{
 
-
-	public VisualGraphObject deepCopy(long id);
+	public void draw(Canvas canvas, DrawingContext context, DrawingSubject subject);
 
 	public void setCustomData(CustomData customData);
 

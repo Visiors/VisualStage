@@ -1,6 +1,5 @@
 package com.visiors.visualstage.renderer;
 
-import java.awt.Image;
 import java.awt.Rectangle;
 
 import com.visiors.visualstage.transform.Transform;
@@ -19,8 +18,5 @@ public interface DrawingContext {
 
 	public void setTransform(Transform transform);
 
-	public Image getOffscreenImage();
-
-	public void setOffscreenImage(Image image);
 
 }

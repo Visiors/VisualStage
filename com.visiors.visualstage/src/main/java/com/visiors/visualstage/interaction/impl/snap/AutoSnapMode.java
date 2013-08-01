@@ -7,8 +7,13 @@ import java.util.List;
 
 import com.google.inject.Inject;
 import com.visiors.visualstage.constants.GraphStageConstants;
+import com.visiors.visualstage.graph.view.edge.VisualEdge;
+import com.visiors.visualstage.graph.view.node.VisualNode;
 import com.visiors.visualstage.interaction.impl.BaseInteractionHandler;
+import com.visiors.visualstage.renderer.Canvas;
+import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.system.SystemUnit;
+import com.visiors.visualstage.transform.Transform;
 import com.visiors.visualstage.util.GraphInteractionUtil;
 
 public class AutoSnapMode extends BaseInteractionHandler {
@@ -45,7 +50,7 @@ public class AutoSnapMode extends BaseInteractionHandler {
 			return false;
 		}
 
-		hitObject = GraphInteractionUtil.getFirstHitNodeAt(visualGraph, pt);
+		hitObject = GraphInteractionUtil.getFirstHitNodeAt(graphDocument.getGraph(), pt);
 
 		return false;
 	}
@@ -75,9 +80,9 @@ public class AutoSnapMode extends BaseInteractionHandler {
 		}
 
 		if (isShowPositionLines()) {
-			final Transform transform = visualGraph.getTransform();
+			final Transform transform = graphDocument.getGraph().getTransform();
 			cursor = transform.transformToScreen(pt);
-			visualGraph.updateView();
+			graphDocument.getGraph().updateView();
 		}
 
 		if (isSnapToGrid()) {
@@ -94,9 +99,9 @@ public class AutoSnapMode extends BaseInteractionHandler {
 		}
 
 		if (isShowPositionLines()) {
-			final Transform transform = visualGraph.getTransform();
+			final Transform transform = graphDocument.getGraph().getTransformer();
 			cursor = transform.transformToScreen(pt);
-			visualGraph.updateView();
+			graphDocument.getGraph().updateView();
 		}
 		return false;
 	}
@@ -104,7 +109,7 @@ public class AutoSnapMode extends BaseInteractionHandler {
 	private void snapToGrid(Point pt) {
 
 		if (hitObject != null) {
-			if (hitObject.isSelected() && visualGraph.getSelection().size() == 1) {
+			if (hitObject.isSelected() && graphDocument.getGraph().getSelection().size() == 1) {
 				snapToGrid(hitObject);
 			}
 		}
@@ -112,12 +117,12 @@ public class AutoSnapMode extends BaseInteractionHandler {
 	}
 
 	@Override
-	public void paintOnBackground(Canvas canvas, Rectangle r) {
+	public void paintOnBackground(Canvas canvas, DrawingContext r) {
 
 	}
 
 	@Override
-	public void paintOnTop(Canvas canvas, Rectangle r) {
+	public void paintOnTop(Canvas canvas, DrawingContext r) {
 
 		if (showPositionLines && cursor != null) {
 			paintPositionLines(canvas, r);

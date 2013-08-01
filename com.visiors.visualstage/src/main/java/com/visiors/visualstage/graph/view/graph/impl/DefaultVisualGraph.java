@@ -1,5 +1,6 @@
 package com.visiors.visualstage.graph.view.graph.impl;
 
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
@@ -23,24 +24,19 @@ import com.visiors.visualstage.graph.view.node.VisualNode;
 import com.visiors.visualstage.graph.view.node.impl.DefaultVisualNode;
 import com.visiors.visualstage.graph.view.node.listener.VisualNodeListener;
 import com.visiors.visualstage.handler.UndoRedoHandler;
-import com.visiors.visualstage.pool.ShapeTemplatePool;
+import com.visiors.visualstage.pool.ShapeDefinitionCollection;
 import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.property.PropertyUnit;
 import com.visiors.visualstage.property.impl.DefaultPropertyList;
 import com.visiors.visualstage.property.impl.DefaultPropertyUnit;
 import com.visiors.visualstage.property.impl.PropertyBinder;
+import com.visiors.visualstage.renderer.Canvas;
 import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.renderer.DrawingSubject;
+import com.visiors.visualstage.renderer.VisualObjectSnapshotGenerator;
 import com.visiors.visualstage.util.PropertyUtil;
 
-public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph, VisualNodeListener, EdgeViewListener
-
-{
-
-	private final Depot depot;
-	// private final GraphViewUndoHelper graphViewUndoHelper;
-	private boolean movingContent;
-	private final SubgraphEventMediator eventMediator;
+public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph, VisualNodeListener, EdgeViewListener{
 
 	protected boolean fitToContent = true;
 	protected boolean contentSelectable = true;
@@ -48,8 +44,14 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	protected boolean contentDeletable = true;;
 	private PropertyBinder propertyBinder;
 
+	private final Depot depot;
+	// private final GraphViewUndoHelper graphViewUndoHelper;
+	private boolean movingContent;
+	private final SubgraphEventMediator eventMediator;
+
+
 	@Inject
-	ShapeTemplatePool graphObjectPool;
+	protected ShapeDefinitionCollection shapeDefinitionCollection;
 	@Inject
 	protected Provider<VisualNode> visualNodeProvider;
 	@Inject
@@ -63,24 +65,20 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 
 	// private Validator validator;
 
-	protected DefaultVisualGraph() {
+	public DefaultVisualGraph() {
 
-		this(-1);
-	}
-
-	protected DefaultVisualGraph(long id) {
-
-		super(id);
+		super();
 
 		depot = new Depot(this);
 		// graphViewUndoHelper = new GraphViewUndoHelper(this);
 		eventMediator = new SubgraphEventMediator(this);
 		new GraphContentManager(this);
+
 	}
 
-	protected DefaultVisualGraph(VisualGraph visualGraph, long id) {
+	protected DefaultVisualGraph(VisualGraph visualGraph) {
 
-		this(id);
+		this();
 
 		this.setBounds(visualGraph.getBounds());
 		this.SetAttributes(visualGraph.getAttributes());
@@ -132,15 +130,15 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	}
 
 	@Override
-	public VisualNode createNode(long id, String type) {
+	public VisualNode createNode(String type) {
 
-		if (!graphObjectPool.contains(type)) {
+		if (!shapeDefinitionCollection.contains(type)) {
 			throw new IllegalArgumentException("The node '" + type
 					+ "' cannot be created beause the associated template could not be found.  "
 					+ "Please load the node's descriptor, or registere the associated node.");
 		}
 
-		return createNode(graphObjectPool.get(type));
+		return createNode(shapeDefinitionCollection.get(type));
 	}
 
 	@Override
@@ -153,14 +151,14 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	}
 
 	@Override
-	public VisualEdge createEdge(long id, String type) {
+	public VisualEdge createEdge( String type) {
 
-		if (!graphObjectPool.contains(type)) {
+		if (!shapeDefinitionCollection.contains(type)) {
 			throw new IllegalArgumentException("The edge '" + type
 					+ "' cannot be created beause the associated template could not be found.  "
 					+ "Please load the edge's descriptor, or registere the associated edge.");
 		}
-		return createEdge(graphObjectPool.get(type));
+		return createEdge(shapeDefinitionCollection.get(type));
 	}
 
 	@Override
@@ -173,15 +171,15 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	}
 
 	@Override
-	public VisualGraph createSubgraph(long id, String type) {
+	public VisualGraph createSubgraph( String type) {
 
-		if (!graphObjectPool.contains(type)) {
+		if (!shapeDefinitionCollection.contains(type)) {
 			throw new IllegalArgumentException("The subgraph '" + type
 					+ "' cannot be created beause the associated template could not be found.  "
 					+ "Please load the subgraph's descriptor, or registere the associated object.");
 		}
 
-		return createSubgraph(graphObjectPool.get(type));
+		return createSubgraph(shapeDefinitionCollection.get(type));
 	}
 
 	@Override
@@ -194,18 +192,20 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	}
 
 	@Override
-	public void createGraphObjects(PropertyList properties) {
+	public List<VisualGraphObject> createGraphObjects(PropertyList properties) {
 
 		/*
 		 * The Objects' id might change if the stored ids are in use. This map
 		 * keeps track of changed stored ids and the real current ids so the
 		 * edges can find their connections
 		 */
+
 		final Map<Long, Long> idMappings = new HashMap<Long, Long>();
 
 		final PropertyList edgesProperties = (PropertyList) properties.get(PropertyConstants.EDGE_SECTION_TAG);
 		final PropertyList nodesProperties = (PropertyList) properties.get(PropertyConstants.NODE_SECTION_TAG);
 		final PropertyList groupsProperties = (PropertyList) properties.get(PropertyConstants.SUBGRAPH_SECTION_TAG);
+		final List<VisualGraphObject> result = new ArrayList<VisualGraphObject>();
 
 		if (groupsProperties != null) {
 			for (int i = 0; i < groupsProperties.size(); i++) {
@@ -213,6 +213,7 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 				final VisualGraph graph = createSubgraph(graphProperties);
 				final long previousID = PropertyUtil.getProperty(graphProperties, PropertyConstants.NODE_PROPERTY_ID,
 						-1L);
+				result.add(graph);
 				idMappings.put(previousID, graph.getID());
 			}
 		}
@@ -220,6 +221,7 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 			for (int i = 0; i < nodesProperties.size(); i++) {
 				final PropertyList nodeProperties = (PropertyList) nodesProperties.get(i);
 				final VisualNode node = createNode(nodeProperties);
+				result.add(node);
 				final long previousID = PropertyUtil.getProperty(nodeProperties, PropertyConstants.NODE_PROPERTY_ID,
 						-1L);
 				idMappings.put(previousID, node.getID());
@@ -229,6 +231,7 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 			for (int i = 0; i < edgesProperties.size(); i++) {
 				final PropertyList edgeProperties = (PropertyList) edgesProperties.get(i);
 				final VisualEdge edge = createEdge(edgeProperties);
+				result.add(edge);
 				// connect edge
 				final PropertyUnit source = PropertyUtil.findPropertyUnit(edgeProperties,
 						PropertyConstants.EDGE_PROPERTY_SOURCE);
@@ -249,6 +252,7 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 				edge.connect(sourceNode, sourcePort, targetNode, targetPort);
 			}
 		}
+		return result;
 	}
 
 	protected void addNode(VisualNode node) {
@@ -600,7 +604,6 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 		return this.contentDeletable;
 	}
 
-
 	@Override
 	public PropertyList getProperties(boolean childrenIncluded) {
 
@@ -664,7 +667,6 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 		// boundary.height);
 	}
 
-
 	@Override
 	protected String getSelectionDesriptorID() {
 
@@ -701,18 +703,33 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	}
 
 	@Override
-	public VisualGraphObject deepCopy(long id) {
+	public Object deepCopy() {
 
-		return new DefaultVisualGraph(this, id);
+		return new DefaultVisualGraph(this);
 	}
-	//
-	//	@Override
-	//	public Image getPreview(Context ctx, ImageObserver observer) {
-	//
-	//		final Image preview = super.getPreview(ctx, observer);
-	//
-	//		return preview;
-	//	}
+
+	@Override
+	public void draw(Canvas canvas, DrawingContext context, DrawingSubject subject) {
+
+		super.draw(canvas, context, subject);
+		for (final VisualGraphObject vgo : depot.getObjects()) {
+			vgo.draw(canvas, context, subject);
+		}
+	}
+
+	@Override
+	public Image provide(DrawingContext context, DrawingSubject subject) {
+
+		//TODO try to call super.provide to see what getViewDescriptor is called
+		// if the one of node then this method can be removed. 
+		// having this method here makes sure that we paint only the graph without children
+		String desc =  super.getViewDescriptor(context, subject);
+		if (desc == null) {
+			return null;
+		}
+		return VisualObjectSnapshotGenerator.createSnapshot(this,desc, context, subject);
+	}
+
 
 	@Override
 	public String getViewDescriptor(DrawingContext context, DrawingSubject subject) {

@@ -1,13 +1,7 @@
 package com.visiors.visualstage.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
-
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.xml.sax.SAXException;
 
 import com.visiors.visualstage.export.XMLService;
 import com.visiors.visualstage.property.Property;
@@ -24,32 +18,21 @@ public class PropertyUtil {
 	public static String propertyList2XML(PropertyList properties, boolean insertHeader) {
 
 		try {
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			XMLService xmlService = new XMLService();
-			xmlService.propertyList2XML(bos, properties, insertHeader);
-			bos.flush();
-			return bos.toString();
+			return xmlService.propertyList2XML(properties, insertHeader);
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
 		return null;
 	}
 
 	public static PropertyList XML2PropertyList(String strXML) {
-
-		try {
-			ByteArrayInputStream bis = new ByteArrayInputStream(strXML.getBytes());
-			XMLService xmlService = new XMLService();
-			return xmlService.XML2PropertyList(bis);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-		} catch (SAXException e) {
-			e.printStackTrace();
-		}
-		return null;
+		XMLService xmlService = new XMLService();
+		return xmlService.XML2PropertyList(strXML);
 	}
+
 	public static PropertyUnit findPropertyUnit(PropertyList pl, String fullPath) {
 		if (pl == null) {
 			return null;

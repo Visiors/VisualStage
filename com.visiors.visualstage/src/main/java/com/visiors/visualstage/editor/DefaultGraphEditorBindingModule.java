@@ -3,8 +3,16 @@ package com.visiors.visualstage.editor;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Binder;
 import com.google.inject.Singleton;
-import com.visiors.visualstage.document.layer.MultiLayerEditor;
-import com.visiors.visualstage.document.layer.impl.DefaultMultiLayerEditor;
+import com.visiors.visualstage.document.GraphDocument;
+import com.visiors.visualstage.document.VisualEdgeProvider;
+import com.visiors.visualstage.document.VisualGraphProvider;
+import com.visiors.visualstage.document.VisualNodeProvider;
+import com.visiors.visualstage.document.impl.DefaultGraphDocument;
+import com.visiors.visualstage.document.layer.LayerManager;
+import com.visiors.visualstage.document.layer.impl.DefaultLayerManager;
+import com.visiors.visualstage.graph.view.edge.VisualEdge;
+import com.visiors.visualstage.graph.view.graph.VisualGraph;
+import com.visiors.visualstage.graph.view.node.VisualNode;
 import com.visiors.visualstage.handler.ClipboardHandler;
 import com.visiors.visualstage.handler.DefaultGroupingHandler;
 import com.visiors.visualstage.handler.GroupingHandler;
@@ -15,12 +23,14 @@ import com.visiors.visualstage.handler.impl.DefaultSelectionHander;
 import com.visiors.visualstage.handler.impl.DefaultUndoRedoHandler;
 import com.visiors.visualstage.interaction.InteractionHandler;
 import com.visiors.visualstage.interaction.impl.DefaultInteractionHandler;
+import com.visiors.visualstage.pool.ShapeDefinitionCollection;
+import com.visiors.visualstage.pool.ShapeDefinitionCollection;
 import com.visiors.visualstage.stage.DefaultStageDesigner;
 import com.visiors.visualstage.stage.StageDesigner;
 import com.visiors.visualstage.system.DefaultSystemUnitService;
 import com.visiors.visualstage.system.SystemUnit;
-import com.visiors.visualstage.transform.Transform;
 import com.visiors.visualstage.transform.DefaultTransformer;
+import com.visiors.visualstage.transform.Transform;
 import com.visiors.visualstage.validation.DefaultValidator;
 import com.visiors.visualstage.validation.Validator;
 
@@ -30,6 +40,12 @@ public class DefaultGraphEditorBindingModule extends BindingModule {
 	public void bindEventBus(Binder binder) {
 
 		binder.bind(EventBus.class).in(Singleton.class);
+	}
+
+	// binding the default graph document
+	public void bindDefaultGraphDocument(Binder binder) {
+
+		binder.bind(GraphDocument.class).to(DefaultGraphDocument.class);
 	}
 
 	// binding the default clip board handler
@@ -83,7 +99,7 @@ public class DefaultGraphEditorBindingModule extends BindingModule {
 	// binding the default layer manager
 	public void bindLayerManager(Binder binder) {
 
-		binder.bind(MultiLayerEditor.class).to(DefaultMultiLayerEditor.class);
+		binder.bind(LayerManager.class).to(DefaultLayerManager.class);
 	}
 
 	// binding the default unit system service
@@ -91,9 +107,30 @@ public class DefaultGraphEditorBindingModule extends BindingModule {
 
 		binder.bind(SystemUnit.class).to(DefaultSystemUnitService.class);
 	}
+	// binding the visual node provider
+	public void bindVisualNodeProvider(Binder binder) {
 
-	//	public void configureFileExtensions(Binder binder) {
+		binder.bind(VisualNode.class).toProvider(VisualNodeProvider.class);
+	}
+	// binding the visual edge provider
+	public void bindVisualEdgeProvider(Binder binder) {
+
+		binder.bind(VisualEdge.class).toProvider(VisualEdgeProvider.class);
+	}
+	// binding the visual graph provider
+	public void bindVisualGraphProvider(Binder binder) {
+
+		binder.bind(VisualGraph.class).toProvider(VisualGraphProvider.class);
+	}
+	// binding the shapes collection
+	public void bindShapesCollection(Binder binder) {
+
+		binder.bind(ShapeDefinitionCollection.class).to(ShapeDefinitionCollection.class);
+	}
+
+
+	// public void configureFileExtensions(Binder binder) {
 	//
-	//		binder.bind(String.class).annotatedWith(Names.named(PropertyConstants.FILE_EXTENSIONS)).toInstance("vst");
-	//	}
+	// binder.bind(String.class).annotatedWith(Names.named(PropertyConstants.FILE_EXTENSIONS)).toInstance("vst");
+	// }
 }

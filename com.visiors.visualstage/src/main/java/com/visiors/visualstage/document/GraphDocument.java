@@ -9,7 +9,7 @@ import com.visiors.visualstage.graph.view.graph.listener.GraphViewListener;
 import com.visiors.visualstage.handler.Undoable;
 import com.visiors.visualstage.property.PropertyOwner;
 import com.visiors.visualstage.renderer.Canvas;
-import com.visiors.visualstage.renderer.DrawingSubject;
+import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.stage.StageDesigner;
 import com.visiors.visualstage.transform.Transform;
 import com.visiors.visualstage.validation.Validator;
@@ -22,7 +22,7 @@ public interface GraphDocument extends MultiLayerDocument, PropertyOwner, Undoab
 
 	public VisualGraph getGraph();
 
-	public String getSVGDocument(DrawingSubject context);
+	public String getSVGDocument(DrawingContext context);
 
 	public StageDesigner getStageDesigner();
 
@@ -39,7 +39,7 @@ public interface GraphDocument extends MultiLayerDocument, PropertyOwner, Undoab
 	//
 	// public boolean isFiringEvents();
 
-	public void draw();
+	public void draw(Canvas canvas, DrawingContext context);
 
 	public void print(Canvas canvas, Rectangle rPage, Transform transform);
 
