@@ -8,15 +8,15 @@ public interface DrawingContext {
 
 	public Resolution getResolution();
 
-	public void setResolution(Resolution resolution);
+	//	public void setResolution(Resolution resolution);
 
 	public Rectangle getBounds();
 
-	public void setBounds(Rectangle rectangle);
+	//	public void setBounds(Rectangle rectangle);
 
 	public Transform getTransform();
 
-	public void setTransform(Transform transform);
+	//	public void setTransform(Transform transform);
 
 
 }

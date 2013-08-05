@@ -2,8 +2,8 @@ package com.visiors.visualstage.graph.view.edge.impl.orthogonal;
 
 import java.awt.Point;
 
-import com.visiors.visualstage.constants.Constants;
-import com.visiors.visualstage.constants.GraphStageConstants;
+import com.visiors.visualstage.constants.SVGConstants;
+import com.visiors.visualstage.constants.InteractionConstants;
 import com.visiors.visualstage.constants.PropertyConstants;
 import com.visiors.visualstage.graph.view.DefaultVisualGraphObject;
 import com.visiors.visualstage.graph.view.ViewConstants;
@@ -49,7 +49,7 @@ public class OrthogonalEdge extends PolygonalEdgeView {
 	protected void initProperties() {
 
 		super.initProperties();
-		svgManDef = svgDescriptorPool.get(Constants.DEFAULT_EDGE_MANIPULATION_HANDEL);
+		svgManDef = svgDescriptorPool.get(SVGConstants.DEFAULT_EDGE_MANIPULATION_HANDEL);
 
 		properties = PropertyUtil.setProperty(properties, PropertyConstants.EDGE_PROPERTY_TYPE,
 				PropertyConstants.EDGE_PROPERTY_TYPE_ORTHOGONAL);
@@ -364,29 +364,29 @@ public class OrthogonalEdge extends PolygonalEdgeView {
 	public int getPreferredCursor() {
 
 		if (manipulationID == DefaultVisualGraphObject.NONE) {
-			return GraphStageConstants.CURSOR_DEFAULT;
+			return InteractionConstants.CURSOR_DEFAULT;
 		}
 
 		if (hitSegmentCenterPoint(manipulationID)) {
 			int index = IDToIndex(manipulationID);
 			Point[] points = path.getPoints();
 			if (points[index].x == points[index + 1].x) {
-				return GraphStageConstants.CURSOR_W_RESIZE;
+				return InteractionConstants.CURSOR_W_RESIZE;
 			} else {
-				return GraphStageConstants.CURSOR_N_RESIZE;
+				return InteractionConstants.CURSOR_N_RESIZE;
 			}
 		}
 		if (hitSegment(manipulationID)) {
-			return GraphStageConstants.CURSOR_CROSSHAIR;
+			return InteractionConstants.CURSOR_CROSSHAIR;
 		}
 		if (hitCornerPoint(manipulationID)) {
-			return GraphStageConstants.CURSOR_CROSSHAIR;
+			return InteractionConstants.CURSOR_CROSSHAIR;
 		}
 		if (hitStartPoint(manipulationID) || hitEndPoint(manipulationID)) {
-			return GraphStageConstants.CURSOR_CROSSHAIR;
+			return InteractionConstants.CURSOR_CROSSHAIR;
 		}
 
-		return GraphStageConstants.CURSOR_DEFAULT;
+		return InteractionConstants.CURSOR_DEFAULT;
 	}
 
 	// private Point[] removeRedundats(Point[] points) {
@@ -475,7 +475,7 @@ public class OrthogonalEdge extends PolygonalEdgeView {
 	private final void createManipulationMarkDescriotor(StringBuffer svg, double x, double y) {
 
 		svg.append("\n<use xlink:href='#");
-		svg.append(Constants.DEFAULT_EDGE_MANIPULATION_HANDEL);
+		svg.append(SVGConstants.DEFAULT_EDGE_MANIPULATION_HANDEL);
 		svg.append("' x='");
 		svg.append(x);
 		svg.append("' y='");

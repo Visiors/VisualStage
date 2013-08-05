@@ -47,7 +47,9 @@ class PropertyUnitBinder implements PropertyListener {
 		this.propertyUnit = propertyUnit;
 		propertyUnit.addPropertyListener(this);
 
-		final String propertyName = propertyUnit.getName();
+		final String propertyFullName = propertyUnit.getName();
+		final String propertyName = propertyFullName.substring(propertyFullName.lastIndexOf(":")+1);
+
 		final String getterMethodName = "get" + capitalizeFirstLetter(propertyName);
 		try {
 			getter = handlerClass.getClass().getDeclaredMethod(getterMethodName, new Class[] {});

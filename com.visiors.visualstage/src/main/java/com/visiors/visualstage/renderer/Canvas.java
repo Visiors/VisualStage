@@ -9,4 +9,5 @@ public interface Canvas{
 
 	public void draw(int x, int y, Image image);
 
+	public DrawingContext getContext();
 }

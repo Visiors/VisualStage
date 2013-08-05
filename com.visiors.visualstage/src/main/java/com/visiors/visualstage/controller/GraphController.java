@@ -5,7 +5,7 @@ import com.visiors.visualstage.graph.view.graph.VisualGraph;
 public interface GraphController {
 
 
-	// public GraphView createGraphView();
+	// public graphView createGraphView();
 
 	void refreshGraphModel(VisualGraph visualGraph);
 

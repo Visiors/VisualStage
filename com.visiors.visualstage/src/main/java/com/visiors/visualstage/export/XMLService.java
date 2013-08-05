@@ -1,6 +1,8 @@
 package com.visiors.visualstage.export;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -15,7 +17,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.visiors.visualstage.constants.PropertyConstants;
+import com.visiors.visualstage.constants.XMLConstants;
 import com.visiors.visualstage.exception.XMLDocumentReadException;
 import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.property.PropertyUnit;
@@ -36,7 +38,7 @@ public class XMLService {
 		final Writer stringWriter = new StringWriter();
 		final PrintWriter printWriter = new PrintWriter(stringWriter);
 		if (insertHeader) {
-			printWriter.print(PropertyConstants.XML_HEADER);
+			printWriter.print(XMLConstants.XML_HEADER);
 		}
 		// writing graph data...
 		writeAttribute(printWriter, properties);
@@ -97,7 +99,7 @@ public class XMLService {
 		return space.toString();
 	}
 
-	public PropertyList XML2PropertyList(String properties){
+	public PropertyList XML2PropertyList(String xml){
 
 		SAXParser parser = null;
 		SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -109,7 +111,10 @@ public class XMLService {
 		// Parsing input
 		try {
 			parser = factory.newSAXParser();
-			parser.parse(properties, defaultHandler);
+			InputStream is = new ByteArrayInputStream(xml.getBytes());
+			parser.parse(is, defaultHandler);
+			is.close();
+
 		} catch (ParserConfigurationException e) {
 			throw new XMLDocumentReadException("Document could not be parsed: ", e );
 		} catch (SAXException e) {

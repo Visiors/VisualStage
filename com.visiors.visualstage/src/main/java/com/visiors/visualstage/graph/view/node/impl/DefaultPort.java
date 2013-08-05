@@ -200,8 +200,8 @@ public class DefaultPort implements Port {
 	// {
 	// g.setColor(selected ? selectionColor : color);
 	//
-	// int x = transformer.scaleX(position.x);
-	// int y = transformer.scaleY(position.y);
+	// int x = transform.scaleX(position.x);
+	// int y = transform.scaleY(position.y);
 	//
 	// g.fillRect(x - range/2, y - range/2, range, range);
 	// g.setColor(Color.darkGray);

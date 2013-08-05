@@ -70,10 +70,10 @@ public class RoundedOrthogonalEdge extends OrthogonalEdge {
 		if (svgLineDef != null) {
 			StringBuffer svg = new StringBuffer();
 
-			svg.append("<g transformer='scale(");
-			svg.append(transformer.getScaleX());
+			svg.append("<g transform='scale(");
+			svg.append(transform.getScaleX());
 			svg.append(",");
-			svg.append(transformer.getScaleY());
+			svg.append(transform.getScaleY());
 			svg.append(")'> ");
 			svg.append(svgLineDef.definition);
 			svg.append("</g>");

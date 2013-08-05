@@ -1,8 +1,8 @@
 package com.visiors.visualstage.graph.view.shape.impl;
 
 import com.visiors.visualstage.graph.view.shape.Shape;
-import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.renderer.DrawingSubject;
+import com.visiors.visualstage.renderer.Resolution;
 
 public class TextShape extends BaseShape implements Shape {
 
@@ -12,7 +12,7 @@ public class TextShape extends BaseShape implements Shape {
 	}
 
 	@Override
-	public String getViewDescriptor(DrawingContext context, DrawingSubject subject) {
+	public String getViewDescriptor(Resolution resolution, DrawingSubject subject) {
 
 		return "";
 	}

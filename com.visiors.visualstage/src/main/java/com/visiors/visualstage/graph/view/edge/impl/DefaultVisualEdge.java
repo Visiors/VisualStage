@@ -5,8 +5,7 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
+import com.google.common.base.Objects;
 import com.google.inject.Inject;
 import com.visiors.visualstage.attribute.Attribute;
 import com.visiors.visualstage.constants.PropertyConstants;
@@ -18,19 +17,21 @@ import com.visiors.visualstage.graph.view.edge.PathChangeListener;
 import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.edge.listener.EdgeViewListener;
 import com.visiors.visualstage.graph.view.graph.VisualGraph;
+import com.visiors.visualstage.graph.view.node.Port;
 import com.visiors.visualstage.graph.view.node.VisualNode;
 import com.visiors.visualstage.graph.view.node.listener.NodeViewAdapter;
 import com.visiors.visualstage.graph.view.node.listener.VisualNodeListener;
+import com.visiors.visualstage.handler.UndoRedoHandler;
 import com.visiors.visualstage.interaction.Interactable;
-import com.visiors.visualstage.pool.SVGDescriptorCollection;
+import com.visiors.visualstage.pool.FormatCollection;
 import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.property.impl.DefaultPropertyList;
 import com.visiors.visualstage.property.impl.DefaultPropertyUnit;
 import com.visiors.visualstage.property.impl.PropertyBinder;
-import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.renderer.DrawingSubject;
 import com.visiors.visualstage.renderer.Resolution;
 import com.visiors.visualstage.svg.SVGDescriptor;
+import com.visiors.visualstage.validation.Validator;
 
 public class DefaultVisualEdge extends DefaultVisualGraphObject implements VisualEdge, PathChangeListener/*
  * ,
@@ -51,10 +52,16 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 	protected String presentationID;
 	protected String styleID;
 	protected String formID;
+	protected Rectangle boundaryExt = new Rectangle();
+
+	private PropertyBinder propertyBinder;
 
 	@Inject
-	protected SVGDescriptorCollection svgDescriptorPool;
-	private PropertyBinder propertyBinder;
+	private FormatCollection formatCollection;
+	@Inject
+	protected UndoRedoHandler undoRedoHandler;
+	@Inject
+	protected Validator validator;
 
 	public DefaultVisualEdge() {
 
@@ -63,7 +70,11 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 		sourcePortId = DefaultVisualGraphObject.NONE;
 		targetPortId = DefaultVisualGraphObject.NONE;
 		path = new DefaultPath();
+		path.getStart().setPoint(new Point(0, 100));
+		path.getEnd().setPoint(new Point(100, 0));
 		path.addPathListener(this);
+
+		initProperties();
 	}
 
 	protected DefaultVisualEdge(VisualEdge edge) {
@@ -81,7 +92,6 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 		}
 	}
 
-	@PostConstruct
 	protected void initProperties() {
 
 		// create the property definition
@@ -120,12 +130,12 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 	@Override
 	public void connect(VisualNode source, int sourcePortId, VisualNode target, int targetPortId) {
 
-		if (sourceNode.equals(source) && this.sourcePortId != sourcePortId && targetNode.equals(target)
-				&& this.targetPortId != targetPortId) {
+		if (Objects.equal(sourceNode, source) && Objects.equal(this.sourcePortId, sourcePortId)
+				&& Objects.equal(targetNode, target) && Objects.equal(this.targetPortId, targetPortId)) {
 			return;
 		}
 
-		if (!getValidator().permitConnection(source, sourcePortId, this, target, targetPortId)) {
+		if (!validator.permitConnection(source, sourcePortId, this, target, targetPortId)) {
 			return;
 		}
 
@@ -137,7 +147,7 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 		if (sourceNode == null || !sourceNode.equals(source)) {
 			if (sourceNode != null) {
 				// detach from the current edge
-				sourceNode.postDisconnected(this);
+				sourceNode.postDisconnected(this, false);
 				sourceNode.removeNodeViewListener(nodeListener);
 			}
 			if (source != null) {
@@ -153,7 +163,7 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 		if (targetNode == null || !targetNode.equals(target)) {
 			if (targetNode != null) {
 				// detach target node from the current edge
-				targetNode.postDisconnected(this);
+				targetNode.postDisconnected(this, true);
 				targetNode.removeNodeViewListener(nodeListener);
 			}
 			if (target != null) {
@@ -165,6 +175,7 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 		this.targetNode = target;
 		this.targetPortId = targetPortId;
 
+		updatePath(true, true);
 		fireEdgeReconnected(oldSourceNode, oldSourcePort, oldTargetNode, oldTargetPort);
 	}
 
@@ -203,20 +214,18 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 	// cachedImage = null;
 	// }
 
-
 	@Override
-	public String getViewDescriptor(DrawingContext context, DrawingSubject subject) {
+	public String getViewDescriptor(Resolution resolution, DrawingSubject subject) {
 
 		if (subject == DrawingSubject.OBJECT) {
 
 			return styledLineDescriptor();
 		}
-		if (subject == DrawingSubject.SELECTION_INDICATORS && context.getResolution() == Resolution.SCREEN) {
+		if (subject == DrawingSubject.SELECTION_INDICATORS && resolution == Resolution.SCREEN) {
 
 			return getSelectionDescriptor();
 		}
-		throw new IllegalArgumentException("Unknown subject: " +subject);
-
+		return new String();
 	}
 
 	private String styledLineDescriptor() {
@@ -244,8 +253,8 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 		if (svgSelDef != null) {
 			final EdgePoint[] points = path.getPoints();
 			final StringBuffer sb = new StringBuffer();
-			final double sx = transformer.getScaleX();
-			final double sy = transformer.getScaleY();
+			final double sx = transform.getScaleX();
+			final double sy = transform.getScaleY();
 			for (EdgePoint edgePoint : points) {
 				final Point point = edgePoint.getPoint();
 				createSelectionMarkDescriotor(sb, (point.x * sx) - svgSelDef.width / 2, (point.y * sy)
@@ -283,9 +292,9 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 		int idx2 = description.indexOf("\"", idx1);
 		final StringBuffer sb = new StringBuffer();
 		sb.append("<g transform='scale(");
-		sb.append(transformer.getScaleX());
+		sb.append(transform.getScaleX());
 		sb.append(",");
-		sb.append(transformer.getScaleY());
+		sb.append(transform.getScaleY());
 		sb.append(")'> ");
 		if (idx1 != -1) {
 			idx1 += 2;
@@ -352,10 +361,9 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 		propertyBinder.loadAll();
 	}
 
-	// ///////////////////////////////////////////////////////////////////////
-	// implementation of VisualObject interface
-	@Override
-	public Rectangle getBounds() {
+
+
+	private void updateBoundaries() {
 
 		int x1 = Integer.MAX_VALUE;
 		int y1 = Integer.MAX_VALUE;
@@ -369,28 +377,20 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 			x2 = Math.max(x2, pt.x);
 			y2 = Math.max(y2, pt.y);
 		}
-		return new Rectangle(x1, y1, x2 - x1, y2 - y1);
+		boundary.setBounds(x1, y1, x2 - x1, y2 - y1);
+
+		boundaryExt.setBounds(boundary);
+		// TODO solve this in a better way!!		
+		boundaryExt.grow(20, 20);
 	}
+	// ///////////////////////////////////////////////////////////////////////
+	// implementation of VisualObject interface
+
 
 	@Override
 	public Rectangle getExtendedBoundary() {
 
-		int x1 = Integer.MAX_VALUE;
-		int y1 = Integer.MAX_VALUE;
-		int x2 = Integer.MIN_VALUE;
-		int y2 = Integer.MIN_VALUE;
-		for (EdgePoint edgePoint : path.getPoints()) {
-			final Point pt = edgePoint.getPoint();
-			x1 = Math.min(x1, pt.x);
-			y1 = Math.min(y1, pt.y);
-			x2 = Math.max(x2, pt.x);
-			y2 = Math.max(y2, pt.y);
-		}
-		final Rectangle r = new Rectangle(x1, y1, x2 - x1, y2 - y1);
-		// TODO solve this in a better way!!
-		final int margin = 20;
-		r.grow(margin, margin);
-		return r;
+		return boundaryExt;
 	}
 
 	@Override
@@ -457,22 +457,30 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 		Point p2 = null;
 		if (updateSource) {
 			if (getSourcePortId() != DefaultVisualGraphObject.NONE) {
-				p1 = sourceNode.getPortSet().getPortByID(getSourcePortId()).getPosition();
-			} /*
-			 * else { final Rectangle r = sourceNode.getBounds(); p1 = new
-			 * Point((int) r.getCenterX(), (int) r.getCenterY()); }
-			 */
+				Port port = sourceNode.getPortSet().getPortByID(getSourcePortId());
+				if (port != null) {
+					p1 = port.getPosition();
+				}
+			}
+			if (p1 == null) {
+				final Rectangle r = sourceNode.getBounds();
+				p1 = new Point((int) r.getCenterX(), (int) r.getCenterY());
+			}
+
 			movePoint(0, p1);
 		}
 		if (updateTarget) {
 			if (getTargetPortId() != DefaultVisualGraphObject.NONE) {
-				p2 = targetNode.getPortSet().getPortByID(getTargetPortId()).getPosition();
-			}/*
-			 * else { p1 = path.getStart().getPoint(); final Rectangle r =
-			 * targetNode.getBounds(); p2 = new Point((int) r.getCenterX(),
-			 * (int) r.getCenterY()); if (p1.x < p2.x) { p2.x = r.x; } else {
-			 * p2.x = r.x + r.width; } }
-			 */
+				Port port = targetNode.getPortSet().getPortByID(getTargetPortId());
+				if (port != null) {
+					p2 = port.getPosition();
+				}
+			}
+			if (p2 == null) {
+				final Rectangle r = targetNode.getBounds();
+				p2 = new Point((int) r.getCenterX(), (int) r.getCenterY());
+			}
+
 			movePoint(path.getSize() - 1, p2);
 		}
 	}
@@ -480,6 +488,8 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 	protected void movePoint(int index, Point target) {
 
 		path.setPointAt(index, new EdgePoint(target));
+		updateBoundaries();
+		setModified(true);
 	}
 
 	@Override
@@ -491,6 +501,7 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 				for (final EdgePoint newPoint : newPoints) {
 					newPoint.getPoint().translate(dx, dy);
 				}
+				updateBoundaries();
 			}
 		}
 	}
@@ -595,7 +606,7 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 	// ===================================================
 	// sending notification to listener
 	protected List<EdgeViewListener> edgeViewlistener = new ArrayList<EdgeViewListener>();
-	protected boolean fireEvents;
+	protected boolean fireEvents = true;
 
 	@Override
 	public void addEdgeViewListener(EdgeViewListener listener) {
@@ -681,6 +692,8 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 		for (final EdgeViewListener l : edgeViewlistener) {
 			l.edgeStoppedChangingPath(this, oldPath);
 		}
+		updateBoundaries();
+		setModified(true);
 	}
 
 	// ///////////////////////////////

@@ -1,103 +1,108 @@
 package com.visiors.visualstage.stage;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.Stroke;
 
-import com.visiors.visualstage.renderer.Canvas;
 import com.visiors.visualstage.transform.Transform;
 
 public class Grid {
 
-    public enum GridStyle {
-        Line, Dot, Cross
-    };
+	public enum GridStyle {
+		Line, Dot, Cross
+	};
 
-    /* Grid line color */
-    private final Color lineColor;
-    private final Color sublineColor;
+	private static Stroke solidStroke = new BasicStroke(1.0f);
 
-    /* Centimetre unit */
-    private static final int CROSS_SIZE = 4;
-    private final Transform transformer;
+	/* Grid line color */
+	private final Color lineColor;
+	private final Color sublineColor;
 
-    public Grid(Transform transformer) {
+	/* Centimetre unit */
+	private static final int CROSS_SIZE = 4;
+	private final Transform transformer;
 
-        this.transformer = transformer;
-        lineColor = new Color(0xD8E5E5);// UIManager.getColor("MinuetLnF.Ruler.Line.Color");
-        sublineColor = new Color(0xEBF2F2); // UIManager.getColor("MinuetLnF.Ruler.Subline.Color");
-    }
+	public Grid(Transform transformer) {
 
-    public void draw(Canvas canvas, Rectangle r, double pixelsPreUnit, GridStyle style) {
+		this.transformer = transformer;
+		lineColor = new Color(0xD8E5E5);// UIManager.getColor("MinuetLnF.Ruler.Line.Color");
+		sublineColor = new Color(0xEBF2F2); // UIManager.getColor("MinuetLnF.Ruler.Subline.Color");
+	}
 
-        double transUnit = transformer.getScale() * pixelsPreUnit;
+	public void draw( Graphics2D gfx, Rectangle r, double pixelsPreUnit, GridStyle style) {
 
-        while (transUnit < pixelsPreUnit / 2) {
-            transUnit *= 2;
-        }
 
-        while (transUnit > pixelsPreUnit * 2) {
-            transUnit /= 2;
-        }
+		double transUnit = transformer.getScale() * pixelsPreUnit;
 
-        double xOffset = Math.abs(transformer.getTranslateX() - r.x) % transUnit - transUnit;
-        double yOffset = Math.abs(transformer.getTranslateY() - r.y) % transUnit - transUnit;
+		while (transUnit < pixelsPreUnit / 2) {
+			transUnit *= 2;
+		}
 
-        if ((int) xOffset < 0) {
-            xOffset += transUnit;
-        }
-        if ((int) yOffset < 0) {
-            yOffset += transUnit;
-        }
+		while (transUnit > pixelsPreUnit * 2) {
+			transUnit /= 2;
+		}
 
-        canvas.setStroke(1.0f);
-        switch (style) {
-            case Line:
+		double xOffset = Math.abs(transformer.getTranslateX() - r.x) % transUnit - transUnit;
+		double yOffset = Math.abs(transformer.getTranslateY() - r.y) % transUnit - transUnit;
 
-                canvas.setColor(sublineColor);
-                for (double x = r.x + xOffset + transUnit / 2; x < r.x + r.width; x += transUnit) {
-                    canvas.drawLine((int) x, r.y, (int) x, r.y + r.height);
-                }
+		if ((int) xOffset < 0) {
+			xOffset += transUnit;
+		}
+		if ((int) yOffset < 0) {
+			yOffset += transUnit;
+		}
 
-                for (double y = r.y + yOffset + transUnit / 2; y < r.y + r.height; y += transUnit) {
-                    canvas.drawLine(r.x, (int) y, r.x + r.width, (int) y);
-                }
+		gfx.setStroke(solidStroke);
+		switch (style) {
+		case Line:
 
-                canvas.setColor(lineColor);
-                int test = 0;
-                for (double x = r.x + xOffset; x < r.x + r.width; x += transUnit, test++) {
-                    canvas.drawLine((int) x, r.y, (int) x, r.y + r.height);
-                    // System.err.println("Number of drawn lines: " + test);
-                }
+			gfx.setColor(sublineColor);
+			for (double x = r.x + xOffset + transUnit / 2; x < r.x + r.width; x += transUnit) {
+				gfx.drawLine((int) x, r.y, (int) x, r.y + r.height);
+			}
 
-                for (double y = r.y + yOffset; y < r.y + r.height; y += transUnit) {
-                    canvas.drawLine(r.x, (int) y, r.x + r.width, (int) y);
-                }
+			for (double y = r.y + yOffset + transUnit / 2; y < r.y + r.height; y += transUnit) {
+				gfx.drawLine(r.x, (int) y, r.x + r.width, (int) y);
+			}
 
-                break;
-            case Dot:
-                canvas.setColor(lineColor);
-                for (double y = r.y + yOffset; y < r.y + r.height; y += transUnit) {
-                    for (double x = r.x + xOffset; x < r.x + r.width; x += transUnit) {
-                        canvas.drawRect((int) x, (int) y, 1, 1);
-                    }
-                }
-                break;
-            case Cross:
-                canvas.setColor(lineColor);
-                for (double x = r.x + xOffset; x < r.x + r.width; x += transUnit) {
-                    for (double y = r.y + yOffset - Grid.CROSS_SIZE; y < r.y + r.height; y += transUnit) {
-                        canvas.drawLine((int) x, (int) y - Grid.CROSS_SIZE, (int) x, (int) y + Grid.CROSS_SIZE);
-                    }
-                }
-                for (double y = r.y + yOffset - Grid.CROSS_SIZE; y < r.y + r.height; y += transUnit) {
-                    for (double x = r.x + xOffset; x < r.x + r.width; x += transUnit) {
-                        canvas.drawLine((int) x - Grid.CROSS_SIZE, (int) y, (int) x + Grid.CROSS_SIZE, (int) y);
-                    }
-                }
-        }
+			gfx.setColor(lineColor);
+			int test = 0;
+			for (double x = r.x + xOffset; x < r.x + r.width; x += transUnit, test++) {
+				gfx.drawLine((int) x, r.y, (int) x, r.y + r.height);
+				// System.err.println("Number of drawn lines: " + test);
+			}
 
-        canvas.setColor(lineColor);
-        canvas.drawRect(r.x, r.y, r.width, r.height);
-    }
+			for (double y = r.y + yOffset; y < r.y + r.height; y += transUnit) {
+				gfx.drawLine(r.x, (int) y, r.x + r.width, (int) y);
+			}
+
+			break;
+		case Dot:
+			gfx.setColor(lineColor);
+			for (double y = r.y + yOffset; y < r.y + r.height; y += transUnit) {
+				for (double x = r.x + xOffset; x < r.x + r.width; x += transUnit) {
+					gfx.drawRect((int) x, (int) y, 1, 1);
+				}
+			}
+			break;
+		case Cross:
+			gfx.setColor(lineColor);
+			for (double x = r.x + xOffset; x < r.x + r.width; x += transUnit) {
+				for (double y = r.y + yOffset - Grid.CROSS_SIZE; y < r.y + r.height; y += transUnit) {
+					gfx.drawLine((int) x, (int) y - Grid.CROSS_SIZE, (int) x, (int) y + Grid.CROSS_SIZE);
+				}
+			}
+			for (double y = r.y + yOffset - Grid.CROSS_SIZE; y < r.y + r.height; y += transUnit) {
+				for (double x = r.x + xOffset; x < r.x + r.width; x += transUnit) {
+					gfx.drawLine((int) x - Grid.CROSS_SIZE, (int) y, (int) x + Grid.CROSS_SIZE, (int) y);
+				}
+			}
+		}
+
+		gfx.setColor(lineColor);
+		gfx.drawRect(r.x, r.y, r.width, r.height);
+	}
 
 }

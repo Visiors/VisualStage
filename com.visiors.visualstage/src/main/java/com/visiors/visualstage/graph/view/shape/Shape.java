@@ -6,8 +6,8 @@ import java.awt.Rectangle;
 
 import com.visiors.visualstage.interaction.Interactable;
 import com.visiors.visualstage.property.PropertyOwner;
-import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.renderer.DrawingSubject;
+import com.visiors.visualstage.renderer.Resolution;
 import com.visiors.visualstage.transform.Transform;
 
 public interface Shape extends Interactable, PropertyOwner, Duplicatable {
@@ -32,7 +32,7 @@ public interface Shape extends Interactable, PropertyOwner, Duplicatable {
 
 	public Transform getTransformer();
 
-	public String getViewDescriptor(DrawingContext context, DrawingSubject subject);
+	public String getViewDescriptor(Resolution resolution, DrawingSubject subject);
 
 	public void setBounds(Rectangle bounds);
 

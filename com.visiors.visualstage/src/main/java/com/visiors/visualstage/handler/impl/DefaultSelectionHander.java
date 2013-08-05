@@ -59,8 +59,8 @@ public class DefaultSelectionHander extends GraphViewAdapter implements GraphVie
 			while (listOfSelectedObjects.size() != 0) {
 				final VisualGraphObject vgo = listOfSelectedObjects.remove(0);
 				vgo.setSelected(false);
-				// if(vgo instanceof GraphView) {
-				// ((GraphView) vgo).getSelectionService().clearSelection();
+				// if(vgo instanceof graphView) {
+				// ((graphView) vgo).getSelectionService().clearSelection();
 				// }
 			}
 		} finally {

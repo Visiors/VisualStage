@@ -1,6 +1,6 @@
 package com.visiors.visualstage.constants;
 
-public class GraphStageConstants {
+public class InteractionConstants {
 
     public static final int    CURSOR_DEFAULT         = 0;
     public static final int    CURSOR_N_RESIZE        = 2;

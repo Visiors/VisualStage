@@ -14,6 +14,7 @@ public class DefaultLayer implements Layer {
 	private int order;
 	protected VisualGraph visualGraph;
 
+
 	public DefaultLayer(int id, int order, VisualGraph visualGraph) {
 
 		this.id = id;

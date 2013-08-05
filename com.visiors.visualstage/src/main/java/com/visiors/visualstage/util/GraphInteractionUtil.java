@@ -327,17 +327,17 @@ public class GraphInteractionUtil {
 	}
 
 	/*
-	 * private static GraphObjectView getFirstHitObjectInGroup( GraphView visualGraph, Point pt, boolean ignoreGroups,
+	 * private static GraphObjectView getFirstHitObjectInGroup( graphView visualGraph, Point pt, boolean ignoreGroups,
 	 * boolean ignoreNodes, boolean ignoreEdges) { GraphObjectView hitObjects[] = visualGraph.getHitObjects(pt); for
 	 * (int i = hitObjects.length - 1; i >= 0 ; i--) { GraphObjectView vgo = hitObjects[i]; if(vgo != null) {
 	 * if(!ignoreGroups && !ignoreNodes && !ignoreEdges ) return vgo; if(vgo instanceof EdgeView && !ignoreEdges) return
-	 * vgo; else if(vgo instanceof GraphView && !ignoreGroups) return vgo; else if(vgo instanceof NodeView &&
+	 * vgo; else if(vgo instanceof graphView && !ignoreGroups) return vgo; else if(vgo instanceof NodeView &&
 	 * !ignoreNodes) return vgo; } } return ignoreGroups || visualGraph.getLevel() == 0 ? null : visualGraph; } private
-	 * static GraphObjectView getLastHitObjectInGroup( GraphView visualGraph, Point pt, boolean ignoreGroups, boolean
+	 * static GraphObjectView getLastHitObjectInGroup( graphView visualGraph, Point pt, boolean ignoreGroups, boolean
 	 * ignoreNodes, boolean ignoreEdges) { GraphObjectView hitObjects[] = visualGraph.getHitObjects(pt); for (int i = 0;
 	 * i < hitObjects.length ; i++) { GraphObjectView vgo = hitObjects[i]; if(vgo != null) { if(!ignoreGroups &&
 	 * !ignoreNodes && !ignoreEdges ) return vgo; if(vgo instanceof EdgeView && !ignoreEdges) return vgo; else if(vgo
-	 * instanceof GraphView && !ignoreGroups) return vgo; else if(vgo instanceof NodeView && !ignoreNodes) return vgo; }
+	 * instanceof graphView && !ignoreGroups) return vgo; else if(vgo instanceof NodeView && !ignoreNodes) return vgo; }
 	 * } return ignoreGroups|| visualGraph.getLevel() == 0 ? null : visualGraph; }
 	 */
 
@@ -508,7 +508,7 @@ public class GraphInteractionUtil {
 		edge.setSourcePortId(sp);
 		edge.setTargetNode(tn);
 		edge.setTargetPortId(tp);
-		System.err.println("Edge moved to GraphView: " + edge.getParent().getID() + " in level: "
+		System.err.println("Edge moved to graphView: " + edge.getParent().getID() + " in level: "
 				+ edge.getParent().getDepth());
 
 	}
@@ -521,7 +521,7 @@ public class GraphInteractionUtil {
 
 	/*
 	 * example final List<GraphObjectView> allObjects = new ArrayList<GraphObjectView>(); GraphVisitor visitor = new
-	 * GraphVisitor () { public void visit(GraphView subgraph, int level) {
+	 * GraphVisitor () { public void visit(graphView subgraph, int level) {
 	 * allObjects.add(subgraph.getGraphObjects(false)); } }; GraphUtil.visitSubgraphs(visualGraph, visitor, true, 0);
 	 */
 

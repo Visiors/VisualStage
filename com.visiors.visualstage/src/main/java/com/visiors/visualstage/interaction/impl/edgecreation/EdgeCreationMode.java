@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.visiors.visualstage.constants.GraphStageConstants;
+import com.visiors.visualstage.constants.InteractionConstants;
 import com.visiors.visualstage.interaction.impl.BaseInteractionHandler;
 import com.visiors.visualstage.util.GraphInteractionUtil;
 
@@ -32,7 +32,7 @@ public class EdgeCreationMode extends BaseInteractionHandler {
 	@Override
 	public String getName() {
 
-		return GraphStageConstants.MODE_EDGE_CREATION;
+		return InteractionConstants.MODE_EDGE_CREATION;
 	}
 
 	@Override

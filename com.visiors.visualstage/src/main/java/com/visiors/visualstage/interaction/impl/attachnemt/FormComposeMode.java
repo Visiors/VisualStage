@@ -6,7 +6,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.List;
 
-import com.visiors.visualstage.constants.GraphStageConstants;
+import com.visiors.visualstage.constants.InteractionConstants;
 import com.visiors.visualstage.form.FormItem;
 import com.visiors.visualstage.interaction.impl.BaseInteractionHandler;
 import com.visiors.visualstage.renderer.DrawingContext;
@@ -186,7 +186,7 @@ public class FormComposeMode extends BaseInteractionHandler {
 	@Override
 	public String getName() {
 
-		return GraphStageConstants.MODE_FORM_COMPOSE;
+		return InteractionConstants.MODE_FORM_COMPOSE;
 	}
 
 	@Override

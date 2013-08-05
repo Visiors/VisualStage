@@ -12,7 +12,7 @@ import com.visiors.visualstage.property.impl.DefaultPropertyList;
 public class DefaultPortSet implements PortSet {
 
 	protected Port[] ports;
-	protected PropertyList properties;
+	protected PropertyList properties = new DefaultPropertyList(PropertyConstants.PORT_PROPERTY);
 	private Positioning positioning;
 
 

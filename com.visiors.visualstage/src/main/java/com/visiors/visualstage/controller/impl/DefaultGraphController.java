@@ -39,8 +39,8 @@ public class DefaultGraphController implements GraphController {
 	}
 
 	// @Override
-	// public GraphView createGraphView() {
-	// GraphView visualGraph = createGraphView(graphModel.getID(),
+	// public graphView createGraphView() {
+	// graphView visualGraph = createGraphView(graphModel.getID(),
 	// graphModel.getNodeType());
 	// visualGraphs.add(visualGraph);
 	// createViewBasedOnModel(visualGraph);
@@ -103,7 +103,7 @@ public class DefaultGraphController implements GraphController {
 		fireGraphModelChanged();
 	}
 
-	// private void createViewBasedOnModel(GraphView visualGraph) {
+	// private void createViewBasedOnModel(graphView visualGraph) {
 	// Node[] nodes = graphModel.getNodes();
 	// Edge[] edges = graphModel.getEdges();
 	//
@@ -206,7 +206,7 @@ public class DefaultGraphController implements GraphController {
 
 	private PropertyList getGraphViewProperties(VisualGraph visualGraph) {
 
-		final PropertyList all = new DefaultPropertyList("GraphView");
+		final PropertyList all = new DefaultPropertyList("graphView");
 
 		// graph id
 		final long id = visualGraph.getID();

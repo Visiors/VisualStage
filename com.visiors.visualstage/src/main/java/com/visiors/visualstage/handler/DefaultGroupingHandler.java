@@ -374,11 +374,11 @@ public class DefaultGroupingHandler implements GroupingHandler {
 	// List<GraphObjectView> result = new ArrayList<GraphObjectView>();
 	// int highestGraph = 0XFFFF;
 	// for(GraphObjectView vgo : selection){
-	// GraphView parent = vgo.getParentGraph();
+	// graphView parent = vgo.getParentGraph();
 	// highestGraph = Math.min(highestGraph, parent.getLevel());
 	// }
 	// for(GraphObjectView vgo : selection){
-	// GraphView parent = vgo.getParentGraph();
+	// graphView parent = vgo.getParentGraph();
 	// if(parent.getLevel() != highestGraph){
 	// vgo = findParentOfLevel(vgo, highestGraph);
 	// if(vgo == null)

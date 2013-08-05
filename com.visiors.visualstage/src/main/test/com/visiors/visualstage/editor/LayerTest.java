@@ -19,7 +19,7 @@ public class LayerTest {
 	public void layerIntegrityTest() {
 
 		GraphEditor editor = new GraphEditor();
-		editor.addCanvas(new CanvasImpl());
+		editor.addCanvas(new MyCanvasImpl());
 		GraphDocument document = editor.newDocument("GraphDocument");
 		Assert.assertNotNull(document);
 

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.inject.Inject;
-import com.visiors.visualstage.constants.GraphStageConstants;
+import com.visiors.visualstage.constants.InteractionConstants;
 import com.visiors.visualstage.document.GraphDocument;
 import com.visiors.visualstage.interaction.InteractionHandler;
 import com.visiors.visualstage.interaction.InteractionMode;
@@ -53,11 +53,11 @@ public class DefaultInteractionHandler implements InteractionHandler {
 		//		registerMode(new PortEditingMode());
 		//		registerMode(new FormComposeMode());
 		//
-		//		combineModes(new String[] { GraphStageConstants.MODE_MODELING,
-		//				GraphStageConstants.MODE_EDGE_CREATION, GraphStageConstants.MODE_MARQUEE_SELECTION,
-		//				GraphStageConstants.MODE_AUTO_ALIGNMENT }, GraphStageConstants.MODE_EDIT);
+		//		combineModes(new String[] { InteractionConstants.MODE_MODELING,
+		//				InteractionConstants.MODE_EDGE_CREATION, InteractionConstants.MODE_MARQUEE_SELECTION,
+		//				InteractionConstants.MODE_AUTO_ALIGNMENT }, InteractionConstants.MODE_EDIT);
 		//
-		//		setActiveMode(GraphStageConstants.MODE_EDIT);
+		//		setActiveMode(InteractionConstants.MODE_EDIT);
 
 	}
 
@@ -339,11 +339,11 @@ public class DefaultInteractionHandler implements InteractionHandler {
 			String[] names = interactionGroup.get(currentMode);
 			for (int i = 0, cursor; i < names.length; i++) {
 				cursor = modes.get(names[i]).getPreferredCursor();
-				if (cursor != GraphStageConstants.CURSOR_DEFAULT) {
+				if (cursor != InteractionConstants.CURSOR_DEFAULT) {
 					return cursor;
 				}
 			}
-			return GraphStageConstants.CURSOR_DEFAULT;
+			return InteractionConstants.CURSOR_DEFAULT;
 		}
 
 	}

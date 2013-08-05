@@ -32,9 +32,9 @@ public class GraphBuilder {
 	@Inject
 	protected GraphObjectTemplateCollection graphObjectTemplateCollection;
 	@Inject
-	protected ShapeDefinitionCollection shapeDefinitionCollection;
+	protected ShapeCollection shapeCollection;
 	@Inject
-	protected SVGDescriptorCollection svgDescriptorCollection;
+	protected FormatCollection formatCollection;
 
 	/**
 	 * Creates a new instance of {@link VisualNode} using the object-definition
@@ -284,10 +284,10 @@ public class GraphBuilder {
 	private PropertyList getObjectDefinition(String name) {
 
 		// fetch the definition for the object
-		if (!shapeDefinitionCollection.contains(name)) {
+		if (!shapeCollection.contains(name)) {
 			throw new IllegalArgumentException("The graph object associated with '" + name + "' could not be find. ");
 		}
-		return shapeDefinitionCollection.get(name);
+		return shapeCollection.get(name);
 	}
 
 	private PropertyList getFormDefinition(PropertyList definition) {
@@ -316,7 +316,7 @@ public class GraphBuilder {
 
 		final String presentationID = PropertyUtil.getProperty(definition, "presentationID", "");
 		if (!presentationID.isEmpty()) {
-			if (!svgDescriptorCollection.contains(presentationID)) {
+			if (!formatCollection.contains(presentationID)) {
 				throw new RuntimeException("A presentation with id' " + presentationID + "' could not be find");
 			}
 		}
@@ -327,7 +327,7 @@ public class GraphBuilder {
 
 		final String styleID = PropertyUtil.getProperty(definition, "styleID", "");
 		if (!styleID.isEmpty()) {
-			if (!svgDescriptorCollection.contains(styleID)) {
+			if (!formatCollection.contains(styleID)) {
 				throw new RuntimeException("The definition for the style  with id' " + styleID + "' could not be find");
 			}
 		}

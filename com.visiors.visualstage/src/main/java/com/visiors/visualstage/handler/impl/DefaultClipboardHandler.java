@@ -5,7 +5,7 @@ import java.awt.Rectangle;
 import java.util.List;
 
 import com.google.inject.Inject;
-import com.visiors.visualstage.constants.PropertyConstants;
+import com.visiors.visualstage.constants.XMLConstants;
 import com.visiors.visualstage.document.GraphDocument;
 import com.visiors.visualstage.graph.view.VisualGraphObject;
 import com.visiors.visualstage.graph.view.edge.VisualEdge;
@@ -163,9 +163,9 @@ public class DefaultClipboardHandler implements ClipboardHandler {
 
 	private void visualObjects2ProperyList(List<VisualGraphObject> objects, PropertyList properties) {
 
-		final PropertyList edgesProperties = new DefaultPropertyList(PropertyConstants.EDGE_SECTION_TAG);
-		final PropertyList nodesProperties = new DefaultPropertyList(PropertyConstants.NODE_SECTION_TAG);
-		final PropertyList subgraphProperties = new DefaultPropertyList(PropertyConstants.SUBGRAPH_SECTION_TAG);
+		final PropertyList edgesProperties = new DefaultPropertyList(XMLConstants.EDGES_SECTION_TAG);
+		final PropertyList nodesProperties = new DefaultPropertyList(XMLConstants.NODES_SECTION_TAG);
+		final PropertyList subgraphProperties = new DefaultPropertyList(XMLConstants.SUBGRAPHS_SECTION_TAG);
 
 		for (final VisualGraphObject vgo : objects) {
 			if (vgo instanceof VisualGraph) {

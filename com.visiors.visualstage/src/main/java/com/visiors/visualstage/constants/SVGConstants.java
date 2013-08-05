@@ -1,6 +1,6 @@
 package com.visiors.visualstage.constants;
 
-public class Constants {
+public class SVGConstants {
 
     public static String SVG_TAG                                   = "svg";
 

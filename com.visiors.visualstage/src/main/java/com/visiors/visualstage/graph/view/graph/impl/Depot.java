@@ -93,8 +93,8 @@ public class Depot extends GraphViewAdapter implements GraphViewListener {
 		// ArrayList<GraphObjectView>(objects.length * 2);
 		// for (int i = 0; i < objects.length; i++) {
 		// all.add(objects[i]);
-		// if (objects[i] instanceof GraphView) {
-		// all = digUpSubgraphObjects((GraphView) objects[i], all);
+		// if (objects[i] instanceof graphView) {
+		// all = digUpSubgraphObjects((graphView) objects[i], all);
 		// }
 		// }
 		// return all.toArray(new GraphObjectView[all.size()]);
@@ -182,27 +182,27 @@ public class Depot extends GraphViewAdapter implements GraphViewListener {
 		}
 	}
 
-	// private List<GraphObjectView> digUpSubgraphObjects(GraphView subgraph,
+	// private List<GraphObjectView> digUpSubgraphObjects(graphView subgraph,
 	// List<GraphObjectView> all) {
 	//
 	// GraphObjectView[] objects = subgraph.getGraphObjects();
 	// for (int i = 0; i < objects.length; i++) {
 	// all.add(objects[i]);
-	// if (objects[i] instanceof GraphView)
-	// all = digUpSubgraphObjects((GraphView) objects[i], all);
+	// if (objects[i] instanceof graphView)
+	// all = digUpSubgraphObjects((graphView) objects[i], all);
 	// }
 	// return all;
 	// }
 	//
-	// private List<GraphObjectView> digUpSubgraphObjects(Rectangle r, GraphView
+	// private List<GraphObjectView> digUpSubgraphObjects(Rectangle r, graphView
 	// subgraph,
 	// List<GraphObjectView> all) {
 	//
 	// GraphObjectView[] objects = subgraph.getGraphObjects(r, false);
 	// for (int i = 0; i < objects.length; i++) {
 	// all.add(objects[i]);
-	// if (objects[i] instanceof GraphView)
-	// all = digUpSubgraphObjects(r, (GraphView) objects[i], all);
+	// if (objects[i] instanceof graphView)
+	// all = digUpSubgraphObjects(r, (graphView) objects[i], all);
 	// }
 	// return all;
 	// }
@@ -247,7 +247,7 @@ public class Depot extends GraphViewAdapter implements GraphViewListener {
 	}
 
 	// //////////////////////////////////////////////////////////////
-	// // GraphView events
+	// // graphView events
 
 	// @Override
 	// public void nodeBoundaryChangning(NodeView node) {

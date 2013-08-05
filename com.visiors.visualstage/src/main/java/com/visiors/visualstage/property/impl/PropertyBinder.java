@@ -85,22 +85,22 @@ public class PropertyBinder {
 	 */
 	public void save(String attributePath) {
 
-		PropertyUnitBinder binding = null;
-		if (attributePath.startsWith("*")) {
-			String relPath = attributePath.substring(attributePath.charAt(1) == ':' ? 2 : 1);
-			for (String key : bindings.keySet()) {
-				if (key.endsWith(relPath)) {
-					binding = bindings.get(key);
-					break;
-				}
-			}
-		} else {
-			binding = bindings.get(attributePath);
-		}
-		if (binding == null) {
-			throw new RuntimeException("Invalid binding: " + attributePath);
-		}
-		binding.updateProperty();
+		//		PropertyUnitBinder binding = null;
+		//		if (attributePath.startsWith("*")) {
+		//			String relPath = attributePath.substring(attributePath.charAt(1) == ':' ? 2 : 1);
+		//			for (String key : bindings.keySet()) {
+		//				if (key.endsWith(relPath)) {
+		//					binding = bindings.get(key);
+		//					break;
+		//				}
+		//			}
+		//		} else {
+		//			binding = bindings.get(attributePath);
+		//		}
+		//		if (binding == null) {
+		//			throw new RuntimeException("Invalid binding: " + attributePath);
+		//		}
+		//		binding.updateProperty();
 	}
 
 	/**
@@ -161,7 +161,7 @@ public class PropertyBinder {
 		unbindAllPropertyUnits();
 
 		// bind all properties and class members
-		bindAllPropertyUnits(propertyList, propertyList.getName());
+		bindAllPropertyUnits(propertyList,propertyList.getName());
 	}
 
 	private void bindAllPropertyUnits(PropertyList properties, String path) {
@@ -174,7 +174,7 @@ public class PropertyBinder {
 				bindAllPropertyUnits(pl, relPath);
 			} else if (p instanceof PropertyUnit) {
 				PropertyUnit pu = (PropertyUnit) p;
-				String relPath = path + ":" + pu.getName();
+				String relPath =  path + ":" + pu.getName();
 				Object handler = getHandlerForPropertyList(path);
 				bindings.put(relPath, new PropertyUnitBinder(handler, pu, relPath));
 			}

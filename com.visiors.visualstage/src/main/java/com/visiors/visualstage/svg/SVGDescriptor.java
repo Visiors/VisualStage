@@ -5,7 +5,7 @@ import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
 
-import com.visiors.visualstage.constants.PropertyConstants;
+import com.visiors.visualstage.constants.XMLConstants;
 import com.visiors.visualstage.export.XMLService;
 import com.visiors.visualstage.property.Property;
 import com.visiors.visualstage.property.PropertyList;
@@ -129,7 +129,7 @@ public class SVGDescriptor {
 	//
 	// private PropertyList extractSVGHeaderAttributes(PropertyList pl) {
 	//
-	// if(Constants.SVG_TAG.equalsIgnoreCase(pl.getName()))
+	// if(SVGConstants.SVG_TAG.equalsIgnoreCase(pl.getName()))
 	// {
 	// DefaultPropertyList attributes = new DefaultPropertyList("Header");
 	//
@@ -156,7 +156,7 @@ public class SVGDescriptor {
 		PropertyList documentAttributes = new DefaultPropertyList("Header");
 		PropertyList symbolAttributes = pl;
 
-		if (PropertyConstants.SVG_TAG.equalsIgnoreCase(pl.getName())) {
+		if (XMLConstants.SVG_TAG.equalsIgnoreCase(pl.getName())) {
 			symbolAttributes = new DefaultPropertyList("symbol");
 			for (int i = pl.size() - 1; i >= 0; i--) {
 				Property p = pl.get(i);

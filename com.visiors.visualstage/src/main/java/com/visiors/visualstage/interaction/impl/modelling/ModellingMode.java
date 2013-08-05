@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.inject.Inject;
-import com.visiors.visualstage.constants.GraphStageConstants;
+import com.visiors.visualstage.constants.InteractionConstants;
 import com.visiors.visualstage.editor.GraphEditor;
 import com.visiors.visualstage.graph.view.VisualGraphObject;
 import com.visiors.visualstage.graph.view.edge.VisualEdge;
@@ -61,7 +61,7 @@ public class ModellingMode extends BaseInteractionHandler {
 	@Override
 	public String getName() {
 
-		return GraphStageConstants.MODE_MODELING;
+		return InteractionConstants.MODE_MODELING;
 	}
 
 	@Override
@@ -141,12 +141,12 @@ public class ModellingMode extends BaseInteractionHandler {
 	}
 
 	//
-	// private void clearSelection(GraphView gv) {
+	// private void clearSelection(graphView gv) {
 	// gv.getSelectionService().clearSelection();
 	// GraphObjectView[] objects = gv.getGraphObjects();
 	// for (int i = 0; i < objects.length; i++) {
-	// if(objects[i] instanceof GraphView)
-	// clearSelection((GraphView) objects[i]);
+	// if(objects[i] instanceof graphView)
+	// clearSelection((graphView) objects[i]);
 	// }
 	// }
 
@@ -235,7 +235,7 @@ public class ModellingMode extends BaseInteractionHandler {
 	@Override
 	public boolean mouseMoved(Point pt, int button, int functionKey) {
 
-		currentCursor = GraphStageConstants.CURSOR_DEFAULT;
+		currentCursor = InteractionConstants.CURSOR_DEFAULT;
 		manipulatoinIndex = ModellingMode.NONE;
 
 		updateHitObject(pt);

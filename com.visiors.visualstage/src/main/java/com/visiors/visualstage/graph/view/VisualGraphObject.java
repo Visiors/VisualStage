@@ -1,11 +1,12 @@
 package com.visiors.visualstage.graph.view;
 
+import java.awt.Graphics2D;
+
 import com.visiors.visualstage.attribute.Attributable;
 import com.visiors.visualstage.graph.CustomData;
 import com.visiors.visualstage.graph.view.graph.VisualGraph;
 import com.visiors.visualstage.graph.view.shape.CompositeShape;
 import com.visiors.visualstage.interaction.Manipulatable;
-import com.visiors.visualstage.renderer.Canvas;
 import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.renderer.DrawingSubject;
 import com.visiors.visualstage.renderer.cache.Cacheable;
@@ -17,7 +18,7 @@ import com.visiors.visualstage.renderer.cache.Cacheable;
  */
 public interface VisualGraphObject extends CompositeShape, Manipulatable, Attributable, Cacheable{
 
-	public void draw(Canvas canvas, DrawingContext context, DrawingSubject subject);
+	public void draw(Graphics2D gfx, DrawingContext context, DrawingSubject subject);
 
 	public void setCustomData(CustomData customData);
 

@@ -8,9 +8,9 @@ import com.visiors.visualstage.transform.Transform;
 
 public class DefaultDrawingContext implements DrawingContext {
 
-	private Resolution resolution;
-	private Rectangle bounds;
-	private Transform transform;
+	private final Resolution resolution;
+	private final Rectangle bounds;
+	private final Transform transform;
 
 	//
 	// public DefaultDrawingContext(Canvas canvas) {
@@ -33,12 +33,7 @@ public class DefaultDrawingContext implements DrawingContext {
 		return resolution;
 	}
 
-	@Override
-	public void setResolution(Resolution resolution) {
 
-		this.resolution = resolution;
-
-	}
 
 	@Override
 	public Rectangle getBounds() {
@@ -46,12 +41,6 @@ public class DefaultDrawingContext implements DrawingContext {
 		return bounds;
 	}
 
-	@Override
-	public void setBounds(Rectangle bounds) {
-
-		this.bounds = bounds;
-
-	}
 
 	@Override
 	public Transform getTransform() {
@@ -59,12 +48,7 @@ public class DefaultDrawingContext implements DrawingContext {
 		return transform;
 	}
 
-	@Override
-	public void setTransform(Transform transform) {
 
-		this.transform = transform;
-
-	}
 
 	@Override
 	public boolean equals(Object obj) {

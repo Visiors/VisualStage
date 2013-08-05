@@ -1,8 +1,8 @@
 package com.visiors.visualstage.graph.view.shape.impl;
 
 import com.visiors.visualstage.graph.view.shape.CompositeShape;
-import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.renderer.DrawingSubject;
+import com.visiors.visualstage.renderer.Resolution;
 
 
 public class RectangleShape extends BaseCompositeShape implements CompositeShape {
@@ -13,7 +13,7 @@ public class RectangleShape extends BaseCompositeShape implements CompositeShape
 	}
 
 	@Override
-	public String getViewDescriptor(DrawingContext context, DrawingSubject subject) {
+	public String getViewDescriptor(Resolution resolution, DrawingSubject subject) {
 
 		return "";
 	}

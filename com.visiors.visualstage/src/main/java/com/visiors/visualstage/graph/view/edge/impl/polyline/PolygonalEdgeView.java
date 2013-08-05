@@ -2,7 +2,7 @@ package com.visiors.visualstage.graph.view.edge.impl.polyline;
 
 import java.awt.Point;
 
-import com.visiors.visualstage.constants.GraphStageConstants;
+import com.visiors.visualstage.constants.InteractionConstants;
 import com.visiors.visualstage.constants.PropertyConstants;
 import com.visiors.visualstage.graph.view.DefaultVisualGraphObject;
 import com.visiors.visualstage.graph.view.edge.VisualEdge;
@@ -141,10 +141,10 @@ public class PolygonalEdgeView extends DefaultVisualEdge {
 	public int getPreferredCursor() {
 
 		if (manipulationID != DefaultVisualGraphObject.NONE) {
-			return GraphStageConstants.CURSOR_CROSSHAIR;
+			return InteractionConstants.CURSOR_CROSSHAIR;
 		}
 
-		return GraphStageConstants.CURSOR_DEFAULT;
+		return InteractionConstants.CURSOR_DEFAULT;
 	}
 
 	public void setPinned(boolean pinned) {

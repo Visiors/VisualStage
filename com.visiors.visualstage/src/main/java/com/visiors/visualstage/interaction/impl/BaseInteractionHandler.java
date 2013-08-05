@@ -2,7 +2,7 @@ package com.visiors.visualstage.interaction.impl;
 
 import java.awt.Point;
 
-import com.visiors.visualstage.constants.GraphStageConstants;
+import com.visiors.visualstage.constants.InteractionConstants;
 import com.visiors.visualstage.document.GraphDocument;
 import com.visiors.visualstage.interaction.Interactable;
 import com.visiors.visualstage.interaction.InteractionMode;
@@ -85,7 +85,7 @@ public abstract class BaseInteractionHandler implements InteractionMode {
 	@Override
 	public int getPreferredCursor() {
 
-		return GraphStageConstants.CURSOR_DEFAULT;
+		return InteractionConstants.CURSOR_DEFAULT;
 	}
 
 	@Override

@@ -1,6 +1,8 @@
 package com.visiors.visualstage.document.impl;
 
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -28,7 +30,6 @@ import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.renderer.DrawingSubject;
 import com.visiors.visualstage.stage.StageDesigner;
 import com.visiors.visualstage.stage.StageDesigner.ViewMode;
-import com.visiors.visualstage.svg.SVGDocumentBuilder;
 import com.visiors.visualstage.transform.Transform;
 import com.visiors.visualstage.validation.Validator;
 
@@ -46,20 +47,22 @@ public class DefaultGraphDocument implements GraphDocument {
 	private boolean doDrawing = true;
 	private PropertyList properties;
 	private boolean enableImageBuffering;
+	private Set<Canvas> canvases = Sets.newHashSet();
 
-	protected SVGDocumentBuilder svgDocumentBuilder = new SVGDocumentBuilder();
+
 	protected LayerManager layerManager;
 
 	private PropertyBinder propertyBinder;
+	@Inject
 	protected StageDesigner stageDesigner;
 
 	protected UndoRedoHandler undoRedoHandler;
 
 	protected Validator validator;
+
 	private String svgBackgroundId;
 	private String svgFilterId;
 	private String svgTransformId;
-	private Set<Canvas> canvases = Sets.newHashSet();
 
 	@Inject
 	public DefaultGraphDocument(LayerManager layerManager, StageDesigner stageDesigner, Validator validator) {
@@ -88,7 +91,7 @@ public class DefaultGraphDocument implements GraphDocument {
 	protected void initProperties() {
 
 		// create the properties definition
-		PropertyList properties = new DefaultPropertyList(PropertyConstants.DOCUMENT_PROPERTY_PREFIX);
+		final PropertyList properties = new DefaultPropertyList(PropertyConstants.DOCUMENT_PROPERTY_PREFIX);
 		// properties.add(new
 		// DefaultPropertyUnit(PropertyConstants.DOCUMENT_PROPERTY_ZOOM,
 		// getZoom()));
@@ -155,7 +158,7 @@ public class DefaultGraphDocument implements GraphDocument {
 			throw new InvalidLayerRemovalException("No layer available!");
 		}
 		if (layerManager.getLayerCount() == 1) {
-			throw  new InvalidLayerRemovalException(
+			throw new InvalidLayerRemovalException(
 					"The layer cannot be removed because the document must have at least one layer!");
 		}
 
@@ -216,26 +219,41 @@ public class DefaultGraphDocument implements GraphDocument {
 
 	// /////////////////////////////////////////////////
 
-	@Override
-	public void draw(Canvas canvas, DrawingContext context) {
+	private void draw() {
 
-		stageDesigner.paintBehind(canvas, context);
+		for (final Canvas canvas : canvases) {
+			draw(canvas);
+		}
+	}
+
+	@Override
+	public void draw(Canvas canvas) {
+
+		final DrawingContext context = canvas.getContext();
+		final Rectangle bounds = context.getBounds();
+		final BufferedImage offscreen = new BufferedImage((int) bounds.getWidth(), (int) bounds.getHeight(),
+				BufferedImage.TYPE_INT_ARGB_PRE);
+		final Graphics2D gfx = (Graphics2D) offscreen.getGraphics();
+
+		stageDesigner.paintBehind(gfx, canvas.getContext());
 
 		final VisualGraph graph = getGraph();
 		// keep always the main graph view fit to the screen
 		graph.setBounds(context.getBounds());
 
-		graph.draw(canvas, context, DrawingSubject.OBJECT);
-		graph.draw(canvas, context, DrawingSubject.SELECTION_INDICATORS);
-		graph.draw(canvas, context, DrawingSubject.PORTS);
+		graph.draw(gfx, context, DrawingSubject.OBJECT);
+		graph.draw(gfx, context, DrawingSubject.SELECTION_INDICATORS);
+		graph.draw(gfx, context, DrawingSubject.PORTS);
 
-		stageDesigner.paintOver(canvas, context);
+		stageDesigner.paintOver(gfx, context);
+		//release
+		canvas.draw(0, 0, offscreen);
 	}
 
 	@Override
 	public String getSVGDocument(DrawingContext context) {
 
-		String content = getGraph().getViewDescriptor(context, DrawingSubject.OBJECT);
+		final String content = getGraph().getViewDescriptor(context.getResolution(), DrawingSubject.OBJECT);
 		// add header, filter and transformation using SVGGraphBuilder
 		return null;// getGraph().getSVGDocument(canvas, context, false, scale);
 	}
@@ -360,7 +378,6 @@ public class DefaultGraphDocument implements GraphDocument {
 
 			fireGraphExpansionChanged(getDocumentBoundary());
 		}
-
 	};
 
 	@Override
@@ -398,6 +415,8 @@ public class DefaultGraphDocument implements GraphDocument {
 				l.viewChanged();
 			}
 		}
+
+		draw();
 	}
 
 	protected void fireGraphManipulated() {
@@ -419,8 +438,7 @@ public class DefaultGraphDocument implements GraphDocument {
 	@Override
 	public Validator getValidator() {
 
-		// TODO Auto-generated method stub
-		return null;
+		return validator;
 	}
 
 	// /////////////////////////////////////////////////////////////////

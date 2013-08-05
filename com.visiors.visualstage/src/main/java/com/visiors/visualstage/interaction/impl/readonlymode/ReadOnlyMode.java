@@ -2,7 +2,7 @@ package com.visiors.visualstage.interaction.impl.readonlymode;
 
 import java.awt.Point;
 
-import com.visiors.visualstage.constants.GraphStageConstants;
+import com.visiors.visualstage.constants.InteractionConstants;
 import com.visiors.visualstage.interaction.impl.BaseInteractionHandler;
 
 public class ReadOnlyMode extends BaseInteractionHandler {
@@ -15,7 +15,7 @@ public class ReadOnlyMode extends BaseInteractionHandler {
 	@Override
 	public String getName() {
 
-		return GraphStageConstants.MODE_READ_ONLY;
+		return InteractionConstants.MODE_READ_ONLY;
 	}
 
 	@Override

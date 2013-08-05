@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.inject.Inject;
-import com.visiors.visualstage.constants.GraphStageConstants;
+import com.visiors.visualstage.constants.InteractionConstants;
 import com.visiors.visualstage.handler.UndoRedoHandler;
 import com.visiors.visualstage.interaction.impl.BaseInteractionHandler;
 import com.visiors.visualstage.renderer.DrawingContext;
@@ -34,7 +34,7 @@ public class MarqueeSelectionMode extends BaseInteractionHandler {
 	@Override
 	public String getName() {
 
-		return GraphStageConstants.MODE_MARQUEE_SELECTION;
+		return InteractionConstants.MODE_MARQUEE_SELECTION;
 	}
 
 	@Override

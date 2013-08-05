@@ -19,7 +19,7 @@ public class GraphEditorTest {
 	public void testNameConflict() {
 
 		GraphEditor editor = new GraphEditor();
-		editor.addCanvas(new CanvasImpl());
+		editor.addCanvas(new MyCanvasImpl());
 		editor.newDocument("New 1");
 		editor.newDocument("New 1");		
 	}
@@ -29,7 +29,7 @@ public class GraphEditorTest {
 	public void testDocumentManagement() {
 
 		GraphEditor editor = new GraphEditor();
-		editor.addCanvas(new CanvasImpl());
+		editor.addCanvas(new MyCanvasImpl());
 
 		GraphDocument doc;
 		doc = editor.newDocument("Doc 1");

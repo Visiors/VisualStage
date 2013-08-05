@@ -2,7 +2,7 @@ package com.visiors.visualstage.interaction.impl.nodecreateion;
 
 import java.awt.Point;
 
-import com.visiors.visualstage.constants.GraphStageConstants;
+import com.visiors.visualstage.constants.InteractionConstants;
 import com.visiors.visualstage.interaction.impl.BaseInteractionHandler;
 
 public class NodeCreationMode extends BaseInteractionHandler {
@@ -15,7 +15,7 @@ public class NodeCreationMode extends BaseInteractionHandler {
 	@Override
 	public String getName() {
 
-		return GraphStageConstants.MODE_NODE_CREATION;
+		return InteractionConstants.MODE_NODE_CREATION;
 	}
 
 	@Override
@@ -63,6 +63,6 @@ public class NodeCreationMode extends BaseInteractionHandler {
 	@Override
 	public int getPreferredCursor() {
 
-		return GraphStageConstants.CURSOR_DEFAULT;
+		return InteractionConstants.CURSOR_DEFAULT;
 	}
 }

@@ -94,10 +94,11 @@ public interface VisualNode extends VisualGraphObject/*
 	/**
 	 * This method will be called to notify the node about disconnection from
 	 * the specified <code>edge</code>
+	 * @param incomingConnection TODO
 	 * 
 	 * @see #preDisconnect(VisualEdge)
 	 */
-	public void postDisconnected(VisualEdge edge);
+	public void postDisconnected(VisualEdge edge, boolean incomingConnection);
 
 	public void addNodeViewListener(VisualNodeListener listener);
 

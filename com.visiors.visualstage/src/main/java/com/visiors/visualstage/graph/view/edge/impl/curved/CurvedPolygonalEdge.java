@@ -6,7 +6,7 @@ import java.awt.geom.Path2D;
 
 import org.apache.batik.ext.awt.image.codec.util.PropertyUtil;
 
-import com.visiors.visualstage.constants.Constants;
+import com.visiors.visualstage.constants.SVGConstants;
 import com.visiors.visualstage.constants.PropertyConstants;
 import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.edge.impl.polyline.PolygonalEdgeView;
@@ -37,7 +37,7 @@ public class CurvedPolygonalEdge extends PolygonalEdgeView {
 	protected void initProperties() {
 
 		super.initProperties();
-		baselineDef = svgDescriptorPool.get(Constants.DEFAULT_EDGE_BASELINE);
+		baselineDef = svgDescriptorPool.get(SVGConstants.DEFAULT_EDGE_BASELINE);
 
 		properties = PropertyUtil.setProperty(properties, PropertyConstants.EDGE_PROPERTY_TYPE,
 				PropertyConstants.EDGE_PROPERTY_TYPE_CURVED_POLYGONAL);

@@ -5,7 +5,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.List;
 
-import com.visiors.visualstage.constants.GraphStageConstants;
+import com.visiors.visualstage.constants.InteractionConstants;
 import com.visiors.visualstage.graph.view.VisualGraphObject;
 import com.visiors.visualstage.graph.view.node.Port;
 import com.visiors.visualstage.graph.view.node.PortSet;
@@ -37,7 +37,7 @@ public class PortEditingMode extends BaseInteractionHandler {
 	@Override
 	public String getName() {
 
-		return GraphStageConstants.MODE_PORT_EDIT;
+		return InteractionConstants.MODE_PORT_EDIT;
 	}
 
 	@Override
@@ -288,11 +288,11 @@ public class PortEditingMode extends BaseInteractionHandler {
 	@Override
 	public boolean mouseMoved(Point pt, int button, int functionKey) {
 
-		currentCursor = GraphStageConstants.CURSOR_DEFAULT;
+		currentCursor = InteractionConstants.CURSOR_DEFAULT;
 		if (subject != null) {
 			pt = visualGraph.getTransform().transformToScreen(pt);
 			if (angleStartHandle.contains(pt) || angleEndHandle.contains(pt)) {
-				currentCursor = GraphStageConstants.CURSOR_CROSSHAIR;
+				currentCursor = InteractionConstants.CURSOR_CROSSHAIR;
 			}
 		}
 		return isActive();

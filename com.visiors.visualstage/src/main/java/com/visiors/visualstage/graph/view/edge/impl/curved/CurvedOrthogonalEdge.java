@@ -36,7 +36,7 @@ public class CurvedOrthogonalEdge extends OrthogonalEdge {
 	protected void initProperties() {
 
 		super.initProperties();
-		baselineDef = svgDescriptorPool.get(Constants.DEFAULT_EDGE_BASELINE);
+		baselineDef = svgDescriptorPool.get(SVGConstants.DEFAULT_EDGE_BASELINE);
 
 		properties = PropertyUtil.setProperty(properties, PropertyConstants.EDGE_PROPERTY_TYPE,
 				PropertyConstants.EDGE_PROPERTY_TYPE_CURVED_ORTHOGONAL);

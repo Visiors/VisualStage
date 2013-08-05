@@ -4,6 +4,7 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
 
+import com.google.inject.Inject;
 import com.visiors.visualstage.graph.UIDGen;
 import com.visiors.visualstage.graph.view.shape.LayoutData;
 import com.visiors.visualstage.graph.view.shape.Shape;
@@ -18,7 +19,8 @@ public abstract class BaseShape implements Shape {
 	protected String name;
 	protected boolean selected;
 	protected boolean highlighted;
-	protected Transform transformer;
+	@Inject
+	protected Transform transform;
 	protected Rectangle boundary;
 	protected Insets margin;
 	protected final Unit widthUnit = Unit.PERCENT;
@@ -76,13 +78,13 @@ public abstract class BaseShape implements Shape {
 	@Override
 	public Transform getTransformer() {
 
-		return transformer;
+		return transform;
 	}
 
 	@Override
 	public void setTransformer(Transform transform) {
 
-		this.transformer = transform;
+		this.transform = transform;
 	}
 
 	@Override

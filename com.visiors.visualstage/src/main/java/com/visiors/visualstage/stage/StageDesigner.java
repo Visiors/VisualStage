@@ -1,11 +1,11 @@
 package com.visiors.visualstage.stage;
 
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.print.PrinterJob;
 
 import com.visiors.visualstage.document.ViewListener;
 import com.visiors.visualstage.handler.ScopeAwareHandler;
-import com.visiors.visualstage.renderer.Canvas;
 import com.visiors.visualstage.renderer.DrawingContext;
 
 public interface StageDesigner extends ScopeAwareHandler {
@@ -14,9 +14,9 @@ public interface StageDesigner extends ScopeAwareHandler {
 		page, plane, none
 	}
 
-	public void paintBehind(Canvas  canvas, DrawingContext context);
+	public void paintBehind(Graphics2D gfx, DrawingContext context);
 
-	public void paintOver(Canvas canvas, DrawingContext context);
+	public void paintOver(Graphics2D gfx, DrawingContext context);
 
 	public PrinterJob getPrinterJob();
 

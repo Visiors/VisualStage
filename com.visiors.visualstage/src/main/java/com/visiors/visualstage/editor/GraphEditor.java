@@ -13,6 +13,7 @@ import com.google.common.collect.Sets;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.visiors.visualstage.constants.PropertyConstants;
+import com.visiors.visualstage.constants.XMLConstants;
 import com.visiors.visualstage.document.GraphDocument;
 import com.visiors.visualstage.document.listener.GraphDocumentListener;
 import com.visiors.visualstage.exception.DocumentExistsException;
@@ -25,11 +26,13 @@ import com.visiors.visualstage.handler.SelectionHandler;
 import com.visiors.visualstage.handler.UndoRedoHandler;
 import com.visiors.visualstage.interaction.InteractionHandler;
 import com.visiors.visualstage.interaction.listener.InteractionListener;
-import com.visiors.visualstage.pool.ShapeDefinitionCollection;
-import com.visiors.visualstage.pool.ShapeDefinitionCollection;
+import com.visiors.visualstage.pool.FormatCollection;
+import com.visiors.visualstage.pool.ShapeCollection;
 import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.property.impl.DefaultPropertyList;
 import com.visiors.visualstage.renderer.Canvas;
+import com.visiors.visualstage.stage.StageDesigner;
+import com.visiors.visualstage.stage.StageDesigner.ViewMode;
 import com.visiors.visualstage.util.PropertyUtil;
 
 public class GraphEditor implements Editor, GraphDocumentListener, InteractionListener {
@@ -40,9 +43,10 @@ public class GraphEditor implements Editor, GraphDocumentListener, InteractionLi
 	protected final UndoRedoHandler undoRedoHandler;
 	protected final SelectionHandler selectionHandler;
 	protected final GroupingHandler groupingHandler;
+	protected final StageDesigner stageDesigner;
 	protected final ClipboardHandler clipboardHandler;
-	protected final ShapeDefinitionCollection shapeDefinitionCollection;
-
+	protected final ShapeCollection shapeCollection;
+	protected final FormatCollection formatCollection;
 	private final Map<String, GraphDocument> documents = Maps.newTreeMap();
 	private final Set<Canvas> canvases = Sets.newHashSet();
 
@@ -50,18 +54,20 @@ public class GraphEditor implements Editor, GraphDocumentListener, InteractionLi
 
 	public GraphEditor() {
 
-		this(new DefaultGraphEditorBindingModule());
+		this(new GraphBindingModule());
 	}
 
 	public GraphEditor(BindingModule module) {
 
 		this.injector = Guice.createInjector(module);
 		this.interactionHandler = injector.getInstance(InteractionHandler.class);
+		this.stageDesigner = injector.getInstance(StageDesigner.class);
 		this.undoRedoHandler = injector.getInstance(UndoRedoHandler.class);
 		this.selectionHandler = injector.getInstance(SelectionHandler.class);
 		this.groupingHandler = injector.getInstance(GroupingHandler.class);
 		this.clipboardHandler = injector.getInstance(ClipboardHandler.class);
-		this.shapeDefinitionCollection = injector.getInstance(ShapeDefinitionCollection.class);
+		this.shapeCollection = injector.getInstance(ShapeCollection.class);
+		this.formatCollection = injector.getInstance(FormatCollection.class);
 	}
 
 	@Override
@@ -96,11 +102,20 @@ public class GraphEditor implements Editor, GraphDocumentListener, InteractionLi
 	GraphDocument createDocumentInstance(String title){
 		final GraphDocument document = injector.getInstance(GraphDocument.class);
 		document.setCanvasSet(canvases);
+		applyDefaultConfiguration(document);
 		document.addGraphDocumentListener(this);
 		document.setTitle(title);
 		documents.put(document.getTitle(), document);
 		setActiveDocument(title);
 		return document;
+	}
+
+	protected void applyDefaultConfiguration(GraphDocument document) {
+
+		StageDesigner designer = document.getStageDesigner();
+		designer.setViewMode(ViewMode.page);
+		designer.showGrid(false);
+		designer.showRuler(false);
 	}
 
 	@Override
@@ -140,7 +155,7 @@ public class GraphEditor implements Editor, GraphDocumentListener, InteractionLi
 		final GraphDocument document = getDocument(title);
 		try {
 			final XMLService xmlService = new XMLService();
-			final PropertyList properties = new DefaultPropertyList(PropertyConstants.DOCUMENT_PROPERTY_DOCUMENT);
+			final PropertyList properties = new DefaultPropertyList(XMLConstants.DOCUMENT_PROPERTY_DOCUMENT);
 			final PropertyList documentProperties = document.getProperties();
 			final PropertyList graphProperties = new DefaultPropertyList(PropertyConstants.DOCUMENT_PROPERTY_GRAPH);
 			graphProperties.add(document.getGraph().getProperties(true));
@@ -161,6 +176,7 @@ public class GraphEditor implements Editor, GraphDocumentListener, InteractionLi
 			clipboardHandler.setScope(activeDocument);
 			selectionHandler.setScope(activeDocument);
 			groupingHandler.setScope(activeDocument);
+			stageDesigner.setScope(activeDocument);
 		}
 	}
 
@@ -202,10 +218,17 @@ public class GraphEditor implements Editor, GraphDocumentListener, InteractionLi
 
 
 	@Override
-	public ShapeDefinitionCollection getShapesCollection() {
+	public ShapeCollection getShapesCollection() {
 
-		return shapeDefinitionCollection;
+		return shapeCollection;
 	}
+
+	@Override
+	public FormatCollection getFormatsCollection() {
+
+		return formatCollection;
+	}
+
 
 	@Override
 	public ClipboardHandler getClipboardHandler() {

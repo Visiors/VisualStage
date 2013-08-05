@@ -39,7 +39,7 @@ public interface GraphDocument extends MultiLayerDocument, PropertyOwner, Undoab
 	//
 	// public boolean isFiringEvents();
 
-	public void draw(Canvas canvas, DrawingContext context);
+	public void draw(Canvas canvas);
 
 	public void print(Canvas canvas, Rectangle rPage, Transform transform);
 

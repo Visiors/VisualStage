@@ -23,10 +23,14 @@ import com.visiors.visualstage.handler.impl.DefaultSelectionHander;
 import com.visiors.visualstage.handler.impl.DefaultUndoRedoHandler;
 import com.visiors.visualstage.interaction.InteractionHandler;
 import com.visiors.visualstage.interaction.impl.DefaultInteractionHandler;
-import com.visiors.visualstage.pool.ShapeDefinitionCollection;
-import com.visiors.visualstage.pool.ShapeDefinitionCollection;
+import com.visiors.visualstage.pool.FormatCollection;
+import com.visiors.visualstage.pool.ShapeCollection;
+import com.visiors.visualstage.pool.TemplateFormatCollection;
+import com.visiors.visualstage.pool.TemplateShapeCollection;
 import com.visiors.visualstage.stage.DefaultStageDesigner;
 import com.visiors.visualstage.stage.StageDesigner;
+import com.visiors.visualstage.svg.DefaultSVGDocumentBuilder;
+import com.visiors.visualstage.svg.SVGDocumentBuilder;
 import com.visiors.visualstage.system.DefaultSystemUnitService;
 import com.visiors.visualstage.system.SystemUnit;
 import com.visiors.visualstage.transform.DefaultTransformer;
@@ -34,7 +38,7 @@ import com.visiors.visualstage.transform.Transform;
 import com.visiors.visualstage.validation.DefaultValidator;
 import com.visiors.visualstage.validation.Validator;
 
-public class DefaultGraphEditorBindingModule extends BindingModule {
+public class GraphBindingModule extends BindingModule {
 
 	// binding the guava event bus
 	public void bindEventBus(Binder binder) {
@@ -66,16 +70,16 @@ public class DefaultGraphEditorBindingModule extends BindingModule {
 		binder.bind(SelectionHandler.class).to(DefaultSelectionHander.class);
 	}
 
-	// binding the default transformer
+	// binding the default transform
 	public void bindAffineTransform(Binder binder) {
 
 		binder.bind(Transform.class).to(DefaultTransformer.class);
 	}
 
-	// binding the default transformer
+	// binding the default transform
 	public void bindStageDesigner(Binder binder) {
 
-		binder.bind(StageDesigner.class).to(DefaultStageDesigner.class);
+		binder.bind(StageDesigner.class).to(DefaultStageDesigner.class).in(Singleton.class);
 	}
 
 	// binding the default grouping handler
@@ -125,7 +129,17 @@ public class DefaultGraphEditorBindingModule extends BindingModule {
 	// binding the shapes collection
 	public void bindShapesCollection(Binder binder) {
 
-		binder.bind(ShapeDefinitionCollection.class).to(ShapeDefinitionCollection.class);
+		binder.bind(ShapeCollection.class).to(TemplateShapeCollection.class).in(Singleton.class);
+	}
+	// binding the format collection
+	public void bindFormatCollection(Binder binder) {
+
+		binder.bind(FormatCollection.class).to(TemplateFormatCollection.class).in(Singleton.class);
+	}
+	// binding the default svg document builder  collection
+	public void bindSVGDocumentBuilder(Binder binder) {
+
+		binder.bind(SVGDocumentBuilder.class).to(DefaultSVGDocumentBuilder.class);
 	}
 
 

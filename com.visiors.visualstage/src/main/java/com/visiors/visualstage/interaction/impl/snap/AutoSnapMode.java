@@ -6,7 +6,7 @@ import java.awt.Rectangle;
 import java.util.List;
 
 import com.google.inject.Inject;
-import com.visiors.visualstage.constants.GraphStageConstants;
+import com.visiors.visualstage.constants.InteractionConstants;
 import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.node.VisualNode;
 import com.visiors.visualstage.interaction.impl.BaseInteractionHandler;
@@ -40,7 +40,7 @@ public class AutoSnapMode extends BaseInteractionHandler {
 	@Override
 	public String getName() {
 
-		return GraphStageConstants.MODE_AUTO_ALIGNMENT;
+		return InteractionConstants.MODE_AUTO_ALIGNMENT;
 	}
 
 	@Override

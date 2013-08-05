@@ -6,7 +6,8 @@ import com.visiors.visualstage.handler.GroupingHandler;
 import com.visiors.visualstage.handler.SelectionHandler;
 import com.visiors.visualstage.handler.UndoRedoHandler;
 import com.visiors.visualstage.interaction.Interactable;
-import com.visiors.visualstage.pool.ShapeDefinitionCollection;
+import com.visiors.visualstage.pool.FormatCollection;
+import com.visiors.visualstage.pool.ShapeCollection;
 import com.visiors.visualstage.renderer.Canvas;
 
 public interface Editor extends Interactable {
@@ -31,8 +32,9 @@ public interface Editor extends Interactable {
 
 	public boolean closeDocument(String title);
 
+	public ShapeCollection getShapesCollection();
 
-	public ShapeDefinitionCollection getShapesCollection();
+	public FormatCollection getFormatsCollection();
 
 	public SelectionHandler getSelectionHandler();
 
@@ -41,9 +43,6 @@ public interface Editor extends Interactable {
 	public UndoRedoHandler getUndoRedoHandler();
 
 	public ClipboardHandler getClipboardHandler();
-
-
-
 
 	// public void registerInplaceTextEditor(InplaceTextditor editor);
 
