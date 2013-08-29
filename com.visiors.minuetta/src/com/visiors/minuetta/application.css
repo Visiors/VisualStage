@@ -1,0 +1,99 @@
+.root {
+-fx-base: rgb(255, 255, 255);
+-fx-background: rgb(255,255,255);
+-fx-control-inner-background:  rgb(255, 255, 255);
+}
+ 
+.tab {
+-fx-background-color: linear-gradient(to top, -fx-base, derive(-fx-base,30%));
+}
+ 
+.menu-bar {
+-fx-background-color: linear-gradient(to bottom, -fx-base, derive(-fx-base,30%));
+}
+ 
+.tool-bar:horizontal {
+-fx-background-color:
+linear-gradient(to bottom, derive(-fx-base,+50%), derive(-fx-base,-40%), derive(-fx-base,-20%));
+}
+ 
+.button {
+-fx-background-color: transparent;
+}
+ 
+.button:hover {
+-fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, -fx-body-color;
+-fx-color: -fx-hover-base;
+}
+ 
+.table-view {
+-fx-table-cell-border-color:derive(-fx-base,+10%);
+-fx-table-header-border-color:derive(-fx-base,+20%);
+}
+ 
+.split-pane:horizontal > * > .split-pane-divider {
+-fx-border-color: transparent -fx-base transparent -fx-base;
+-fx-background-color: transparent, derive(-fx-base,20%);
+-fx-background-insets: 0, 0 1 0 1;
+}
+
+.gallery-titled-pane {
+  
+  -fx-color: #a6b5c9;
+    -fx-font-family: "Helvetica";
+    -fx-font-size: 12px;
+    /*-fx-font-weight: BOLD;*/
+    -fx-text-fill: white;
+} 
+
+.gallery-titled-pane > .title  {
+ /*  -fx-background-color: white; */
+}
+.gallery-titled-pane > .title > .arrow-button .arrow {
+ /*  -fx-background-color: white; */
+}
+ 
+.my-gridpane {
+-fx-background-color: radial-gradient(radius 100%, derive(-fx-base,20%), derive(-fx-base,-20%));
+}
+ 
+.separator-label {
+-fx-text-fill: orange;
+}
+
+
+
+#view{
+    -fx-background-color: "#F2F2F2";
+    -fx-border-width:  0.5px;
+     -fx-border-color: "#B2B2B2";
+ /*  -fx-border-radius: 10 10 0 0;
+  -fx-background-radius: 10 10 0 0;*/
+    
+}
+
+#iphone-toolbar {
+    -fx-background-color: linear-gradient(#98a8bd 0%, #8195af 25%, #6d86a4 100%);
+}
+#iphone {
+    -fx-background-color: 
+        #a6b5c9,
+        linear-gradient(#303842 0%, #3e5577 20%, #375074 100%),
+        linear-gradient(#768aa5 0%, #849cbb 5%, #5877a2 50%, #486a9a 51%, #4a6c9b 100%);
+    -fx-background-insets: 0 0 -1 0,0,1;
+    -fx-background-radius: 5,5,4;
+    -fx-padding: 7 30 7 30;
+    -fx-text-fill: #242d35;
+    -fx-font-family: "Helvetica";
+    -fx-font-size: 12px;
+    -fx-text-fill: white;
+
+}
+#iphone Text {
+    -fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.8) , 0, 0.0 , 0 , -1 );
+}
+
+.tool-bar .spacer {
+    -fx-padding: 0 5.417em 0 0;
+}
+
