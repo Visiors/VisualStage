@@ -1,3 +1,4 @@
+
 package com.visiors.visualstage.svg;
 
 import java.awt.Rectangle;
@@ -6,15 +7,13 @@ import com.visiors.visualstage.transform.Transform;
 
 public interface SVGDocumentBuilder {
 
-	public void createDocument(int width, int height);
+	public void createEmptyDocument(int width, int height);
 
-	public void createDocument(int width, int height, Transform transform);
+	public void createEmptyDocument(int width, int height, Transform transform);
 
-	public void createDocument(int width, int height, Transform xform, String svgBackgroundID, String svgFilterID,
-			String svgTransformID);
+	public void createEmptyDocument(int width, int height, Transform xform, DocumentConfig config);
 
-	public void createEmptyDocument(Rectangle viewBox, Transform xform, String svgBackgroundID, String svgFilterID,
-			String svgTransformID);
+	public void createEmptyDocument(Rectangle viewBox, Transform xform, DocumentConfig config);
 
 	public void addDocumentAttributes(String[][] attributes);
 

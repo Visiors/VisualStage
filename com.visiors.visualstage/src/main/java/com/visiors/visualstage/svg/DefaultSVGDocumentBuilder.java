@@ -35,90 +35,88 @@ public class DefaultSVGDocumentBuilder implements SVGDocumentBuilder {
 	 * @see com.visiors.visualstage.svg.SVGDocumentBuilder#createDocument(int, int)
 	 */
 	@Override
-	public void createDocument(int width, int height) {
+	public void createEmptyDocument(int width, int height) {
 
-		createDocument(width, height, null, null, null, null);
+		createEmptyDocument(width, height, null, null);
 	}
 
 	/* (non-Javadoc)
 	 * @see com.visiors.visualstage.svg.SVGDocumentBuilder#createDocument(int, int, com.visiors.visualstage.transform.Transform)
 	 */
 	@Override
-	public void createDocument(int width, int height, Transform transform) {
+	public void createEmptyDocument(int width, int height, Transform transform) {
 
-		createDocument(width, height, transform, null, null, null);
+		createEmptyDocument(width, height, transform, null);
 	}
 
 	/* (non-Javadoc)
 	 * @see com.visiors.visualstage.svg.SVGDocumentBuilder#createDocument(int, int, com.visiors.visualstage.transform.Transform, java.lang.String, java.lang.String, java.lang.String)
 	 */
 	@Override
-	public void createDocument(int width, int height, Transform xform, String svgBackgroundID, String svgFilterID,
-			String svgTransformID) {
+	public void createEmptyDocument(int width, int height, Transform transform, DocumentConfig config) {
 
-		createEmptyDocument(new Rectangle(0, 0, width, height), xform, svgBackgroundID, svgFilterID, svgTransformID);
+		createEmptyDocument(new Rectangle(0, 0, width, height), transform, config);
 	}
 
 	/* (non-Javadoc)
 	 * @see com.visiors.visualstage.svg.SVGDocumentBuilder#createDocument(java.awt.Rectangle, com.visiors.visualstage.transform.Transform, java.lang.String, java.lang.String, java.lang.String)
 	 */
 	@Override
-	public void createEmptyDocument(Rectangle viewBox, Transform xform, String svgBackgroundID, String svgFilterID,
-			String svgTransformID) {
+	public void createEmptyDocument(Rectangle viewBox, Transform transform, DocumentConfig config) {
 
 		svg.setLength(0);
 		groups = 0;
 		usedReferences.clear();
 
 		appendSVGHeader(viewBox.x, viewBox.y, viewBox.width, viewBox.height);
-		appendEffects(svgBackgroundID, svgFilterID, svgTransformID);
-		appendInternalTransform(xform);
+		appendEffects(config);
+		appendInternalTransform(transform);
 	}
 
-	private void appendInternalTransform(Transform xform) {
+	private void appendInternalTransform(Transform transform) {
 
-		if (xform == null) {
+		if (transform == null) {
 			return;
 		}
 
 		// translate
-		svg.append("<g transform='translate(").append(xform.getTranslateX());
-		svg.append(",").append(xform.getTranslateY()).append(")'");/*
+		svg.append("<g transform='translate(").append(transform.getTranslateX());
+		svg.append(",").append(transform.getTranslateY()).append(")'");/*
 		 * // scale
-		 * svg.append(" scale(").append(xform.getScaleX
+		 * svg.append(" scale(").append(transform.getScaleX
 		 * ()).append(",");
-		 * svg.append(xform.getScaleY()).append(")"); //
+		 * svg.append(transform.getScaleY()).append(")"); //
 		 * rotate
-		 * svg.append(" rotate(").append(xform.getRotation
+		 * svg.append(" rotate(").append(transform.getRotation
 		 * ()).append(")"); // shear
 		 * svg.append(" skewX(").append
-		 * (xform.getShearX()).append(")");
+		 * (transform.getShearX()).append(")");
 		 * svg.append(" skewY("
-		 * ).append(xform.getShearY()).append(")'");
+		 * ).append(transform.getShearY()).append(")'");
 		 */
 		svg.append(">");
 		lineBreak();
 		groups++;
 	}
 
-	private void appendEffects(String backgroundID, String filterID, String xformID) {
+	private void appendEffects(DocumentConfig config) {
 
-		if (backgroundID != null || filterID != null || xformID != null) {
+		if (config != null) {
 			// background for the view box
-			if (backgroundID != null) {
-				if (!usedReferences.contains(backgroundID)) {
-					usedReferences.add(backgroundID);
+			if (config.getBachgroundColor() != null) {
+				if (!usedReferences.contains(config.getBachgroundColor())) {
+					usedReferences.add(config.getBachgroundColor());
 				}
-				svg.append(" <rect x='0' y='0' width='100%' height='100%' style='fill:url(#" + backgroundID + ")' />");
+				svg.append(" <rect x='0' y='0' width='100%' height='100%' style='fill:url(#" + config.getBachgroundColor() + ")' />");
 
 				lineBreak();
 			}
-			if (filterID != null || xformID != null) {
+			if (config.getFilter() != null || config.getTransformation() != null) {
 				svg.append("<g");
 
 				// Transform
-				if (xformID != null) {
-					SVGDescriptor def = formatCollection.get(xformID);
+				if (config.getTransformation() != null) {
+					SVGDescriptor def = formatCollection.get(config.getTransformation());
 					String xf = def.getAttribute("transform");
 					if (xf != null) {
 						svg.append(" transform='" + xf + "'");
@@ -126,11 +124,11 @@ public class DefaultSVGDocumentBuilder implements SVGDocumentBuilder {
 				}
 
 				// filter
-				if (filterID != null) {
-					if (!usedReferences.contains(filterID)) {
-						usedReferences.add(filterID);
+				if (config.getFilter() != null) {
+					if (!usedReferences.contains(config.getFilter())) {
+						usedReferences.add(config.getFilter());
 					}
-					svg.append(" filter='url(#" + filterID + ")'");
+					svg.append(" filter='url(#" + config.getFilter() + ")'");
 				}
 				svg.append(">");
 				lineBreak();

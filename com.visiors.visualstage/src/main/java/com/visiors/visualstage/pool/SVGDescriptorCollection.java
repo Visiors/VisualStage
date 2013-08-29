@@ -24,14 +24,14 @@ public class SVGDescriptorCollection {
 	public synchronized void loadAndPool(String description) {
 
 		try {
-			XMLService xmlService = new XMLService();
-			PropertyList properties = xmlService.XML2PropertyList(description);
-			for (Property property : properties) {
+			final XMLService xmlService = new XMLService();
+			final PropertyList properties = xmlService.XML2PropertyList(description);
+			for (final Property property : properties) {
 
-				SVGDescriptor svgDefinition = new SVGDescriptor((PropertyList) property);
+				final SVGDescriptor svgDefinition = new SVGDescriptor((PropertyList) property);
 				add(svgDefinition.id, svgDefinition);
 			}
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			throw new XMLDocumentReadException("Error while reading the XML content!", e);
 		}
 

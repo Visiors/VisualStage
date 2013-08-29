@@ -50,7 +50,7 @@ public class VisualObjectSnapshotGenerator {
 		viewBox.x -= transform.getTranslateX();
 		viewBox.y -= transform.getTranslateY();
 		if (!Strings.isNullOrEmpty(viewDescriptor)) {
-			docBuilder.createEmptyDocument(viewBox, null, null, null, null);
+			docBuilder.createEmptyDocument(viewBox, null, null);
 			docBuilder.addContent(viewDescriptor);
 			// doc.addDocumentAttributes(svgAttributes);
 			docBuilder.finlaizeDocument();
@@ -58,7 +58,8 @@ public class VisualObjectSnapshotGenerator {
 		}
 
 		// Debug drawing
-		else if (subject == DrawingSubject.OBJECT) {
+
+		if (subject == DrawingSubject.OBJECT) {
 
 			final Rectangle b = vgo.getBounds();
 			img = new BufferedImage(b.width+2, b.height+2, BufferedImage.TYPE_INT_ARGB_PRE);

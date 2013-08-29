@@ -72,6 +72,9 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 		// previewCreator = new VisualObjectSnapshotGenerator(this);
 		// cachedImage = new ArrayList<CachedImage>();
 
+		styleID = FormatCollection.DEFAULT_STYLE;
+		presentationID = FormatCollection.DEFAULT_NODE_PRESENTATION;
+
 		initPropertyList();
 	}
 
@@ -495,8 +498,8 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 
 
 		//TEST
-		presentationID = PropertyUtil.getProperty(properties, "presentation", "");
-		styleID = PropertyUtil.getProperty(properties, "style", "");
+		//		presentationID = PropertyUtil.getProperty(properties, "presentation", "");
+		//		styleID = PropertyUtil.getProperty(properties, "style", "");
 	}
 
 	public int getX() {

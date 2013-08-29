@@ -1,5 +1,6 @@
 package com.visiors.visualstage.document;
 
+import java.awt.Image;
 import java.awt.Rectangle;
 import java.util.Set;
 
@@ -10,7 +11,6 @@ import com.visiors.visualstage.handler.Undoable;
 import com.visiors.visualstage.property.PropertyOwner;
 import com.visiors.visualstage.renderer.Canvas;
 import com.visiors.visualstage.renderer.DrawingContext;
-import com.visiors.visualstage.stage.StageDesigner;
 import com.visiors.visualstage.transform.Transform;
 import com.visiors.visualstage.validation.Validator;
 
@@ -22,15 +22,11 @@ public interface GraphDocument extends MultiLayerDocument, PropertyOwner, Undoab
 
 	public VisualGraph getGraph();
 
-	public String getSVGDocument(DrawingContext context);
-
-	public StageDesigner getStageDesigner();
-
 	public Validator getValidator();
 
-	public void enableImageBuffering(boolean enable);
+	public void useImageBuffering(boolean enable);
 
-	public void enableDrawing(boolean doPainting);
+	public void enableDrawing(boolean enable);
 
 	public boolean isDrawingEnabled();
 
@@ -38,6 +34,9 @@ public interface GraphDocument extends MultiLayerDocument, PropertyOwner, Undoab
 	// public void fireEvents(boolean enable);
 	//
 	// public boolean isFiringEvents();
+
+
+	public String getSVGDocument(DrawingContext context);
 
 	public void draw(Canvas canvas);
 
@@ -50,6 +49,8 @@ public interface GraphDocument extends MultiLayerDocument, PropertyOwner, Undoab
 	public void setSvgTransformation(String svgTransformId);
 
 	public Rectangle getDocumentBoundary();
+
+	public Image getImage(DrawingContext context);
 
 	public void addGraphDocumentListener(GraphDocumentListener listener);
 

@@ -4,10 +4,6 @@ import java.awt.Color;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
 
 import com.visiors.visualstage.renderer.Canvas;
 import com.visiors.visualstage.renderer.DrawingContext;
@@ -34,16 +30,10 @@ public class MyCanvasImpl implements Canvas {
 		screen.getGraphics().drawImage(image, x, y, null);
 	}
 
-	public void save() {
 
-		try {
-			File outputfile = new File("screen.png");
-			ImageIO.write((BufferedImage ) screen, "png", outputfile);
-			System.out.println("saved to: " + outputfile.getAbsolutePath());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	public Image getScreen() {
 
+		return screen;
 	}
 
 	@Override

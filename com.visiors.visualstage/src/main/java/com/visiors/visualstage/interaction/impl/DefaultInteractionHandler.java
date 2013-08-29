@@ -43,8 +43,11 @@ public class DefaultInteractionHandler implements InteractionHandler {
 	@Inject
 	public DefaultInteractionHandler() {
 
-		/* Register the basic modes */
 		registerMode(new ReadOnlyMode());
+		setActiveMode(InteractionConstants.MODE_READ_ONLY);
+
+		//		/* Register the basic modes */
+		//		registerMode(new ReadOnlyMode());
 		//		registerMode(new ModellingMode());
 		//		registerMode(new EdgeCreationMode());
 		//		registerMode(new NodeCreationMode());

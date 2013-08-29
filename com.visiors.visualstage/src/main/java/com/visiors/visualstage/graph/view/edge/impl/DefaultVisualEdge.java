@@ -31,6 +31,7 @@ import com.visiors.visualstage.property.impl.PropertyBinder;
 import com.visiors.visualstage.renderer.DrawingSubject;
 import com.visiors.visualstage.renderer.Resolution;
 import com.visiors.visualstage.svg.SVGDescriptor;
+import com.visiors.visualstage.util.PropertyUtil;
 import com.visiors.visualstage.validation.Validator;
 
 public class DefaultVisualEdge extends DefaultVisualGraphObject implements VisualEdge, PathChangeListener/*
@@ -49,9 +50,8 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 	protected PropertyList properties;
 	protected SVGDescriptor svgLineDef;
 	protected SVGDescriptor svgSelDef;
-	protected String presentationID;
-	protected String styleID;
-	protected String formID;
+	protected String styleID = FormatCollection.DEFAULT_STYLE;
+	protected String presentationID = FormatCollection.DEFAULT_EDGE_PRESENTATION;
 	protected Rectangle boundaryExt = new Rectangle();
 
 	private PropertyBinder propertyBinder;
@@ -105,7 +105,7 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 
 		propertyBinder = new PropertyBinder(this);
 
-		setProperties(properties);
+		//		setProperties(properties);
 	}
 
 	@Override
@@ -359,6 +359,15 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 		super.setProperties(propertyList);
 
 		propertyBinder.loadAll();
+
+
+		//TEST
+		presentationID = PropertyUtil.getProperty(propertyList, "presentation", "");
+		styleID = PropertyUtil.getProperty(propertyList, "style", "");
+
+
+		svgLineDef = formatCollection.get(presentationID);
+		//		svgSelDef = SVGDefinitionPool.get(Constants.DEFAULT_EDGE_SELECTION_MARKER);
 	}
 
 

@@ -112,10 +112,9 @@ public class GraphEditor implements Editor, GraphDocumentListener, InteractionLi
 
 	protected void applyDefaultConfiguration(GraphDocument document) {
 
-		StageDesigner designer = document.getStageDesigner();
-		designer.setViewMode(ViewMode.page);
-		designer.showGrid(false);
-		designer.showRuler(false);
+		stageDesigner.setViewMode(ViewMode.page);
+		stageDesigner.showGrid(true);
+		stageDesigner.showRuler(true);
 	}
 
 	@Override
@@ -216,7 +215,6 @@ public class GraphEditor implements Editor, GraphDocumentListener, InteractionLi
 	}
 
 
-
 	@Override
 	public ShapeCollection getShapesCollection() {
 
@@ -240,6 +238,12 @@ public class GraphEditor implements Editor, GraphDocumentListener, InteractionLi
 	public SelectionHandler getSelectionHandler() {
 
 		return selectionHandler;
+	}
+
+	@Override
+	public StageDesigner getStageDesigner() {
+
+		return stageDesigner;
 	}
 
 	@Override

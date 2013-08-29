@@ -67,7 +67,7 @@ public class SVGDescriptor {
 			String svgTag = svg.substring(s, e) + "/>";
 
 			final XMLService xmlService = new XMLService();
-			PropertyList pl =  xmlService.XML2PropertyList(svgTag);
+			PropertyList pl = xmlService.XML2PropertyList(svgTag);
 
 			PropertyList[] p = convertSVG2Symbol(pl);
 			headerInfo = p[1];
@@ -252,4 +252,13 @@ public class SVGDescriptor {
 		return 0.0;
 	}
 
+	public String getID() {
+
+		return id;
+	}
+
+	public String getDefinition() {
+
+		return definition;
+	}
 }

@@ -7,5 +7,4 @@ public class DocumentExistsException extends RuntimeException {
 
 		super(msg);
 	}
-
 }

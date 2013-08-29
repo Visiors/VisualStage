@@ -28,7 +28,9 @@ public class ReadOnlyMode extends BaseInteractionHandler {
 
 	private void unselectGraph() {
 
-		graphDocument.getGraph().clearSelection();
+		if(graphDocument != null) {
+			graphDocument.getGraph().clearSelection();
+		}
 	}
 
 	@Override
@@ -64,6 +66,8 @@ public class ReadOnlyMode extends BaseInteractionHandler {
 	@Override
 	public boolean mousePressed(Point pt, int button, int functionKey) {
 
+		if(graphDocument != null) {
+			graphDocument.enableDrawing(true);}
 		return false;
 	}
 

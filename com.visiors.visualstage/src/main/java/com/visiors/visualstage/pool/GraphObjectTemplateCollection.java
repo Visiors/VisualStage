@@ -13,8 +13,9 @@ import com.visiors.visualstage.graph.view.node.VisualNode;
  * <p>
  * 
  * This class pools the concrete implementation of graph objects. The graph
- * object instances can be registered here so that they can be used later to create new graph objects. Each
- * instance is considered as a template that can be cloned to create a new instance.
+ * object instances can be registered here so that they can be used later to
+ * create new graph objects. Each instance is considered as a template that can
+ * be cloned to create a new instance.
  * 
  * 
  */
@@ -24,8 +25,6 @@ public class GraphObjectTemplateCollection {
 
 	private final Map<String, VisualGraphObject> registeredGraphObjects = new HashMap<String, VisualGraphObject>();
 
-
-
 	private GraphObjectTemplateCollection() {
 
 		/* Singleton */
@@ -33,8 +32,8 @@ public class GraphObjectTemplateCollection {
 
 	/**
 	 * Registers a {@link VisualGraphObject} which can be accessed by the
-	 * specified <code>templateName</code>. The registered object will be used as a
-	 * template to created graph objects on the runtime.
+	 * specified <code>templateName</code>. The registered object will be used
+	 * as a template to created graph objects on the runtime.
 	 * 
 	 * @param vgo
 	 *            A concrete implementation of {@link VisualNode},
@@ -46,8 +45,9 @@ public class GraphObjectTemplateCollection {
 	}
 
 	/**
-	 * Returns true if a graph object with the specified <code>templateName</code> was
-	 * already registered; otherwise it returns false.
+	 * Returns true if a graph object with the specified
+	 * <code>templateName</code> was already registered; otherwise it returns
+	 * false.
 	 */
 	public boolean isRegistered(String templateName) {
 
@@ -58,6 +58,5 @@ public class GraphObjectTemplateCollection {
 
 		return registeredGraphObjects.get(templateName);
 	}
-
 
 }

@@ -1,6 +1,7 @@
 package com.visiors.visualstage.document.impl;
 
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -30,6 +31,10 @@ import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.renderer.DrawingSubject;
 import com.visiors.visualstage.stage.StageDesigner;
 import com.visiors.visualstage.stage.StageDesigner.ViewMode;
+import com.visiors.visualstage.svg.DocumentConfig;
+import com.visiors.visualstage.svg.SVGDocumentBuilder;
+import com.visiors.visualstage.svg.SVGDocumentConfig;
+import com.visiors.visualstage.svg.SVGUtil;
 import com.visiors.visualstage.transform.Transform;
 import com.visiors.visualstage.validation.Validator;
 
@@ -46,9 +51,8 @@ public class DefaultGraphDocument implements GraphDocument {
 	private String title;
 	private boolean doDrawing = true;
 	private PropertyList properties;
-	private boolean enableImageBuffering;
+	private boolean useImageCaching;
 	private Set<Canvas> canvases = Sets.newHashSet();
-
 
 	protected LayerManager layerManager;
 
@@ -56,13 +60,15 @@ public class DefaultGraphDocument implements GraphDocument {
 	@Inject
 	protected StageDesigner stageDesigner;
 
+	@Inject
+	SVGDocumentBuilder svgDocumentBuilder;
 	protected UndoRedoHandler undoRedoHandler;
 
 	protected Validator validator;
 
-	private String svgBackgroundId;
-	private String svgFilterId;
-	private String svgTransformId;
+	private String svgBackground;
+	private String svgFilter;
+	private String svgTransformation;
 
 	@Inject
 	public DefaultGraphDocument(LayerManager layerManager, StageDesigner stageDesigner, Validator validator) {
@@ -203,9 +209,9 @@ public class DefaultGraphDocument implements GraphDocument {
 	}
 
 	@Override
-	public void enableImageBuffering(boolean enable) {
+	public void useImageBuffering(boolean enable) {
 
-		enableImageBuffering = enable;
+		useImageCaching = enable;
 	}
 
 	@Override
@@ -231,31 +237,46 @@ public class DefaultGraphDocument implements GraphDocument {
 
 		final DrawingContext context = canvas.getContext();
 		final Rectangle bounds = context.getBounds();
-		final BufferedImage offscreen = new BufferedImage((int) bounds.getWidth(), (int) bounds.getHeight(),
+		final BufferedImage screen = new BufferedImage((int) bounds.getWidth(), (int) bounds.getHeight(),
 				BufferedImage.TYPE_INT_ARGB_PRE);
-		final Graphics2D gfx = (Graphics2D) offscreen.getGraphics();
-
-		stageDesigner.paintBehind(gfx, canvas.getContext());
-
+		final Graphics2D gfx = (Graphics2D) screen.getGraphics();
 		final VisualGraph graph = getGraph();
+
 		// keep always the main graph view fit to the screen
 		graph.setBounds(context.getBounds());
 
-		graph.draw(gfx, context, DrawingSubject.OBJECT);
-		graph.draw(gfx, context, DrawingSubject.SELECTION_INDICATORS);
-		graph.draw(gfx, context, DrawingSubject.PORTS);
+		stageDesigner.paintBehind(gfx, canvas.getContext());
+
+		if (useImageCaching) {
+			graph.draw(gfx, context, DrawingSubject.OBJECT);
+			graph.draw(gfx, context, DrawingSubject.SELECTION_INDICATORS);
+			graph.draw(gfx, context, DrawingSubject.PORTS);
+		} else {
+			final Image img = getImage(context, null);
+			gfx.drawImage(img, 0, 0, null);
+		}
 
 		stageDesigner.paintOver(gfx, context);
-		//release
-		canvas.draw(0, 0, offscreen);
+
+		canvas.draw(0, 0, screen);
 	}
 
-	@Override
-	public String getSVGDocument(DrawingContext context) {
 
-		final String content = getGraph().getViewDescriptor(context.getResolution(), DrawingSubject.OBJECT);
-		// add header, filter and transformation using SVGGraphBuilder
-		return null;// getGraph().getSVGDocument(canvas, context, false, scale);
+	@Override
+	public Image getImage(DrawingContext context) {
+
+		final DocumentConfig config = new SVGDocumentConfig(svgBackground, svgFilter, svgTransformation);
+		return getImage(context, config);
+	}
+
+	private Image getImage(DrawingContext context, DocumentConfig config) {
+
+
+		final DrawingSubject[] subjects = new DrawingSubject[] { DrawingSubject.OBJECT,
+				DrawingSubject.SELECTION_INDICATORS, DrawingSubject.PORTS };
+		final String svgDocument = getSVGDocument(context, config, subjects);
+		final Image image = SVGUtil.svgToImage(svgDocument);
+		return image;
 	}
 
 	@Override
@@ -304,16 +325,30 @@ public class DefaultGraphDocument implements GraphDocument {
 
 	}
 
-	@Override
-	public StageDesigner getStageDesigner() {
 
-		return stageDesigner;
+	protected String getSVGDocument(DrawingContext context, DocumentConfig config, DrawingSubject...subject) {
+
+		final VisualGraph graph = getGraph();
+		Rectangle boundary = graph.getBounds();
+		svgDocumentBuilder.createEmptyDocument(boundary.width, boundary.height, graph.getTransformer(), config);
+		for (DrawingSubject drawingSubject : subject) {
+			svgDocumentBuilder.addContent(graph.getViewDescriptor(context.getResolution(), drawingSubject));			
+		}
+		svgDocumentBuilder.finlaizeDocument();
+		return svgDocumentBuilder.getDocument();
+	}
+
+	@Override
+	public String getSVGDocument(DrawingContext context) {
+
+		final DocumentConfig config = new SVGDocumentConfig(svgBackground, svgFilter, svgTransformation);
+		return getSVGDocument(context, config,  DrawingSubject.OBJECT);
 	}
 
 	@Override
 	public void setSvgBackground(String svgBackgroundId) {
 
-		this.svgBackgroundId = svgBackgroundId;
+		this.svgBackground = svgBackgroundId;
 		// getGraph().setBackground(svgBackgroundId);
 		fireViewChanged();
 	}
@@ -321,7 +356,7 @@ public class DefaultGraphDocument implements GraphDocument {
 	@Override
 	public void setSvgFilter(String svgFilterId) {
 
-		this.svgFilterId = svgFilterId;
+		this.svgFilter = svgFilterId;
 		// interactionHandler.setFilter(svgFilterId);
 		fireViewChanged();
 	}
@@ -329,7 +364,7 @@ public class DefaultGraphDocument implements GraphDocument {
 	@Override
 	public void setSvgTransformation(String svgTransformId) {
 
-		this.svgTransformId = svgTransformId;
+		this.svgTransformation = svgTransformId;
 		// interactionHandler.svgTransformID(svgTransformId);
 		fireViewChanged();
 	}

@@ -8,10 +8,12 @@ import java.util.List;
 
 import com.google.inject.Inject;
 import com.visiors.visualstage.constants.InteractionConstants;
+import com.visiors.visualstage.graph.view.VisualGraphObject;
 import com.visiors.visualstage.handler.UndoRedoHandler;
 import com.visiors.visualstage.interaction.impl.BaseInteractionHandler;
+import com.visiors.visualstage.renderer.Canvas;
 import com.visiors.visualstage.renderer.DrawingContext;
-import com.visiors.visualstage.renderer.cache.GraphObjectView;
+import com.visiors.visualstage.transform.Transform;
 
 public class MarqueeSelectionMode extends BaseInteractionHandler {
 
@@ -96,8 +98,8 @@ public class MarqueeSelectionMode extends BaseInteractionHandler {
 		VisualGraphObject[] objects = visualGraph.getGraphObjects();
 
 		final Transform transformer = visualGraph.getTransform();
-		for (int i = 0; i < objects.length; i++) {
-			vobj = objects[i];
+		for (VisualGraphObject object : objects) {
+			vobj = object;
 			robj = transformer.transformToScreen(vobj.getBounds());
 
 			/*

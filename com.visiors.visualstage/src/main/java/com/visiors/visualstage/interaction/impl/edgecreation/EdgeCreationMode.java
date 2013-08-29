@@ -6,6 +6,12 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.visiors.visualstage.constants.InteractionConstants;
+import com.visiors.visualstage.editor.GraphEditor;
+import com.visiors.visualstage.graph.view.edge.VisualEdge;
+import com.visiors.visualstage.graph.view.edge.impl.orthogonal.OrthogonalEdgeRouter;
+import com.visiors.visualstage.graph.view.node.Port;
+import com.visiors.visualstage.graph.view.node.PortSet;
+import com.visiors.visualstage.graph.view.node.VisualNode;
 import com.visiors.visualstage.interaction.impl.BaseInteractionHandler;
 import com.visiors.visualstage.util.GraphInteractionUtil;
 

@@ -9,17 +9,14 @@ public class StraightEdge extends DefaultVisualEdge {
 
 	public StraightEdge() {
 
-		super(-1);
+		super();
 	}
 
-	protected StraightEdge(long id) {
 
-		super(id);
-	}
 
-	protected StraightEdge(VisualEdge edge, long id) {
+	protected StraightEdge(VisualEdge edge) {
 
-		super(edge, id);
+		super(edge);
 	}
 
 	@Override
@@ -28,13 +25,12 @@ public class StraightEdge extends DefaultVisualEdge {
 		super.initProperties();
 		properties = PropertyUtil.setProperty(properties, PropertyConstants.EDGE_PROPERTY_TYPE,
 				PropertyConstants.EDGE_PROPERTY_TYPE_STRAIGHT);
-
 	}
 
 	@Override
-	public VisualEdge deepCopy(long id) {
+	public VisualEdge deepCopy() {
 
-		return new StraightEdge(this, id);
+		return new StraightEdge(this);
 	}
 
 }

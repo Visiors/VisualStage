@@ -69,8 +69,6 @@ public class GraphBuilder {
 		visualNode.setChildren(children);
 	}
 
-
-
 	private List<Shape> buildChildren(PropertyList childrenDefinition) {
 
 		final List<Shape> shapes = new ArrayList<Shape>();
@@ -113,7 +111,7 @@ public class GraphBuilder {
 		final String height = PropertyUtil.getProperty(property, "height", "100%");
 		final String layout_info = PropertyUtil.getProperty(property, "layout_info", "");
 
-		Shape shape = null;
+		final Shape shape = null;
 		return shape;
 	}
 

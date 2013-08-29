@@ -26,6 +26,7 @@ import com.visiors.visualstage.graph.view.node.VisualNode;
 import com.visiors.visualstage.graph.view.node.impl.DefaultVisualNode;
 import com.visiors.visualstage.graph.view.node.listener.VisualNodeListener;
 import com.visiors.visualstage.handler.UndoRedoHandler;
+import com.visiors.visualstage.pool.FormatCollection;
 import com.visiors.visualstage.pool.ShapeCollection;
 import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.property.PropertyUnit;
@@ -77,6 +78,8 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 		// graphViewUndoHelper = new GraphViewUndoHelper(this);
 		eventMediator = new SubgraphEventMediator(this);
 		new GraphContentManager(this); 
+		styleID = FormatCollection.DEFAULT_STYLE;
+		presentationID = FormatCollection.DEFAULT_SUBGRAPH_PRESENTATION;
 	}
 
 	protected DefaultVisualGraph(VisualGraph visualGraph) {
@@ -132,6 +135,13 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 		// undoRedoHandler.endOfGroupAction();
 	}
 
+
+	@Override
+	public VisualNode createNode() {
+
+		return  createNode(ShapeCollection.DEFAULT_NODE);
+	}
+
 	@Override
 	public VisualNode createNode(String type) {
 
@@ -155,6 +165,12 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	}
 
 	@Override
+	public VisualEdge createEdge() {
+
+		return createEdge(ShapeCollection.DEFAULT_EDGE);
+	}
+
+	@Override
 	public VisualEdge createEdge(String type) {
 
 		if (!shapeCollection.contains(type)) {
@@ -173,6 +189,12 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 		visualEdge.setProperties(properties);
 		addEdge(visualEdge);
 		return visualEdge;
+	}
+
+	@Override
+	public VisualGraph createSubgraph() {
+
+		return createSubgraph(ShapeCollection.DEFAULT_SUBGRAPH);
 	}
 
 	@Override
@@ -714,6 +736,8 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 
 		return new DefaultVisualGraph(this);
 	}
+
+
 
 	@Override
 	public void draw(Graphics2D gfx, DrawingContext context, DrawingSubject subject) {

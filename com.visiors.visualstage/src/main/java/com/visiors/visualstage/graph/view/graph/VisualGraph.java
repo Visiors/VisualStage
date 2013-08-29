@@ -32,9 +32,15 @@ public interface VisualGraph extends VisualNode/* , LayoutableGraph */{
 	 */
 	public VisualNode createNode(String type);
 
+	public VisualNode createNode();
+
 	public VisualEdge createEdge(String type);
 
+	public VisualEdge createEdge();
+
 	public VisualGraph createSubgraph(String type);
+
+	public VisualGraph createSubgraph();
 
 	public VisualNode createNode(PropertyList properties);
 
@@ -134,5 +140,6 @@ public interface VisualGraph extends VisualNode/* , LayoutableGraph */{
 	public void removeGraphViewListener(GraphViewListener listener);
 
 	public PropertyList getProperties(boolean childrenIncluded);
+
 
 }
