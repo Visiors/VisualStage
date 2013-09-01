@@ -18,7 +18,6 @@ public interface Interactable {
 	public static final int CURSOR_CROSSHAIR = 11;
 	public static final int CURSOR_EDIT_TEXT = 12;
 
-
 	/* mouse buttons */
 	public static final int BUTTON_LEFT = 1;
 	public static final int BUTTON_MIDDLE = 2;

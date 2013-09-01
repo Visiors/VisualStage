@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -68,6 +69,8 @@ public class GraphEditor implements Editor, GraphDocumentListener, InteractionLi
 		this.clipboardHandler = injector.getInstance(ClipboardHandler.class);
 		this.shapeCollection = injector.getInstance(ShapeCollection.class);
 		this.formatCollection = injector.getInstance(FormatCollection.class);
+
+		injector.injectMembers(interactionHandler);
 	}
 
 	@Override
@@ -170,7 +173,7 @@ public class GraphEditor implements Editor, GraphDocumentListener, InteractionLi
 	public void setActiveDocument(String title) {
 
 		activeDocument = title == null ? null: getDocument(title);
-		if(activeDocument != null){
+		if(activeDocument != null){ // TODO when activeDocument == null (last document closed) scope must be set on null
 			interactionHandler.setScope(activeDocument);
 			clipboardHandler.setScope(activeDocument);
 			selectionHandler.setScope(activeDocument);
@@ -201,6 +204,15 @@ public class GraphEditor implements Editor, GraphDocumentListener, InteractionLi
 
 		final GraphDocument document = getDocument(currentTitle);
 		document.setTitle(currentTitle);
+	}
+
+
+	@Override
+	public void update() {
+		GraphDocument doc = getActiveDocument();
+		if(doc != null) {
+			doc.update();
+		}	
 	}
 
 	@Override
@@ -361,8 +373,31 @@ public class GraphEditor implements Editor, GraphDocumentListener, InteractionLi
 	@Override
 	public void graphExpansionChanged(Rectangle newBoundary) {
 
-		// TODO Auto-generated method stub
-
+		fireBoundaryChanged(newBoundary);
 	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////
+	///// Listener
+	Set<EditorListener> listeners = new HashSet<EditorListener>();
+	@Override
+	public void addEditorListener(EditorListener editorListener) {
+
+		listeners.add(editorListener);
+	}
+
+	@Override
+	public void removeEditorListener(EditorListener editorListener) {
+
+		listeners.remove(editorListener);		
+	}
+
+
+	protected void fireBoundaryChanged(Rectangle newBoundary) {
+
+		for (EditorListener listener : listeners) {
+			listener.boundaryChangedListener(newBoundary);
+		}
+	}
+
 
 }

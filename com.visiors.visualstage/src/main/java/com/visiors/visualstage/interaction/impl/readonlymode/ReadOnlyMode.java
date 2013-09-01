@@ -3,9 +3,9 @@ package com.visiors.visualstage.interaction.impl.readonlymode;
 import java.awt.Point;
 
 import com.visiors.visualstage.constants.InteractionConstants;
-import com.visiors.visualstage.interaction.impl.BaseInteractionHandler;
+import com.visiors.visualstage.interaction.impl.BaseTool;
 
-public class ReadOnlyMode extends BaseInteractionHandler {
+public class ReadOnlyMode extends BaseTool {
 
 	public ReadOnlyMode() {
 
@@ -66,8 +66,6 @@ public class ReadOnlyMode extends BaseInteractionHandler {
 	@Override
 	public boolean mousePressed(Point pt, int button, int functionKey) {
 
-		if(graphDocument != null) {
-			graphDocument.enableDrawing(true);}
 		return false;
 	}
 

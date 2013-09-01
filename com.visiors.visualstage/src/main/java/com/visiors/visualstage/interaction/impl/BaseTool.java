@@ -4,17 +4,19 @@ import java.awt.Point;
 
 import com.visiors.visualstage.constants.InteractionConstants;
 import com.visiors.visualstage.document.GraphDocument;
+import com.visiors.visualstage.graph.view.graph.VisualGraph;
 import com.visiors.visualstage.interaction.Interactable;
-import com.visiors.visualstage.interaction.InteractionMode;
-import com.visiors.visualstage.renderer.Canvas;
+import com.visiors.visualstage.interaction.Tool;
+import com.visiors.visualstage.renderer.AWTCanvas;
 import com.visiors.visualstage.renderer.DrawingContext;
 
-public abstract class BaseInteractionHandler implements InteractionMode {
+public abstract class BaseTool implements Tool {
 
 	protected boolean active;
 	protected GraphDocument graphDocument;
+	protected VisualGraph visualGraph;
 
-	protected BaseInteractionHandler() {
+	protected BaseTool() {
 
 	}
 
@@ -22,6 +24,7 @@ public abstract class BaseInteractionHandler implements InteractionMode {
 	public void setScope(GraphDocument graphDocument) {
 
 		this.graphDocument = graphDocument;
+		this.visualGraph = graphDocument.getGraph();
 
 	}
 
@@ -105,12 +108,12 @@ public abstract class BaseInteractionHandler implements InteractionMode {
 	}
 
 	@Override
-	public void paintOnBackground(Canvas canvas, DrawingContext context) {
+	public void paintOnBackground(AWTCanvas awtCanvas, DrawingContext context) {
 
 	}
 
 	@Override
-	public void paintOnTop(Canvas canvas, DrawingContext context) {
+	public void paintOnTop(AWTCanvas awtCanvas, DrawingContext context) {
 
 	}
 

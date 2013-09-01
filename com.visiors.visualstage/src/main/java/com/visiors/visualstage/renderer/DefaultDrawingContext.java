@@ -9,7 +9,7 @@ import com.visiors.visualstage.transform.Transform;
 public class DefaultDrawingContext implements DrawingContext {
 
 	private final Resolution resolution;
-	private final Rectangle bounds;
+	private final Rectangle visibleBounds;
 	private final Transform transform;
 
 	//
@@ -19,10 +19,10 @@ public class DefaultDrawingContext implements DrawingContext {
 	// canvas.getTransform());
 	// }
 
-	public DefaultDrawingContext(Resolution resolution, Rectangle bounds, Transform transform) {
+	public DefaultDrawingContext(Resolution resolution, Rectangle visibleBounds, Transform transform) {
 
 		this.resolution = resolution;
-		this.bounds = new Rectangle(bounds);
+		this.visibleBounds = new Rectangle(visibleBounds);
 		this.transform = new DefaultTransformer((DefaultTransformer) transform);
 
 	}
@@ -36,9 +36,9 @@ public class DefaultDrawingContext implements DrawingContext {
 
 
 	@Override
-	public Rectangle getBounds() {
+	public Rectangle getVisibleBounds() {
 
-		return bounds;
+		return visibleBounds;
 	}
 
 
@@ -56,7 +56,7 @@ public class DefaultDrawingContext implements DrawingContext {
 		if (obj instanceof DefaultDrawingContext) {
 			final DefaultDrawingContext other = (DefaultDrawingContext) obj;
 			return Objects.equal(resolution, other.resolution) && Objects.equal(transform, other.transform)
-					&& Objects.equal(bounds, other.bounds);
+					&& Objects.equal(visibleBounds, other.visibleBounds);
 		}
 		return false;
 	}
@@ -64,7 +64,7 @@ public class DefaultDrawingContext implements DrawingContext {
 	@Override
 	public int hashCode() {
 
-		return Objects.hashCode(resolution, bounds, transform);
+		return Objects.hashCode(resolution, visibleBounds, transform);
 	}
 
 	@Override
@@ -77,7 +77,7 @@ public class DefaultDrawingContext implements DrawingContext {
 	// protected Object clone() {
 	//
 	// final DefaultDrawingContext copy = new DefaultDrawingContext(resolution,
-	// subject, new Rectangle(bounds),
+	// subject, new Rectangle(visibleBounds),
 	// new DefaultTransformer((DefaultTransformer) transform));
 	// copy.setImage(outputImage);
 	// return copy;

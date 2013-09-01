@@ -28,6 +28,8 @@ public interface GraphDocument extends MultiLayerDocument, PropertyOwner, Undoab
 
 	public void enableDrawing(boolean enable);
 
+	public void update();
+
 	public boolean isDrawingEnabled();
 
 	//

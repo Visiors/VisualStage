@@ -1,6 +1,5 @@
 package com.visiors.visualstage.document.impl;
 
-import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -26,6 +25,7 @@ import com.visiors.visualstage.handler.UndoRedoHandler;
 import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.property.impl.DefaultPropertyList;
 import com.visiors.visualstage.property.impl.PropertyBinder;
+import com.visiors.visualstage.renderer.AWTCanvas;
 import com.visiors.visualstage.renderer.Canvas;
 import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.renderer.DrawingSubject;
@@ -219,8 +219,20 @@ public class DefaultGraphDocument implements GraphDocument {
 
 		this.doDrawing = doDrawing;
 		if (doDrawing) {
-			fireViewChanged();
+			update();
 		}
+	}
+
+	@Override
+	public void update() {
+
+		if (doDrawing) {
+			for (final GraphDocumentListener l : graphDocumentListener) {
+				l.viewChanged();
+			}
+		}
+
+		draw();
 	}
 
 	// /////////////////////////////////////////////////
@@ -236,31 +248,31 @@ public class DefaultGraphDocument implements GraphDocument {
 	public void draw(Canvas canvas) {
 
 		final DrawingContext context = canvas.getContext();
-		final Rectangle bounds = context.getBounds();
-		final BufferedImage screen = new BufferedImage((int) bounds.getWidth(), (int) bounds.getHeight(),
-				BufferedImage.TYPE_INT_ARGB_PRE);
-		final Graphics2D gfx = (Graphics2D) screen.getGraphics();
+		final Rectangle bounds = context.getVisibleBounds();
+		if (bounds == null || bounds.isEmpty()) {
+			System.err.println("Warning: Cannot draw on the canvas with zero width/heigt!");
+			return;
+		}
+		final AWTCanvas awtCanvas = new AWTCanvas((int) bounds.getWidth(), (int) bounds.getHeight());
 		final VisualGraph graph = getGraph();
 
 		// keep always the main graph view fit to the screen
-		graph.setBounds(context.getBounds());
+		graph.setBounds(context.getVisibleBounds());
 
-		stageDesigner.paintBehind(gfx, canvas.getContext());
+		stageDesigner.paintBehind(awtCanvas, canvas.getContext());
 
 		if (useImageCaching) {
-			graph.draw(gfx, context, DrawingSubject.OBJECT);
-			graph.draw(gfx, context, DrawingSubject.SELECTION_INDICATORS);
-			graph.draw(gfx, context, DrawingSubject.PORTS);
+			graph.draw(awtCanvas, context, DrawingSubject.OBJECT);
+			graph.draw(awtCanvas, context, DrawingSubject.SELECTION_INDICATORS);
+			graph.draw(awtCanvas, context, DrawingSubject.PORTS);
 		} else {
-			final Image img = getImage(context, null);
-			gfx.drawImage(img, 0, 0, null);
+			awtCanvas.image = (BufferedImage) getImage(context, null);
 		}
 
-		stageDesigner.paintOver(gfx, context);
+		stageDesigner.paintOver(awtCanvas, context);
 
-		canvas.draw(0, 0, screen);
+		canvas.draw(0, 0, awtCanvas.image);
 	}
-
 
 	@Override
 	public Image getImage(DrawingContext context) {
@@ -270,7 +282,6 @@ public class DefaultGraphDocument implements GraphDocument {
 	}
 
 	private Image getImage(DrawingContext context, DocumentConfig config) {
-
 
 		final DrawingSubject[] subjects = new DrawingSubject[] { DrawingSubject.OBJECT,
 				DrawingSubject.SELECTION_INDICATORS, DrawingSubject.PORTS };
@@ -325,14 +336,13 @@ public class DefaultGraphDocument implements GraphDocument {
 
 	}
 
-
-	protected String getSVGDocument(DrawingContext context, DocumentConfig config, DrawingSubject...subject) {
+	protected String getSVGDocument(DrawingContext context, DocumentConfig config, DrawingSubject... subject) {
 
 		final VisualGraph graph = getGraph();
 		Rectangle boundary = graph.getBounds();
 		svgDocumentBuilder.createEmptyDocument(boundary.width, boundary.height, graph.getTransformer(), config);
 		for (DrawingSubject drawingSubject : subject) {
-			svgDocumentBuilder.addContent(graph.getViewDescriptor(context.getResolution(), drawingSubject));			
+			svgDocumentBuilder.addContent(graph.getViewDescriptor(context.getResolution(), drawingSubject));
 		}
 		svgDocumentBuilder.finlaizeDocument();
 		return svgDocumentBuilder.getDocument();
@@ -342,7 +352,7 @@ public class DefaultGraphDocument implements GraphDocument {
 	public String getSVGDocument(DrawingContext context) {
 
 		final DocumentConfig config = new SVGDocumentConfig(svgBackground, svgFilter, svgTransformation);
-		return getSVGDocument(context, config,  DrawingSubject.OBJECT);
+		return getSVGDocument(context, config, DrawingSubject.OBJECT);
 	}
 
 	@Override
@@ -445,13 +455,7 @@ public class DefaultGraphDocument implements GraphDocument {
 
 	protected void fireViewChanged() {
 
-		if (doDrawing) {
-			for (final GraphDocumentListener l : graphDocumentListener) {
-				l.viewChanged();
-			}
-		}
-
-		draw();
+		update();
 	}
 
 	protected void fireGraphManipulated() {

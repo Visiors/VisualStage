@@ -907,8 +907,8 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 			}
 			if (svgDef != null) {
 				final Rectangle b = transform.transformToScreen(boundary);
-				final double tx = transform.getTranslateX();
-				final double ty = transform.getTranslateY();
+				final double tx = transform.getXTranslate();
+				final double ty = transform.getYTranslate();
 				if (styleID != null) {
 					if (styleID.indexOf(':') == -1) { // TODO ?
 						desc.append("<g class='" + styleID + "'>");
@@ -933,10 +933,11 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 				if (styleID != null) {
 					desc.append("</g>");
 				}
-			} else {
+			} 
+			else {
 				System.err.println("presentation-ID '" + presentationID
-						+ "' referes to an not existing graphical object.");
-				// presentationID = null; write it only once!
+						+ "' refes to an not existing graphical object.");
+				presentationID = null;// write it only once!
 			}
 		}
 
@@ -982,9 +983,9 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 		if (selDef != null) {
 			final Rectangle b = transform.transformToScreen(boundary);
 			desc.append("<g transform='translate(");
-			desc.append(-transform.getTranslateX());
+			desc.append(-transform.getXTranslate());
 			desc.append(",");
-			desc.append(-transform.getTranslateY());
+			desc.append(-transform.getYTranslate());
 			desc.append(")'>");
 
 			/*

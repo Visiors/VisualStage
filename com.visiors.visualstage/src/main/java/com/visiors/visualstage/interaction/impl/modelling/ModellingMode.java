@@ -7,15 +7,12 @@ import java.util.List;
 
 import com.google.inject.Inject;
 import com.visiors.visualstage.constants.InteractionConstants;
-import com.visiors.visualstage.editor.GraphEditor;
 import com.visiors.visualstage.graph.view.VisualGraphObject;
 import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.graph.VisualGraph;
 import com.visiors.visualstage.graph.view.node.VisualNode;
 import com.visiors.visualstage.handler.UndoRedoHandler;
-import com.visiors.visualstage.interaction.impl.BaseInteractionHandler;
-import com.visiors.visualstage.property.PropertyList;
-import com.visiors.visualstage.property.impl.DefaultPropertyList;
+import com.visiors.visualstage.interaction.impl.BaseTool;
 import com.visiors.visualstage.util.GraphInteractionUtil;
 
 /**
@@ -28,7 +25,7 @@ import com.visiors.visualstage.util.GraphInteractionUtil;
  * 
  * @version $Id: $
  */
-public class ModellingMode extends BaseInteractionHandler {
+public class ModellingMode extends BaseTool {
 
 	/* resizing details */
 	public static final int NONE = -1;
@@ -107,6 +104,7 @@ public class ModellingMode extends BaseInteractionHandler {
 			 * control key is not pressed
 			 */
 			if (!isControlKeyPressed(functionKey) && !isShiftKeyPressed(functionKey)) {
+
 				visualGraph.clearSelection();
 			}
 		} else {
@@ -162,6 +160,7 @@ public class ModellingMode extends BaseInteractionHandler {
 
 		if (mousePressedPos.equals(pt)) {
 			/* only if mouse is released on the same object */
+
 			if (hitObject == GraphInteractionUtil.getFirstHitObjectAt(visualGraph, pt)) { /*
 			 * invert
 			 * selection
@@ -328,7 +327,7 @@ public class ModellingMode extends BaseInteractionHandler {
 
 	private void updateHitObject(Point pt) {
 
-		VisualGraphObject lastHitObject = hitObject;
+		final VisualGraphObject lastHitObject = hitObject;
 
 		hitObject = GraphInteractionUtil.getFirstHitObjectAt(visualGraph, pt);
 		if (lastHitObject != hitObject && lastHitObject != null) {
@@ -337,7 +336,9 @@ public class ModellingMode extends BaseInteractionHandler {
 
 		if (hitObject != null) {
 			hitObject.setHighlighted(true);
-			visualGraph = hitObject.getParent();
+			// TODO check this, changing the graph seems to be a bad idea
+			// visualGraph = hitObject.getParentGraph();
+
 		}
 	}
 
@@ -349,11 +350,11 @@ public class ModellingMode extends BaseInteractionHandler {
 
 	private void trackGroupHitByActiveObject(int functionKey) {
 
-		boolean keyPressed = isAltKeyPressed(functionKey);
+		final boolean keyPressed = isAltKeyPressed(functionKey);
 		if (keyPressed) {
 			if (hitObject instanceof VisualNode) {
-				if (hitObject.getParent().getDepth() > 0) {
-					hitObject.getParent().setHighlighted(true);
+				if (hitObject.getParentGraph().getDepth() > 0) {
+					hitObject.getParentGraph().setHighlighted(true);
 				}
 			}
 			return;
@@ -365,10 +366,11 @@ public class ModellingMode extends BaseInteractionHandler {
 		}
 
 		if (hitObject instanceof VisualNode) {
+
 			final List<VisualGraphObject> selection = visualGraph.getSelection();
 			hitGroup = GraphInteractionUtil.getLastGroupHitByObjects(visualGraph, selection);
 			if (hitGroup != null) {
-				hitObject.getParent().setHighlighted(false);
+				hitObject.getParentGraph().setHighlighted(false);
 				hitGroup.setHighlighted(true);
 			}
 		}
@@ -383,47 +385,44 @@ public class ModellingMode extends BaseInteractionHandler {
 	private void trackNodesHitByActiveConnector() {
 
 		if (connectingTargetNode != null) {
-			connectingTargetNode.openPorts(false);
+			connectingTargetNode.illuminatePorts(false);
 		}
 
 		if (connectingSourceNode != null) {
-			connectingSourceNode.openPorts(false);
+			connectingSourceNode.illuminatePorts(false);
 		}
 
 		// check if a connector is acting
 		if (hitObject instanceof VisualEdge) {
 
-			VisualEdge edge = (VisualEdge) hitObject;
-			Point sPt = edge.getStartConnectionPoint();
+			final VisualEdge edge = (VisualEdge) hitObject;
+			final Point sPt = edge.getPath().getStart().getPoint();
 			// check if a node is hit by connector
+
 			VisualNode node = GraphInteractionUtil.getFirstHitNodeAt(visualGraph, sPt);
 			if (node != null) {
-				node.openPorts(true);
-				int port = node.getPreferredPort(sPt);
+				node.illuminatePorts(true);
+				final int port = node.getPreferredPort(sPt);
 				node.highlightPort(port, true);
 				connectingSourcePort = port;
 				if (port != ModellingMode.NONE) {
-					if (node.acceptConnection(edge, sPt) && edge.acceptConnection(node, port)) {
-						connectingEdge = edge;
-						connectingSourceNode = node;
-					}
+					connectingEdge = edge;
+					connectingSourceNode = node;
 				}
 			} else {
 				connectingSourceNode = null;
 			}
 
-			Point ePt = edge.getEndConnectionPoint();
+			final Point ePt = edge.getPath().getEnd().getPoint();
 			node = GraphInteractionUtil.getFirstHitNodeAt(visualGraph, ePt);
 			if (node != null) {
-				node.openPorts(true);
-				int port = node.getPreferredPort(ePt);
+				node.illuminatePorts(true);
+				final int port = node.getPreferredPort(ePt);
 				connectingTargetPort = port;
 				node.highlightPort(port, true);
 				if (port != ModellingMode.NONE) {
-					if (node.acceptConnection(edge, ePt) && edge.acceptConnection(node, port)) {
-						connectingEdge = edge;
-						connectingTargetNode = node;
-					}
+					connectingEdge = edge;
+					connectingTargetNode = node;
 				}
 			} else {
 				connectingTargetNode = null;
@@ -441,7 +440,7 @@ public class ModellingMode extends BaseInteractionHandler {
 			if (hitGroup == null) {
 				hitGroup = visualGraph;
 			}
-			if (hitObject.getParent() != hitGroup) {
+			if (hitObject.getParentGraph() != hitGroup) {
 				final List<VisualGraphObject> selection = visualGraph.getSelection();
 				GraphInteractionUtil.relocateObject(selection, hitGroup);
 			}
@@ -452,20 +451,23 @@ public class ModellingMode extends BaseInteractionHandler {
 
 		if (connectingEdge != null) {
 			if (connectingSourceNode != null) {
-				connectingSourceNode.openPorts(false);
+				connectingSourceNode.illuminatePorts(false);
 				if (connectingSourcePort != ModellingMode.NONE) {
-					connectingEdge.setSourceNode(connectingSourceNode, connectingSourcePort);
+					connectingEdge.connect(connectingSourceNode, connectingSourcePort, connectingEdge.getTargetNode(),
+							connectingEdge.getTargetPortId());
 				}
 			} else {
-				connectingEdge.setSourceNode(null);
+				connectingEdge.connect(null, -1, connectingEdge.getTargetNode(), connectingEdge.getTargetPortId());
 			}
+
 			if (connectingTargetNode != null) {
-				connectingTargetNode.openPorts(false);
+				connectingTargetNode.illuminatePorts(false);
 				if (connectingTargetPort != ModellingMode.NONE) {
-					connectingEdge.setTargetNode(connectingTargetNode, connectingTargetPort);
+					connectingEdge.connect(connectingEdge.getSourceNode(), connectingEdge.getSourcePortId(),
+							connectingTargetNode, connectingTargetPort);
 				}
 			} else {
-				connectingEdge.setTargetNode(null);
+				connectingEdge.connect(connectingEdge.getSourceNode(), connectingEdge.getSourcePortId(), null, -1);
 			}
 			GraphInteractionUtil.moveEdgeToAppropriateGraphView(connectingEdge);
 		}
@@ -478,23 +480,23 @@ public class ModellingMode extends BaseInteractionHandler {
 
 	private final void notifyActionBegin() {
 
-		undoRedoHandler.stratOfGroupAction();
-		// notify object about immediate actions
-		final List<VisualGraphObject> selection = visualGraph.getSelection();
-		for (VisualGraphObject vgo : selection) {
-			vgo.startManipulating();
-		}
+		//		undoRedoHandler.stratOfGroupAction();
+		//		// notify object about immediate actions
+		//		final List<VisualGraphObject> selection = visualGraph.getSelection();
+		//		for (final VisualGraphObject vgo : selection) {
+		//			vgo.startManipulating();
+		//		}
 		manipulatingNotified = true;
 	}
 
 	private final void notifyActionEnd() {
 
-		// notify object about end of interaction
-		manipulatingNotified = false;
-		final List<VisualGraphObject> selection = visualGraph.getSelection();
-		for (VisualGraphObject vgo : selection) {
-			vgo.endManipulating();
-		}
+		//		// notify object about end of interaction
+		//		manipulatingNotified = false;
+		//		final List<VisualGraphObject> selection = visualGraph.getSelection();
+		//		for (final VisualGraphObject vgo : selection) {
+		//			vgo.endManipulating();
+		//		}
 
 		undoRedoHandler.endOfGroupAction();
 	}
@@ -504,19 +506,22 @@ public class ModellingMode extends BaseInteractionHandler {
 		try {
 			undoRedoHandler.stratOfGroupAction();
 
-			// create
-			List<VisualGraphObject> selection = visualGraph.getSelection();
-			// selection.remove(hitObject);
-
-			PropertyList propertyList = new DefaultPropertyList();
-			GraphEditor.visualObjects2ProperyList(selection.toArray(new VisualGraphObject[0]),
-					propertyList);
-			List<VisualGraphObject> duplicatedObjects = GraphEditor.createGraphObjects(
-					propertyList, visualGraph, true);
-			visualGraph.setSelection(duplicatedObjects);
-			for (int i = 0; i < duplicatedObjects.size(); i++) {
-				visualGraph.toFront(duplicatedObjects.get(i));
-			}
+			//TODO duplicate selected objects
+			//			// create
+			//			final List<VisualGraphObject> selection = visualGraph.getSelection();
+			//			// selection.remove(hitObject);
+			//
+			//			final PropertyList propertyList = new DefaultPropertyList();
+			//			GraphEditor.visualObjects2ProperyList(selection.toArray(new VisualGraphObject[0]), propertyList);
+			//			
+			//			final List<VisualGraphObject> duplicatedObjects = GraphEditor.createGraphObjects(propertyList, visualGraph,
+			//					true);
+			//			
+			//
+			//			visualGraph.setSelection(duplicatedObjects);
+			//			for (int i = 0; i < duplicatedObjects.size(); i++) {
+			//				visualGraph.toFront(duplicatedObjects.get(i));
+			//			}
 
 			updateHitObject(pt);
 
@@ -529,12 +534,12 @@ public class ModellingMode extends BaseInteractionHandler {
 	void moveSelection(Point pt) {
 
 		if (hitObject != null) {
-			Point startPos = hitObjectPos.getLocation();
-			Point currentPos = hitObject.getBounds().getLocation();
-			int dx = mousePressedPos.x - pt.x + currentPos.x - startPos.x;
-			int dy = mousePressedPos.y - pt.y + currentPos.y - startPos.y;
+			final Point startPos = hitObjectPos.getLocation();
+			final Point currentPos = hitObject.getBounds().getLocation();
+			final int dx = mousePressedPos.x - pt.x + currentPos.x - startPos.x;
+			final int dy = mousePressedPos.y - pt.y + currentPos.y - startPos.y;
 
-			List<VisualGraphObject> selection = visualGraph.getSelection();
+			final List<VisualGraphObject> selection = visualGraph.getSelection();
 
 			moveEdgesWithSelectedNodes(selection, dx, dy);
 			moveEdges(selection, dx, dy);
@@ -545,14 +550,14 @@ public class ModellingMode extends BaseInteractionHandler {
 
 	private void moveEdgesWithSelectedNodes(List<VisualGraphObject> selection, int dx, int dy) {
 
-		List<VisualEdge> edgesToMove = new ArrayList<VisualEdge>();
+		final List<VisualEdge> edgesToMove = new ArrayList<VisualEdge>();
 		VisualNode sn, tn;
 
-		for (VisualGraphObject vgo : selection) {
+		for (final VisualGraphObject vgo : selection) {
 			if (vgo instanceof VisualNode) {
-				VisualNode n = (VisualNode) vgo;
+				final VisualNode n = (VisualNode) vgo;
 				List<VisualEdge> connections = n.getOutgoingEdges();
-				for (VisualEdge edge : connections) {
+				for (final VisualEdge edge : connections) {
 					if (!edge.isSelected()) {
 						tn = edge.getTargetNode();
 						if (tn != null && tn.isSelected() && !edgesToMove.contains(edge)) {
@@ -561,7 +566,7 @@ public class ModellingMode extends BaseInteractionHandler {
 					}
 				}
 				connections = n.getIncomingEdges();
-				for (VisualEdge edge : connections) {
+				for (final VisualEdge edge : connections) {
 					if (!edge.isSelected()) {
 						sn = edge.getSourceNode();
 						if (sn != null && sn.isSelected() && !edgesToMove.contains(edge)) {
@@ -571,14 +576,14 @@ public class ModellingMode extends BaseInteractionHandler {
 				}
 			}
 		}
-		for (VisualEdge edge : edgesToMove) {
+		for (final VisualEdge edge : edgesToMove) {
 			edge.move(-dx, -dy);
 		}
 	}
 
 	private final synchronized void moveEdges(List<VisualGraphObject> selection, int dx, int dy) {
 
-		for (VisualGraphObject vgo : selection) {
+		for (final VisualGraphObject vgo : selection) {
 			if (vgo instanceof VisualEdge) {
 				vgo.move(-dx, -dy);
 			}
@@ -587,7 +592,7 @@ public class ModellingMode extends BaseInteractionHandler {
 
 	private final synchronized void moveNodes(List<VisualGraphObject> selection, int dx, int dy) {
 
-		for (VisualGraphObject vgo : selection) {
+		for (final VisualGraphObject vgo : selection) {
 			if (vgo instanceof VisualNode) {
 				vgo.move(-dx, -dy);
 			}

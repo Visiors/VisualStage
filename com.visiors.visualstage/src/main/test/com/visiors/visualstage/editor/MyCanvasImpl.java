@@ -55,7 +55,7 @@ public class MyCanvasImpl implements Canvas {
 			}
 
 			@Override
-			public Rectangle getBounds() {
+			public Rectangle getVisibleBounds() {
 
 				return new Rectangle(0, 0, screenWidth, screenHeight);
 			}

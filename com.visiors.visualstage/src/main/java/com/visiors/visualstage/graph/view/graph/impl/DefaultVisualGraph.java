@@ -1,6 +1,5 @@
 package com.visiors.visualstage.graph.view.graph.impl;
 
-import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
@@ -33,6 +32,7 @@ import com.visiors.visualstage.property.PropertyUnit;
 import com.visiors.visualstage.property.impl.DefaultPropertyList;
 import com.visiors.visualstage.property.impl.DefaultPropertyUnit;
 import com.visiors.visualstage.property.impl.PropertyBinder;
+import com.visiors.visualstage.renderer.AWTCanvas;
 import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.renderer.DrawingSubject;
 import com.visiors.visualstage.renderer.Resolution;
@@ -740,11 +740,11 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 
 
 	@Override
-	public void draw(Graphics2D gfx, DrawingContext context, DrawingSubject subject) {
+	public void draw(AWTCanvas awtCanvas, DrawingContext context, DrawingSubject subject) {
 
-		super.draw(gfx, context, subject);
+		super.draw(awtCanvas, context, subject);
 		for (final VisualGraphObject vgo : depot.getObjects()) {
-			vgo.draw(gfx, context, subject);
+			vgo.draw(awtCanvas, context, subject);
 		}
 	}
 

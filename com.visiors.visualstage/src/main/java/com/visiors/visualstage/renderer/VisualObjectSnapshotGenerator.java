@@ -47,8 +47,8 @@ public class VisualObjectSnapshotGenerator {
 		// svgAttributes = vgo.getSVGDocumentAttributes();
 		final Transform transform = vgo.getTransformer();
 		final Rectangle viewBox = transform.transformToScreen(vgo.getExtendedBoundary());
-		viewBox.x -= transform.getTranslateX();
-		viewBox.y -= transform.getTranslateY();
+		viewBox.x -= transform.getXTranslate();
+		viewBox.y -= transform.getYTranslate();
 		if (!Strings.isNullOrEmpty(viewDescriptor)) {
 			docBuilder.createEmptyDocument(viewBox, null, null);
 			docBuilder.addContent(viewDescriptor);

@@ -105,9 +105,9 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 	 * @see com.visiors.visualstage.view.transform.Transform#setTranslateX(double)
 	 */
 	@Override
-	public void setTranslateX(double tx) {
+	public void setXTranslate(double tx) {
 
-		super.setTranslateX(tx);
+		super.setXTranslate(tx);
 	}
 
 	/*
@@ -115,9 +115,9 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 	 * @see com.visiors.visualstage.view.transform.Transform#setTranslateY(double)
 	 */
 	@Override
-	public void setTranslateY(double ty) {
+	public void setYTranslate(double ty) {
 
-		super.setTranslateY(ty);
+		super.setYTranslate(ty);
 	}
 
 	/*
@@ -195,9 +195,9 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 	 * @see com.visiors.visualstage.view.transform.Transform#getTranslateX()
 	 */
 	@Override
-	public double getTranslateX() {
+	public double getXTranslate() {
 
-		return super.getTranslateX();
+		return super.getXTranslate();
 	}
 
 	/*
@@ -205,9 +205,9 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 	 * @see com.visiors.visualstage.view.transform.Transform#getTranslateY()
 	 */
 	@Override
-	public double getTranslateY() {
+	public double getYTranslate() {
 
-		return super.getTranslateY();
+		return super.getYTranslate();
 	}
 
 	/*

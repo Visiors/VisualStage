@@ -12,10 +12,10 @@ import com.visiors.visualstage.graph.view.edge.impl.orthogonal.OrthogonalEdgeRou
 import com.visiors.visualstage.graph.view.node.Port;
 import com.visiors.visualstage.graph.view.node.PortSet;
 import com.visiors.visualstage.graph.view.node.VisualNode;
-import com.visiors.visualstage.interaction.impl.BaseInteractionHandler;
+import com.visiors.visualstage.interaction.impl.BaseTool;
 import com.visiors.visualstage.util.GraphInteractionUtil;
 
-public class EdgeCreationMode extends BaseInteractionHandler {
+public class EdgeCreationMode extends BaseTool {
 
 	private static final int range = 40;
 	private static final int alignmentRange = 30;
@@ -100,7 +100,7 @@ public class EdgeCreationMode extends BaseInteractionHandler {
 			lastDraggedPoint = pt;
 
 			if (createdEdge != null) {
-				createdEdge.getParent().deleteGraphObject(createdEdge);
+				createdEdge.getParentGraph().remove(createdEdge);
 				createdEdge = null;
 			}
 
@@ -134,18 +134,16 @@ public class EdgeCreationMode extends BaseInteractionHandler {
 			int sp = createdEdge.getSourcePortId();
 			VisualNode t = createdEdge.getTargetNode();
 			int tp = createdEdge.getTargetPortId();
-			createdEdge.setSourceNode(null);
-			createdEdge.setTargetNode(null);
-			createdEdge.setSourceNode(t, tp);
-			createdEdge.setTargetNode(s, sp);
-			visualGraph.updateView();
+			createdEdge.connect(null, -1, null, -1);
+			createdEdge.connect(s, sp, t, tp);
+			graphDocument.update();
 		}
 	}
 
 	private void cancel(boolean cancel) {
 
 		if (cancel && createdEdge != null) {
-			createdEdge.getParent().deleteGraphObject(createdEdge);
+			createdEdge.getParentGraph().remove(createdEdge);
 			createdEdge = null;
 			highlightTargetPorts(null, false, false);
 		}
@@ -154,14 +152,14 @@ public class EdgeCreationMode extends BaseInteractionHandler {
 	private void highlightTargetPorts(Port[] ports, boolean openPort, boolean highlight) {
 
 		if (draggingNode != null) {
-			draggingNode.openPorts(ports != null && openPort);
+			draggingNode.illuminatePorts(ports != null && openPort);
 			if (ports != null && highlight) {
 				draggingNode.highlightPort(ports[0].getID(), true);
 			}
 		}
 
 		if (nodeToMate != null) {
-			nodeToMate.openPorts(ports != null && openPort);
+			nodeToMate.illuminatePorts(ports != null && openPort);
 			if (ports != null && highlight) {
 				nodeToMate.highlightPort(ports[1].getID(), true);
 			}
@@ -189,7 +187,7 @@ public class EdgeCreationMode extends BaseInteractionHandler {
 					if (connect) {
 						highlightTargetPorts(posrts, true, true);
 						createEdge(forward);
-						visualGraph.updateView();
+						graphDocument.update();
 					}
 				}
 			}
@@ -231,8 +229,8 @@ public class EdgeCreationMode extends BaseInteractionHandler {
 
 		cancelTimer();
 		if (createdEdge != null) {
-			createdEdge.getParent().deleteGraphObject(createdEdge);
-			visualGraph.updateView();
+			createdEdge.getParentGraph().remove(createdEdge);
+			graphDocument.update();
 		}
 		highlightTargetPorts(null, false, false);
 		draggingNode = null;
@@ -251,13 +249,13 @@ public class EdgeCreationMode extends BaseInteractionHandler {
 			GraphEditor f = GraphEditor.instance();
 			createdEdge = f.createDefaultEdge();
 			if (forward) {
-				createdEdge.setSourceNode(nodeToMate, p1);
-				createdEdge.setTargetNode(draggingNode, p2);
+
+				createdEdge.connect(nodeToMate, p1,draggingNode, p2);
+
 			} else {
-				createdEdge.setSourceNode(draggingNode, p2);
-				createdEdge.setTargetNode(nodeToMate, p1);
+				createdEdge.connect(draggingNode, p2,nodeToMate, p1);
 			}
-			nodeToMate.getParent().addGraphObject(createdEdge);
+			nodeToMate.getParentGraph().add(createdEdge);
 			GraphInteractionUtil.moveEdgeToAppropriateGraphView(createdEdge);
 		}
 		keyPressedInProcess = 0;
@@ -290,7 +288,7 @@ public class EdgeCreationMode extends BaseInteractionHandler {
 
 	private Port getHighlightedPort(VisualNode node) {
 
-		if (node != null && node.portsOpened()) {
+		if (node != null && node.arePortsilluminated()) {
 			PortSet ports = node.getPortSet();
 			for (Port port : ports.getPorts()) {
 				if (port.isHighlighted()) {

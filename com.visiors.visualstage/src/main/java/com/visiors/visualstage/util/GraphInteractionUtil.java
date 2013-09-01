@@ -10,7 +10,7 @@ import java.util.Map;
 import com.visiors.visualstage.graph.view.VisualGraphObject;
 import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.graph.VisualGraph;
-import com.visiors.visualstage.graph.view.graph.impl.GraphVisitor;
+import com.visiors.visualstage.graph.view.node.Port;
 import com.visiors.visualstage.graph.view.node.PortSet;
 import com.visiors.visualstage.graph.view.node.VisualNode;
 
@@ -136,15 +136,15 @@ public class GraphInteractionUtil {
 			bref = refObject.getBounds();
 			Point cpt = new Point(bref.x + bref.width / 2, bref.y + bref.height / 2);
 
-			VisualNode[] nodes = visualGraph.getNodes();
-			for (int i = 0; i < nodes.length; i++) {
+			List<VisualNode> nodes = visualGraph.getNodes();
+			for (VisualNode node : nodes) {
 
-				if (nodes[i].getID() == refObject.getID()) {
+				if (node.getID() == refObject.getID()) {
 					continue;
 				}
 
-				if ((nodes[i] instanceof VisualGraph && !ignoreGroups) || !ignoreNodes) {
-					b = nodes[i].getBounds();
+				if ((node instanceof VisualGraph && !ignoreGroups) || !ignoreNodes) {
+					b = node.getBounds();
 					if (ignoreOverlaps && bref.intersects(b)) {
 						continue;
 					}
@@ -155,7 +155,7 @@ public class GraphInteractionUtil {
 					if (r < minDist) {
 						minDist = r;
 						;
-						bestmatch = nodes[i];
+						bestmatch = node;
 					}
 				}
 			}
@@ -164,8 +164,8 @@ public class GraphInteractionUtil {
 			// TODO
 			// EdgeView[] edges = visualGraph.getEdges();
 			// for (int i = 0; i < edges.length; i++) {
-				//
-				// }
+			//
+			// }
 		}
 		return bestmatch;
 	}
@@ -179,22 +179,23 @@ public class GraphInteractionUtil {
 		double r;
 		Rectangle bref = refObject.getBounds();
 
-		VisualNode[] nodes = visualGraph.getNodes();
-		for (int i = 0; i < nodes.length; i++) {
+		List<VisualNode> nodes = visualGraph.getNodes();
+		for (VisualNode node : nodes) {
 
-			if (nodes[i].getID() == refObject.getID()) {
+
+			if (node.getID() == refObject.getID()) {
 				continue;
 			}
 
-			if (nodes[i] instanceof VisualGraph) {
-				VisualGraphObject no = getClosestNode((VisualGraph) nodes[i], refObject, maxDistance, ignoreOverlaps,
+			if (node instanceof VisualGraph) {
+				VisualGraphObject no = getClosestNode((VisualGraph) node, refObject, maxDistance, ignoreOverlaps,
 						posrts);
 				if (no != null) {
 					return no;
 				}
 			}
 
-			b = nodes[i].getBounds();
+			b = node.getBounds();
 			if (!ignoreOverlaps) {
 				if (bref.intersects(b)) {
 					continue;
@@ -208,7 +209,7 @@ public class GraphInteractionUtil {
 			}
 			// find the port on the opposite side
 			int beta = portMidAngle(pRef);
-			Port pNode = getAvailableport(nodes[i], beta + 180);
+			Port pNode = getAvailableport(node, beta + 180);
 
 			if (pNode == null) {
 				continue;
@@ -219,7 +220,7 @@ public class GraphInteractionUtil {
 			r = distance(pt1.x, pt1.y, pt2.x, pt2.y);
 			if (r < maxDistance && r < minDist) {
 				minDist = r;
-				bestmatch = nodes[i];
+				bestmatch = node;
 				if (posrts != null) {
 					posrts[0] = pRef;
 					posrts[1] = pNode;
@@ -304,10 +305,10 @@ public class GraphInteractionUtil {
 	private static List<VisualGraphObject> recursiveSearchForHitObject(VisualGraph visualGraph, Point pt,
 			boolean ignoreGroups, boolean ignoreNodes, boolean ignoreEdges, List<VisualGraphObject> hitList) {
 
-		VisualGraphObject hitObjects[] = visualGraph.getHitObjects(pt);
+		List<VisualGraphObject> hitObjects = visualGraph.getHitObjects(pt);
 
-		for (int i = hitObjects.length - 1; i >= 0; i--) {
-			VisualGraphObject vgo = hitObjects[i];
+		for (int i = hitObjects.size() - 1; i >= 0; i--) {
+			VisualGraphObject vgo = hitObjects.get(i);
 			if (vgo != null) {
 
 				if (vgo instanceof VisualEdge && !ignoreEdges) {
@@ -351,9 +352,9 @@ public class GraphInteractionUtil {
 	private static boolean nested(VisualGraph graphView1, VisualGraph graphView2) {
 
 		int l2 = graphView2.getDepth();
-		VisualGraph gv = graphView2.getParent();
+		VisualGraph gv = graphView2.getParentGraph();
 		while (gv.getDepth() > l2) {
-			gv = graphView2.getParent();
+			gv = graphView2.getParentGraph();
 		}
 		return gv == graphView1;
 	}
@@ -376,29 +377,29 @@ public class GraphInteractionUtil {
 
 		VisualGraph targetGraph = null;
 		if (source != null) {
-			graphViewSource = source.getParent();
+			graphViewSource = source.getParentGraph();
 		}
 		if (target != null) {
-			graphViewTarget = target.getParent();
+			graphViewTarget = target.getParentGraph();
 		}
 
 		if (graphViewSource == null && graphViewTarget != null) {
-			targetGraph = graphViewTarget.getParent();
+			targetGraph = graphViewTarget.getParentGraph();
 		} else if (graphViewSource != null && graphViewTarget == null) {
-			targetGraph = graphViewSource.getParent();
+			targetGraph = graphViewSource.getParentGraph();
 		} else if (graphViewSource != null && graphViewTarget != null) {
 			if (graphViewSource.getDepth() < graphViewTarget.getDepth()) {
 				if (nested(graphViewSource, graphViewTarget)) {
 					return graphViewSource;
 				} else {
-					graphViewSource.getParent();
+					graphViewSource.getParentGraph();
 				}
 			} else if (graphViewSource.getDepth() > graphViewTarget.getDepth()) {
 
 				if (nested(graphViewTarget, graphViewSource)) {
 					return graphViewTarget;
 				} else {
-					graphViewTarget.getParent();
+					graphViewTarget.getParentGraph();
 				}
 			} else {
 				if (graphViewSource == graphViewTarget) {
@@ -417,8 +418,8 @@ public class GraphInteractionUtil {
 		VisualGraph parentSource = graphViewSource;
 		VisualGraph parenttarget = graphViewTarget;
 		while (parentSource != parenttarget) {
-			parentSource = parentSource.getParent();
-			parenttarget = parenttarget.getParent();
+			parentSource = parentSource.getParentGraph();
+			parenttarget = parenttarget.getParentGraph();
 		}
 
 		return parentSource;
@@ -426,14 +427,14 @@ public class GraphInteractionUtil {
 
 	public static void moveEdgeToAppropriateGraphView(VisualEdge edge) {
 
-		VisualGraph currentView = edge.getParent();
+		VisualGraph currentView = edge.getParentGraph();
 		VisualGraph parent = currentView;
 		if (parent == null) {
 			return;
 		}
 		VisualGraph topLevelView = parent;
 		while (topLevelView.getDepth() != 0) {
-			topLevelView = topLevelView.getParent();
+			topLevelView = topLevelView.getParentGraph();
 		}
 
 		VisualGraph targetView = GraphInteractionUtil.determinOptimumGraphViewForEdge(topLevelView, edge);
@@ -453,7 +454,7 @@ public class GraphInteractionUtil {
 
 	public static final void relocateObject(VisualGraphObject vgo, VisualGraph targetView) {
 
-		VisualGraph currentView = vgo.getParent();
+		VisualGraph currentView = vgo.getParentGraph();
 		if (currentView != targetView) {
 
 			if (vgo instanceof VisualEdge) {
@@ -479,17 +480,17 @@ public class GraphInteractionUtil {
 		for (VisualEdge edgeView : outgoingEdges) {
 			sourcePortMap.put(edgeView, new Integer(edgeView.getSourcePortId()));
 		}
-		sourceView.deleteGraphObject(node);
-		targetView.addGraphObject(node);
+		sourceView.remove(node);
+		targetView.add(node);
 
 		for (VisualEdge edge : outgoingEdges) {
 			Integer portID = sourcePortMap.get(edge);
-			edge.setSourceNode(node, portID.intValue());
+			edge.connect(node, portID.intValue(), edge.getTargetNode(), edge.getTargetPortId());
 			moveEdgeToAppropriateGraphView(edge);
 		}
 		for (VisualEdge edge : incomingEdges) {
 			Integer portID = targetPortMap.get(edge);
-			edge.setTargetNode(node, portID.intValue());
+			edge.connect(edge.getSourceNode(), edge.getSourcePortId(), node, portID.intValue());
 			moveEdgeToAppropriateGraphView(edge);
 		}
 	}
@@ -501,47 +502,20 @@ public class GraphInteractionUtil {
 		VisualNode tn = edge.getTargetNode();
 		int tp = edge.getTargetPortId();
 
-		sourceView.deleteGraphObject(edge);
-		targetView.addGraphObject(edge);
+		sourceView.remove(edge);
+		targetView.add(edge);
 
-		edge.setSourceNode(sn);
-		edge.setSourcePortId(sp);
-		edge.setTargetNode(tn);
-		edge.setTargetPortId(tp);
-		System.err.println("Edge moved to graphView: " + edge.getParent().getID() + " in level: "
-				+ edge.getParent().getDepth());
+		edge.connect(sn, sp, tn, tp);
+		System.err.println("Edge moved to graphView: " + edge.getParentGraph().getID() + " in level: "
+				+ edge.getParentGraph().getDepth());
 
 	}
 
 	private static void relocateGroup(VisualGraph group, VisualGraph sourceView, VisualGraph targetView) {
 
-		sourceView.deleteGraphObject(group);
-		targetView.addGraphObject(group);
+		sourceView.remove(group);
+		targetView.add(group);
 	}
 
-	/*
-	 * example final List<GraphObjectView> allObjects = new ArrayList<GraphObjectView>(); GraphVisitor visitor = new
-	 * GraphVisitor () { public void visit(graphView subgraph, int level) {
-	 * allObjects.add(subgraph.getGraphObjects(false)); } }; GraphUtil.visitSubgraphs(visualGraph, visitor, true, 0);
-	 */
-
-	public static final void visitSubgraphs(VisualGraph visualGraph, GraphVisitor visitor, boolean preOrder,
-			int currentLevel) {
-
-		VisualGraphObject[] nodes = visualGraph.getNodes();
-		for (int i = 0; i < nodes.length; i++) {
-
-			if (nodes[i] instanceof VisualGraph) {
-				VisualGraph subgraph = (VisualGraph) nodes[i];
-				if (preOrder) {
-					visitor.visit(subgraph, currentLevel);
-					visitSubgraphs(subgraph, visitor, preOrder, currentLevel + 1);
-				} else {
-					visitSubgraphs(subgraph, visitor, preOrder, currentLevel + 1);
-					visitor.visit(subgraph, currentLevel);
-				}
-			}
-		}
-	}
 
 }

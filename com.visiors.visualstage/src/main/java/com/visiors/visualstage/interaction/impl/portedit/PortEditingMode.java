@@ -12,11 +12,12 @@ import com.visiors.visualstage.graph.view.node.PortSet;
 import com.visiors.visualstage.graph.view.node.VisualNode;
 import com.visiors.visualstage.graph.view.node.impl.DefaultPort;
 import com.visiors.visualstage.graph.view.node.impl.DefaultPortSet;
-import com.visiors.visualstage.interaction.impl.BaseInteractionHandler;
+import com.visiors.visualstage.interaction.impl.BaseTool;
+import com.visiors.visualstage.renderer.AWTCanvas;
 import com.visiors.visualstage.renderer.Canvas;
 import com.visiors.visualstage.renderer.DrawingContext;
 
-public class PortEditingMode extends BaseInteractionHandler {
+public class PortEditingMode extends BaseTool {
 
 	private VisualNode subject;
 	private PortSet originalPortSet;
@@ -305,14 +306,14 @@ public class PortEditingMode extends BaseInteractionHandler {
 	}
 
 	@Override
-	public void paintOnBackground(Canvas canvas, DrawingContext r) {
+	public void paintOnBackground(AWTCanvas awtCanvas, DrawingContext r) {
 
 		if (subject == null || portID == -1) {
 			return;
 		}
 
 		// Guide lines
-		canvas.setColor(Color.lightGray);
+		awtCanvas.setColor(Color.lightGray);
 
 		Rectangle b = subject.getBounds();
 		b = visualGraph.getTransform().transformToScreen(b);
@@ -326,18 +327,18 @@ public class PortEditingMode extends BaseInteractionHandler {
 		// b.y + b.height + 50);
 
 		// write ratio
-		canvas.setColor(Color.black);
+		awtCanvas.setColor(Color.black);
 		Port port = subject.getPortSet().getPortByID(portID);
-		canvas.drawString("x-ratio: " + port.getXRatio() + "%", b.x + b.width / 2 + 10, b.y
+		awtCanvas.drawString("x-ratio: " + port.getXRatio() + "%", b.x + b.width / 2 + 10, b.y
 				+ b.height + 50);
-		canvas.drawString("y-ratio: " + port.getYRatio() + "%", b.x + b.width / 2 + 10, b.y
+		awtCanvas.drawString("y-ratio: " + port.getYRatio() + "%", b.x + b.width / 2 + 10, b.y
 				+ b.height + 60);
 	}
 
 	@Override
-	public void paintOnTop(Canvas canvas, DrawingContext r) {
+	public void paintOnTop(AWTCanvas awtCanvas, DrawingContext r) {
 
-		drawPortsAcceptingInterval(canvas);
+		drawPortsAcceptingInterval(awtCanvas);
 
 	}
 

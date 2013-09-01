@@ -8,11 +8,12 @@ import java.util.List;
 
 import com.visiors.visualstage.constants.InteractionConstants;
 import com.visiors.visualstage.form.FormItem;
-import com.visiors.visualstage.interaction.impl.BaseInteractionHandler;
+import com.visiors.visualstage.interaction.impl.BaseTool;
+import com.visiors.visualstage.renderer.AWTCanvas;
 import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.util.GraphInteractionUtil;
 
-public class FormComposeMode extends BaseInteractionHandler {
+public class FormComposeMode extends BaseTool {
 
 	private FormItem hitComponent;
 	private VisualNode hitNode;
@@ -206,14 +207,14 @@ public class FormComposeMode extends BaseInteractionHandler {
 	}
 
 	@Override
-	public void paintOnBackground(Canvas canvas, DrawingContext context) {
+	public void paintOnBackground(AWTCanvas awtCanvas, DrawingContext context) {
 
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void paintOnTop(Canvas canvas, DrawingContext context) {
+	public void paintOnTop(AWTCanvas awtCanvas, DrawingContext context) {
 
 		final VisualNode[] nodes = visualGraph.getNodes();
 		final Transform xform = visualGraph.getTransform();
@@ -301,7 +302,7 @@ public class FormComposeMode extends BaseInteractionHandler {
 		final Dimension size = hitComponent.getSize();
 		final Point offset = hitComponent.getOffset();
 		Transform xform = visualGraph.getTransform();
-		final Rectangle b = xform.transformToScreen(hitNode.getBounds());
+		final Rectangle b = xform.transformToScreen(hitNode.getVisibleBounds());
 		final Point pt = new Point(b.x, b.y - size.height - 50);
 
 		pt.x -= 40;

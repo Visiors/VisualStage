@@ -55,7 +55,7 @@ public class Ruler {
 			gfx2D.fillRect(r.x, r.y, r.width, size);
 			gfx2D.setColor(lineColor);
 
-			rTrans.x += transformer.getTranslateX();
+			rTrans.x += transformer.getXTranslate();
 
 			for (double x = rTrans.x, n = 0; x < rTrans.width; x += transUnit, n++) {
 				outline = n % outlineStep == 0;
@@ -82,7 +82,7 @@ public class Ruler {
 			gfx2D.fillRect(r.x, r.y, size, r.height);
 			gfx2D.setColor(lineColor);
 
-			rTrans.y += transformer.getTranslateY();
+			rTrans.y += transformer.getYTranslate();
 
 			for (double y = rTrans.y, n = 0; y < rTrans.height; y += transUnit, n++) {
 				outline = n % outlineStep == 0;

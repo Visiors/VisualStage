@@ -8,15 +8,17 @@ import java.util.List;
 import com.google.inject.Inject;
 import com.visiors.visualstage.constants.InteractionConstants;
 import com.visiors.visualstage.graph.view.edge.VisualEdge;
+import com.visiors.visualstage.graph.view.node.Port;
+import com.visiors.visualstage.graph.view.node.PortSet;
 import com.visiors.visualstage.graph.view.node.VisualNode;
-import com.visiors.visualstage.interaction.impl.BaseInteractionHandler;
-import com.visiors.visualstage.renderer.Canvas;
+import com.visiors.visualstage.interaction.impl.BaseTool;
+import com.visiors.visualstage.renderer.AWTCanvas;
 import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.system.SystemUnit;
 import com.visiors.visualstage.transform.Transform;
 import com.visiors.visualstage.util.GraphInteractionUtil;
 
-public class AutoSnapMode extends BaseInteractionHandler {
+public class AutoSnapMode extends BaseTool {
 
 	private static final int EDGE_STRAIGHT_RANGE = 15;
 
@@ -50,7 +52,7 @@ public class AutoSnapMode extends BaseInteractionHandler {
 			return false;
 		}
 
-		hitObject = GraphInteractionUtil.getFirstHitNodeAt(graphDocument.getGraph(), pt);
+		hitObject = GraphInteractionUtil.getFirstHitNodeAt(visualGraph, pt);
 
 		return false;
 	}
@@ -80,9 +82,9 @@ public class AutoSnapMode extends BaseInteractionHandler {
 		}
 
 		if (isShowPositionLines()) {
-			final Transform transform = graphDocument.getGraph().getTransform();
+			final Transform transform = visualGraph.getTransformer();
 			cursor = transform.transformToScreen(pt);
-			graphDocument.getGraph().updateView();
+			graphDocument.update();
 		}
 
 		if (isSnapToGrid()) {
@@ -99,9 +101,9 @@ public class AutoSnapMode extends BaseInteractionHandler {
 		}
 
 		if (isShowPositionLines()) {
-			final Transform transform = graphDocument.getGraph().getTransformer();
+			final Transform transform = visualGraph.getTransformer();
 			cursor = transform.transformToScreen(pt);
-			graphDocument.getGraph().updateView();
+			graphDocument.update();
 		}
 		return false;
 	}
@@ -109,31 +111,30 @@ public class AutoSnapMode extends BaseInteractionHandler {
 	private void snapToGrid(Point pt) {
 
 		if (hitObject != null) {
-			if (hitObject.isSelected() && graphDocument.getGraph().getSelection().size() == 1) {
+			if (hitObject.isSelected() && visualGraph.getSelection().size() == 1) {
 				snapToGrid(hitObject);
 			}
 		}
+	}
+
+	@Override
+	public void paintOnBackground(AWTCanvas awtCanvas, DrawingContext context) {
 
 	}
 
 	@Override
-	public void paintOnBackground(Canvas canvas, DrawingContext r) {
-
-	}
-
-	@Override
-	public void paintOnTop(Canvas canvas, DrawingContext r) {
+	public void paintOnTop(AWTCanvas awtCanvas, DrawingContext context) {
 
 		if (showPositionLines && cursor != null) {
-			paintPositionLines(canvas, r);
+			paintPositionLines(awtCanvas, context.getVisibleBounds());
 		}
 	}
 
-	private void paintPositionLines(Canvas canvas, Rectangle r) {
+	private void paintPositionLines(AWTCanvas canvas, Rectangle r) {
 
-		canvas.setColor(Color.red);
-		canvas.drawLine(r.x, cursor.y, r.x + r.width, cursor.y);
-		canvas.drawLine(cursor.x, r.y, cursor.x, r.y + r.height);
+		canvas.gfx.setColor(Color.red);
+		canvas.gfx.drawLine(r.x, cursor.y, r.x + r.width, cursor.y);
+		canvas.gfx.drawLine(cursor.x, r.y, cursor.x, r.y + r.height);
 	}
 
 	void snapToGrid(VisualNode node) {
@@ -142,7 +143,7 @@ public class AutoSnapMode extends BaseInteractionHandler {
 			return;
 		}
 		ignoreEvents = true;
-		int unit = (int) systemUnit.getPixelsPerUnit();
+		final int unit = (int) systemUnit.getPixelsPerUnit();
 		final int snapRegion = 10;
 		final Rectangle b = node.getBounds();
 		int x = (b.x / unit) * unit;
@@ -210,30 +211,27 @@ public class AutoSnapMode extends BaseInteractionHandler {
 	private void adjustNodePos(VisualNode node) {
 
 		List<VisualEdge> edges = node.getOutgoingEdges();
-		for (VisualEdge edge : edges) {
+		for (final VisualEdge edge : edges) {
 			adjustSourceNode(edge);
 		}
 		edges = node.getIncomingEdges();
-		for (VisualEdge edge : edges) {
+		for (final VisualEdge edge : edges) {
 			adjustTargetNode(edge);
 		}
 	}
 
 	private void adjustSourceNode(VisualEdge edge) {
 
-		final Point[] points = edge.getPoints();
-		VisualNode sourceNode = edge.getSourceNode();
-		VisualNode targetNode = edge.getTargetNode();
+		final VisualNode sourceNode = edge.getSourceNode();
+		final VisualNode targetNode = edge.getTargetNode();
 		if (sourceNode == null || targetNode == null) {
 			return;
 		}
 
-		int sourcePortId = edge.getSourcePortId();
-		int targetPortId = edge.getTargetPortId();
-		final Point ptStart = sourcePortId == -1 ? sourceNode.getPortPosition(sourcePortId)
-				: points[0];
-		final Point ptEnd = sourcePortId == -1 ? targetNode.getPortPosition(targetPortId)
-				: points[points.length - 1];
+		final int sourcePortId = edge.getSourcePortId();
+		final int targetPortId = edge.getTargetPortId();
+		final Point ptStart = getPortPosition(sourceNode, sourcePortId);
+		final Point ptEnd = getPortPosition(targetNode, targetPortId);
 
 		int dx = ptStart.x - ptEnd.x;
 		int dy = ptStart.y - ptEnd.y;
@@ -248,21 +246,32 @@ public class AutoSnapMode extends BaseInteractionHandler {
 		}
 	}
 
+	private Point getPortPosition(VisualNode node, int portId) {
+
+		if (node != null && portId != -1) {
+			final PortSet ps = node.getPortSet();
+			if (ps != null) {
+				final Port port = ps.getPortByID(portId);
+				if (port != null) {
+					return port.getPosition();
+				}
+			}
+		}
+		return new Point();
+	}
+
 	private void adjustTargetNode(VisualEdge edge) {
 
-		final Point[] points = edge.getPoints();
-		VisualNode sourceNode = edge.getSourceNode();
-		VisualNode targetNode = edge.getTargetNode();
+		final VisualNode sourceNode = edge.getSourceNode();
+		final VisualNode targetNode = edge.getTargetNode();
 		if (sourceNode == null || targetNode == null) {
 			return;
 		}
 
-		int sourcePortId = edge.getSourcePortId();
-		int targetPortId = edge.getTargetPortId();
-		final Point ptStart = sourcePortId == -1 ? sourceNode.getPortPosition(sourcePortId)
-				: points[0];
-		final Point ptEnd = sourcePortId == -1 ? targetNode.getPortPosition(targetPortId)
-				: points[points.length - 1];
+		final int sourcePortId = edge.getSourcePortId();
+		final int targetPortId = edge.getTargetPortId();
+		final Point ptStart = getPortPosition(sourceNode, sourcePortId);
+		final Point ptEnd = getPortPosition(targetNode, targetPortId);
 
 		int dx = ptStart.x - ptEnd.x;
 		int dy = ptStart.y - ptEnd.y;

@@ -68,12 +68,12 @@ class SimpleTransformer implements Cloneable {
         return m10;
     }
 
-    double getTranslateX() {
+    double getXTranslate() {
 
         return m02;
     }
 
-    double getTranslateY() {
+    double getYTranslate() {
 
         return m12;
     }
@@ -98,12 +98,12 @@ class SimpleTransformer implements Cloneable {
         m10 = sy;
     }
 
-    void setTranslateX(double tx) {
+    void setXTranslate(double tx) {
 
         m02 = tx;
     }
 
-    void setTranslateY(double ty) {
+    void setYTranslate(double ty) {
 
         m12 = ty;
     }

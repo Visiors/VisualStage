@@ -16,9 +16,9 @@ public interface Transform {
 
 	public void setShearY(double sy);
 
-	public void setTranslateX(double tx);
+	public void setXTranslate(double tx);
 
-	public void setTranslateY(double ty);
+	public void setYTranslate(double ty);
 
 	public void setRotation(double alpha);
 
@@ -34,9 +34,9 @@ public interface Transform {
 
 	public double getShearY();
 
-	public double getTranslateX();
+	public double getXTranslate();
 
-	public double getTranslateY();
+	public double getYTranslate();
 
 	public double getRotation();
 

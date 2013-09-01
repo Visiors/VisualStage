@@ -1,6 +1,5 @@
 package com.visiors.visualstage.graph.view;
 
-import java.awt.Graphics2D;
 import java.awt.Image;
 
 import com.google.inject.Inject;
@@ -11,6 +10,7 @@ import com.visiors.visualstage.graph.view.graph.VisualGraph;
 import com.visiors.visualstage.graph.view.shape.impl.BaseCompositeShape;
 import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.property.impl.DefaultPropertyList;
+import com.visiors.visualstage.renderer.AWTCanvas;
 import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.renderer.DrawingSubject;
 import com.visiors.visualstage.renderer.VisualObjectSnapshotGenerator;
@@ -108,14 +108,14 @@ GraphObjectImageProvider {
 	//	}
 
 	@Override
-	public void draw(Graphics2D gfx, DrawingContext context, DrawingSubject subject) {
+	public void draw(AWTCanvas awtCanvas, DrawingContext context, DrawingSubject subject) {
 
 		Image image = viewCache.get(context, subject);
 		if (image != null) {
 
-			int x = (int) transform.getTranslateX() + boundary.x;
-			int y = (int) transform.getTranslateY()+ boundary.y;
-			gfx.drawImage(image, x, y, null);
+			int x = (int) transform.getXTranslate() + boundary.x;
+			int y = (int) transform.getYTranslate()+ boundary.y;
+			awtCanvas.gfx.drawImage(image, x, y, null);
 		}
 	}
 

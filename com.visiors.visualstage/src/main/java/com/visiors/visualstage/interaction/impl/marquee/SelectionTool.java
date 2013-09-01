@@ -1,8 +1,10 @@
 package com.visiors.visualstage.interaction.impl.marquee;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Stroke;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,23 +12,25 @@ import com.google.inject.Inject;
 import com.visiors.visualstage.constants.InteractionConstants;
 import com.visiors.visualstage.graph.view.VisualGraphObject;
 import com.visiors.visualstage.handler.UndoRedoHandler;
-import com.visiors.visualstage.interaction.impl.BaseInteractionHandler;
-import com.visiors.visualstage.renderer.Canvas;
+import com.visiors.visualstage.interaction.impl.BaseTool;
+import com.visiors.visualstage.renderer.AWTCanvas;
 import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.transform.Transform;
 
-public class MarqueeSelectionMode extends BaseInteractionHandler {
+public class SelectionTool extends BaseTool {
 
 	private final Rectangle marqueeRect = new Rectangle();
 	private final Color lineColor;
 	private final List<VisualGraphObject> objectInMarquee = new ArrayList<VisualGraphObject>();
 	private Point mousePressedPos;
+	private static Stroke dashedStroke = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0,
+			new float[] { 3, 1 }, 0);
 
 	@Inject
 	private UndoRedoHandler undoRedoHandler;
 
-	@Inject
-	public MarqueeSelectionMode() {
+
+	public SelectionTool() {
 
 		super();
 
@@ -42,11 +46,12 @@ public class MarqueeSelectionMode extends BaseInteractionHandler {
 	@Override
 	public boolean mousePressed(Point pt, int button, int functionKey) {
 
-		undoRedoHandler.stratOfGroupAction();
+		//		undoRedoHandler.stratOfGroupAction();
 
-		VisualGraphObject[] hit = visualGraph.getHitObjects(pt);
-		if (hit.length == 0) {
-			final Transform transformer = visualGraph.getTransform();
+
+		final List<VisualGraphObject> hit = visualGraph.getHitObjects(pt);
+		if (!hit.isEmpty()) {
+			final Transform transformer = visualGraph.getTransformer();
 			mousePressedPos = transformer.transformToScreen(pt);
 		}
 		return false;
@@ -55,11 +60,11 @@ public class MarqueeSelectionMode extends BaseInteractionHandler {
 	@Override
 	public boolean mouseReleased(Point pt, int button, int functionKey) {
 
-		undoRedoHandler.endOfGroupAction();
+		//		undoRedoHandler.endOfGroupAction();
 		mousePressedPos = null;
 		if (!isEmpty()) {
 			empty();
-			visualGraph.updateView();
+			graphDocument.update();
 		}
 		return false;
 	}
@@ -68,9 +73,10 @@ public class MarqueeSelectionMode extends BaseInteractionHandler {
 	public boolean mouseDragged(Point pt, int button, int functionKey) {
 
 		if (mousePressedPos != null) {
-			final Transform transformer = visualGraph.getTransform();
+
+			final Transform transformer = visualGraph.getTransformer();
 			setMarqueeRect(mousePressedPos, transformer.transformToScreen(pt));
-			visualGraph.updateView();
+			graphDocument.update();
 		}
 		return false;
 	}
@@ -95,10 +101,10 @@ public class MarqueeSelectionMode extends BaseInteractionHandler {
 
 		VisualGraphObject vobj;
 		Rectangle robj;
-		VisualGraphObject[] objects = visualGraph.getGraphObjects();
 
-		final Transform transformer = visualGraph.getTransform();
-		for (VisualGraphObject object : objects) {
+		final List<VisualGraphObject> objects = visualGraph.getGraphObjects();
+		final Transform transformer = visualGraph.getTransformer();
+		for (final VisualGraphObject object : objects) {
 			vobj = object;
 			robj = transformer.transformToScreen(vobj.getBounds());
 
@@ -138,15 +144,14 @@ public class MarqueeSelectionMode extends BaseInteractionHandler {
 	}
 
 	@Override
-	public void paintOnBackground(Canvas canvas, DrawingContext r) {
+	public void paintOnBackground(AWTCanvas awtCanvas, DrawingContext r) {
 
 		if (!marqueeRect.isEmpty()) {
 
-			canvas.setStroke(1.0f, new float[] { 3, 1 });
-			canvas.setColor(lineColor);
+			awtCanvas.gfx.setStroke(dashedStroke);
+			awtCanvas.gfx.setColor(lineColor);
 			// canvas.setXORMode(new Color(200, 220, 255));
-			canvas.drawRect(marqueeRect.x, marqueeRect.y, marqueeRect.width - 1,
-					marqueeRect.height - 1);
+			awtCanvas.gfx.drawRect(marqueeRect.x, marqueeRect.y, marqueeRect.width - 1, marqueeRect.height - 1);
 			// canvas.setPaintMode();
 		}
 	}

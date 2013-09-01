@@ -80,8 +80,8 @@ public class DefaultSVGDocumentBuilder implements SVGDocumentBuilder {
 		}
 
 		// translate
-		svg.append("<g transform='translate(").append(transform.getTranslateX());
-		svg.append(",").append(transform.getTranslateY()).append(")'");/*
+		svg.append("<g transform='translate(").append(transform.getXTranslate());
+		svg.append(",").append(transform.getYTranslate()).append(")'");/*
 		 * // scale
 		 * svg.append(" scale(").append(transform.getScaleX
 		 * ()).append(",");

@@ -5,20 +5,20 @@ import java.util.List;
 import com.visiors.visualstage.handler.GraphViewHandler;
 import com.visiors.visualstage.handler.ScopeAwareHandler;
 import com.visiors.visualstage.interaction.listener.InteractionListener;
-import com.visiors.visualstage.renderer.Canvas;
+import com.visiors.visualstage.renderer.AWTCanvas;
 import com.visiors.visualstage.renderer.DrawingContext;
 
 public interface InteractionHandler extends Interactable, GraphViewHandler, ScopeAwareHandler {
 
-	public void registerMode(InteractionMode handler);
+	public void registerMode(Tool handler);
 
 	public void setActiveMode(String name);
 
 	public String getActiveMode();
 
-	public InteractionMode getMode(String name);
+	public Tool getMode(String name);
 
-	public List<InteractionMode> getRegisteredModes();
+	public List<Tool> getRegisteredModes();
 
 	public void addInteractionListener(InteractionListener listener);
 
@@ -26,8 +26,8 @@ public interface InteractionHandler extends Interactable, GraphViewHandler, Scop
 
 	public void combineModes(String[] modes, String alias);
 
-	public void paintOnBackground(Canvas canvas, DrawingContext context);
+	public void paintOnBackground(AWTCanvas awtCanvas, DrawingContext context);
 
-	public void paintOnTop(Canvas canvas, DrawingContext context);
+	public void paintOnTop(AWTCanvas awtCanvas, DrawingContext context);
 
 }

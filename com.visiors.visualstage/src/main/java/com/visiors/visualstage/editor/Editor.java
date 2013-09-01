@@ -47,6 +47,12 @@ public interface Editor extends Interactable {
 
 	public ClipboardHandler getClipboardHandler();
 
+	void update();
+
+
+	void addEditorListener(EditorListener editorListener);
+	void removeEditorListener(EditorListener editorListener);
+
 	// public void registerInplaceTextEditor(InplaceTextditor editor);
 
 }

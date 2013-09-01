@@ -1,14 +1,12 @@
 package com.visiors.visualstage.handler;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.google.inject.Inject;
 import com.visiors.visualstage.document.GraphDocument;
-import com.visiors.visualstage.editor.GraphEditor;
 import com.visiors.visualstage.graph.view.VisualGraphObject;
 import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.graph.VisualGraph;
@@ -147,7 +145,7 @@ public class DefaultGroupingHandler implements GroupingHandler {
 			return;
 		}
 
-		VisualGraph group = GraphEditor.instance().createContainer(-1, graphviewToUse);
+		VisualGraph group = visualGraph.createSubgraph( graphviewToUse);
 
 		undoRedoHandler.stratOfGroupAction();
 		visualGraph.fireStartGrouping(group);
@@ -206,7 +204,7 @@ public class DefaultGroupingHandler implements GroupingHandler {
 		List<VisualGraphObject> objectToBeIncluded = new ArrayList<VisualGraphObject>();
 		// include edges that are at least from one side are connected to
 		// selected objects
-		VisualEdge[] edges = parnetGraphView.getEdges();
+		List<VisualEdge> edges = parnetGraphView.getEdges();
 		for (VisualEdge e : edges) {
 			if (!objects.contains(e)) {
 				if (isSourceNodeInList(e, objects) || isTargetNodeInList(e, objects)) {
@@ -288,13 +286,11 @@ public class DefaultGroupingHandler implements GroupingHandler {
 				e = (VisualEdge) vgo;
 				c = edgeSourceMap.get(e);
 				if (c != null) {
-					e.setSourceNode(c.node);
-					e.setSourcePortId(c.portID);
+					e.connect(c.node, c.portID, e.getTargetNode(), e.getTargetPortId());
 				}
 				c = edgeTargetMap.get(e);
 				if (c != null) {
-					e.setTargetNode(c.node);
-					e.setTargetPortId(c.portID);
+					e.connect(e.getSourceNode(), e.getSourcePortId(), c.node, c.portID);
 				}
 				e.setProperties(edgePropertiesMap.get(e));
 				GraphInteractionUtil.moveEdgeToAppropriateGraphView(e);
@@ -323,9 +319,8 @@ public class DefaultGroupingHandler implements GroupingHandler {
 
 				VisualGraph group = (VisualGraph) vgo;
 				VisualGraph parentContainer = group.getParentGraph();
-				VisualGraphObject[] objects = group.getGraphObjects();
-				List<VisualGraphObject> objectsToBeUngroupped = new ArrayList<VisualGraphObject>(
-						Arrays.asList(objects));
+				List<VisualGraphObject> objects = group.getGraphObjects();
+				List<VisualGraphObject> objectsToBeUngroupped = new ArrayList<VisualGraphObject>(objects) ;
 				objectsToBeUngroupped.addAll(expandToNotIncludedConnections(objectsToBeUngroupped,
 						parentGraph));
 				saveEdgeConnectionInfo(objectsToBeUngroupped);
@@ -334,27 +329,27 @@ public class DefaultGroupingHandler implements GroupingHandler {
 				// create edges with exiting nodes
 				for (VisualGraphObject go : objectsToBeUngroupped) {
 					if (go instanceof VisualEdge) {
-						group.deleteGraphObject(go);
+						group.remove(go);
 					}
 				}
 				for (VisualGraphObject go : objectsToBeUngroupped) {
 					if (go instanceof VisualNode) {
-						group.deleteGraphObject(go);
+						group.remove(go);
 					}
 				}
 
-				parentContainer.deleteGraphObject(group);
+				parentContainer.remove(group);
 
 				// add nodes first
 				for (VisualGraphObject go : objectsToBeUngroupped) {
 					if (go instanceof VisualNode) {
-						parentContainer.addGraphObject(go);
+						parentContainer.add(go);
 						go.setSelected(true);
 					}
 				}
 				for (VisualGraphObject go : objectsToBeUngroupped) {
 					if (go instanceof VisualEdge) {
-						parentContainer.addGraphObject(go);
+						parentContainer.add(go);
 						go.setSelected(true);
 					}
 				}

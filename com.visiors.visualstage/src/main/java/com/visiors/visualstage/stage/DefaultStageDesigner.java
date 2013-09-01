@@ -2,7 +2,6 @@ package com.visiors.visualstage.stage;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Stroke;
 import java.awt.print.PageFormat;
@@ -15,6 +14,7 @@ import com.google.inject.Inject;
 import com.visiors.visualstage.document.GraphDocument;
 import com.visiors.visualstage.document.ViewListener;
 import com.visiors.visualstage.graph.view.graph.VisualGraph;
+import com.visiors.visualstage.renderer.AWTCanvas;
 import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.renderer.Resolution;
 import com.visiors.visualstage.stage.Grid.GridStyle;
@@ -137,38 +137,38 @@ public class DefaultStageDesigner implements StageDesigner {
 	}
 
 	@Override
-	public void paintBehind(Graphics2D gfx, DrawingContext context) {
+	public void paintBehind(AWTCanvas awtCanvas, DrawingContext context) {
 
-		final Rectangle canvasBounds = context.getBounds();
+		final Rectangle canvasBounds = context.getVisibleBounds();
 
 		if (pageView == ViewMode.page) {
-			drawPages(gfx, context);
+			drawPages(awtCanvas, context);
 		} else if (pageView == ViewMode.plane) {
-			fillBackground(gfx, context);
+			fillBackground(awtCanvas, context);
 			if (showGrid && context.getResolution() == Resolution.SCREEN) {
-				grid.draw(gfx, canvasBounds, systemUnit.getPixelsPerUnit(), GridStyle.Line);
+				grid.draw(awtCanvas, canvasBounds, systemUnit.getPixelsPerUnit(), GridStyle.Line);
 			}
 		}
 	}
 
 	@Override
-	public void paintOver(Graphics2D gfx, DrawingContext context) {
+	public void paintOver(AWTCanvas awtCanvas, DrawingContext context) {
 
 		if (showRuler && context.getResolution() == Resolution.SCREEN) {
 
-			paintRulers(gfx, context);
+			paintRulers(awtCanvas, context);
 		}
 	}
 
-	private void paintRulers(Graphics2D gfx, DrawingContext context) {
+	private void paintRulers(AWTCanvas awtCanvas, DrawingContext context) {
 
-		final Rectangle bounds = context.getBounds();
-		hRuler.draw(gfx, bounds, systemUnit.getPixelsPerUnit(), 5, "cm");
-		vRuler.draw(gfx, bounds, systemUnit.getPixelsPerUnit(), 5, "cm");
-		cornerButton.draw(gfx, bounds);
+		final Rectangle bounds = context.getVisibleBounds();
+		hRuler.draw(awtCanvas.gfx, bounds, systemUnit.getPixelsPerUnit(), 5, "cm");
+		vRuler.draw(awtCanvas.gfx, bounds, systemUnit.getPixelsPerUnit(), 5, "cm");
+		cornerButton.draw(awtCanvas.gfx, bounds);
 	}
 
-	private void drawPages(Graphics2D gfx, DrawingContext context) {
+	private void drawPages(AWTCanvas awtCanvas, DrawingContext context) {
 
 		// required space
 		final double wImageable = pageFormat.getImageableWidth();
@@ -233,16 +233,16 @@ public class DefaultStageDesigner implements StageDesigner {
 				(int) (topMargin + totalImageableHeight + bottomMargin));
 		Rectangle rPage = transform.transformToScreen(rPageBoundary);
 		// paper
-		gfx.setColor(Color.white);
-		gfx.fillRect(rPage.x, rPage.y, rPage.width, rPage.height);
+		awtCanvas.gfx.setColor(Color.white);
+		awtCanvas.gfx.fillRect(rPage.x, rPage.y, rPage.width, rPage.height);
 
 		// shadow
-		gfx.setColor(pageShadowColor);
-		gfx.fillRect(rPage.x + rPage.width + 1, rPage.y + 4, 4, rPage.height - 3);
-		gfx.fillRect(rPage.x + 4, rPage.y + rPage.height + 1, rPage.width + 1, 4);
+		awtCanvas.gfx.setColor(pageShadowColor);
+		awtCanvas.gfx.fillRect(rPage.x + rPage.width + 1, rPage.y + 4, 4, rPage.height - 3);
+		awtCanvas.gfx.fillRect(rPage.x + 4, rPage.y + rPage.height + 1, rPage.width + 1, 4);
 
 		// page frame
-		gfx.drawRect(rPage.x, rPage.y, rPage.width, rPage.height);
+		awtCanvas.gfx.drawRect(rPage.x, rPage.y, rPage.width, rPage.height);
 
 		if (showGrid && resolution == Resolution.SCREEN) {
 			final Rectangle rVisible = transform.transformToScreen(new Rectangle((int) (xPage + leftMargin),
@@ -254,36 +254,36 @@ public class DefaultStageDesigner implements StageDesigner {
 			// x2 = Math.min(a, b)
 			// rVisible.width = Math.min(rVisible.width, r.x + r.width - rVisible.x);
 			// rVisible.y = Math.max(rVisible.y, r.y - (int) ((r.y - rVisible.y) % transUnit)) ;
-			grid.draw(gfx, rVisible, systemUnit.getPixelsPerUnit(), GridStyle.Line);
-			gfx.drawRect(rVisible.x, rVisible.y, rVisible.width, rVisible.height);
+			grid.draw(awtCanvas, rVisible, systemUnit.getPixelsPerUnit(), GridStyle.Line);
+			awtCanvas.gfx.drawRect(rVisible.x, rVisible.y, rVisible.width, rVisible.height);
 		}
 
 		// page divider
 		if (columns > 1 || rows > 1) {
 
-			gfx.setStroke(dashedStroke);
-			gfx.setColor(Color.darkGray);
+			awtCanvas.gfx.setStroke(dashedStroke);
+			awtCanvas.gfx.setColor(Color.darkGray);
 
 			double scale = transform.getScale();
 			int x = (int) (rPage.x + (leftMargin + wImageable) * scale) - 2;
 			int y = rPage.y;
 			for (int i = 1; i < columns; i++, x += wImageable * scale) {
-				gfx.drawLine(x, y, x, (int) (y + (totalImageableHeight + topMargin + bottomMargin) * scale));
+				awtCanvas.gfx.drawLine(x, y, x, (int) (y + (totalImageableHeight + topMargin + bottomMargin) * scale));
 			}
 			x = rPage.x;
 			y = (int) (rPage.y + (topMargin + hImageable) * scale) - 2;
 			for (int i = 1; i < rows; i++, y += hImageable * scale) {
-				gfx.drawLine(x, y, (int) (x + (totalImageableWith + leftMargin + rightMargin) * scale), y);
+				awtCanvas.gfx.drawLine(x, y, (int) (x + (totalImageableWith + leftMargin + rightMargin) * scale), y);
 			}
 		}
 	}
 
-	private void fillBackground(Graphics2D gfx2D, DrawingContext context) {
+	private void fillBackground(AWTCanvas awtCanvas, DrawingContext context) {
 
 		// screen
-		final Rectangle r = new Rectangle(context.getBounds());
-		gfx2D.setColor(Color.white);
-		gfx2D.fillRect(r.x, r.y, r.width, r.height);
+		final Rectangle r = new Rectangle(context.getVisibleBounds());
+		awtCanvas.gfx.setColor(Color.white);
+		awtCanvas.gfx.fillRect(r.x, r.y, r.width, r.height);
 	}
 
 	@Override

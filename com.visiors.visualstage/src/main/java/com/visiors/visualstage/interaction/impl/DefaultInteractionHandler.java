@@ -10,18 +10,19 @@ import com.google.inject.Inject;
 import com.visiors.visualstage.constants.InteractionConstants;
 import com.visiors.visualstage.document.GraphDocument;
 import com.visiors.visualstage.interaction.InteractionHandler;
-import com.visiors.visualstage.interaction.InteractionMode;
+import com.visiors.visualstage.interaction.Tool;
 import com.visiors.visualstage.interaction.impl.edgecreation.EdgeCreationMode;
+import com.visiors.visualstage.interaction.impl.marquee.SelectionTool;
 import com.visiors.visualstage.interaction.impl.modelling.ModellingMode;
 import com.visiors.visualstage.interaction.impl.nodecreateion.NodeCreationMode;
 import com.visiors.visualstage.interaction.impl.readonlymode.ReadOnlyMode;
 import com.visiors.visualstage.interaction.listener.InteractionListener;
-import com.visiors.visualstage.renderer.Canvas;
+import com.visiors.visualstage.renderer.AWTCanvas;
 import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.renderer.Resolution;
 
 /**
- * This class allows registering different {@link InteractionMode}s and
+ * This class allows registering tools which implement the interface {@link Tool}. Tools can be activate
  * switching between them. It registered the following four basic
  * interaction-handler:
  * <ul>
@@ -30,51 +31,58 @@ import com.visiors.visualstage.renderer.Resolution;
  * <li> {@link EdgeCreationMode}</li>
  * <li> {@link NodeCreationMode}</li>
  * </ul>
- * Custom {@link InteractionMode}s can be registered and use at the run-time.
+ * Custom {@link Tool}s can be registered and use at the run-time.
  */
 public class DefaultInteractionHandler implements InteractionHandler {
 
 	private String lastMode;
 	private String currentMode;
-	private final Map<String, InteractionMode> modes = new HashMap<String, InteractionMode>();
-	private final Map<String, String[]> interactionGroup = new HashMap<String, String[]>();
+	private final Map<String, Tool> modes = new HashMap<String, Tool>();
+
 	boolean combinedAction;
+	private final ToolSet toolSet = new ToolSet();
 
 	@Inject
 	public DefaultInteractionHandler() {
 
-		registerMode(new ReadOnlyMode());
-		setActiveMode(InteractionConstants.MODE_READ_ONLY);
-
-		//		/* Register the basic modes */
+		/* Register the basic modes */
 		//		registerMode(new ReadOnlyMode());
 		//		registerMode(new ModellingMode());
 		//		registerMode(new EdgeCreationMode());
 		//		registerMode(new NodeCreationMode());
 		//		registerMode(new AutoSnapMode());
-		//		registerMode(new MarqueeSelectionMode());
+		registerMode(new SelectionTool());
 		//		registerMode(new PortEditingMode());
 		//		registerMode(new FormComposeMode());
-		//
-		//		combineModes(new String[] { InteractionConstants.MODE_MODELING,
-		//				InteractionConstants.MODE_EDGE_CREATION, InteractionConstants.MODE_MARQUEE_SELECTION,
-		//				InteractionConstants.MODE_AUTO_ALIGNMENT }, InteractionConstants.MODE_EDIT);
-		//
-		//		setActiveMode(InteractionConstants.MODE_EDIT);
+
+
+		toolSet.addToolSet(
+				InteractionConstants.MODE_MODELING, 
+				InteractionConstants.MODE_MODELING, 
+				InteractionConstants.MODE_MODELING,
+				InteractionConstants.MODE_EDGE_CREATION, 
+				InteractionConstants.MODE_MARQUEE_SELECTION,
+				InteractionConstants.MODE_AUTO_ALIGNMENT , 
+				InteractionConstants.MODE_EDIT);
+
+		setActiveMode(InteractionConstants.MODE_EDIT);
 
 	}
+
+
+
 
 	@Override
 	public void setScope(GraphDocument graphDocument) {
 
-		List<InteractionMode> regModes = getRegisteredModes();
-		for (InteractionMode interactionMode : regModes) {
-			interactionMode.setScope(graphDocument);
+		List<Tool> regModes = getRegisteredModes();
+		for (Tool tool : regModes) {
+			tool.setScope(graphDocument);
 		}
 	}
 
 	@Override
-	public void registerMode(InteractionMode handler) {
+	public void registerMode(Tool handler) {
 
 		if (modes.containsKey(handler.getName())) {
 			throw new IllegalArgumentException(
@@ -142,47 +150,47 @@ public class DefaultInteractionHandler implements InteractionHandler {
 	}
 
 	@Override
-	public InteractionMode getMode(String name) {
+	public Tool getMode(String name) {
 
 		return modes.get(name);
 	}
 
 	@Override
-	public List<InteractionMode> getRegisteredModes() {
+	public List<Tool> getRegisteredModes() {
 
-		return new ArrayList<InteractionMode>(modes.values());
+		return new ArrayList<Tool>(modes.values());
 	}
 
 	/* Delegate all mouse and key events to currently active interaction-handler */
 
 	@Override
-	public void paintOnBackground(Canvas canvas, DrawingContext context) {
+	public void paintOnBackground(AWTCanvas awtCanvas, DrawingContext context) {
 
 		if (context.getResolution() != Resolution.SCREEN) {
 			return;
 		}
 		if (!combinedAction) {
-			modes.get(currentMode).paintOnBackground(canvas, context);
+			modes.get(currentMode).paintOnBackground(awtCanvas, context);
 		} else {
 			String[] names = interactionGroup.get(currentMode);
 			for (String name : names) {
-				modes.get(name).paintOnBackground(canvas, context);
+				modes.get(name).paintOnBackground(awtCanvas, context);
 			}
 		}
 	}
 
 	@Override
-	public void paintOnTop(Canvas canvas, DrawingContext context) {
+	public void paintOnTop(AWTCanvas awtCanvas, DrawingContext context) {
 
 		if (context.getResolution() != Resolution.SCREEN) {
 			return;
 		}
 		if (!combinedAction) {
-			modes.get(currentMode).paintOnTop(canvas, context);
+			modes.get(currentMode).paintOnTop(awtCanvas, context);
 		} else {
 			String[] names = interactionGroup.get(currentMode);
 			for (String name : names) {
-				modes.get(name).paintOnTop(canvas, context);
+				modes.get(name).paintOnTop(awtCanvas, context);
 			}
 		}
 	}
