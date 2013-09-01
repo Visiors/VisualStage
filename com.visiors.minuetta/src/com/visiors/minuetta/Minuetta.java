@@ -1,8 +1,5 @@
 package com.visiors.minuetta;
 
-import java.awt.Point;
-import java.awt.Rectangle;
-
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
@@ -24,15 +21,10 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import com.visiors.minuetta.editor.GraphEditorPane;
+import com.visiors.minuetta.editor.MultiPageEditor;
 import com.visiors.minuetta.view.PropertyView;
 import com.visiors.minuetta.view.ShapeGallery;
-import com.visiors.visualstage.document.GraphDocument;
 import com.visiors.visualstage.editor.GraphEditor;
-import com.visiors.visualstage.graph.view.edge.EdgePoint;
-import com.visiors.visualstage.graph.view.edge.VisualEdge;
-import com.visiors.visualstage.graph.view.graph.VisualGraph;
-import com.visiors.visualstage.graph.view.node.VisualNode;
 
 public class Minuetta extends Application {
 
@@ -48,8 +40,8 @@ public class Minuetta extends Application {
 
 		try {
 			BorderPane root = new BorderPane();
-			Scene scene = new Scene(root, 1024, 800, Color.WHITE);
-			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+			Scene scene = new Scene(root, 1024, 800, Color.LIGHTGREY   );
+			//			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(scene);
 			primaryStage.setTitle("minuetta");
 
@@ -119,24 +111,9 @@ public class Minuetta extends Application {
 
 	private Node createEditorArea() {
 
-		final GraphEditorPane graphPane = new GraphEditorPane();
-		this.editor = graphPane.getEditor();
+		final MultiPageEditor multiPageEditor = new MultiPageEditor();
 
-		GraphDocument document = editor.newDocument("New Document");
-		VisualGraph graph = document.getGraph();
-		VisualNode startNode = graph.createNode();
-		startNode.setBounds(new Rectangle(100, 100, 100, 100));
-		VisualNode endNode = graph.createNode();
-		endNode.setBounds(new Rectangle(300, 300, 80, 80));
-		VisualEdge edge = graph.createEdge();
-
-		EdgePoint points[] = new EdgePoint[2];
-		points[0] = new EdgePoint(new Point(100,300));
-		points[1] = new EdgePoint(new Point(400,100));
-		edge.getPath().setPoints(points, false);
-
-
-		return graphPane;
+		return multiPageEditor;
 	}
 
 	private Node createLeftPane() {

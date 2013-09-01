@@ -5,41 +5,51 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
 import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.image.ImageView;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.WritableImage;
 
-import com.visiors.visualstage.renderer.Canvas;
 import com.visiors.visualstage.renderer.DefaultDrawingContext;
 import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.renderer.Resolution;
 import com.visiors.visualstage.transform.DefaultTransformer;
 import com.visiors.visualstage.transform.Transform;
 
-public class GraphCanvas implements Canvas {
+public class GraphCanvas extends Canvas implements com.visiors.visualstage.renderer.Canvas {
 
-	private final DrawingContext context;
-	private Resolution resolution;
-	private Rectangle bounds;
-	private final Transform transform;
-	private final ImageView imageView;
+	protected final DrawingContext context;
+	protected final Transform transform;
+	protected Resolution resolution;
 
-	public GraphCanvas(ImageView imageView) {
+	public GraphCanvas() {
 
-		this.imageView = imageView;
+		super();
+
 		resolution = Resolution.SCREEN;
 		transform = new DefaultTransformer();
-		bounds = new Rectangle(100, 100);
-		context = new DefaultDrawingContext(resolution, bounds, transform){
+		context = new DefaultDrawingContext(resolution, new Rectangle(), transform) {
+
 			@Override
-			public Rectangle getBounds() {
-				return bounds;
+			public Rectangle getVisibleBounds() {
+
+				return new Rectangle((int) getWidth(), (int) getHeight());
 			}
 		};
 	}
 
-	public void setBounds(Rectangle bounds) {
+	@Override
+	public void draw(int x, int y, Image image) {
 
-		this.bounds = bounds;
+		final BufferedImage bufferedImage = (BufferedImage) image;
+		final WritableImage fxImage = SwingFXUtils.toFXImage(bufferedImage, null);
+		GraphicsContext gc = getGraphicsContext2D();
+		gc.drawImage(fxImage, 0, 0);
+	}
+
+	@Override
+	public DrawingContext getContext() {
+
+		return context;
 	}
 
 	public void setResolution(Resolution resolution) {
@@ -55,51 +65,49 @@ public class GraphCanvas implements Canvas {
 	public double getScale() {
 
 		return transform.getScale();
-
 	}
 
 	public void setXTranslate(double dx) {
 
-		transform.setTranslateX(dx);
+		transform.setXTranslate(dx);
 	}
 
 	public double getXTranslate() {
 
-		return transform.getTranslateX();
+		return transform.getXTranslate();
 	}
 
 	public void setYTranslate(double dy) {
 
-		transform.setTranslateY(dy);
+		transform.setYTranslate(dy);
 	}
 
 	public double getYTranslate() {
 
-		return transform.getTranslateY();
+		return transform.getYTranslate();
 	}
 
-	@Override
-	public void draw(int x, int y, Image image) {
-
-		BufferedImage bufferedImage = (BufferedImage) image;
-		WritableImage fxImage = SwingFXUtils.toFXImage(bufferedImage, null);
-		imageView.setImage(fxImage);
-	}
-
-	@Override
-	public DrawingContext getContext() {
-
-		return context;
-	}
-
-	public void setWidth(int newWidth) {
-
-		bounds.width = newWidth;
-	}
-
-	public void setHeight(int newHeight) {
-
-		bounds.height = newHeight;
-	}
+	// private void initResizeListeners() {
+	//
+	// widthProperty().addListener(new ChangeListener<Number>() {
+	//
+	// @Override
+	// public void changed(ObservableValue<? extends Number> observable, Number
+	// oldValue, Number newValue) {
+	//
+	// context.getVisibleBounds().width = newValue.intValue();
+	// }
+	// });
+	//
+	// heightProperty().addListener(new ChangeListener<Number>() {
+	//
+	// @Override
+	// public void changed(ObservableValue<? extends Number> observable, Number
+	// oldValue, Number newValue) {
+	//
+	// context.getVisibleBounds().height = newValue.intValue();
+	// }
+	// });
+	// }
 
 }

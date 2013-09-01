@@ -1,175 +1,92 @@
 package com.visiors.minuetta.editor;
 
 import java.awt.Point;
+import java.awt.Rectangle;
+import java.util.Random;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.geometry.Pos;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.StackPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.Tooltip;
 
-import com.visiors.minuetta.GraphCanvas;
+import com.visiors.visualstage.document.GraphDocument;
 import com.visiors.visualstage.editor.GraphEditor;
-import com.visiors.visualstage.interaction.Interactable;
+import com.visiors.visualstage.graph.view.edge.EdgePoint;
+import com.visiors.visualstage.graph.view.edge.VisualEdge;
+import com.visiors.visualstage.graph.view.graph.VisualGraph;
+import com.visiors.visualstage.graph.view.node.VisualNode;
 
-public class GraphEditorPane extends StackPane {
+public class EditorPage extends Tab implements EventHandler<Event> {
 
 	private final GraphEditor editor;
-	private final GraphCanvas canvas;
+	private final ScrollableCanvas scrollableCanvas;
+	private final GraphDocument document;
+	private final MultiPageEditor multiPageEditor;
 
-	public GraphEditorPane() {
+
+	public EditorPage(MultiPageEditor multiPageEditor, String title) {
 
 		super();
 
-		final ImageView imageView = new ImageView();
-		setAlignment(imageView, Pos.TOP_LEFT);
-		getChildren().add(imageView);
-		this.canvas = new GraphCanvas(imageView);
-		this.editor = new GraphEditor();
-		editor.addCanvas(canvas);
+		this.multiPageEditor = multiPageEditor;
+		this.editor = multiPageEditor.getEditor();
+		this.document = editor.newDocument(title);		
+		this.scrollableCanvas = new ScrollableCanvas(editor);
+		setContent(scrollableCanvas);		
+		editor.addCanvas(scrollableCanvas.getCanvas());
+		setText(document.getTitle());
+		setTooltip(new Tooltip(document.getTitle()));
+		setId(title);
+		setOnClosed(this);
 
-		initListeners();
+		createRandomGraph();
 	}
+
+
+
+	private void createRandomGraph() {
+
+		Random rnd = new Random();
+		VisualGraph graph = document.getGraph();
+
+		for (int n = 0; n < 1; ++n) {
+
+			VisualNode node = graph.createNode();
+			node.setBounds(new Rectangle(100, 100, 100, 100));
+			int x = rnd.nextInt(400);
+			int y = rnd.nextInt(400);
+			node.move(x, y);
+
+		}
+
+		VisualEdge edge = graph.createEdge();
+
+		EdgePoint points[] = new EdgePoint[2];
+		points[0] = new EdgePoint(new Point(100,300));
+		points[1] = new EdgePoint(new Point(400,100));
+		edge.getPath().setPoints(points, false);
+
+	}
+
 
 	public GraphEditor getEditor() {
 
 		return editor;
 	}
 
-	private void initListeners() {
 
-		widthProperty().addListener(new ChangeListener<Number>() {
+	public GraphDocument getDocunemt() {
 
-			@Override
-			public void changed(ObservableValue<? extends Number> observableValue, Number oldWidth, Number newWidth) {
-
-				canvas.setWidth(newWidth.intValue());
-			}
-		});
-		heightProperty().addListener(new ChangeListener<Number>() {
-
-			@Override
-			public void changed(ObservableValue<? extends Number> observableValue, Number oldHeight, Number newHeight) {
-
-				canvas.setHeight(newHeight.intValue());
-			}
-		});
-
-		addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
-
-			@Override
-			public void handle(MouseEvent e) {
-
-				if (editor.mousePressed(vsPoint(e), vsMouseButton(e), vsFunctionKey(e))) {
-					e.consume();
-				}
-			}
-		});
-
-		addEventFilter(MouseEvent.MOUSE_RELEASED, new EventHandler<MouseEvent>() {
-
-			@Override
-			public void handle(MouseEvent e) {
-
-				if (editor.mousePressed(vsPoint(e), vsMouseButton(e), vsFunctionKey(e))) {
-					e.consume();
-				}
-			}
-		});
-
-		addEventFilter(MouseEvent.MOUSE_MOVED, new EventHandler<MouseEvent>() {
-
-			@Override
-			public void handle(MouseEvent e) {
-
-				if (editor.mouseMoved(vsPoint(e), vsMouseButton(e), vsFunctionKey(e))) {
-					e.consume();
-				}
-			}
-		});
-
-		addEventFilter(MouseEvent.MOUSE_DRAGGED, new EventHandler<MouseEvent>() {
-
-			@Override
-			public void handle(MouseEvent e) {
-
-				if (editor.mouseDragged(vsPoint(e), vsMouseButton(e), vsFunctionKey(e))) {
-					e.consume();
-				}
-			}
-		});
-
-		addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
-
-			@Override
-			public void handle(KeyEvent  e) {
-
-				if (editor.keyPressed(vsKeyChar(e), vsKeyCode(e))) {
-					e.consume();
-				}
-			}
-		});
-
-		addEventHandler(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>() {
-
-			@Override
-			public void handle(KeyEvent  e) {
-
-				if (editor.keyReleased(vsKeyChar(e), vsKeyCode(e))) {
-					e.consume();
-				}
-			}
-		});
+		return document;
 	}
 
-	private Point vsPoint(MouseEvent e) {
 
-		return new Point((int) e.getX(), (int) e.getY());
-	}
 
-	private int vsFunctionKey(MouseEvent e) {
+	@Override
+	public void handle(Event e) {
 
-		int key = 0;
-		if (e.isAltDown()) {
-			key |= Interactable.KEY_ALT;
-		}
-		if (e.isControlDown()) {
-			key |= Interactable.KEY_CONTROL;
-		}
-		if (e.isShiftDown()) {
-			key |= Interactable.KEY_SHIFT;
-		}
-		return key;
-	}
-
-	private int vsMouseButton(MouseEvent e) {
-
-		if (e.isPrimaryButtonDown()) {
-			return Interactable.BUTTON_LEFT;
-		}
-		if (e.isMiddleButtonDown()) {
-			return Interactable.BUTTON_MIDDLE;
-		}
-		if (e.isSecondaryButtonDown()) {
-			return Interactable.BUTTON_RIGHT;
-		}
-		return 0;
-	}
-
-	private int vsKeyCode(KeyEvent e) {
-
-		final KeyCode code = e.getCode();
-		return code.ordinal();
-	}
-
-	private int vsKeyChar(KeyEvent e) {
-
-		final String character = e.getCharacter();
-		return character.charAt(0);
+		editor.closeDocument(document.getTitle());
+		e.consume();
 	}
 
 }
