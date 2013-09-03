@@ -22,7 +22,6 @@ import com.visiors.visualstage.graph.view.node.VisualNode;
 import com.visiors.visualstage.graph.view.node.listener.NodeViewAdapter;
 import com.visiors.visualstage.graph.view.node.listener.VisualNodeListener;
 import com.visiors.visualstage.handler.UndoRedoHandler;
-import com.visiors.visualstage.interaction.Interactable;
 import com.visiors.visualstage.pool.FormatCollection;
 import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.property.impl.DefaultPropertyList;
@@ -31,6 +30,7 @@ import com.visiors.visualstage.property.impl.PropertyBinder;
 import com.visiors.visualstage.renderer.DrawingSubject;
 import com.visiors.visualstage.renderer.Resolution;
 import com.visiors.visualstage.svg.SVGDescriptor;
+import com.visiors.visualstage.tool.Interactable;
 import com.visiors.visualstage.util.PropertyUtil;
 import com.visiors.visualstage.validation.Validator;
 

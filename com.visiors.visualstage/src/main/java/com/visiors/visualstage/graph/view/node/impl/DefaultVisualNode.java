@@ -18,7 +18,6 @@ import com.visiors.visualstage.graph.view.node.VisualNode;
 import com.visiors.visualstage.graph.view.node.listener.VisualNodeListener;
 import com.visiors.visualstage.graph.view.shape.Shape;
 import com.visiors.visualstage.handler.UndoRedoHandler;
-import com.visiors.visualstage.interaction.Interactable;
 import com.visiors.visualstage.pool.FormatCollection;
 import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.property.impl.DefaultPropertyList;
@@ -27,6 +26,7 @@ import com.visiors.visualstage.property.impl.PropertyBinder;
 import com.visiors.visualstage.renderer.DrawingSubject;
 import com.visiors.visualstage.renderer.Resolution;
 import com.visiors.visualstage.svg.SVGDescriptor;
+import com.visiors.visualstage.tool.Interactable;
 import com.visiors.visualstage.util.PropertyUtil;
 
 public class DefaultVisualNode extends DefaultVisualGraphObject implements VisualNode {
@@ -67,7 +67,7 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 		this.portSet = new DefaultPortSet();
 		this.incomingEdges = new ArrayList<VisualEdge>();
 		this.outgoingEdges = new ArrayList<VisualEdge>();
-		this.boundary = new Rectangle(0, 0, 80, 50);
+		this.boundary = new Rectangle(0, 0, 80, 50); 
 
 		// previewCreator = new VisualObjectSnapshotGenerator(this);
 		// cachedImage = new ArrayList<CachedImage>();

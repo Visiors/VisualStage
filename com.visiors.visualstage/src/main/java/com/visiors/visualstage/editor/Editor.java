@@ -5,11 +5,11 @@ import com.visiors.visualstage.handler.ClipboardHandler;
 import com.visiors.visualstage.handler.GroupingHandler;
 import com.visiors.visualstage.handler.SelectionHandler;
 import com.visiors.visualstage.handler.UndoRedoHandler;
-import com.visiors.visualstage.interaction.Interactable;
 import com.visiors.visualstage.pool.FormatCollection;
 import com.visiors.visualstage.pool.ShapeCollection;
 import com.visiors.visualstage.renderer.Canvas;
 import com.visiors.visualstage.stage.StageDesigner;
+import com.visiors.visualstage.tool.Interactable;
 
 public interface Editor extends Interactable {
 

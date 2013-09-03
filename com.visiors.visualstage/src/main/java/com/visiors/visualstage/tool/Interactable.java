@@ -1,4 +1,4 @@
-package com.visiors.visualstage.interaction;
+package com.visiors.visualstage.tool;
 
 import java.awt.Point;
 
@@ -14,9 +14,10 @@ public interface Interactable {
 	public static final int CURSOR_NE_RESIZE = 7;
 	public static final int CURSOR_SW_RESIZE = 8;
 	public static final int CURSOR_SE_RESIZE = 9;
-	public static final int CURSOR_MOVE = 10;
+	public static final int CURSOR_MOVE		 = 10;
 	public static final int CURSOR_CROSSHAIR = 11;
 	public static final int CURSOR_EDIT_TEXT = 12;
+
 
 	/* mouse buttons */
 	public static final int BUTTON_LEFT = 1;

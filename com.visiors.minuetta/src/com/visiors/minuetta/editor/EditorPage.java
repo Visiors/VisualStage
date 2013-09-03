@@ -1,6 +1,5 @@
 package com.visiors.minuetta.editor;
 
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.Random;
 
@@ -11,8 +10,6 @@ import javafx.scene.control.Tooltip;
 
 import com.visiors.visualstage.document.GraphDocument;
 import com.visiors.visualstage.editor.GraphEditor;
-import com.visiors.visualstage.graph.view.edge.EdgePoint;
-import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.graph.VisualGraph;
 import com.visiors.visualstage.graph.view.node.VisualNode;
 
@@ -21,15 +18,14 @@ public class EditorPage extends Tab implements EventHandler<Event> {
 	private final GraphEditor editor;
 	private final ScrollableCanvas scrollableCanvas;
 	private final GraphDocument document;
-	private final MultiPageEditor multiPageEditor;
 
 
-	public EditorPage(MultiPageEditor multiPageEditor, String title) {
+
+	public EditorPage(GraphEditor editor, String title) {
 
 		super();
 
-		this.multiPageEditor = multiPageEditor;
-		this.editor = multiPageEditor.getEditor();
+		this.editor = editor;
 		this.document = editor.newDocument(title);		
 		this.scrollableCanvas = new ScrollableCanvas(editor);
 		setContent(scrollableCanvas);		
@@ -49,7 +45,7 @@ public class EditorPage extends Tab implements EventHandler<Event> {
 		Random rnd = new Random();
 		VisualGraph graph = document.getGraph();
 
-		for (int n = 0; n < 1; ++n) {
+		for (int n = 0; n < 5; ++n) {
 
 			VisualNode node = graph.createNode();
 			node.setBounds(new Rectangle(100, 100, 100, 100));
@@ -59,12 +55,12 @@ public class EditorPage extends Tab implements EventHandler<Event> {
 
 		}
 
-		VisualEdge edge = graph.createEdge();
-
-		EdgePoint points[] = new EdgePoint[2];
-		points[0] = new EdgePoint(new Point(100,300));
-		points[1] = new EdgePoint(new Point(400,100));
-		edge.getPath().setPoints(points, false);
+		//		VisualEdge edge = graph.createEdge();
+		//
+		//		EdgePoint points[] = new EdgePoint[2];
+		//		points[0] = new EdgePoint(new Point(100,300));
+		//		points[1] = new EdgePoint(new Point(400,100));
+		//		edge.getPath().setPoints(points, false);
 
 	}
 

@@ -2,21 +2,16 @@ package com.visiors.visualstage.interaction.impl.nodecreateion;
 
 import java.awt.Point;
 
-import com.visiors.visualstage.constants.InteractionConstants;
+import com.visiors.visualstage.constants.Interactable;
 import com.visiors.visualstage.interaction.impl.BaseTool;
 
 public class NodeCreationMode extends BaseTool {
 
-	public NodeCreationMode() {
+	public NodeCreationMode(String name) {
 
-		super();
+		super(name);
 	}
 
-	@Override
-	public String getName() {
-
-		return InteractionConstants.MODE_NODE_CREATION;
-	}
 
 	@Override
 	public boolean keyPressed(int keyChar, int keyCode) {
@@ -63,6 +58,6 @@ public class NodeCreationMode extends BaseTool {
 	@Override
 	public int getPreferredCursor() {
 
-		return InteractionConstants.CURSOR_DEFAULT;
+		return Interactable.CURSOR_DEFAULT;
 	}
 }

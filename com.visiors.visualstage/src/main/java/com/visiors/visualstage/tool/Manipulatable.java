@@ -1,4 +1,4 @@
-package com.visiors.visualstage.interaction;
+package com.visiors.visualstage.tool;
 
 //TODO Shane: see if this interface can be avoided
 public interface Manipulatable {

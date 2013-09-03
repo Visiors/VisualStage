@@ -1,4 +1,4 @@
-package com.visiors.visualstage.interaction.impl.modelling;
+package com.visiors.visualstage.interaction.impl;
 
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -6,13 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.inject.Inject;
-import com.visiors.visualstage.constants.InteractionConstants;
 import com.visiors.visualstage.graph.view.VisualGraphObject;
 import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.graph.VisualGraph;
 import com.visiors.visualstage.graph.view.node.VisualNode;
-import com.visiors.visualstage.handler.UndoRedoHandler;
-import com.visiors.visualstage.interaction.impl.BaseTool;
+import com.visiors.visualstage.tool.Interactable;
 import com.visiors.visualstage.util.GraphInteractionUtil;
 
 /**
@@ -25,13 +23,13 @@ import com.visiors.visualstage.util.GraphInteractionUtil;
  * 
  * @version $Id: $
  */
-public class ModellingMode extends BaseTool {
+public class ModellingTool extends BaseTool {
 
 	/* resizing details */
 	public static final int NONE = -1;
 	private static final int INTERNAL_ACTION_ID = 0xFFFF00;
-	private static final int MOVE_OR_COPY_OBJECTS = ModellingMode.INTERNAL_ACTION_ID + 1;
-	private static final int MOVE_OBJECTS = ModellingMode.INTERNAL_ACTION_ID + 2;
+	private static final int MOVE_OR_COPY_OBJECTS = ModellingTool.INTERNAL_ACTION_ID + 1;
+	private static final int MOVE_OBJECTS = ModellingTool.INTERNAL_ACTION_ID + 2;
 
 	private Point mousePressedPos;
 	private Rectangle hitObjectPos;
@@ -48,18 +46,14 @@ public class ModellingMode extends BaseTool {
 	private VisualGraph hitGroup;
 
 	@Inject
-	private UndoRedoHandler undoRedoHandler;
+	//	private UndoRedoHandler undoRedoHandler;
 
-	public ModellingMode() {
+	public ModellingTool(String name) {
 
-		super();
+		super(name);
 	}
 
-	@Override
-	public String getName() {
 
-		return InteractionConstants.MODE_MODELING;
-	}
 
 	@Override
 	public boolean keyPressed(int keyChar, int keyCode) {
@@ -209,8 +203,8 @@ public class ModellingMode extends BaseTool {
 		 * first in order to create a second copy of the same object
 		 */
 		if (hitObject != null) {
-			if (manipulatoinIndex == ModellingMode.MOVE_OBJECTS) {
-				manipulatoinIndex = ModellingMode.MOVE_OR_COPY_OBJECTS;
+			if (manipulatoinIndex == ModellingTool.MOVE_OBJECTS) {
+				manipulatoinIndex = ModellingTool.MOVE_OR_COPY_OBJECTS;
 			}
 		}
 
@@ -234,8 +228,8 @@ public class ModellingMode extends BaseTool {
 	@Override
 	public boolean mouseMoved(Point pt, int button, int functionKey) {
 
-		currentCursor = InteractionConstants.CURSOR_DEFAULT;
-		manipulatoinIndex = ModellingMode.NONE;
+		currentCursor = Interactable.CURSOR_DEFAULT;
+		manipulatoinIndex = ModellingTool.NONE;
 
 		updateHitObject(pt);
 
@@ -249,7 +243,7 @@ public class ModellingMode extends BaseTool {
 
 				return true;
 			}
-			manipulatoinIndex = ModellingMode.MOVE_OR_COPY_OBJECTS;
+			manipulatoinIndex = ModellingTool.MOVE_OR_COPY_OBJECTS;
 		}
 
 		return false;
@@ -271,13 +265,13 @@ public class ModellingMode extends BaseTool {
 				visualGraph.clearSelection();
 				visualGraph.setSelection(hitObject);
 			}
-			if (manipulatoinIndex == ModellingMode.MOVE_OR_COPY_OBJECTS) { // Duplicate
+			if (manipulatoinIndex == ModellingTool.MOVE_OR_COPY_OBJECTS) { // Duplicate
 				// selection
 				if (isControlKeyPressed(functionKey)) {
 					duplicateSelection(pt);
 				}
-				manipulatoinIndex = ModellingMode.MOVE_OBJECTS;
-			} else if (manipulatoinIndex == ModellingMode.MOVE_OBJECTS) { // move
+				manipulatoinIndex = ModellingTool.MOVE_OBJECTS;
+			} else if (manipulatoinIndex == ModellingTool.MOVE_OBJECTS) { // move
 				// selected
 				// objects
 				if (!wasManipulationNotified()) {
@@ -288,7 +282,7 @@ public class ModellingMode extends BaseTool {
 			trackNodesHitByActiveConnector();
 			trackNodesHitByNode();
 			trackGroupHitByActiveObject(functionKey);
-			return manipulatoinIndex != ModellingMode.MOVE_OBJECTS; // let other
+			return manipulatoinIndex != ModellingTool.MOVE_OBJECTS; // let other
 			// like Edge
 			// creation
 			// do their
@@ -316,8 +310,8 @@ public class ModellingMode extends BaseTool {
 		connectingEdge = null;
 		connectingSourceNode = null;
 		connectingTargetNode = null;
-		connectingSourcePort = ModellingMode.NONE;
-		connectingTargetPort = ModellingMode.NONE;
+		connectingSourcePort = ModellingTool.NONE;
+		connectingTargetPort = ModellingTool.NONE;
 
 		if (hitGroup != null) {
 			hitGroup.setHighlighted(false);
@@ -405,7 +399,7 @@ public class ModellingMode extends BaseTool {
 				final int port = node.getPreferredPort(sPt);
 				node.highlightPort(port, true);
 				connectingSourcePort = port;
-				if (port != ModellingMode.NONE) {
+				if (port != ModellingTool.NONE) {
 					connectingEdge = edge;
 					connectingSourceNode = node;
 				}
@@ -420,7 +414,7 @@ public class ModellingMode extends BaseTool {
 				final int port = node.getPreferredPort(ePt);
 				connectingTargetPort = port;
 				node.highlightPort(port, true);
-				if (port != ModellingMode.NONE) {
+				if (port != ModellingTool.NONE) {
 					connectingEdge = edge;
 					connectingTargetNode = node;
 				}
@@ -452,7 +446,7 @@ public class ModellingMode extends BaseTool {
 		if (connectingEdge != null) {
 			if (connectingSourceNode != null) {
 				connectingSourceNode.illuminatePorts(false);
-				if (connectingSourcePort != ModellingMode.NONE) {
+				if (connectingSourcePort != ModellingTool.NONE) {
 					connectingEdge.connect(connectingSourceNode, connectingSourcePort, connectingEdge.getTargetNode(),
 							connectingEdge.getTargetPortId());
 				}
@@ -462,7 +456,7 @@ public class ModellingMode extends BaseTool {
 
 			if (connectingTargetNode != null) {
 				connectingTargetNode.illuminatePorts(false);
-				if (connectingTargetPort != ModellingMode.NONE) {
+				if (connectingTargetPort != ModellingTool.NONE) {
 					connectingEdge.connect(connectingEdge.getSourceNode(), connectingEdge.getSourcePortId(),
 							connectingTargetNode, connectingTargetPort);
 				}
@@ -498,13 +492,13 @@ public class ModellingMode extends BaseTool {
 		//			vgo.endManipulating();
 		//		}
 
-		undoRedoHandler.endOfGroupAction();
+		//		undoRedoHandler.endOfGroupAction();
 	}
 
 	void duplicateSelection(Point pt) {
 
 		try {
-			undoRedoHandler.stratOfGroupAction();
+			//			undoRedoHandler.stratOfGroupAction();
 
 			//TODO duplicate selected objects
 			//			// create
@@ -526,7 +520,7 @@ public class ModellingMode extends BaseTool {
 			updateHitObject(pt);
 
 		} finally {
-			undoRedoHandler.endOfGroupAction();
+			//			undoRedoHandler.endOfGroupAction();
 		}
 
 	}

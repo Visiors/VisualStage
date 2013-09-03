@@ -2,7 +2,7 @@ package com.visiors.visualstage.graph.view.edge;
 
 import java.awt.Point;
 
-import com.visiors.visualstage.interaction.Manipulatable;
+import com.visiors.visualstage.tool.Manipulatable;
 
 /**
  * This interface defines the path for drawing graph edges. A path can consist

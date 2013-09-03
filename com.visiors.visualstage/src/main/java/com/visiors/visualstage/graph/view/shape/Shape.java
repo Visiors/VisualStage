@@ -4,10 +4,10 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
 
-import com.visiors.visualstage.interaction.Interactable;
 import com.visiors.visualstage.property.PropertyOwner;
 import com.visiors.visualstage.renderer.DrawingSubject;
 import com.visiors.visualstage.renderer.Resolution;
+import com.visiors.visualstage.tool.Interactable;
 import com.visiors.visualstage.transform.Transform;
 
 public interface Shape extends Interactable, PropertyOwner, Duplicatable {

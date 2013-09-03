@@ -5,7 +5,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.List;
 
-import com.visiors.visualstage.constants.InteractionConstants;
+import com.visiors.visualstage.constants.Interactable;
 import com.visiors.visualstage.graph.view.VisualGraphObject;
 import com.visiors.visualstage.graph.view.node.Port;
 import com.visiors.visualstage.graph.view.node.PortSet;
@@ -14,7 +14,6 @@ import com.visiors.visualstage.graph.view.node.impl.DefaultPort;
 import com.visiors.visualstage.graph.view.node.impl.DefaultPortSet;
 import com.visiors.visualstage.interaction.impl.BaseTool;
 import com.visiors.visualstage.renderer.AWTCanvas;
-import com.visiors.visualstage.renderer.Canvas;
 import com.visiors.visualstage.renderer.DrawingContext;
 
 public class PortEditingMode extends BaseTool {
@@ -27,19 +26,14 @@ public class PortEditingMode extends BaseTool {
 	private int currentCursor;
 	private Rectangle handle;
 
-	public PortEditingMode() {
+	public PortEditingMode(String name) {
 
-		super();
+		super(name);
 
 		angleEndHandle = new Rectangle();
 		angleStartHandle = new Rectangle();
 	}
 
-	@Override
-	public String getName() {
-
-		return InteractionConstants.MODE_PORT_EDIT;
-	}
 
 	@Override
 	public void setActive(boolean activated) {
@@ -50,7 +44,7 @@ public class PortEditingMode extends BaseTool {
 				VisualGraphObject vgo = selection.get(0);
 				if (vgo instanceof VisualNode) {
 					subject = (VisualNode) vgo;
-					subject.openPorts(true);
+					subject.illuminatePorts(true);
 					// subject.setSelected(false);
 					originalPortSet = subject.getPortSet();
 					super.setActive(activated);
@@ -65,7 +59,7 @@ public class PortEditingMode extends BaseTool {
 	public void cancelInteraction() {
 
 		if (subject != null) {
-			subject.openPorts(false);
+			subject.illuminatePorts(false);
 			subject.setPortSet(originalPortSet);
 			subject.highlightPort(portID, false);
 			subject = null;
@@ -78,7 +72,7 @@ public class PortEditingMode extends BaseTool {
 	public void terminateInteraction() {
 
 		if (subject != null) {
-			subject.openPorts(false);
+			subject.illuminatePorts(false);
 			subject.highlightPort(portID, false);
 			portID = -1;
 			subject = null;
@@ -94,7 +88,7 @@ public class PortEditingMode extends BaseTool {
 		}
 
 		handle = null;
-		final Point spt = visualGraph.getTransform().transformToScreen(pt);
+		final Point spt = visualGraph.getTransformer().transformToScreen(pt);
 		if (angleStartHandle.contains(spt) || angleEndHandle.contains(spt)) {
 			handle = angleStartHandle.contains(spt) ? angleStartHandle : angleEndHandle;
 			return true;
@@ -113,7 +107,7 @@ public class PortEditingMode extends BaseTool {
 			subject.highlightPort(portID, true);
 		}
 
-		visualGraph.updateView();
+		graphDocument.update();
 
 		return isActive();
 	}
@@ -178,7 +172,7 @@ public class PortEditingMode extends BaseTool {
 				movePort(portID, pt);
 			}
 
-			visualGraph.updateView();
+			graphDocument.update();
 		}
 		return isActive();
 	}
@@ -289,11 +283,11 @@ public class PortEditingMode extends BaseTool {
 	@Override
 	public boolean mouseMoved(Point pt, int button, int functionKey) {
 
-		currentCursor = InteractionConstants.CURSOR_DEFAULT;
+		currentCursor = Interactable.CURSOR_DEFAULT;
 		if (subject != null) {
-			pt = visualGraph.getTransform().transformToScreen(pt);
+			pt = visualGraph.getTransformer().transformToScreen(pt);
 			if (angleStartHandle.contains(pt) || angleEndHandle.contains(pt)) {
-				currentCursor = InteractionConstants.CURSOR_CROSSHAIR;
+				currentCursor = Interactable.CURSOR_CROSSHAIR;
 			}
 		}
 		return isActive();
@@ -306,17 +300,26 @@ public class PortEditingMode extends BaseTool {
 	}
 
 	@Override
-	public void paintOnBackground(AWTCanvas awtCanvas, DrawingContext r) {
+	public void drawHints(AWTCanvas awtCanvas, DrawingContext context, boolean onTop) {
 
-		if (subject == null || portID == -1) {
+		if(onTop) {
+			paintOnTop(awtCanvas, context);
+		} else {
+			paintBehind(awtCanvas, context);
+		}
+	}
+
+	private void paintBehind(AWTCanvas awtCanvas, DrawingContext context) {
+
+		if (subject == null || portID == -1 ) {
 			return;
 		}
 
 		// Guide lines
-		awtCanvas.setColor(Color.lightGray);
+		awtCanvas.gfx.setColor(Color.lightGray);
 
 		Rectangle b = subject.getBounds();
-		b = visualGraph.getTransform().transformToScreen(b);
+		b = visualGraph.getTransformer().transformToScreen(b);
 		// canvas.drawLine(b.x - 50,
 		// b.y + b.height / 2,
 		// b.x + b.width + 50,
@@ -327,47 +330,40 @@ public class PortEditingMode extends BaseTool {
 		// b.y + b.height + 50);
 
 		// write ratio
-		awtCanvas.setColor(Color.black);
+		awtCanvas.gfx.setColor(Color.black);
 		Port port = subject.getPortSet().getPortByID(portID);
-		awtCanvas.drawString("x-ratio: " + port.getXRatio() + "%", b.x + b.width / 2 + 10, b.y
+		awtCanvas.gfx.drawString("x-ratio: " + port.getXRatio() + "%", b.x + b.width / 2 + 10, b.y
 				+ b.height + 50);
-		awtCanvas.drawString("y-ratio: " + port.getYRatio() + "%", b.x + b.width / 2 + 10, b.y
+		awtCanvas.gfx.drawString("y-ratio: " + port.getYRatio() + "%", b.x + b.width / 2 + 10, b.y
 				+ b.height + 60);
 	}
+	private void paintOnTop(AWTCanvas awtCanvas, DrawingContext context) {
 
-	@Override
-	public void paintOnTop(AWTCanvas awtCanvas, DrawingContext r) {
-
-		drawPortsAcceptingInterval(awtCanvas);
-
-	}
-
-	private void drawPortsAcceptingInterval(Canvas canvas) {
 
 		if (subject == null) {
 			return;
 		}
-		canvas.setColor(Color.gray);
+		awtCanvas.gfx.setColor(Color.gray);
 		Port[] ports = subject.getPortSet().getPorts();
 		double r = 50;
-		for (int i = 0; i < ports.length; i++) {
-			Port port = ports[i];
+		for (Port port2 : ports) {
+			Port port = port2;
 			if (!port.isHighlighted()) {
 				continue;
 			}
 			int[] angles = port.getAcceptedInterval();
 			double start = Math.toRadians(angles[0]);
 			double end = Math.toRadians(angles[1]);
-			Point pt = visualGraph.getTransform().transformToScreen(port.getPosition());
-			canvas.setColor(Color.black);
+			Point pt = visualGraph.getTransformer().transformToScreen(port.getPosition());
+			awtCanvas.gfx.setColor(Color.black);
 
 			int dx1 = (int) (6 * Math.cos(start));
 			int dy1 = (int) (6 * Math.sin(start));
 			int dx2 = (int) (r * Math.cos(start));
 			int dy2 = (int) (r * Math.sin(start));
-			canvas.drawLine(pt.x + dx1, pt.y - dy1, pt.x + dx2, pt.y - dy2);
+			awtCanvas.gfx.drawLine(pt.x + dx1, pt.y - dy1, pt.x + dx2, pt.y - dy2);
 			angleStartHandle.setBounds(pt.x + dx2 - 4, pt.y - dy2 - 4, 7, 7);
-			canvas.fillOval(angleStartHandle.x, angleStartHandle.y, angleStartHandle.width,
+			awtCanvas.gfx.fillOval(angleStartHandle.x, angleStartHandle.y, angleStartHandle.width,
 					angleStartHandle.height);
 
 			dx1 = (int) (6 * Math.cos(end));
@@ -375,21 +371,21 @@ public class PortEditingMode extends BaseTool {
 			dx2 = (int) (r * Math.cos(end));
 			dy2 = (int) (r * Math.sin(end));
 
-			canvas.drawLine(pt.x + dx1, pt.y - dy1, pt.x + dx2, pt.y - dy2);
+			awtCanvas.gfx.drawLine(pt.x + dx1, pt.y - dy1, pt.x + dx2, pt.y - dy2);
 
 			angleEndHandle.setBounds(pt.x + dx2 - 4, pt.y - dy2 - 4, 7, 7);
-			canvas.fillOval(angleEndHandle.x, angleEndHandle.y, angleEndHandle.width,
+			awtCanvas.gfx.fillOval(angleEndHandle.x, angleEndHandle.y, angleEndHandle.width,
 					angleEndHandle.height);
 			dx2 = (int) ((r + 15) * Math.cos(start));
 			dy2 = (int) ((r + 15) * Math.sin(start));
-			canvas.drawString("start: " + angles[0] + "°", pt.x + dx2, pt.y - dy2);
+			awtCanvas.gfx.drawString("start: " + angles[0] + "°", pt.x + dx2, pt.y - dy2);
 			int offset = 0;
 			if ((angles[0] == 0 && angles[1] == 360)) {
 				offset -= 12;
 			}
 			dx2 = (int) ((r + 15) * Math.cos(end));
 			dy2 = (int) ((r + 15) * Math.sin(end)) + offset;
-			canvas.drawString("end: " + angles[1] + "°", pt.x + dx2, pt.y - dy2);
+			awtCanvas.gfx.drawString("end: " + angles[1] + "°", pt.x + dx2, pt.y - dy2);
 
 		}
 	}

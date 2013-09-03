@@ -5,10 +5,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.visiors.visualstage.constants.InteractionConstants;
-import com.visiors.visualstage.editor.GraphEditor;
 import com.visiors.visualstage.graph.view.edge.VisualEdge;
-import com.visiors.visualstage.graph.view.edge.impl.orthogonal.OrthogonalEdgeRouter;
 import com.visiors.visualstage.graph.view.node.Port;
 import com.visiors.visualstage.graph.view.node.PortSet;
 import com.visiors.visualstage.graph.view.node.VisualNode;
@@ -30,15 +27,9 @@ public class EdgeCreationMode extends BaseTool {
 	private Point lastDraggedPoint;
 	private int keyPressedInProcess;
 
-	public EdgeCreationMode() {
+	public EdgeCreationMode(String name) {
 
-		super();
-	}
-
-	@Override
-	public String getName() {
-
-		return InteractionConstants.MODE_EDGE_CREATION;
+		super(name);
 	}
 
 	@Override
@@ -246,8 +237,7 @@ public class EdgeCreationMode extends BaseTool {
 		if (refPort != null && alignPort != null) {
 			int p1 = refPort.getID();
 			int p2 = alignPort.getID();
-			GraphEditor f = GraphEditor.instance();
-			createdEdge = f.createDefaultEdge();
+			createdEdge = visualGraph.createEdge();
 			if (forward) {
 
 				createdEdge.connect(nodeToMate, p1,draggingNode, p2);
@@ -262,29 +252,29 @@ public class EdgeCreationMode extends BaseTool {
 		forward = true;
 	}
 
-	private void adaptEdge(VisualEdge edge, Point start, Point end) {
-
-		Point[] points = edge.getPoints();
-		// createdEdge.move(start.x - points[0].x, start.y - points[0].y);
-		points = edge.getPoints();
-		//
-		// double w2 = end.x - start.x;
-		// double h2 = end.y - start.y;
-		// double w1 = points[points.length-1].x - points[0].x;
-		// double h1 = points[points.length-1].y - points[0].y;
-		// double dx;
-		// double dy;
-		//
-		// for (int i = 0; i < points.length; i++) {
-		// dx = (points[i].x - points[0].x);
-		// dy = (points[i].y - points[0].y);
-		// points[i].x -= (int) (dx / Math.round(w1/w2)) ;
-		// points[i].y -= (int) (dy / Math.round(h1/h2)) ;
-		// }
-
-		edge.setPoints(OrthogonalEdgeRouter.routeEdge(edge, points, 4));
-
-	}
+	//	private void adaptEdge(VisualEdge edge, Point start, Point end) {
+	//
+	//		Point[] points = edge.getPoints();
+	//		// createdEdge.move(start.x - points[0].x, start.y - points[0].y);
+	//		points = edge.getPoints();
+	//		//
+	//		// double w2 = end.x - start.x;
+	//		// double h2 = end.y - start.y;
+	//		// double w1 = points[points.length-1].x - points[0].x;
+	//		// double h1 = points[points.length-1].y - points[0].y;
+	//		// double dx;
+	//		// double dy;
+	//		//
+	//		// for (int i = 0; i < points.length; i++) {
+	//		// dx = (points[i].x - points[0].x);
+	//		// dy = (points[i].y - points[0].y);
+	//		// points[i].x -= (int) (dx / Math.round(w1/w2)) ;
+	//		// points[i].y -= (int) (dy / Math.round(h1/h2)) ;
+	//		// }
+	//
+	//		edge.setPoints(OrthogonalEdgeRouter.routeEdge(edge, points, 4));
+	//
+	//	}
 
 	private Port getHighlightedPort(VisualNode node) {
 

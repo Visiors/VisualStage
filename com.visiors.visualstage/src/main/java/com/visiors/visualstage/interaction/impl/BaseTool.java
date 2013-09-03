@@ -2,23 +2,26 @@ package com.visiors.visualstage.interaction.impl;
 
 import java.awt.Point;
 
-import com.visiors.visualstage.constants.InteractionConstants;
 import com.visiors.visualstage.document.GraphDocument;
 import com.visiors.visualstage.graph.view.graph.VisualGraph;
-import com.visiors.visualstage.interaction.Interactable;
-import com.visiors.visualstage.interaction.Tool;
 import com.visiors.visualstage.renderer.AWTCanvas;
 import com.visiors.visualstage.renderer.DrawingContext;
+import com.visiors.visualstage.tool.Interactable;
+import com.visiors.visualstage.tool.Tool;
 
-public abstract class BaseTool implements Tool {
+public class BaseTool implements Tool {
 
 	protected boolean active;
 	protected GraphDocument graphDocument;
 	protected VisualGraph visualGraph;
+	private final String name;
 
-	protected BaseTool() {
+	protected BaseTool(String name) {
+		this.name = name;
 
 	}
+
+
 
 	@Override
 	public void setScope(GraphDocument graphDocument) {
@@ -29,7 +32,9 @@ public abstract class BaseTool implements Tool {
 	}
 
 	@Override
-	public abstract String getName();
+	public String getName(){
+		return this.name;
+	}
 
 	@Override
 	public void setActive(boolean activated) {
@@ -88,7 +93,7 @@ public abstract class BaseTool implements Tool {
 	@Override
 	public int getPreferredCursor() {
 
-		return InteractionConstants.CURSOR_DEFAULT;
+		return Interactable.CURSOR_DEFAULT;
 	}
 
 	@Override
@@ -108,14 +113,10 @@ public abstract class BaseTool implements Tool {
 	}
 
 	@Override
-	public void paintOnBackground(AWTCanvas awtCanvas, DrawingContext context) {
+	public void drawHints(AWTCanvas awtCanvas, DrawingContext context, boolean onTop) {
 
 	}
 
-	@Override
-	public void paintOnTop(AWTCanvas awtCanvas, DrawingContext context) {
-
-	}
 
 	protected boolean isControlKeyPressed(int key) {
 

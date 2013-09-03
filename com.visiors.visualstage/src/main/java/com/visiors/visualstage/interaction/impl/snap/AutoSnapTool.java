@@ -6,7 +6,6 @@ import java.awt.Rectangle;
 import java.util.List;
 
 import com.google.inject.Inject;
-import com.visiors.visualstage.constants.InteractionConstants;
 import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.node.Port;
 import com.visiors.visualstage.graph.view.node.PortSet;
@@ -18,7 +17,7 @@ import com.visiors.visualstage.system.SystemUnit;
 import com.visiors.visualstage.transform.Transform;
 import com.visiors.visualstage.util.GraphInteractionUtil;
 
-public class AutoSnapMode extends BaseTool {
+public class AutoSnapTool extends BaseTool {
 
 	private static final int EDGE_STRAIGHT_RANGE = 15;
 
@@ -32,18 +31,13 @@ public class AutoSnapMode extends BaseTool {
 	@Inject
 	SystemUnit systemUnit;
 
-	public AutoSnapMode() {
+	public AutoSnapTool(String name) {
 
-		super();
+		super(name);
 
 		setMoveToStraightEdge(true);
 	}
 
-	@Override
-	public String getName() {
-
-		return InteractionConstants.MODE_AUTO_ALIGNMENT;
-	}
 
 	@Override
 	public boolean mousePressed(Point pt, int button, int functionKey) {
@@ -118,14 +112,9 @@ public class AutoSnapMode extends BaseTool {
 	}
 
 	@Override
-	public void paintOnBackground(AWTCanvas awtCanvas, DrawingContext context) {
+	public void drawHints(AWTCanvas awtCanvas, DrawingContext context, boolean onTop) {
 
-	}
-
-	@Override
-	public void paintOnTop(AWTCanvas awtCanvas, DrawingContext context) {
-
-		if (showPositionLines && cursor != null) {
+		if (onTop && showPositionLines && cursor != null) {
 			paintPositionLines(awtCanvas, context.getVisibleBounds());
 		}
 	}
@@ -235,10 +224,10 @@ public class AutoSnapMode extends BaseTool {
 
 		int dx = ptStart.x - ptEnd.x;
 		int dy = ptStart.y - ptEnd.y;
-		if (Math.abs(dx) > AutoSnapMode.EDGE_STRAIGHT_RANGE) {
+		if (Math.abs(dx) > AutoSnapTool.EDGE_STRAIGHT_RANGE) {
 			dx = 0;
 		}
-		if (Math.abs(dy) > AutoSnapMode.EDGE_STRAIGHT_RANGE) {
+		if (Math.abs(dy) > AutoSnapTool.EDGE_STRAIGHT_RANGE) {
 			dy = 0;
 		}
 		if (dx != 0 || dy != 0) {
@@ -275,10 +264,10 @@ public class AutoSnapMode extends BaseTool {
 
 		int dx = ptStart.x - ptEnd.x;
 		int dy = ptStart.y - ptEnd.y;
-		if (Math.abs(dx) > AutoSnapMode.EDGE_STRAIGHT_RANGE) {
+		if (Math.abs(dx) > AutoSnapTool.EDGE_STRAIGHT_RANGE) {
 			dx = 0;
 		}
-		if (Math.abs(dy) > AutoSnapMode.EDGE_STRAIGHT_RANGE) {
+		if (Math.abs(dy) > AutoSnapTool.EDGE_STRAIGHT_RANGE) {
 			dy = 0;
 		}
 		if (dx != 0 || dy != 0) {

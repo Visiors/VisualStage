@@ -2,15 +2,14 @@ package com.visiors.visualstage.graph.view.edge.impl.polyline;
 
 import java.awt.Point;
 
-import com.visiors.visualstage.constants.InteractionConstants;
 import com.visiors.visualstage.constants.PropertyConstants;
 import com.visiors.visualstage.graph.view.DefaultVisualGraphObject;
 import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.edge.impl.DefaultVisualEdge;
 import com.visiors.visualstage.graph.view.node.VisualNode;
-import com.visiors.visualstage.interaction.Interactable;
 import com.visiors.visualstage.svg.SVGDescriptor;
 import com.visiors.visualstage.svg.SVGUtil;
+import com.visiors.visualstage.tool.Interactable;
 import com.visiors.visualstage.util.PropertyUtil;
 
 public class PolygonalEdgeView extends DefaultVisualEdge {
@@ -141,10 +140,10 @@ public class PolygonalEdgeView extends DefaultVisualEdge {
 	public int getPreferredCursor() {
 
 		if (manipulationID != DefaultVisualGraphObject.NONE) {
-			return InteractionConstants.CURSOR_CROSSHAIR;
+			return Interactable.CURSOR_CROSSHAIR;
 		}
 
-		return InteractionConstants.CURSOR_DEFAULT;
+		return Interactable.CURSOR_DEFAULT;
 	}
 
 	public void setPinned(boolean pinned) {

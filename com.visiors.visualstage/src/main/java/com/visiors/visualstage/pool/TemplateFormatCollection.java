@@ -23,6 +23,7 @@ public class TemplateFormatCollection implements FormatCollection {
 	public TemplateFormatCollection() {
 
 		loadDefaultFomatDefinition();
+		loadDefaultDecorationFomatDefinition();
 	}
 
 	@Override
@@ -74,16 +75,30 @@ public class TemplateFormatCollection implements FormatCollection {
 
 	private void loadDefaultFomatDefinition() {
 
-		final String name = "DefaultFormatDefinition.xml";
-		final InputStream is = getClass().getResourceAsStream(name);
+		final String shapeDefinition = "DefaultFormatDefinition.xml";
+		final InputStream is = getClass().getResourceAsStream(shapeDefinition);
 		if (is == null) {
-			throw new ResourceLoadException("Failed to load the default format definition " + name);
+			throw new ResourceLoadException("Failed to load the default format definition " + shapeDefinition);
 		}
 		try {
 			final String xmlContent = CharStreams.toString(new InputStreamReader(is, "UTF-8"));
 			loadAndPool(xmlContent);
 		} catch (final IOException e) {
-			throw new XMLDocumentReadException("Failed to read the default format definition " + name, e);
+			throw new XMLDocumentReadException("Failed to read the default format definition " + shapeDefinition, e);
+		}
+	}
+	private void loadDefaultDecorationFomatDefinition() {
+
+		final String decorationDefinition = "DefaultDecorationDefinition.xml";
+		final InputStream is = getClass().getResourceAsStream(decorationDefinition);
+		if (is == null) {
+			throw new ResourceLoadException("Failed to load the default format definition " + decorationDefinition);
+		}
+		try {
+			final String xmlContent = CharStreams.toString(new InputStreamReader(is, "UTF-8"));
+			loadAndPool(xmlContent);
+		} catch (final IOException e) {
+			throw new XMLDocumentReadException("Failed to read the default format definition " + decorationDefinition, e);
 		}
 	}
 

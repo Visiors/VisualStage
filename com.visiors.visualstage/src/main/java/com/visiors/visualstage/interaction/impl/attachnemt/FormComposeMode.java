@@ -6,8 +6,10 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.List;
 
-import com.visiors.visualstage.constants.InteractionConstants;
-import com.visiors.visualstage.form.FormItem;
+import org.apache.batik.gvt.TextNode.Anchor;
+
+import com.visiors.visualstage.constants.Interactable;
+import com.visiors.visualstage.graph.view.node.VisualNode;
 import com.visiors.visualstage.interaction.impl.BaseTool;
 import com.visiors.visualstage.renderer.AWTCanvas;
 import com.visiors.visualstage.renderer.DrawingContext;
@@ -22,9 +24,9 @@ public class FormComposeMode extends BaseTool {
 	private int dx;
 	private int dy;
 
-	public FormComposeMode() {
+	public FormComposeMode(String name) {
 
-		super();
+		super(name);
 	}
 
 	@Override
@@ -187,7 +189,7 @@ public class FormComposeMode extends BaseTool {
 	@Override
 	public String getName() {
 
-		return InteractionConstants.MODE_FORM_COMPOSE;
+		return Interactable.MODE_FORM_COMPOSE;
 	}
 
 	@Override
@@ -207,14 +209,11 @@ public class FormComposeMode extends BaseTool {
 	}
 
 	@Override
-	public void paintOnBackground(AWTCanvas awtCanvas, DrawingContext context) {
+	public void drawHints(AWTCanvas awtCanvas, DrawingContext context, boolean onTop) {
 
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void paintOnTop(AWTCanvas awtCanvas, DrawingContext context) {
+		if(!onTop) {
+			return;
+		}
 
 		final VisualNode[] nodes = visualGraph.getNodes();
 		final Transform xform = visualGraph.getTransform();

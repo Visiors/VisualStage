@@ -17,12 +17,11 @@ public class MultiPageEditor extends TabPane {
 
 		newDocument("New Document");
 
-		new MouseKeyEventMediator(this); 
 	}
 
 	public void newDocument(String title) {
 
-		final Tab tab = new EditorPage(this, title);
+		final Tab tab = new EditorPage(editor, title);
 		getTabs().add(tab);
 		super.getSelectionModel().select(tab);
 	}

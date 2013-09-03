@@ -6,9 +6,9 @@ public interface GraphDocumentListener {
 
 	public void undoStackModified();
 
-	public void viewChanged();
-
-	void graphManipulated();
+	//	public void viewChanged();
+	//
+	//	void graphManipulated();
 
 	void graphExpansionChanged(Rectangle newBoundary);
 

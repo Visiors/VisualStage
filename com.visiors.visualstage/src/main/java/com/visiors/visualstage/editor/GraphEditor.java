@@ -25,8 +25,6 @@ import com.visiors.visualstage.handler.ClipboardHandler;
 import com.visiors.visualstage.handler.GroupingHandler;
 import com.visiors.visualstage.handler.SelectionHandler;
 import com.visiors.visualstage.handler.UndoRedoHandler;
-import com.visiors.visualstage.interaction.InteractionHandler;
-import com.visiors.visualstage.interaction.listener.InteractionListener;
 import com.visiors.visualstage.pool.FormatCollection;
 import com.visiors.visualstage.pool.ShapeCollection;
 import com.visiors.visualstage.property.PropertyList;
@@ -34,13 +32,14 @@ import com.visiors.visualstage.property.impl.DefaultPropertyList;
 import com.visiors.visualstage.renderer.Canvas;
 import com.visiors.visualstage.stage.StageDesigner;
 import com.visiors.visualstage.stage.StageDesigner.ViewMode;
+import com.visiors.visualstage.tool.ToolManager;
 import com.visiors.visualstage.util.PropertyUtil;
 
-public class GraphEditor implements Editor, GraphDocumentListener, InteractionListener {
+public class GraphEditor implements Editor, GraphDocumentListener {
 
 	protected GraphDocument activeDocument;
 	protected final Injector injector;
-	protected final InteractionHandler interactionHandler;
+	protected final ToolManager toolManager;
 	protected final UndoRedoHandler undoRedoHandler;
 	protected final SelectionHandler selectionHandler;
 	protected final GroupingHandler groupingHandler;
@@ -61,7 +60,7 @@ public class GraphEditor implements Editor, GraphDocumentListener, InteractionLi
 	public GraphEditor(BindingModule module) {
 
 		this.injector = Guice.createInjector(module);
-		this.interactionHandler = injector.getInstance(InteractionHandler.class);
+		this.toolManager = injector.getInstance(ToolManager.class);
 		this.stageDesigner = injector.getInstance(StageDesigner.class);
 		this.undoRedoHandler = injector.getInstance(UndoRedoHandler.class);
 		this.selectionHandler = injector.getInstance(SelectionHandler.class);
@@ -70,7 +69,7 @@ public class GraphEditor implements Editor, GraphDocumentListener, InteractionLi
 		this.shapeCollection = injector.getInstance(ShapeCollection.class);
 		this.formatCollection = injector.getInstance(FormatCollection.class);
 
-		injector.injectMembers(interactionHandler);
+		injector.injectMembers(toolManager);
 	}
 
 	@Override
@@ -116,8 +115,8 @@ public class GraphEditor implements Editor, GraphDocumentListener, InteractionLi
 	protected void applyDefaultConfiguration(GraphDocument document) {
 
 		stageDesigner.setViewMode(ViewMode.page);
-		stageDesigner.showGrid(true);
-		stageDesigner.showRuler(true);
+		stageDesigner.showGrid(false);
+		stageDesigner.showRuler(false);
 	}
 
 	@Override
@@ -174,7 +173,7 @@ public class GraphEditor implements Editor, GraphDocumentListener, InteractionLi
 
 		activeDocument = title == null ? null: getDocument(title);
 		if(activeDocument != null){ // TODO when activeDocument == null (last document closed) scope must be set on null
-			interactionHandler.setScope(activeDocument);
+			toolManager.setScope(activeDocument);
 			clipboardHandler.setScope(activeDocument);
 			selectionHandler.setScope(activeDocument);
 			groupingHandler.setScope(activeDocument);
@@ -280,74 +279,70 @@ public class GraphEditor implements Editor, GraphDocumentListener, InteractionLi
 	@Override
 	public boolean keyPressed(int keyChar, int keyCode) {
 
-		return interactionHandler.keyPressed(keyChar, keyCode);
+		return toolManager.keyPressed(keyChar, keyCode);
 
 	}
 
 	@Override
 	public boolean keyReleased(int keyChar, int keyCode) {
 
-		return interactionHandler.keyReleased(keyChar, keyCode);
+		return toolManager.keyReleased(keyChar, keyCode);
 	}
 
 	@Override
 	public boolean mouseDoubleClicked(Point pt, int button, int functionKey) {
 
-		return interactionHandler.mouseDoubleClicked(pt, button, functionKey);
+		return toolManager.mouseDoubleClicked(pt, button, functionKey);
 	}
 
 	@Override
 	public boolean mouseDragged(Point pt, int button, int functionKey) {
 
-		return interactionHandler.mouseDragged(pt, button, functionKey);
+		return toolManager.mouseDragged(pt, button, functionKey);
 	}
 
 	@Override
 	public boolean mouseMoved(Point pt, int button, int functionKey) {
 
-		return interactionHandler.mouseMoved(pt, button, functionKey);
+		return toolManager.mouseMoved(pt, button, functionKey);
 	}
 
 	@Override
 	public boolean mousePressed(Point pt, int button, int functionKey) {
 
-		return interactionHandler.mousePressed(pt, button, functionKey);
+		return toolManager.mousePressed(pt, button, functionKey);
 	}
 
 	@Override
 	public boolean mouseReleased(Point pt, int button, int functionKey) {
 
-		return interactionHandler.mouseReleased(pt, button, functionKey);
+		return toolManager.mouseReleased(pt, button, functionKey);
 	}
 
 	@Override
 	public boolean isInteracting() {
 
-		return interactionHandler.isInteracting();
+		return toolManager.isInteracting();
 	}
 
 	@Override
 	public void cancelInteraction() {
 
-		interactionHandler.cancelInteraction();
+		toolManager.cancelInteraction();
 	}
 
 	@Override
 	public void terminateInteraction() {
 
-		interactionHandler.cancelInteraction();
+		toolManager.cancelInteraction();
 	}
 
 	@Override
 	public int getPreferredCursor() {
 
-		return interactionHandler.getPreferredCursor();
+		return toolManager.getPreferredCursor();
 	}
 
-	@Override
-	public void interactionModeChanged(String previousHandler, String currnetHandler) {
-		// update view
-	}
 
 	@Override
 	public void undoStackModified() {
@@ -356,19 +351,6 @@ public class GraphEditor implements Editor, GraphDocumentListener, InteractionLi
 
 	}
 
-	@Override
-	public void viewChanged() {
-
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void graphManipulated() {
-
-		// TODO Auto-generated method stub
-
-	}
 
 	@Override
 	public void graphExpansionChanged(Rectangle newBoundary) {

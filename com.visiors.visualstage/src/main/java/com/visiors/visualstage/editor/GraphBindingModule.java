@@ -21,15 +21,7 @@ import com.visiors.visualstage.handler.UndoRedoHandler;
 import com.visiors.visualstage.handler.impl.DefaultClipboardHandler;
 import com.visiors.visualstage.handler.impl.DefaultSelectionHander;
 import com.visiors.visualstage.handler.impl.DefaultUndoRedoHandler;
-import com.visiors.visualstage.interaction.InteractionHandler;
-import com.visiors.visualstage.interaction.impl.DefaultInteractionHandler;
-import com.visiors.visualstage.interaction.impl.edgecreation.EdgeCreationMode;
-import com.visiors.visualstage.interaction.impl.marquee.SelectionTool;
-import com.visiors.visualstage.interaction.impl.modelling.ModellingMode;
-import com.visiors.visualstage.interaction.impl.nodecreateion.NodeCreationMode;
-import com.visiors.visualstage.interaction.impl.portedit.PortEditingMode;
-import com.visiors.visualstage.interaction.impl.readonlymode.ReadOnlyMode;
-import com.visiors.visualstage.interaction.impl.snap.AutoSnapMode;
+import com.visiors.visualstage.interaction.impl.DefaultToolManager;
 import com.visiors.visualstage.pool.FormatCollection;
 import com.visiors.visualstage.pool.ShapeCollection;
 import com.visiors.visualstage.pool.TemplateFormatCollection;
@@ -40,6 +32,7 @@ import com.visiors.visualstage.svg.DefaultSVGDocumentBuilder;
 import com.visiors.visualstage.svg.SVGDocumentBuilder;
 import com.visiors.visualstage.system.DefaultSystemUnitService;
 import com.visiors.visualstage.system.SystemUnit;
+import com.visiors.visualstage.tool.ToolManager;
 import com.visiors.visualstage.transform.DefaultTransformer;
 import com.visiors.visualstage.transform.Transform;
 import com.visiors.visualstage.validation.DefaultValidator;
@@ -98,7 +91,7 @@ public class GraphBindingModule extends BindingModule {
 	// binding the default interaction manager
 	public void bindInteractionManager(Binder binder) {
 
-		binder.bind(InteractionHandler.class).to(DefaultInteractionHandler.class);
+		binder.bind(ToolManager.class).to(DefaultToolManager.class).in(Singleton.class);;
 	}
 
 	// binding the default validator
@@ -149,41 +142,6 @@ public class GraphBindingModule extends BindingModule {
 		binder.bind(SVGDocumentBuilder.class).to(DefaultSVGDocumentBuilder.class);
 	}
 
-	// binding tools
-	public void bindReadOnlyModeBuilder(Binder binder) {
-
-		binder.bind(ReadOnlyMode.class).toInstance(new ReadOnlyMode());
-	}
-	// binding tools
-	public void bindModellingModeBuilder(Binder binder) {
-
-		binder.bind(ModellingMode.class).toInstance(new ModellingMode());
-	}
-	// binding tools
-	public void bindEdgeCreationModeBuilder(Binder binder) {
-
-		binder.bind(EdgeCreationMode.class).toInstance(new EdgeCreationMode());
-	}
-	// binding tools
-	public void bindNodeCreationModeBuilder(Binder binder) {
-
-		binder.bind(NodeCreationMode.class).toInstance(new NodeCreationMode());
-	}
-	// binding tools
-	public void bindAutoSnapModeBuilder(Binder binder) {
-
-		binder.bind(AutoSnapMode.class).toInstance(new AutoSnapMode());
-	}
-	// binding tools
-	public void bindMarqueeSelectionModeBuilder(Binder binder) {
-
-		binder.bind(SelectionTool.class).toInstance(new SelectionTool());
-	}
-	// binding tools
-	public void bindPortEditingModeBuilder(Binder binder) {
-
-		binder.bind(PortEditingMode.class).toInstance(new PortEditingMode());
-	}
 	// public void configureFileExtensions(Binder binder) {
 	//
 	// binder.bind(String.class).annotatedWith(Names.named(PropertyConstants.FILE_EXTENSIONS)).toInstance("vst");

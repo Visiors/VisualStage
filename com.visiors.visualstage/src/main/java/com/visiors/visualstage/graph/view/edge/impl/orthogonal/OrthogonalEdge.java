@@ -2,16 +2,15 @@ package com.visiors.visualstage.graph.view.edge.impl.orthogonal;
 
 import java.awt.Point;
 
-import com.visiors.visualstage.constants.SVGConstants;
-import com.visiors.visualstage.constants.InteractionConstants;
 import com.visiors.visualstage.constants.PropertyConstants;
+import com.visiors.visualstage.constants.SVGConstants;
 import com.visiors.visualstage.graph.view.DefaultVisualGraphObject;
 import com.visiors.visualstage.graph.view.ViewConstants;
 import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.edge.impl.polyline.PolygonalEdgeView;
-import com.visiors.visualstage.interaction.Interactable;
 import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.svg.SVGDescriptor;
+import com.visiors.visualstage.tool.Interactable;
 import com.visiors.visualstage.util.PropertyUtil;
 
 public class OrthogonalEdge extends PolygonalEdgeView {
@@ -364,29 +363,29 @@ public class OrthogonalEdge extends PolygonalEdgeView {
 	public int getPreferredCursor() {
 
 		if (manipulationID == DefaultVisualGraphObject.NONE) {
-			return InteractionConstants.CURSOR_DEFAULT;
+			return Interactable.CURSOR_DEFAULT;
 		}
 
 		if (hitSegmentCenterPoint(manipulationID)) {
 			int index = IDToIndex(manipulationID);
 			Point[] points = path.getPoints();
 			if (points[index].x == points[index + 1].x) {
-				return InteractionConstants.CURSOR_W_RESIZE;
+				return Interactable.CURSOR_W_RESIZE;
 			} else {
-				return InteractionConstants.CURSOR_N_RESIZE;
+				return Interactable.CURSOR_N_RESIZE;
 			}
 		}
 		if (hitSegment(manipulationID)) {
-			return InteractionConstants.CURSOR_CROSSHAIR;
+			return Interactable.CURSOR_CROSSHAIR;
 		}
 		if (hitCornerPoint(manipulationID)) {
-			return InteractionConstants.CURSOR_CROSSHAIR;
+			return Interactable.CURSOR_CROSSHAIR;
 		}
 		if (hitStartPoint(manipulationID) || hitEndPoint(manipulationID)) {
-			return InteractionConstants.CURSOR_CROSSHAIR;
+			return Interactable.CURSOR_CROSSHAIR;
 		}
 
-		return InteractionConstants.CURSOR_DEFAULT;
+		return Interactable.CURSOR_DEFAULT;
 	}
 
 	// private Point[] removeRedundats(Point[] points) {

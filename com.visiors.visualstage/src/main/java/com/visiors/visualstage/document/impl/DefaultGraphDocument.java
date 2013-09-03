@@ -2,7 +2,6 @@ package com.visiors.visualstage.document.impl;
 
 import java.awt.Image;
 import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -35,6 +34,7 @@ import com.visiors.visualstage.svg.DocumentConfig;
 import com.visiors.visualstage.svg.SVGDocumentBuilder;
 import com.visiors.visualstage.svg.SVGDocumentConfig;
 import com.visiors.visualstage.svg.SVGUtil;
+import com.visiors.visualstage.tool.ToolManager;
 import com.visiors.visualstage.transform.Transform;
 import com.visiors.visualstage.validation.Validator;
 
@@ -57,9 +57,8 @@ public class DefaultGraphDocument implements GraphDocument {
 	protected LayerManager layerManager;
 
 	private PropertyBinder propertyBinder;
-	@Inject
 	protected StageDesigner stageDesigner;
-
+	protected final ToolManager toolManager;
 	@Inject
 	SVGDocumentBuilder svgDocumentBuilder;
 	protected UndoRedoHandler undoRedoHandler;
@@ -71,9 +70,10 @@ public class DefaultGraphDocument implements GraphDocument {
 	private String svgTransformation;
 
 	@Inject
-	public DefaultGraphDocument(LayerManager layerManager, StageDesigner stageDesigner, Validator validator) {
+	public DefaultGraphDocument(LayerManager layerManager, StageDesigner stageDesigner, ToolManager toolManager, Validator validator) {
 
 		this.stageDesigner = stageDesigner;
+		this.toolManager = toolManager;
 		this.validator = validator;
 		this.layerManager = layerManager;
 
@@ -227,22 +227,14 @@ public class DefaultGraphDocument implements GraphDocument {
 	public void update() {
 
 		if (doDrawing) {
-			for (final GraphDocumentListener l : graphDocumentListener) {
-				l.viewChanged();
+			for (final Canvas canvas : canvases) {
+				draw(canvas);
 			}
 		}
-
-		draw();
 	}
 
 	// /////////////////////////////////////////////////
 
-	private void draw() {
-
-		for (final Canvas canvas : canvases) {
-			draw(canvas);
-		}
-	}
 
 	@Override
 	public void draw(Canvas canvas) {
@@ -259,19 +251,19 @@ public class DefaultGraphDocument implements GraphDocument {
 		// keep always the main graph view fit to the screen
 		graph.setBounds(context.getVisibleBounds());
 
-		stageDesigner.paintBehind(awtCanvas, canvas.getContext());
-
+		toolManager.drawHints(awtCanvas, context, false);
+		stageDesigner.paintBehind(awtCanvas, context);
 		if (useImageCaching) {
 			graph.draw(awtCanvas, context, DrawingSubject.OBJECT);
 			graph.draw(awtCanvas, context, DrawingSubject.SELECTION_INDICATORS);
 			graph.draw(awtCanvas, context, DrawingSubject.PORTS);
 		} else {
-			awtCanvas.image = (BufferedImage) getImage(context, null);
+			awtCanvas.gfx.drawImage(getImage(context, null), 0, 0, null);
 		}
-
 		stageDesigner.paintOver(awtCanvas, context);
-
+		toolManager.drawHints(awtCanvas, context, true);
 		canvas.draw(0, 0, awtCanvas.image);
+
 	}
 
 	@Override
@@ -396,11 +388,6 @@ public class DefaultGraphDocument implements GraphDocument {
 
 	GraphViewListener graphViewListener = new GraphViewAdapter() {
 
-		@Override
-		public void graphManipulated(VisualGraph graph) {
-
-			fireGraphManipulated();
-		}
 
 		@Override
 		public void viewChanged(VisualGraph graph) {
@@ -458,14 +445,7 @@ public class DefaultGraphDocument implements GraphDocument {
 		update();
 	}
 
-	protected void fireGraphManipulated() {
 
-		if (doDrawing) {
-			for (final GraphDocumentListener l : graphDocumentListener) {
-				l.graphManipulated();
-			}
-		}
-	}
 
 	protected void fireGraphExpansionChanged(Rectangle r) {
 

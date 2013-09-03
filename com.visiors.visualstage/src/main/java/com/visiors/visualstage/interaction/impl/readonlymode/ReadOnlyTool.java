@@ -2,21 +2,16 @@ package com.visiors.visualstage.interaction.impl.readonlymode;
 
 import java.awt.Point;
 
-import com.visiors.visualstage.constants.InteractionConstants;
 import com.visiors.visualstage.interaction.impl.BaseTool;
 
-public class ReadOnlyMode extends BaseTool {
+public class ReadOnlyTool extends BaseTool {
 
-	public ReadOnlyMode() {
+	public ReadOnlyTool(String name) {
 
-		super();
+		super(name);
 	}
 
-	@Override
-	public String getName() {
 
-		return InteractionConstants.MODE_READ_ONLY;
-	}
 
 	@Override
 	public void setActive(boolean activated) {

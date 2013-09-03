@@ -4,11 +4,11 @@ import com.visiors.visualstage.attribute.Attributable;
 import com.visiors.visualstage.graph.CustomData;
 import com.visiors.visualstage.graph.view.graph.VisualGraph;
 import com.visiors.visualstage.graph.view.shape.CompositeShape;
-import com.visiors.visualstage.interaction.Manipulatable;
 import com.visiors.visualstage.renderer.AWTCanvas;
 import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.renderer.DrawingSubject;
 import com.visiors.visualstage.renderer.cache.Cacheable;
+import com.visiors.visualstage.tool.Manipulatable;
 
 /**
  * This interface defines methods that are common in all visual graph objects;
