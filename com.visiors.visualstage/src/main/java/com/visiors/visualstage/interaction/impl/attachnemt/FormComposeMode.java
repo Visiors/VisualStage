@@ -301,7 +301,7 @@ public class FormComposeMode extends BaseTool {
 		final Dimension size = hitComponent.getSize();
 		final Point offset = hitComponent.getOffset();
 		Transform xform = visualGraph.getTransform();
-		final Rectangle b = xform.transformToScreen(hitNode.getVisibleBounds());
+		final Rectangle b = xform.transformToScreen(hitNode.getClipBounds());
 		final Point pt = new Point(b.x, b.y - size.height - 50);
 
 		pt.x -= 40;

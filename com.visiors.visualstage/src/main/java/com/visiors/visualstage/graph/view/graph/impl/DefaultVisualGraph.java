@@ -739,6 +739,7 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 
 
 
+
 	@Override
 	public void draw(AWTCanvas awtCanvas, DrawingContext context, DrawingSubject subject) {
 
@@ -747,6 +748,8 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 			vgo.draw(awtCanvas, context, subject);
 		}
 	}
+
+
 
 
 	@Override

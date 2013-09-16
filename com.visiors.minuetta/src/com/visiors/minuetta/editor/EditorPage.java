@@ -8,6 +8,7 @@ import javafx.event.EventHandler;
 import javafx.scene.control.Tab;
 import javafx.scene.control.Tooltip;
 
+import com.visiors.minuetta.ScrollableCanvas;
 import com.visiors.visualstage.document.GraphDocument;
 import com.visiors.visualstage.editor.GraphEditor;
 import com.visiors.visualstage.graph.view.graph.VisualGraph;
@@ -26,9 +27,9 @@ public class EditorPage extends Tab implements EventHandler<Event> {
 		super();
 
 		this.editor = editor;
-		this.document = editor.newDocument(title);		
+		this.document = editor.newDocument(title);
 		this.scrollableCanvas = new ScrollableCanvas(editor);
-		setContent(scrollableCanvas);		
+		setContent(scrollableCanvas);				
 		editor.addCanvas(scrollableCanvas.getCanvas());
 		setText(document.getTitle());
 		setTooltip(new Tooltip(document.getTitle()));

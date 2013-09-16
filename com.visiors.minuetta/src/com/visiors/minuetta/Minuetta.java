@@ -1,6 +1,8 @@
 package com.visiors.minuetta;
 
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -24,7 +26,6 @@ import javafx.stage.Stage;
 import com.visiors.minuetta.editor.MultiPageEditor;
 import com.visiors.minuetta.view.PropertyView;
 import com.visiors.minuetta.view.ShapeGallery;
-import com.visiors.visualstage.editor.GraphEditor;
 
 public class Minuetta extends Application {
 
@@ -33,7 +34,7 @@ public class Minuetta extends Application {
 		launch(args);
 	}
 
-	private GraphEditor editor;
+	private MultiPageEditor multiPageEditor;
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -111,7 +112,7 @@ public class Minuetta extends Application {
 
 	private Node createEditorArea() {
 
-		final MultiPageEditor multiPageEditor = new MultiPageEditor();
+		this.multiPageEditor = new MultiPageEditor();
 
 		return multiPageEditor;
 	}
@@ -132,11 +133,17 @@ public class Minuetta extends Application {
 
 		HBox buttonBar = new HBox();
 
-		Button btn1 = ButtonBuilder.create().text("Copy").id("iphone").build();
+		Button btn1 = ButtonBuilder.create().text("New").id("iphone").build();
 		Button btn2 = ButtonBuilder.create().text("Cut").id("iphone").build();
 		Button btn3 = ButtonBuilder.create().text("Paste").id("iphone").build();
 		buttonBar.getChildren().addAll(btn1, new Separator(), btn2, btn3);
 		toolBar.getItems().addAll(spacer, buttonBar);
+
+		btn1.setOnAction(new EventHandler<ActionEvent>() {
+			@Override public void handle(ActionEvent e) {
+				multiPageEditor.newDocument(""+System.currentTimeMillis());
+			}
+		});
 		return toolBar;
 	}
 

@@ -1,5 +1,7 @@
 package com.visiors.visualstage.document.impl;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.util.ArrayList;
@@ -223,8 +225,31 @@ public class DefaultGraphDocument implements GraphDocument {
 		}
 	}
 
+
+
+
+	//	long lastDraw;
+	//	long queeDraw;
+
 	@Override
 	public void update() {
+		//		if(System.currentTimeMillis() - lastDraw < 50) {
+		//			System.err.println("cancel");
+		//			if(queeDraw == 0) {
+		//				queeDraw = 1;
+		//				new Timer().schedule(
+		//						new TimerTask() {
+		//
+		//							@Override
+		//							public void run() {
+		//								//								System.out.println("ping");
+		//								update();
+		//								queeDraw = 0;
+		//							}
+		//						}, 150);
+		//			}
+		//		}
+		//		lastDraw = System.currentTimeMillis();
 
 		if (doDrawing) {
 			for (final Canvas canvas : canvases) {
@@ -237,22 +262,32 @@ public class DefaultGraphDocument implements GraphDocument {
 
 
 	@Override
-	public void draw(Canvas canvas) {
+	public synchronized void draw(Canvas canvas) {
 
 		final DrawingContext context = canvas.getContext();
-		final Rectangle bounds = context.getVisibleBounds();
-		if (bounds == null || bounds.isEmpty()) {
+		final Transform transform = context.getTransform();
+		final Rectangle viewport = context.getClipBounds();
+		if (viewport == null || viewport.isEmpty()) {
 			System.err.println("Warning: Cannot draw on the canvas with zero width/heigt!");
 			return;
 		}
-		final AWTCanvas awtCanvas = new AWTCanvas((int) bounds.getWidth(), (int) bounds.getHeight());
-		final VisualGraph graph = getGraph();
 
-		// keep always the main graph view fit to the screen
-		graph.setBounds(context.getVisibleBounds());
+		System.err.println("Viewport:" + viewport);
+
+
+		final VisualGraph graph = getGraph(); 
+		//keep always the main graph view fit to the screen
+		graph.setBounds(viewport);
+		//		transform.setXTranslate(viewport.getMinX());
+		//		transform.setYTranslate(viewport.getMinY());
+		//		graph.setTransformer(transform); 
+
+
+		final AWTCanvas awtCanvas = new AWTCanvas(viewport.x, viewport.y, (int) viewport.getWidth(), (int) viewport.getHeight());
+		awtCanvas.gfx.translate(viewport.x, viewport.y);
 
 		toolManager.drawHints(awtCanvas, context, false);
-		stageDesigner.paintBehind(awtCanvas, context);
+		//		stageDesigner.paintBehind(awtCanvas, context);
 		if (useImageCaching) {
 			graph.draw(awtCanvas, context, DrawingSubject.OBJECT);
 			graph.draw(awtCanvas, context, DrawingSubject.SELECTION_INDICATORS);
@@ -260,9 +295,14 @@ public class DefaultGraphDocument implements GraphDocument {
 		} else {
 			awtCanvas.gfx.drawImage(getImage(context, null), 0, 0, null);
 		}
-		stageDesigner.paintOver(awtCanvas, context);
+		//		stageDesigner.paintOver(awtCanvas, context);
 		toolManager.drawHints(awtCanvas, context, true);
-		canvas.draw(0, 0, awtCanvas.image);
+
+		awtCanvas.gfx.translate(-viewport.x, -viewport.y);	
+		awtCanvas.gfx.setStroke(new BasicStroke(1f));
+		awtCanvas.gfx.setColor(Color.red);
+		awtCanvas.gfx.drawRect(1, 1, (int) viewport.getWidth()-2, (int) viewport.getHeight()-2);
+		canvas.draw(-viewport.x, -viewport.y, awtCanvas.image);
 
 	}
 

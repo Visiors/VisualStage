@@ -10,7 +10,7 @@ public interface DrawingContext {
 
 	//	public void setResolution(Resolution resolution);
 
-	public Rectangle getVisibleBounds();
+	public Rectangle getClipBounds();
 
 	//	public void setBounds(Rectangle rectangle);
 

@@ -115,7 +115,7 @@ public class AutoSnapTool extends BaseTool {
 	public void drawHints(AWTCanvas awtCanvas, DrawingContext context, boolean onTop) {
 
 		if (onTop && showPositionLines && cursor != null) {
-			paintPositionLines(awtCanvas, context.getVisibleBounds());
+			paintPositionLines(awtCanvas, context.getClipBounds());
 		}
 	}
 

@@ -65,7 +65,6 @@ public class SelectionTool extends BaseTool {
 				needUpdate = true;
 			} else {
 				deselectOnMoueRelease = hitOnMouseDown.isSelected() && visualGraph.getSelection().size() > 1;
-				System.err.println("deselectOnMoueRelease: " + deselectOnMoueRelease);
 				for (final VisualGraphObject vgo : visualGraph.getGraphObjects()) {
 					if (vgo.equals(hitOnMouseDown)) {
 						if (!vgo.isSelected()) {

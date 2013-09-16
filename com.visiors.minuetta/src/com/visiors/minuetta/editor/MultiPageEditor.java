@@ -16,7 +16,6 @@ public class MultiPageEditor extends TabPane {
 		setSide(Side.TOP);
 
 		newDocument("New Document");
-
 	}
 
 	public void newDocument(String title) {
@@ -31,6 +30,4 @@ public class MultiPageEditor extends TabPane {
 
 		return editor;
 	}
-
-
 }

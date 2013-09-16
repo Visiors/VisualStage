@@ -36,7 +36,7 @@ public class DefaultDrawingContext implements DrawingContext {
 
 
 	@Override
-	public Rectangle getVisibleBounds() {
+	public Rectangle getClipBounds() {
 
 		return visibleBounds;
 	}
