@@ -272,7 +272,7 @@ public class DefaultGraphDocument implements GraphDocument {
 			return;
 		}
 
-		System.err.println("Viewport:" + viewport);
+		//		System.err.println("Viewport:" + viewport);
 
 
 		final VisualGraph graph = getGraph(); 
@@ -300,8 +300,8 @@ public class DefaultGraphDocument implements GraphDocument {
 
 		awtCanvas.gfx.translate(-viewport.x, -viewport.y);	
 		awtCanvas.gfx.setStroke(new BasicStroke(1f));
-		awtCanvas.gfx.setColor(Color.red);
-		awtCanvas.gfx.drawRect(1, 1, (int) viewport.getWidth()-2, (int) viewport.getHeight()-2);
+		awtCanvas.gfx.setColor(Color.blue);
+		awtCanvas.gfx.drawRect(2, 2, (int) viewport.getWidth()-4, (int) viewport.getHeight()-4);
 		canvas.draw(-viewport.x, -viewport.y, awtCanvas.image);
 
 	}

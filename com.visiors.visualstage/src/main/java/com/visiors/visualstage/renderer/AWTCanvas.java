@@ -15,11 +15,10 @@ public class AWTCanvas {
 
 		image = new BufferedImage(width, height,BufferedImage.TYPE_INT_ARGB_PRE);
 		gfx = (Graphics2D) image.getGraphics();
-		//				gfx.translate(x, y);
-		gfx.setColor(Color.orange);
+		gfx.setColor(Color.white);
 		gfx.fillRect(0, 0, width, height);
-		gfx.setColor(Color.blue);
-		gfx.drawRect(4, 4, width-8, height-8);
+		gfx.setColor(Color.orange);
+		gfx.drawRect(1, 1, width-2, height-2);
 	}
 
 	public void setImage(Image img){
