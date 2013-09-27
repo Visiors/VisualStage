@@ -139,7 +139,7 @@ public class DefaultStageDesigner implements StageDesigner {
 	@Override
 	public void paintBehind(AWTCanvas awtCanvas, DrawingContext context) {
 
-		final Rectangle canvasBounds = context.getClipBounds();
+		final Rectangle canvasBounds = context.getViewport();
 
 		if (pageView == ViewMode.page) {
 			drawPages(awtCanvas, context);
@@ -162,7 +162,7 @@ public class DefaultStageDesigner implements StageDesigner {
 
 	private void paintRulers(AWTCanvas awtCanvas, DrawingContext context) {
 
-		final Rectangle bounds = context.getClipBounds();
+		final Rectangle bounds = context.getViewport();
 		hRuler.draw(awtCanvas.gfx, bounds, systemUnit.getPixelsPerUnit(), 5, "cm");
 		vRuler.draw(awtCanvas.gfx, bounds, systemUnit.getPixelsPerUnit(), 5, "cm");
 		cornerButton.draw(awtCanvas.gfx, bounds);
@@ -281,7 +281,7 @@ public class DefaultStageDesigner implements StageDesigner {
 	private void fillBackground(AWTCanvas awtCanvas, DrawingContext context) {
 
 		// screen
-		final Rectangle r = new Rectangle(context.getClipBounds());
+		final Rectangle r = new Rectangle(context.getViewport());
 		awtCanvas.gfx.setColor(Color.white);
 		awtCanvas.gfx.fillRect(r.x, r.y, r.width, r.height);
 	}

@@ -55,11 +55,18 @@ public class MyCanvasImpl implements Canvas {
 			}
 
 			@Override
-			public Rectangle getClipBounds() {
+			public Rectangle getViewport() {
 
 				return new Rectangle(0, 0, screenWidth, screenHeight);
 			}
 		};
+	}
+
+	@Override
+	public void invalidate() {
+
+		// TODO Auto-generated method stub
+
 	}
 
 }

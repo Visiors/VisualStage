@@ -10,10 +10,10 @@ import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.node.Port;
 import com.visiors.visualstage.graph.view.node.PortSet;
 import com.visiors.visualstage.graph.view.node.VisualNode;
-import com.visiors.visualstage.interaction.impl.BaseTool;
 import com.visiors.visualstage.renderer.AWTCanvas;
 import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.system.SystemUnit;
+import com.visiors.visualstage.tool.impl.BaseTool;
 import com.visiors.visualstage.transform.Transform;
 import com.visiors.visualstage.util.GraphInteractionUtil;
 
@@ -78,7 +78,7 @@ public class AutoSnapTool extends BaseTool {
 		if (isShowPositionLines()) {
 			final Transform transform = visualGraph.getTransformer();
 			cursor = transform.transformToScreen(pt);
-			graphDocument.update();
+			graphDocument.invalidate();
 		}
 
 		if (isSnapToGrid()) {
@@ -97,7 +97,7 @@ public class AutoSnapTool extends BaseTool {
 		if (isShowPositionLines()) {
 			final Transform transform = visualGraph.getTransformer();
 			cursor = transform.transformToScreen(pt);
-			graphDocument.update();
+			graphDocument.invalidate();
 		}
 		return false;
 	}
@@ -115,7 +115,7 @@ public class AutoSnapTool extends BaseTool {
 	public void drawHints(AWTCanvas awtCanvas, DrawingContext context, boolean onTop) {
 
 		if (onTop && showPositionLines && cursor != null) {
-			paintPositionLines(awtCanvas, context.getClipBounds());
+			paintPositionLines(awtCanvas, context.getViewport());
 		}
 	}
 

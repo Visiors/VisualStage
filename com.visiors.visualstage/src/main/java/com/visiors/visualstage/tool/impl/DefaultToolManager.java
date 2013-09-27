@@ -1,4 +1,4 @@
-package com.visiors.visualstage.interaction.impl;
+package com.visiors.visualstage.tool.impl;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -50,7 +50,7 @@ public class DefaultToolManager implements ToolManager {
 		registerTool(new SelectionTool(TOOL_SELECTION));
 		registerTool(new MarqueeSelectionTool(TOOL_MARQUEE_SELECTION));
 		registerTool(new ObjectEditTool(TOOL_OBJECT_EVENT_MEDIATOR));
-		registerTool(new MoveObjectTool(TOOL_MOVE_TOOL));
+		registerTool(new MoveAndResizeTool(TOOL_MOVE_TOOL));
 		// registerTool(new EdgeCreationTool());
 		// registerTool(new NodeCreationTool());
 		// registerTool(new AutoSnapTool());

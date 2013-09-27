@@ -1,4 +1,4 @@
-package com.visiors.visualstage.interaction.impl;
+package com.visiors.visualstage.tool.impl;
 
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -21,7 +21,7 @@ import com.visiors.visualstage.util.GraphInteractionUtil;
  * 
  * @version $Id: $
  */
-public class MoveObjectTool extends BaseTool {
+public class MoveAndResizeTool extends BaseTool {
 
 
 	private Point mousePressedPos;
@@ -31,7 +31,7 @@ public class MoveObjectTool extends BaseTool {
 
 
 
-	protected MoveObjectTool(String name) {
+	protected MoveAndResizeTool(String name) {
 
 		super(name);
 	}
@@ -118,11 +118,9 @@ public class MoveObjectTool extends BaseTool {
 	private synchronized void moveSelection(Point pt) {
 
 		if (hitObject != null) {
-
 			final Point currentPos = hitObject.getBounds().getLocation();
 			final int dx = mousePressedPos.x - pt.x + currentPos.x - hitObjectPos.x;
 			final int dy = mousePressedPos.y - pt.y + currentPos.y - hitObjectPos.y;
-
 			final List<VisualGraphObject> selection = visualGraph.getSelection();
 
 			moveEdgesWithSelectedNodes(selection, dx, dy);

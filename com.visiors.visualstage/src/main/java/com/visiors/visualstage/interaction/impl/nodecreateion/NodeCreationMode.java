@@ -3,7 +3,7 @@ package com.visiors.visualstage.interaction.impl.nodecreateion;
 import java.awt.Point;
 
 import com.visiors.visualstage.constants.Interactable;
-import com.visiors.visualstage.interaction.impl.BaseTool;
+import com.visiors.visualstage.tool.impl.BaseTool;
 
 public class NodeCreationMode extends BaseTool {
 

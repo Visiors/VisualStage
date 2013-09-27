@@ -12,9 +12,9 @@ import com.visiors.visualstage.graph.view.node.PortSet;
 import com.visiors.visualstage.graph.view.node.VisualNode;
 import com.visiors.visualstage.graph.view.node.impl.DefaultPort;
 import com.visiors.visualstage.graph.view.node.impl.DefaultPortSet;
-import com.visiors.visualstage.interaction.impl.BaseTool;
 import com.visiors.visualstage.renderer.AWTCanvas;
 import com.visiors.visualstage.renderer.DrawingContext;
+import com.visiors.visualstage.tool.impl.BaseTool;
 
 public class PortEditingMode extends BaseTool {
 
@@ -107,7 +107,7 @@ public class PortEditingMode extends BaseTool {
 			subject.highlightPort(portID, true);
 		}
 
-		graphDocument.update();
+		graphDocument.invalidate();
 
 		return isActive();
 	}
@@ -172,7 +172,7 @@ public class PortEditingMode extends BaseTool {
 				movePort(portID, pt);
 			}
 
-			graphDocument.update();
+			graphDocument.invalidate();
 		}
 		return isActive();
 	}

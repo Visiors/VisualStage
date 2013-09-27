@@ -10,9 +10,9 @@ import org.apache.batik.gvt.TextNode.Anchor;
 
 import com.visiors.visualstage.constants.Interactable;
 import com.visiors.visualstage.graph.view.node.VisualNode;
-import com.visiors.visualstage.interaction.impl.BaseTool;
 import com.visiors.visualstage.renderer.AWTCanvas;
 import com.visiors.visualstage.renderer.DrawingContext;
+import com.visiors.visualstage.tool.impl.BaseTool;
 import com.visiors.visualstage.util.GraphInteractionUtil;
 
 public class FormComposeMode extends BaseTool {
@@ -301,7 +301,7 @@ public class FormComposeMode extends BaseTool {
 		final Dimension size = hitComponent.getSize();
 		final Point offset = hitComponent.getOffset();
 		Transform xform = visualGraph.getTransform();
-		final Rectangle b = xform.transformToScreen(hitNode.getClipBounds());
+		final Rectangle b = xform.transformToScreen(hitNode.getViewport());
 		final Point pt = new Point(b.x, b.y - size.height - 50);
 
 		pt.x -= 40;

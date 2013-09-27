@@ -11,7 +11,7 @@ public class AWTCanvas {
 	public Graphics2D gfx;
 	public BufferedImage image;
 
-	public AWTCanvas(int x, int y, int width, int height) {
+	public AWTCanvas(int width, int height) {
 
 		image = new BufferedImage(width, height,BufferedImage.TYPE_INT_ARGB_PRE);
 		gfx = (Graphics2D) image.getGraphics();

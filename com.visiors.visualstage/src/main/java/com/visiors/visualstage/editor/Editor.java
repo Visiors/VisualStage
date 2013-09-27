@@ -7,13 +7,10 @@ import com.visiors.visualstage.handler.SelectionHandler;
 import com.visiors.visualstage.handler.UndoRedoHandler;
 import com.visiors.visualstage.pool.FormatCollection;
 import com.visiors.visualstage.pool.ShapeCollection;
-import com.visiors.visualstage.renderer.Canvas;
 import com.visiors.visualstage.stage.StageDesigner;
 import com.visiors.visualstage.tool.Interactable;
 
 public interface Editor extends Interactable {
-
-	public void addCanvas(Canvas canvas);
 
 	public GraphDocument newDocument(String title);
 
@@ -47,10 +44,8 @@ public interface Editor extends Interactable {
 
 	public ClipboardHandler getClipboardHandler();
 
-	void update();
-
-
 	void addEditorListener(EditorListener editorListener);
+
 	void removeEditorListener(EditorListener editorListener);
 
 	// public void registerInplaceTextEditor(InplaceTextditor editor);

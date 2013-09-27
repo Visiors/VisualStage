@@ -6,11 +6,9 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
-import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.visiors.visualstage.constants.PropertyConstants;
 import com.visiors.visualstage.document.GraphDocument;
@@ -54,7 +52,6 @@ public class DefaultGraphDocument implements GraphDocument {
 	private boolean doDrawing = true;
 	private PropertyList properties;
 	private boolean useImageCaching;
-	private Set<Canvas> canvases = Sets.newHashSet();
 
 	protected LayerManager layerManager;
 
@@ -72,7 +69,8 @@ public class DefaultGraphDocument implements GraphDocument {
 	private String svgTransformation;
 
 	@Inject
-	public DefaultGraphDocument(LayerManager layerManager, StageDesigner stageDesigner, ToolManager toolManager, Validator validator) {
+	public DefaultGraphDocument(LayerManager layerManager, StageDesigner stageDesigner, ToolManager toolManager,
+			Validator validator) {
 
 		this.stageDesigner = stageDesigner;
 		this.toolManager = toolManager;
@@ -123,13 +121,6 @@ public class DefaultGraphDocument implements GraphDocument {
 	public void setProperties(PropertyList properties) {
 
 		this.properties = properties;
-	}
-
-	@Override
-	public void setCanvasSet(Set<Canvas> canvases) {
-
-		this.canvases = canvases;
-
 	}
 
 	@Override
@@ -221,73 +212,35 @@ public class DefaultGraphDocument implements GraphDocument {
 
 		this.doDrawing = doDrawing;
 		if (doDrawing) {
-			update();
+			invalidate();
 		}
 	}
 
-
-
-
-	//	long lastDraw;
-	//	long queeDraw;
-
 	@Override
-	public void update() {
-		//		if(System.currentTimeMillis() - lastDraw < 50) {
-		//			System.err.println("cancel");
-		//			if(queeDraw == 0) {
-		//				queeDraw = 1;
-		//				new Timer().schedule(
-		//						new TimerTask() {
-		//
-		//							@Override
-		//							public void run() {
-		//								//								System.out.println("ping");
-		//								update();
-		//								queeDraw = 0;
-		//							}
-		//						}, 150);
-		//			}
-		//		}
-		//		lastDraw = System.currentTimeMillis();
+	public void invalidate() {
 
-		if (doDrawing) {
-			for (final Canvas canvas : canvases) {
-				draw(canvas);
-			}
-		}
+		fireViewInvalid();
 	}
 
 	// /////////////////////////////////////////////////
 
-
 	@Override
-	public synchronized void draw(Canvas canvas) {
+	public synchronized Image getScreen(DrawingContext context) {
 
-		final DrawingContext context = canvas.getContext();
-		final Transform transform = context.getTransform();
-		final Rectangle viewport = context.getClipBounds();
+		final Rectangle viewport = context.getViewport();
+		final AWTCanvas awtCanvas = new AWTCanvas((int) viewport.getWidth(), (int) viewport.getHeight());
+
 		if (viewport == null || viewport.isEmpty()) {
 			System.err.println("Warning: Cannot draw on the canvas with zero width/heigt!");
-			return;
+			return awtCanvas.image;
 		}
 
-		//		System.err.println("Viewport:" + viewport);
-
-
-		final VisualGraph graph = getGraph(); 
-		//keep always the main graph view fit to the screen
+		final VisualGraph graph = getGraph();
+		// keep always the main graph view fit to the screen
 		graph.setBounds(viewport);
-		//		transform.setXTranslate(viewport.getMinX());
-		//		transform.setYTranslate(viewport.getMinY());
-		//		graph.setTransformer(transform); 
-
-
-		final AWTCanvas awtCanvas = new AWTCanvas(viewport.x, viewport.y, (int) viewport.getWidth(), (int) viewport.getHeight());
-		awtCanvas.gfx.translate(viewport.x, viewport.y);
 
 		toolManager.drawHints(awtCanvas, context, false);
-		//		stageDesigner.paintBehind(awtCanvas, context);
+		stageDesigner.paintBehind(awtCanvas, context);
 		if (useImageCaching) {
 			graph.draw(awtCanvas, context, DrawingSubject.OBJECT);
 			graph.draw(awtCanvas, context, DrawingSubject.SELECTION_INDICATORS);
@@ -295,15 +248,13 @@ public class DefaultGraphDocument implements GraphDocument {
 		} else {
 			awtCanvas.gfx.drawImage(getImage(context, null), 0, 0, null);
 		}
-		//		stageDesigner.paintOver(awtCanvas, context);
+		stageDesigner.paintOver(awtCanvas, context);
 		toolManager.drawHints(awtCanvas, context, true);
 
-		awtCanvas.gfx.translate(-viewport.x, -viewport.y);	
 		awtCanvas.gfx.setStroke(new BasicStroke(1f));
 		awtCanvas.gfx.setColor(Color.blue);
-		awtCanvas.gfx.drawRect(2, 2, (int) viewport.getWidth()-4, (int) viewport.getHeight()-4);
-		canvas.draw(-viewport.x, -viewport.y, awtCanvas.image);
-
+		awtCanvas.gfx.drawRect(2, 2, (int) viewport.getWidth() - 4, (int) viewport.getHeight() - 4);
+		return awtCanvas.image;
 	}
 
 	@Override
@@ -372,7 +323,12 @@ public class DefaultGraphDocument implements GraphDocument {
 
 		final VisualGraph graph = getGraph();
 		Rectangle boundary = graph.getBounds();
-		svgDocumentBuilder.createEmptyDocument(boundary.width, boundary.height, graph.getTransformer(), config);
+		final Rectangle viewport = new Rectangle(-context.getViewport().x, -context.getViewport().y, boundary.width,
+				boundary.height);
+		Transform xform = graph.getTransformer();
+
+		svgDocumentBuilder.createEmptyDocument(viewport, xform, config);
+
 		for (DrawingSubject drawingSubject : subject) {
 			svgDocumentBuilder.addContent(graph.getViewDescriptor(context.getResolution(), drawingSubject));
 		}
@@ -392,7 +348,7 @@ public class DefaultGraphDocument implements GraphDocument {
 
 		this.svgBackground = svgBackgroundId;
 		// getGraph().setBackground(svgBackgroundId);
-		fireViewChanged();
+		invalidate();
 	}
 
 	@Override
@@ -400,7 +356,7 @@ public class DefaultGraphDocument implements GraphDocument {
 
 		this.svgFilter = svgFilterId;
 		// interactionHandler.setFilter(svgFilterId);
-		fireViewChanged();
+		invalidate();
 	}
 
 	@Override
@@ -408,7 +364,7 @@ public class DefaultGraphDocument implements GraphDocument {
 
 		this.svgTransformation = svgTransformId;
 		// interactionHandler.svgTransformID(svgTransformId);
-		fireViewChanged();
+		invalidate();
 	}
 
 	@Override
@@ -428,11 +384,10 @@ public class DefaultGraphDocument implements GraphDocument {
 
 	GraphViewListener graphViewListener = new GraphViewAdapter() {
 
-
 		@Override
-		public void viewChanged(VisualGraph graph) {
+		public void viewInvalid(VisualGraph graph) {
 
-			fireViewChanged();
+			invalidate();
 		}
 
 		@Override
@@ -480,12 +435,12 @@ public class DefaultGraphDocument implements GraphDocument {
 		graphDocumentListener.remove(listener);
 	}
 
-	protected void fireViewChanged() {
+	protected void fireViewInvalid() {
 
-		update();
+		for (final GraphDocumentListener l : graphDocumentListener) {
+			l.viewInvalid(this);
+		}
 	}
-
-
 
 	protected void fireGraphExpansionChanged(Rectangle r) {
 

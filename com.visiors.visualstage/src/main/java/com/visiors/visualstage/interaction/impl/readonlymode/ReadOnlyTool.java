@@ -2,7 +2,7 @@ package com.visiors.visualstage.interaction.impl.readonlymode;
 
 import java.awt.Point;
 
-import com.visiors.visualstage.interaction.impl.BaseTool;
+import com.visiors.visualstage.tool.impl.BaseTool;
 
 public class ReadOnlyTool extends BaseTool {
 

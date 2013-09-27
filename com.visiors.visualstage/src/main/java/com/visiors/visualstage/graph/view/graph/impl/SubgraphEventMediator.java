@@ -43,10 +43,10 @@ class SubgraphEventMediator {
 		}
 
 		@Override
-		public void viewChanged(VisualGraph graph) {
+		public void viewInvalid(VisualGraph graph) {
 
 			for (GraphViewListener l : parentListener) {
-				l.viewChanged(graph);
+				l.viewInvalid(graph);
 			}
 		}
 

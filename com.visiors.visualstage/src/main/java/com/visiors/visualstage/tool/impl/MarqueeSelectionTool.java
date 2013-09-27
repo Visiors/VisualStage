@@ -1,4 +1,4 @@
-package com.visiors.visualstage.interaction.impl;
+package com.visiors.visualstage.tool.impl;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -59,7 +59,7 @@ public class MarqueeSelectionTool extends BaseTool {
 		mousePressedPos = null;
 		if (!marqueeRect.isEmpty()) {
 			empty();
-			graphDocument.update();
+			graphDocument.invalidate();
 		}
 		return false;
 	}
@@ -71,7 +71,7 @@ public class MarqueeSelectionTool extends BaseTool {
 			final Transform transformer = visualGraph.getTransformer();
 			adjustMarqueeRect(mousePressedPos, transformer.transformToScreen(pt));
 			updateObjectSelectionState(isControlKeyPressed(functionKey));
-			graphDocument.update();
+			graphDocument.invalidate();
 		}
 		return false;
 	}
@@ -106,7 +106,7 @@ public class MarqueeSelectionTool extends BaseTool {
 			for (VisualGraphObject vobj : objects) {
 				r = transformer.transformToScreen(vobj.getBounds());
 				if (marqueeRect.contains(r) ) {
-					vobj.setSelected(!existingSelection.contains(vobj));
+					vobj.setSelected(existingSelection == null || !existingSelection.contains(vobj));
 				}
 			}
 		}
@@ -121,13 +121,15 @@ public class MarqueeSelectionTool extends BaseTool {
 	}
 
 	@Override
-	public void drawHints(AWTCanvas awtCanvas, DrawingContext r, boolean onTop) {
+	public void drawHints(AWTCanvas awtCanvas, DrawingContext context, boolean onTop) {
 
 		if (onTop && !marqueeRect.isEmpty()) {
 			awtCanvas.gfx.setStroke(dashedStroke);
 			awtCanvas.gfx.setColor(lineColor);
 			//			awtCanvas.gfx.setXORMode(new Color(200, 220, 255));
-			awtCanvas.gfx.drawRect(marqueeRect.x, marqueeRect.y, marqueeRect.width - 1, marqueeRect.height - 1);
+			int x = (int) context.getViewport().getX();
+			int y = (int) context.getViewport().getY();
+			awtCanvas.gfx.drawRect(x + marqueeRect.x, y + marqueeRect.y, marqueeRect.width - 1, marqueeRect.height - 1);
 			//			awtCanvas.gfx.setPaintMode();
 		}
 	}

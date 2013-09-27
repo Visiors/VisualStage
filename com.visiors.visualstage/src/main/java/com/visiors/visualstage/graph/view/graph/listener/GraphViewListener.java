@@ -58,7 +58,7 @@ public interface GraphViewListener {
 	 * View needs to be repainted
 	 * 
 	 */
-	public void viewChanged(VisualGraph graph);
+	public void viewInvalid(VisualGraph graph);
 
 	/**
 	 * changes to graph redarding expansion of graph

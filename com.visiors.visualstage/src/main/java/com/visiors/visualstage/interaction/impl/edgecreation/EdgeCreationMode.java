@@ -9,7 +9,7 @@ import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.node.Port;
 import com.visiors.visualstage.graph.view.node.PortSet;
 import com.visiors.visualstage.graph.view.node.VisualNode;
-import com.visiors.visualstage.interaction.impl.BaseTool;
+import com.visiors.visualstage.tool.impl.BaseTool;
 import com.visiors.visualstage.util.GraphInteractionUtil;
 
 public class EdgeCreationMode extends BaseTool {
@@ -127,7 +127,7 @@ public class EdgeCreationMode extends BaseTool {
 			int tp = createdEdge.getTargetPortId();
 			createdEdge.connect(null, -1, null, -1);
 			createdEdge.connect(s, sp, t, tp);
-			graphDocument.update();
+			graphDocument.invalidate();
 		}
 	}
 
@@ -178,7 +178,7 @@ public class EdgeCreationMode extends BaseTool {
 					if (connect) {
 						highlightTargetPorts(posrts, true, true);
 						createEdge(forward);
-						graphDocument.update();
+						graphDocument.invalidate();
 					}
 				}
 			}
@@ -221,7 +221,7 @@ public class EdgeCreationMode extends BaseTool {
 		cancelTimer();
 		if (createdEdge != null) {
 			createdEdge.getParentGraph().remove(createdEdge);
-			graphDocument.update();
+			graphDocument.invalidate();
 		}
 		highlightTargetPorts(null, false, false);
 		draggingNode = null;

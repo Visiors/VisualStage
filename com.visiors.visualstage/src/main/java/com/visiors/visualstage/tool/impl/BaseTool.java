@@ -1,4 +1,4 @@
-package com.visiors.visualstage.interaction.impl;
+package com.visiors.visualstage.tool.impl;
 
 import java.awt.Point;
 

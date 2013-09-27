@@ -976,7 +976,7 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 			return;
 		}
 		for (final GraphViewListener l : graphViewListener) {
-			l.viewChanged(this);
+			l.viewInvalid(this);
 		}
 	}
 

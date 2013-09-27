@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.visiors.visualstage.constants.PropertyConstants;
@@ -29,7 +28,6 @@ import com.visiors.visualstage.pool.FormatCollection;
 import com.visiors.visualstage.pool.ShapeCollection;
 import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.property.impl.DefaultPropertyList;
-import com.visiors.visualstage.renderer.Canvas;
 import com.visiors.visualstage.stage.StageDesigner;
 import com.visiors.visualstage.stage.StageDesigner.ViewMode;
 import com.visiors.visualstage.tool.ToolManager;
@@ -48,9 +46,6 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 	protected final ShapeCollection shapeCollection;
 	protected final FormatCollection formatCollection;
 	private final Map<String, GraphDocument> documents = Maps.newTreeMap();
-	private final Set<Canvas> canvases = Sets.newHashSet();
-
-
 
 	public GraphEditor() {
 
@@ -103,7 +98,6 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 
 	GraphDocument createDocumentInstance(String title){
 		final GraphDocument document = injector.getInstance(GraphDocument.class);
-		document.setCanvasSet(canvases);
 		applyDefaultConfiguration(document);
 		document.addGraphDocumentListener(this);
 		document.setTitle(title);
@@ -114,9 +108,9 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 
 	protected void applyDefaultConfiguration(GraphDocument document) {
 
-		stageDesigner.setViewMode(ViewMode.page);
-		stageDesigner.showGrid(true);
-		stageDesigner.showRuler(true);
+		stageDesigner.setViewMode(ViewMode.plane);
+		stageDesigner.showGrid(false);
+		stageDesigner.showRuler(false);
 	}
 
 	@Override
@@ -137,18 +131,11 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 			} else {
 				setActiveDocument(existingDocuments.get(docIndex-1).getTitle());
 			}
-
 		}
 		document.removeGraphDocumentListener(this);
 		return true;
 	}
 
-	@Override
-	public void addCanvas(Canvas canvas) {
-
-		this.canvases .add(canvas);
-
-	}
 
 	@Override
 	public String saveDocument(String title) {
@@ -206,13 +193,6 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 	}
 
 
-	@Override
-	public void update() {
-		GraphDocument doc = getActiveDocument();
-		if(doc != null) {
-			doc.update();
-		}	
-	}
 
 	@Override
 	public GraphDocument getActiveDocument() {
@@ -358,6 +338,14 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 		fireBoundaryChanged(newBoundary);
 	}
 
+
+	@Override
+	public void viewInvalid(GraphDocument documen) {
+
+		fireViewInvalid( documen);		
+	}
+
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////
 	///// Listener
 	Set<EditorListener> listeners = new HashSet<EditorListener>();
@@ -374,6 +362,13 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 	}
 
 
+
+	protected void fireViewInvalid(GraphDocument documen) {
+
+		for (EditorListener listener : listeners) {
+			listener.viewInvalid(documen);
+		}
+	}
 	protected void fireBoundaryChanged(Rectangle newBoundary) {
 
 		for (EditorListener listener : listeners) {

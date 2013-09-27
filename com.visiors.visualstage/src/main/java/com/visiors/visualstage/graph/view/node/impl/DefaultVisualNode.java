@@ -747,7 +747,6 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 		if ((dx != 0 || dy != 0) && attributes.isMovable()) {
 			final Rectangle r = new Rectangle(boundary);
 			r.translate(dx, dy);
-
 			setBounds(r);
 		}
 	}

@@ -86,7 +86,7 @@ public class GraphViewAdapter implements GraphViewListener {
 	}
 
 	@Override
-	public void viewChanged(VisualGraph graph) {
+	public void viewInvalid(VisualGraph graph) {
 
 	}
 
