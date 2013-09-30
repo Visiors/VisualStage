@@ -29,6 +29,14 @@ public interface GraphDocument extends MultiLayerDocument, PropertyOwner, Undoab
 
 	public boolean isDrawingEnabled();
 
+	public double getZoom();
+
+	public void setZoom(double value);
+
+	public void setTransformer(Transform transform);
+
+	public Transform getTransformer();
+
 	//
 	// public void fireEvents(boolean enable);
 	//
@@ -50,7 +58,6 @@ public interface GraphDocument extends MultiLayerDocument, PropertyOwner, Undoab
 
 	public Rectangle getDocumentBoundary();
 
-
 	public void addGraphDocumentListener(GraphDocumentListener listener);
 
 	public void removeGraphDocumentListener(GraphDocumentListener listener);
@@ -60,6 +67,5 @@ public interface GraphDocument extends MultiLayerDocument, PropertyOwner, Undoab
 	public void removeGraphViewListener(GraphViewListener listener);
 
 	public void invalidate();
-
 
 }

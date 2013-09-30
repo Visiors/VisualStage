@@ -17,11 +17,10 @@ public class BaseTool implements Tool {
 	private final String name;
 
 	protected BaseTool(String name) {
+
 		this.name = name;
 
 	}
-
-
 
 	@Override
 	public void setScope(GraphDocument graphDocument) {
@@ -32,7 +31,8 @@ public class BaseTool implements Tool {
 	}
 
 	@Override
-	public String getName(){
+	public String getName() {
+
 		return this.name;
 	}
 
@@ -117,7 +117,6 @@ public class BaseTool implements Tool {
 
 	}
 
-
 	protected boolean isControlKeyPressed(int key) {
 
 		return (key & Interactable.KEY_CONTROL) != 0;
@@ -131,6 +130,10 @@ public class BaseTool implements Tool {
 	protected boolean isAltKeyPressed(int key) {
 
 		return (key & Interactable.KEY_ALT) != 0;
+	}
+
+	protected boolean isFunctionKeyPressed(int key) {
+		return key != 0;
 	}
 
 }

@@ -30,6 +30,8 @@ public interface VisualGraphObject extends CompositeShape, Manipulatable, Attrib
 
 	public void move(int dx, int dy);
 
+
+
 	// public void fireEvents(boolean enable);
 	//
 	// public boolean isFiringEvents();

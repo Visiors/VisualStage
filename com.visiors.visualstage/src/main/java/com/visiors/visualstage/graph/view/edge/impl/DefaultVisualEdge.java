@@ -9,6 +9,7 @@ import com.google.common.base.Objects;
 import com.google.inject.Inject;
 import com.visiors.visualstage.attribute.Attribute;
 import com.visiors.visualstage.constants.PropertyConstants;
+import com.visiors.visualstage.editor.DI;
 import com.visiors.visualstage.graph.view.Constants;
 import com.visiors.visualstage.graph.view.DefaultVisualGraphObject;
 import com.visiors.visualstage.graph.view.edge.EdgePoint;
@@ -66,6 +67,9 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 	public DefaultVisualEdge() {
 
 		super();
+
+		DI.injectMembers(this);
+
 
 		sourcePortId = DefaultVisualGraphObject.NONE;
 		targetPortId = DefaultVisualGraphObject.NONE;

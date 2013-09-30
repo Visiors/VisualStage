@@ -1,4 +1,4 @@
-package com.visiors.visualstage.editor;
+package com.visiors.visualstage.editor.impl;
 
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Binder;
@@ -10,6 +10,7 @@ import com.visiors.visualstage.document.VisualNodeProvider;
 import com.visiors.visualstage.document.impl.DefaultGraphDocument;
 import com.visiors.visualstage.document.layer.LayerManager;
 import com.visiors.visualstage.document.layer.impl.DefaultLayerManager;
+import com.visiors.visualstage.editor.BindingModule;
 import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.graph.VisualGraph;
 import com.visiors.visualstage.graph.view.node.VisualNode;

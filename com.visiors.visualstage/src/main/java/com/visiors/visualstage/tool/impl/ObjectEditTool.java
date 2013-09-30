@@ -7,8 +7,8 @@ import com.visiors.visualstage.tool.Interactable;
 
 /**
  * 
- * This class simply passes the incoming mouse- and key-events to the graph objects at the mouse position so that
- * graph objects can interact with user. 
+ * This class simply passes the incoming mouse- and key-events to the graph
+ * objects at the mouse position so that graph objects can interact with user.
  * 
  * @version $Id: $
  */

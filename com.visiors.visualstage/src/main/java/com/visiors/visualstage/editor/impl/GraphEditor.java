@@ -1,7 +1,6 @@
-package com.visiors.visualstage.editor;
+package com.visiors.visualstage.editor.impl;
 
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -10,12 +9,14 @@ import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.Maps;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
 import com.visiors.visualstage.constants.PropertyConstants;
 import com.visiors.visualstage.constants.XMLConstants;
 import com.visiors.visualstage.document.GraphDocument;
 import com.visiors.visualstage.document.listener.GraphDocumentListener;
+import com.visiors.visualstage.editor.BindingModule;
+import com.visiors.visualstage.editor.DI;
+import com.visiors.visualstage.editor.Editor;
+import com.visiors.visualstage.editor.EditorListener;
 import com.visiors.visualstage.exception.DocumentExistsException;
 import com.visiors.visualstage.exception.DocumentNotFoundException;
 import com.visiors.visualstage.exception.DocumentSaveException;
@@ -36,7 +37,6 @@ import com.visiors.visualstage.util.PropertyUtil;
 public class GraphEditor implements Editor, GraphDocumentListener {
 
 	protected GraphDocument activeDocument;
-	protected final Injector injector;
 	protected final ToolManager toolManager;
 	protected final UndoRedoHandler undoRedoHandler;
 	protected final SelectionHandler selectionHandler;
@@ -54,17 +54,15 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 
 	public GraphEditor(BindingModule module) {
 
-		this.injector = Guice.createInjector(module);
-		this.toolManager = injector.getInstance(ToolManager.class);
-		this.stageDesigner = injector.getInstance(StageDesigner.class);
-		this.undoRedoHandler = injector.getInstance(UndoRedoHandler.class);
-		this.selectionHandler = injector.getInstance(SelectionHandler.class);
-		this.groupingHandler = injector.getInstance(GroupingHandler.class);
-		this.clipboardHandler = injector.getInstance(ClipboardHandler.class);
-		this.shapeCollection = injector.getInstance(ShapeCollection.class);
-		this.formatCollection = injector.getInstance(FormatCollection.class);
-
-		injector.injectMembers(toolManager);
+		DI.init(module);
+		this.toolManager = DI.getInstance(ToolManager.class);
+		this.stageDesigner = DI.getInstance(StageDesigner.class);
+		this.undoRedoHandler = DI.getInstance(UndoRedoHandler.class);
+		this.selectionHandler = DI.getInstance(SelectionHandler.class);
+		this.groupingHandler = DI.getInstance(GroupingHandler.class);
+		this.clipboardHandler = DI.getInstance(ClipboardHandler.class);
+		this.shapeCollection = DI.getInstance(ShapeCollection.class);
+		this.formatCollection = DI.getInstance(FormatCollection.class);
 	}
 
 	@Override
@@ -96,8 +94,8 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 
 	}
 
-	GraphDocument createDocumentInstance(String title){
-		final GraphDocument document = injector.getInstance(GraphDocument.class);
+	private GraphDocument createDocumentInstance(String title){
+		final GraphDocument document = DI.getInstance(GraphDocument.class);
 		applyDefaultConfiguration(document);
 		document.addGraphDocumentListener(this);
 		document.setTitle(title);
@@ -109,8 +107,8 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 	protected void applyDefaultConfiguration(GraphDocument document) {
 
 		stageDesigner.setViewMode(ViewMode.plane);
-		stageDesigner.showGrid(false);
-		stageDesigner.showRuler(false);
+		stageDesigner.showGrid(true);
+		stageDesigner.showRuler(true);
 	}
 
 	@Override
@@ -333,9 +331,9 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 
 
 	@Override
-	public void graphExpansionChanged(Rectangle newBoundary) {
+	public void graphExpansionChanged() {
 
-		fireBoundaryChanged(newBoundary);
+		fireBoundaryChanged();
 	}
 
 
@@ -369,10 +367,10 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 			listener.viewInvalid(documen);
 		}
 	}
-	protected void fireBoundaryChanged(Rectangle newBoundary) {
+	protected void fireBoundaryChanged() {
 
 		for (EditorListener listener : listeners) {
-			listener.boundaryChangedListener(newBoundary);
+			listener.boundaryChangedListener();
 		}
 	}
 

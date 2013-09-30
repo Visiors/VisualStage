@@ -1,7 +1,5 @@
 package com.visiors.visualstage.document.listener;
 
-import java.awt.Rectangle;
-
 import com.visiors.visualstage.document.GraphDocument;
 
 public interface GraphDocumentListener {
@@ -12,6 +10,6 @@ public interface GraphDocumentListener {
 	//
 	//	void graphManipulated();
 
-	void graphExpansionChanged(Rectangle newBoundary);
+	void graphExpansionChanged();
 
 }

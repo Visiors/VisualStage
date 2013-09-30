@@ -10,16 +10,14 @@ import java.util.Map;
 
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 import com.visiors.visualstage.document.layer.Layer;
 import com.visiors.visualstage.document.layer.LayerManager;
+import com.visiors.visualstage.editor.DI;
 import com.visiors.visualstage.graph.view.graph.VisualGraph;
 import com.visiors.visualstage.handler.impl.LayerChangedEvent;
 
 public class DefaultLayerManager implements LayerManager {
 
-	@Inject
-	protected Injector injector;
 
 	private final Map<Integer, Layer> layers = new HashMap<Integer, Layer>();;
 
@@ -47,7 +45,7 @@ public class DefaultLayerManager implements LayerManager {
 	public Layer selectLayer(int id) {
 
 		currentLayer = getLayer(id);
-		currentLayer.getVisualGraph();
+
 		eventbus.post(new LayerChangedEvent(currentLayer));
 		return currentLayer;
 	}
@@ -63,8 +61,9 @@ public class DefaultLayerManager implements LayerManager {
 
 	@Override
 	public Layer addLayer(int id) {
-		VisualGraph visualGraph = injector.getInstance(VisualGraph.class);
-		injector.injectMembers(visualGraph);
+
+		VisualGraph visualGraph = DI.getInstance(VisualGraph.class);
+		DI.injectMembers(visualGraph);
 
 		final Layer layer = new DefaultLayer(id, layers.size(), visualGraph);
 		layers.put(new Integer(id), layer);

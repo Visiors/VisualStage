@@ -46,14 +46,11 @@ public class ModellingTool extends BaseTool {
 	private VisualGraph hitGroup;
 
 	@Inject
-	//	private UndoRedoHandler undoRedoHandler;
-
+	// private UndoRedoHandler undoRedoHandler;
 	public ModellingTool(String name) {
 
 		super(name);
 	}
-
-
 
 	@Override
 	public boolean keyPressed(int keyChar, int keyCode) {
@@ -156,22 +153,22 @@ public class ModellingTool extends BaseTool {
 			/* only if mouse is released on the same object */
 
 			if (hitObject == GraphInteractionUtil.getFirstHitObjectAt(visualGraph, pt)) { /*
-			 * invert
-			 * selection
-			 * if
-			 * multi
-			 * -
-			 * selection
-			 * -
-			 * mode
-			 * is
-			 * active
-			 * ;
-			 * otherwise
-			 * reset
-			 * the
-			 * selection
-			 */
+																						   * invert
+																						   * selection
+																						   * if
+																						   * multi
+																						   * -
+																						   * selection
+																						   * -
+																						   * mode
+																						   * is
+																						   * active
+																						   * ;
+																						   * otherwise
+																						   * reset
+																						   * the
+																						   * selection
+																						   */
 
 				// TODO birng it to selectionMode
 				// if (hitObject != null && !hitObject.isSelected() &&
@@ -474,53 +471,56 @@ public class ModellingTool extends BaseTool {
 
 	private final void notifyActionBegin() {
 
-		//		undoRedoHandler.stratOfGroupAction();
-		//		// notify object about immediate actions
-		//		final List<VisualGraphObject> selection = visualGraph.getSelection();
-		//		for (final VisualGraphObject vgo : selection) {
-		//			vgo.startManipulating();
-		//		}
+		// undoRedoHandler.stratOfGroupAction();
+		// // notify object about immediate actions
+		// final List<VisualGraphObject> selection = visualGraph.getSelection();
+		// for (final VisualGraphObject vgo : selection) {
+		// vgo.startManipulating();
+		// }
 		manipulatingNotified = true;
 	}
 
 	private final void notifyActionEnd() {
 
-		//		// notify object about end of interaction
-		//		manipulatingNotified = false;
-		//		final List<VisualGraphObject> selection = visualGraph.getSelection();
-		//		for (final VisualGraphObject vgo : selection) {
-		//			vgo.endManipulating();
-		//		}
+		// // notify object about end of interaction
+		// manipulatingNotified = false;
+		// final List<VisualGraphObject> selection = visualGraph.getSelection();
+		// for (final VisualGraphObject vgo : selection) {
+		// vgo.endManipulating();
+		// }
 
-		//		undoRedoHandler.endOfGroupAction();
+		// undoRedoHandler.endOfGroupAction();
 	}
 
 	void duplicateSelection(Point pt) {
 
 		try {
-			//			undoRedoHandler.stratOfGroupAction();
+			// undoRedoHandler.stratOfGroupAction();
 
-			//TODO duplicate selected objects
-			//			// create
-			//			final List<VisualGraphObject> selection = visualGraph.getSelection();
-			//			// selection.remove(hitObject);
+			// TODO duplicate selected objects
+			// // create
+			// final List<VisualGraphObject> selection =
+			// visualGraph.getSelection();
+			// // selection.remove(hitObject);
 			//
-			//			final PropertyList propertyList = new DefaultPropertyList();
-			//			GraphEditor.visualObjects2ProperyList(selection.toArray(new VisualGraphObject[0]), propertyList);
-			//			
-			//			final List<VisualGraphObject> duplicatedObjects = GraphEditor.createGraphObjects(propertyList, visualGraph,
-			//					true);
-			//			
+			// final PropertyList propertyList = new DefaultPropertyList();
+			// GraphEditor.visualObjects2ProperyList(selection.toArray(new
+			// VisualGraphObject[0]), propertyList);
 			//
-			//			visualGraph.setSelection(duplicatedObjects);
-			//			for (int i = 0; i < duplicatedObjects.size(); i++) {
-			//				visualGraph.toFront(duplicatedObjects.get(i));
-			//			}
+			// final List<VisualGraphObject> duplicatedObjects =
+			// GraphEditor.createGraphObjects(propertyList, visualGraph,
+			// true);
+			//
+			//
+			// visualGraph.setSelection(duplicatedObjects);
+			// for (int i = 0; i < duplicatedObjects.size(); i++) {
+			// visualGraph.toFront(duplicatedObjects.get(i));
+			// }
 
 			updateHitObject(pt);
 
 		} finally {
-			//			undoRedoHandler.endOfGroupAction();
+			// undoRedoHandler.endOfGroupAction();
 		}
 
 	}

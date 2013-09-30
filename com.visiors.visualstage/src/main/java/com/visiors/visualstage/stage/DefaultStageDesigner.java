@@ -43,11 +43,11 @@ public class DefaultStageDesigner implements StageDesigner {
 
 	protected VisualGraph visualGraph;
 
-	private static Stroke dashedStroke = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{1,2}, 0);
+	private static Stroke dashedStroke = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0,
+			new float[] { 1, 2 }, 0);
 
 	@Inject
 	SystemUnit systemUnit;
-
 
 	public DefaultStageDesigner() {
 
@@ -66,10 +66,16 @@ public class DefaultStageDesigner implements StageDesigner {
 
 		printerJob = PrinterJob.getPrinterJob();
 		pageFormat = printerJob.defaultPage();
-		Paper paper = pageFormat.getPaper();
-		double[] paperSize = PrinterUtil.getPaperSize("letter");
-		final double w = /* 200 / PrinterUtil.mmPerInch * PrinterUtil.PRINT_DPI;/ */paperSize[0];
-		final double h = /* 200 / PrinterUtil.mmPerInch * PrinterUtil.PRINT_DPI;/ */paperSize[1];
+		final Paper paper = pageFormat.getPaper();
+		final double[] paperSize = PrinterUtil.getPaperSize("letter");
+		final double w = /*
+						  * 200 / PrinterUtil.mmPerInch *
+						  * PrinterUtil.PRINT_DPI;/
+						  */paperSize[0];
+		final double h = /*
+						  * 200 / PrinterUtil.mmPerInch *
+						  * PrinterUtil.PRINT_DPI;/
+						  */paperSize[1];
 
 		paper.setSize(w, h);
 
@@ -139,14 +145,15 @@ public class DefaultStageDesigner implements StageDesigner {
 	@Override
 	public void paintBehind(AWTCanvas awtCanvas, DrawingContext context) {
 
-		final Rectangle canvasBounds = context.getViewport();
+		final Rectangle viewport = context.getViewport();
 
 		if (pageView == ViewMode.page) {
 			drawPages(awtCanvas, context);
 		} else if (pageView == ViewMode.plane) {
 			fillBackground(awtCanvas, context);
 			if (showGrid && context.getResolution() == Resolution.SCREEN) {
-				grid.draw(awtCanvas, canvasBounds, systemUnit.getPixelsPerUnit(), GridStyle.Line);
+				final Rectangle screen = new Rectangle(viewport.x, viewport.y, viewport.width, viewport.height);
+				grid.draw(awtCanvas, screen, systemUnit.getPixelsPerUnit(), GridStyle.Line);
 			}
 		}
 	}
@@ -162,10 +169,10 @@ public class DefaultStageDesigner implements StageDesigner {
 
 	private void paintRulers(AWTCanvas awtCanvas, DrawingContext context) {
 
-		final Rectangle bounds = context.getViewport();
-		hRuler.draw(awtCanvas.gfx, bounds, systemUnit.getPixelsPerUnit(), 5, "cm");
-		vRuler.draw(awtCanvas.gfx, bounds, systemUnit.getPixelsPerUnit(), 5, "cm");
-		cornerButton.draw(awtCanvas.gfx, bounds);
+		final Rectangle viewport = context.getViewport();
+		hRuler.draw(awtCanvas.gfx, viewport, systemUnit.getPixelsPerUnit(), 5, "cm");
+		vRuler.draw(awtCanvas.gfx, viewport, systemUnit.getPixelsPerUnit(), 5, "cm");
+		cornerButton.draw(awtCanvas.gfx, viewport);
 	}
 
 	private void drawPages(AWTCanvas awtCanvas, DrawingContext context) {
@@ -179,7 +186,6 @@ public class DefaultStageDesigner implements StageDesigner {
 		final double bottomMargin = pageFormat.getHeight() - hImageable - topMargin;
 		final Transform transform = visualGraph.getTransformer();
 		final Resolution resolution = context.getResolution();
-
 
 		if (!lockSize || exBounds == null) {
 			exBounds = visualGraph.getExtendedBoundary();
@@ -231,7 +237,7 @@ public class DefaultStageDesigner implements StageDesigner {
 		final double yPage = exBounds.y - yoffset;
 		rPageBoundary = new Rectangle((int) xPage, (int) yPage, (int) (leftMargin + totalImageableWith + rightMargin),
 				(int) (topMargin + totalImageableHeight + bottomMargin));
-		Rectangle rPage = transform.transformToScreen(rPageBoundary);
+		final Rectangle rPage = transform.transformToScreen(rPageBoundary);
 		// paper
 		awtCanvas.gfx.setColor(Color.white);
 		awtCanvas.gfx.fillRect(rPage.x, rPage.y, rPage.width, rPage.height);
@@ -248,12 +254,16 @@ public class DefaultStageDesigner implements StageDesigner {
 			final Rectangle rVisible = transform.transformToScreen(new Rectangle((int) (xPage + leftMargin),
 					(int) (yPage + topMargin), (int) (totalImageableWith), (int) (totalImageableHeight)));
 
-			// double transUnit = transform.getScale() * systemUnit.getPixelsPerUnit();
-			// rVisible.x = Math.max(rVisible.x, r.x - (int) ((r.x - rVisible.x) % transUnit)) ;
+			// double transUnit = transform.getScale() *
+			// systemUnit.getPixelsPerUnit();
+			// rVisible.x = Math.max(rVisible.x, r.x - (int) ((r.x - rVisible.x)
+			// % transUnit)) ;
 			// int x2 = Math.min(rVisible.x + rVisible.width;
 			// x2 = Math.min(a, b)
-			// rVisible.width = Math.min(rVisible.width, r.x + r.width - rVisible.x);
-			// rVisible.y = Math.max(rVisible.y, r.y - (int) ((r.y - rVisible.y) % transUnit)) ;
+			// rVisible.width = Math.min(rVisible.width, r.x + r.width -
+			// rVisible.x);
+			// rVisible.y = Math.max(rVisible.y, r.y - (int) ((r.y - rVisible.y)
+			// % transUnit)) ;
 			grid.draw(awtCanvas, rVisible, systemUnit.getPixelsPerUnit(), GridStyle.Line);
 			awtCanvas.gfx.drawRect(rVisible.x, rVisible.y, rVisible.width, rVisible.height);
 		}
@@ -264,7 +274,7 @@ public class DefaultStageDesigner implements StageDesigner {
 			awtCanvas.gfx.setStroke(dashedStroke);
 			awtCanvas.gfx.setColor(Color.darkGray);
 
-			double scale = transform.getScale();
+			final double scale = transform.getScale();
 			int x = (int) (rPage.x + (leftMargin + wImageable) * scale) - 2;
 			int y = rPage.y;
 			for (int i = 1; i < columns; i++, x += wImageable * scale) {
@@ -319,7 +329,7 @@ public class DefaultStageDesigner implements StageDesigner {
 
 	private void fireViewModeChanged() {
 
-		for (ViewListener l : viewListener) {
+		for (final ViewListener l : viewListener) {
 			l.viewModeChanged();
 		}
 	}

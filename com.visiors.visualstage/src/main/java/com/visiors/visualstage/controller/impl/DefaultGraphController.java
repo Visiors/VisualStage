@@ -7,7 +7,7 @@ import java.util.List;
 
 import com.google.inject.Inject;
 import com.visiors.visualstage.controller.GraphController;
-import com.visiors.visualstage.editor.GraphEditor;
+import com.visiors.visualstage.editor.impl.GraphEditor;
 import com.visiors.visualstage.graph.model.EdgeModel;
 import com.visiors.visualstage.graph.model.GraphModel;
 import com.visiors.visualstage.graph.model.impl.DefaultEdgeModel;

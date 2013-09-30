@@ -5,72 +5,66 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.inject.Inject;
+import com.visiors.visualstage.editor.DI;
 import com.visiors.visualstage.graph.view.VisualGraphObject;
 import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.node.VisualNode;
+import com.visiors.visualstage.handler.UndoRedoHandler;
 import com.visiors.visualstage.tool.Interactable;
 import com.visiors.visualstage.util.GraphInteractionUtil;
+import com.visiors.visualstage.validation.Validator;
 
 /**
  * 
- * Coordinating the interactions. - MAking sure that objects receive mouse/key
- * events - Ensures that manipulable object receive relevant information so that
- * they can react on user interaction. on user user action - Taking care of top
- * level actions like: + moving objects + connecting / reconnecting edges + copy
- * on move
- * 
  * @version $Id: $
  */
-public class MoveAndResizeTool extends BaseTool {
+public class MoveSelectionTool extends BaseTool {
 
 
-	private Point mousePressedPos;
-	private Rectangle hitObjectPos;
-	private VisualGraphObject hitObject;
-	private boolean manipulatingNotified;
+	protected Point mousePressedPos;
+	protected VisualGraphObject hitObject;
+	protected Rectangle hitObjectOringalPos;
+	protected boolean isMoving;
+	@Inject
+	protected Validator validator;
+	@Inject
+	UndoRedoHandler undoRedoHandler;
 
-
-
-	protected MoveAndResizeTool(String name) {
+	protected MoveSelectionTool(String name) {
 
 		super(name);
+
+		DI.injectMembers(this);
 	}
-
-
 
 	@Override
 	public boolean mousePressed(Point pt, int button, int functionKey) {
 
 		hitObject = GraphInteractionUtil.getFirstHitObjectAt(visualGraph, pt);
-
-		if (hitObject != null ) {
+		if (hitObject != null) {
 			mousePressedPos = pt;
-			hitObjectPos = hitObject.getBounds();
+			hitObjectOringalPos = hitObject.getBounds();
 		}
-
 		return false;
 	}
 
 	@Override
 	public boolean mouseReleased(Point pt, int button, int functionKey) {
 
-
-		if(hitObject != null){
-			notifyActionEnd();
-			mousePressedPos = null;
-			hitObjectPos = null;
+		if (hitObject != null) {
+			onEndMoving();
 			hitObject = null;
-			manipulatingNotified = false;
+			isMoving = false;
 		}
 		return false;
 	}
 
 	@Override
 	public boolean mouseDragged(Point pt, int button, int functionKey) {
-
 		if (hitObject != null) {
-			if (!wasManipulationNotified()) {
-				notifyActionBegin();
+			if (!isMoving()) {
+				onStartMoving();
 			}
 			moveSelection(pt);
 			return true;
@@ -78,59 +72,55 @@ public class MoveAndResizeTool extends BaseTool {
 		return false;
 	}
 
-	private final boolean wasManipulationNotified() {
+	private final boolean isMoving() {
 
-		return manipulatingNotified;
+		return isMoving;
 	}
 
-	private final void notifyActionBegin() {
+	private final void onStartMoving() {
 
-		//		undoRedoHandler.stratOfGroupAction();
-		// notify object about immediate actions
+		undoRedoHandler.stratOfGroupAction();
+		// notify object about imminent action
 		final List<VisualGraphObject> selection = visualGraph.getSelection();
 		for (final VisualGraphObject vgo : selection) {
 			vgo.startManipulating();
 		}
-		manipulatingNotified = true;
+		isMoving = true;
 	}
-	private final void notifyActionEnd() {
 
-		//		undoRedoHandler.endOfGroupAction();
-		// notify object about immediate actions
+	private final void onEndMoving() {
+
+		// notify object about the end of move action
 		final List<VisualGraphObject> selection = visualGraph.getSelection();
 		for (final VisualGraphObject vgo : selection) {
 			vgo.endManipulating();
 		}
-		manipulatingNotified = true;
+		undoRedoHandler.endOfGroupAction();
 	}
 
 	@Override
 	public int getPreferredCursor() {
 
-		if (hitObject != null) {
-			return Interactable.CURSOR_MOVE;
-		}
-		return Interactable.CURSOR_DEFAULT;
+		return hitObject != null ? Interactable.CURSOR_MOVE : Interactable.CURSOR_DEFAULT;
 	}
-
-
 
 	private synchronized void moveSelection(Point pt) {
 
 		if (hitObject != null) {
-			final Point currentPos = hitObject.getBounds().getLocation();
-			final int dx = mousePressedPos.x - pt.x + currentPos.x - hitObjectPos.x;
-			final int dy = mousePressedPos.y - pt.y + currentPos.y - hitObjectPos.y;
+			final Point hitObjectCurrentPos = hitObject.getBounds().getLocation();
+			final int dx = mousePressedPos.x - pt.x + hitObjectCurrentPos.x - hitObjectOringalPos.x;
+			final int dy = mousePressedPos.y - pt.y + hitObjectCurrentPos.y - hitObjectOringalPos.y;
 			final List<VisualGraphObject> selection = visualGraph.getSelection();
-
-			moveEdgesWithSelectedNodes(selection, dx, dy);
+			moveConnectedEdges(selection, dx, dy);
 			moveEdges(selection, dx, dy);
 			moveNodes(selection, dx, dy);
-
 		}
 	}
 
-	private void moveEdgesWithSelectedNodes(List<VisualGraphObject> selection, int dx, int dy) {
+	/**
+	 * Moves edges that are not selected but connected to selected nodes
+	 */
+	private void moveConnectedEdges(List<VisualGraphObject> selection, int dx, int dy) {
 
 		final List<VisualEdge> edgesToMove = new ArrayList<VisualEdge>();
 		VisualNode sn, tn;
@@ -159,7 +149,9 @@ public class MoveAndResizeTool extends BaseTool {
 			}
 		}
 		for (final VisualEdge edge : edgesToMove) {
-			edge.move(-dx, -dy);
+			if (validator.permitMovingEdge(edge, -dx, -dy)) {
+				edge.move(-dx, -dy);
+			}
 		}
 	}
 
@@ -167,7 +159,10 @@ public class MoveAndResizeTool extends BaseTool {
 
 		for (final VisualGraphObject vgo : selection) {
 			if (vgo instanceof VisualEdge) {
-				vgo.move(-dx, -dy);
+				final VisualEdge edge = (VisualEdge) vgo;
+				if (validator.permitMovingEdge(edge, -dx, -dy)) {
+					edge.move(-dx, -dy);
+				}
 			}
 		}
 	}
@@ -176,9 +171,11 @@ public class MoveAndResizeTool extends BaseTool {
 
 		for (final VisualGraphObject vgo : selection) {
 			if (vgo instanceof VisualNode) {
-				vgo.move(-dx, -dy);
+				final VisualNode node = (VisualNode) vgo;
+				if (validator.permitMovingNode(node, -dx, -dy)) {
+					node.move(-dx, -dy);
+				}
 			}
 		}
 	}
-
 }

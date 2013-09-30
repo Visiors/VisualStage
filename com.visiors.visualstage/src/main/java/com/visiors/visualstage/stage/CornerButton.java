@@ -6,11 +6,11 @@ import java.awt.Rectangle;
 
 public class CornerButton {
 
-	final Ruler       hRuler;
-	final Ruler       vRuler;
-	final Grid        grid;
-	Color             bkCorner;
-	Color             lineColor;
+	final Ruler hRuler;
+	final Ruler vRuler;
+	final Grid grid;
+	Color bkCorner;
+	Color lineColor;
 	private final int size;
 
 	public CornerButton(Ruler hRler, Ruler vRuler, Grid grid, int size) {
@@ -26,12 +26,10 @@ public class CornerButton {
 	public void draw(Graphics2D gfx2D, Rectangle r) {
 
 		gfx2D.setColor(bkCorner);
-		gfx2D.fillRect(r.x, r.y, size, size);
-
+		gfx2D.fillRect(0, 0, size, size);
 		gfx2D.setColor(lineColor);
-		// canvas.drawRect(r.x, r.y, size, size);
-		gfx2D.drawLine(r.x, r.y + size, r.x + size, r.y + size);
-		gfx2D.drawLine(r.x + size / 2 - 3, r.y + size / 2 - 3, r.x + size / 2 + 3, r.y + size / 2 + 3);
+		gfx2D.drawLine(0, size, size, size);
+		gfx2D.drawLine(size / 2 - 3, size / 2 - 3, size / 2 + 3, size / 2 + 3);
 	}
 
 }

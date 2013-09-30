@@ -70,5 +70,5 @@ public interface GraphViewListener {
 	/**
 	 * graph's boundary has changed
 	 */
-	void graphExpansionChanged(VisualGraph graph, Rectangle newBoundary);
+	void graphExpansionChanged(VisualGraph graph);
 }

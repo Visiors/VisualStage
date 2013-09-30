@@ -81,10 +81,10 @@ class GraphContentManager {
 	GraphViewListener graphListener = new GraphViewAdapter() {
 
 		@Override
-		public void graphExpansionChanged(VisualGraph graph, Rectangle newBoundary) {
+		public void graphExpansionChanged(VisualGraph graph) {
 
 			if (graphview.fitToContent) {
-				fitToContent(newBoundary);
+				fitToContent(graph.getExtendedBoundary());
 			}
 		}
 

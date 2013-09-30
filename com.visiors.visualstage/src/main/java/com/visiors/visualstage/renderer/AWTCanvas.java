@@ -17,8 +17,6 @@ public class AWTCanvas {
 		gfx = (Graphics2D) image.getGraphics();
 		gfx.setColor(Color.white);
 		gfx.fillRect(0, 0, width, height);
-		gfx.setColor(Color.orange);
-		gfx.drawRect(1, 1, width-2, height-2);
 	}
 
 	public void setImage(Image img){

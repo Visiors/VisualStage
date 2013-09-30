@@ -9,6 +9,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.visiors.visualstage.document.GraphDocument;
+import com.visiors.visualstage.editor.impl.GraphEditor;
 import com.visiors.visualstage.exception.DocumentExistsException;
 
 

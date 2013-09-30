@@ -54,10 +54,10 @@ public class Depot extends GraphViewAdapter implements GraphViewListener {
 	VisualNode[] getNodes() {
 
 		int i = 0;
-		VisualNode[] ns = new VisualNode[nodes];
+		final VisualNode[] ns = new VisualNode[nodes];
 		if (nodes > 0) {
-			VisualGraphObject[] objects = container.getObjects();
-			for (VisualGraphObject n : objects) {
+			final VisualGraphObject[] objects = container.getObjects();
+			for (final VisualGraphObject n : objects) {
 				if (n instanceof VisualNode) {
 					ns[i++] = (VisualNode) n;
 				}
@@ -69,10 +69,10 @@ public class Depot extends GraphViewAdapter implements GraphViewListener {
 	VisualEdge[] getEdges() {
 
 		int i = 0;
-		VisualEdge[] es = new VisualEdge[edges];
+		final VisualEdge[] es = new VisualEdge[edges];
 		if (edges > 0) {
-			VisualGraphObject[] objects = container.getObjects();
-			for (VisualGraphObject e : objects) {
+			final VisualGraphObject[] objects = container.getObjects();
+			for (final VisualGraphObject e : objects) {
 				if (e instanceof VisualEdge) {
 					es[i++] = (VisualEdge) e;
 				}
@@ -112,17 +112,16 @@ public class Depot extends GraphViewAdapter implements GraphViewListener {
 	VisualGraphObject[] getHitObjects(Point pt) {
 
 		// first pick objects of with the bounding box is hit
-		VisualGraphObject[] candidates = container.getObjectToDraw();
+		final VisualGraphObject[] candidates = container.getObjectToDraw();
 
 		// consider only objects that consider themselves as hit
-		List<VisualGraphObject> hitObjects = new ArrayList<VisualGraphObject>();
-		for (VisualGraphObject candidate : candidates) {
+		final List<VisualGraphObject> hitObjects = new ArrayList<VisualGraphObject>();
+		for (final VisualGraphObject candidate : candidates) {
 			if (candidate.isHit(pt)) {
 				hitObjects.add(candidate);
 				if (candidate instanceof VisualGraph) {
-					List<VisualGraphObject> hitNestedOject = ((VisualGraph) candidate)
-							.getGraphObjectsAt(pt);
-					for (VisualGraphObject element : hitNestedOject) {
+					final List<VisualGraphObject> hitNestedOject = ((VisualGraph) candidate).getGraphObjectsAt(pt);
+					for (final VisualGraphObject element : hitNestedOject) {
 						hitObjects.add(element);
 					}
 				}
@@ -229,12 +228,12 @@ public class Depot extends GraphViewAdapter implements GraphViewListener {
 
 	private void fireGraphExpansionChanged() {
 
-		visualGraph.fireGraphExpansionChanged(expansion);
+		visualGraph.fireGraphExpansionChanged();
 	}
 
 	private void checkExpansionAndSendNotification() {
 
-		Rectangle currentExpansion = container.getTotalExpansion();
+		final Rectangle currentExpansion = container.getTotalExpansion();
 		if (!expansion.equals(currentExpansion)) {
 			expansion.setBounds(currentExpansion);
 			fireGraphExpansionChanged();

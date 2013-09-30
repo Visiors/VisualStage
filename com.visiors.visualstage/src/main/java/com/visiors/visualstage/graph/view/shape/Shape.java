@@ -69,4 +69,5 @@ public interface Shape extends Interactable, PropertyOwner, Duplicatable {
 	public LayoutData getLayoutData();
 
 	public void setLayoutData(LayoutData data);
+
 }

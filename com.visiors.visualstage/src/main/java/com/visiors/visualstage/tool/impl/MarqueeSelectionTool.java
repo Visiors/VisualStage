@@ -26,7 +26,6 @@ public class MarqueeSelectionTool extends BaseTool {
 	@Inject
 	private UndoRedoHandler undoRedoHandler;
 
-
 	public MarqueeSelectionTool(String name) {
 
 		super(name);
@@ -34,18 +33,16 @@ public class MarqueeSelectionTool extends BaseTool {
 		lineColor = new Color(0x9999aa); // UIManager.getColor("MinuetLnF.Marquee.Color");
 	}
 
-
-
 	@Override
 	public boolean mousePressed(Point pt, int button, int functionKey) {
 
-		//		undoRedoHandler.stratOfGroupAction();
+		// undoRedoHandler.stratOfGroupAction();
 		final List<VisualGraphObject> hit = visualGraph.getHitObjects(pt);
 		if (hit.isEmpty()) {
 			final Transform transformer = visualGraph.getTransformer();
 			mousePressedPos = transformer.transformToScreen(pt);
 
-			if(isControlKeyPressed(functionKey)) {
+			if (isControlKeyPressed(functionKey)) {
 				existingSelection = visualGraph.getSelection();
 			}
 		}
@@ -55,7 +52,7 @@ public class MarqueeSelectionTool extends BaseTool {
 	@Override
 	public boolean mouseReleased(Point pt, int button, int functionKey) {
 
-		//		undoRedoHandler.endOfGroupAction();
+		// undoRedoHandler.endOfGroupAction();
 		mousePressedPos = null;
 		if (!marqueeRect.isEmpty()) {
 			empty();
@@ -92,20 +89,20 @@ public class MarqueeSelectionTool extends BaseTool {
 		Rectangle r;
 
 		// -select only objects inside the selection rectangle
-		if(!xorSelectionMode) {
+		if (!xorSelectionMode) {
 			visualGraph.clearSelection();
-			for (VisualGraphObject vobj : objects) {
+			for (final VisualGraphObject vobj : objects) {
 				r = transformer.transformToScreen(vobj.getBounds());
-				if (marqueeRect.contains(r) ) {
+				if (marqueeRect.contains(r)) {
 					vobj.setSelected(true);
 				}
-			}			
-		}else{
-			// -keep the selection state of objects outside the marquee. 
+			}
+		} else {
+			// -keep the selection state of objects outside the marquee.
 			// -Invert the selection state of objects inside the marquee
-			for (VisualGraphObject vobj : objects) {
+			for (final VisualGraphObject vobj : objects) {
 				r = transformer.transformToScreen(vobj.getBounds());
-				if (marqueeRect.contains(r) ) {
+				if (marqueeRect.contains(r)) {
 					vobj.setSelected(existingSelection == null || !existingSelection.contains(vobj));
 				}
 			}
@@ -115,7 +112,7 @@ public class MarqueeSelectionTool extends BaseTool {
 	void empty() {
 
 		marqueeRect.setSize(0, 0);
-		if(existingSelection != null) {
+		if (existingSelection != null) {
 			existingSelection = null;
 		}
 	}
@@ -126,11 +123,11 @@ public class MarqueeSelectionTool extends BaseTool {
 		if (onTop && !marqueeRect.isEmpty()) {
 			awtCanvas.gfx.setStroke(dashedStroke);
 			awtCanvas.gfx.setColor(lineColor);
-			//			awtCanvas.gfx.setXORMode(new Color(200, 220, 255));
-			int x = (int) context.getViewport().getX();
-			int y = (int) context.getViewport().getY();
+			// awtCanvas.gfx.setXORMode(new Color(200, 220, 255));
+			final int x = (int) context.getViewport().getX();
+			final int y = (int) context.getViewport().getY();
 			awtCanvas.gfx.drawRect(x + marqueeRect.x, y + marqueeRect.y, marqueeRect.width - 1, marqueeRect.height - 1);
-			//			awtCanvas.gfx.setPaintMode();
+			// awtCanvas.gfx.setPaintMode();
 		}
 	}
 }

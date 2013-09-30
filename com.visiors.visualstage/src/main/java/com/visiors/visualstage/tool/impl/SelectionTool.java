@@ -1,9 +1,9 @@
 package com.visiors.visualstage.tool.impl;
 
 import java.awt.Point;
-import java.util.List;
 
 import com.visiors.visualstage.graph.view.VisualGraphObject;
+import com.visiors.visualstage.util.GraphInteractionUtil;
 
 /**
  * This tool listens to mouse event and selects graph objects accordingly. Both
@@ -22,30 +22,6 @@ public class SelectionTool extends BaseTool {
 	}
 
 	@Override
-	public boolean mouseReleased(Point pt, int button, int functionKey) {
-
-		if (hitOnMouseDown != null) {
-			if (deselectOnMoueRelease) {
-				if(mouseDownPos.equals( pt)){ // don't remove the selection if objects were moved
-					boolean needUpdate = false;
-					for (final VisualGraphObject vgo : visualGraph.getGraphObjects()) {
-						if (vgo.isSelected() && !vgo.equals(hitOnMouseDown)) {
-							vgo.setSelected(false);
-							needUpdate = true;
-						}
-					}
-					if (needUpdate) {
-						graphDocument.invalidate();
-					}
-				}
-			}
-			hitOnMouseDown = null;
-			deselectOnMoueRelease = false;
-		}
-		return false;
-	}
-
-	@Override
 	public boolean mousePressed(Point pt, int button, int functionKey) {
 
 		final boolean xorMode = isControlKeyPressed(functionKey);
@@ -61,8 +37,12 @@ public class SelectionTool extends BaseTool {
 			}
 		} else {
 			if (xorMode) {
-				hitOnMouseDown.setSelected(!hitOnMouseDown.isSelected());
-				needUpdate = true;
+				if (!hitOnMouseDown.isSelected()) {
+					hitOnMouseDown.setSelected(!hitOnMouseDown.isSelected());
+					needUpdate = true;
+				} else {
+					deselectOnMoueRelease = true;
+				}
 			} else {
 				deselectOnMoueRelease = hitOnMouseDown.isSelected() && visualGraph.getSelection().size() > 1;
 				for (final VisualGraphObject vgo : visualGraph.getGraphObjects()) {
@@ -87,13 +67,39 @@ public class SelectionTool extends BaseTool {
 		return false;
 	}
 
+	@Override
+	public boolean mouseReleased(Point pt, int button, int functionKey) {
+
+		if (hitOnMouseDown != null) {
+			final boolean xorMode = isControlKeyPressed(functionKey);
+			if (mouseDownPos.equals(pt)) { // don't change the selection if
+										   // objects were moved
+				if (deselectOnMoueRelease) {
+					if (xorMode) {
+						hitOnMouseDown.setSelected(false);
+					} else {
+						boolean needUpdate = false;
+						for (final VisualGraphObject vgo : visualGraph.getGraphObjects()) {
+							if (vgo.isSelected() && !vgo.equals(hitOnMouseDown)) {
+								vgo.setSelected(false);
+								needUpdate = true;
+							}
+						}
+						if (needUpdate) {
+							graphDocument.invalidate();
+						}
+					}
+				}
+			}
+			hitOnMouseDown = null;
+			deselectOnMoueRelease = false;
+		}
+		return false;
+	}
+
 	private VisualGraphObject getTopHitObject(Point pt) {
 
-		final List<VisualGraphObject> hitObjects = visualGraph.getHitObjects(pt);
-		if (!hitObjects.isEmpty()) {
-			return hitObjects.get(0);
-		}
-		return null;
+		return GraphInteractionUtil.getFirstHitObjectAt(visualGraph, pt);
 
 	}
 }

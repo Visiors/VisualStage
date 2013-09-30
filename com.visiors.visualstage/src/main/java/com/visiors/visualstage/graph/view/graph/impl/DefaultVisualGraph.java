@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 import com.google.inject.Provider;
 import com.visiors.visualstage.constants.PropertyConstants;
 import com.visiors.visualstage.constants.XMLConstants;
+import com.visiors.visualstage.editor.DI;
 import com.visiors.visualstage.graph.view.Constants;
 import com.visiors.visualstage.graph.view.DefaultVisualGraphObject;
 import com.visiors.visualstage.graph.view.VisualGraphObject;
@@ -36,6 +36,8 @@ import com.visiors.visualstage.renderer.AWTCanvas;
 import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.renderer.DrawingSubject;
 import com.visiors.visualstage.renderer.Resolution;
+import com.visiors.visualstage.transform.Transform;
+import com.visiors.visualstage.transform.TransformValueChangeListener;
 import com.visiors.visualstage.util.PropertyUtil;
 
 public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph, VisualNodeListener, EdgeViewListener {
@@ -51,8 +53,7 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	private boolean movingContent;
 	private final SubgraphEventMediator eventMediator;
 
-	@Inject
-	protected Injector injector;
+
 	@Inject
 	protected ShapeCollection shapeCollection;
 	@Inject
@@ -65,11 +66,6 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	protected UndoRedoHandler undoRedoHandler;
 
 
-
-	// private DefaultSVGDocumentBuilder svgDoc;
-
-	// private Validator validator;
-
 	public DefaultVisualGraph() {
 
 		super();
@@ -80,6 +76,7 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 		new GraphContentManager(this); 
 		styleID = FormatCollection.DEFAULT_STYLE;
 		presentationID = FormatCollection.DEFAULT_SUBGRAPH_PRESENTATION;
+
 	}
 
 	protected DefaultVisualGraph(VisualGraph visualGraph) {
@@ -93,7 +90,6 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 		this.setProperties(visualGraph.getProperties());
 		this.setStyleID(visualGraph.getStyleID());
 		this.setPresentationID(visualGraph.getPresentationID());
-		/* this.setFormID(node.getFormID()); */
 		if (visualGraph.getPortSet() != null) {
 			portSet = visualGraph.getPortSet();
 		}
@@ -120,7 +116,7 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	@Override
 	public void remove(VisualGraphObject... graphObjects) {
 
-		// undoRedoHandler.stratOfGroupAction();
+		undoRedoHandler.stratOfGroupAction();
 
 		for (final VisualGraphObject go : graphObjects) {
 			if (go instanceof VisualNode) {
@@ -132,7 +128,7 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 				removeEdge((VisualEdge) go);
 			}
 		}
-		// undoRedoHandler.endOfGroupAction();
+		undoRedoHandler.endOfGroupAction();
 	}
 
 
@@ -158,7 +154,7 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	public VisualNode createNode(PropertyList properties) {
 
 		final VisualNode visualNode = visualNodeProvider.get();
-		injector.injectMembers(visualNode);
+		DI.injectMembers(visualNode);
 		visualNode.setProperties(properties);
 		addNode(visualNode);
 		return visualNode;
@@ -185,7 +181,7 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	public VisualEdge createEdge(PropertyList properties) {
 
 		final VisualEdge visualEdge = visualEdgeProvider.get();
-		injector.injectMembers(visualEdge);
+		DI.injectMembers(visualEdge);
 		visualEdge.setProperties(properties);
 		addEdge(visualEdge);
 		return visualEdge;
@@ -213,7 +209,7 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	public VisualGraph createSubgraph(PropertyList properties) {
 
 		final VisualGraph visualGraph = visualGraphProvider.get();
-		injector.injectMembers(visualGraph);
+		DI.injectMembers(visualGraph);
 		visualGraph.setProperties(properties);
 		addNode(visualGraph);
 		return visualGraph;
@@ -293,7 +289,6 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 		node.setParentGraph(this);
 		node.setTransformer(transform);
 		node.addNodeViewListener(this);
-		// node.fireEvents(fireEvents);
 		fireNodeAdded(node);
 		// graphViewUndoHelper.registerNodeCreation(node);
 	}
@@ -330,7 +325,6 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 		depot.add(edge);
 		edge.setParentGraph(this);
 		edge.setTransformer(transform);
-		// edge.fireEvents(fireEvents);
 		edge.addEdgeViewListener(this);
 		fireEdgeAdded(edge);
 		// graphViewUndoHelper.registerEdgeCreation(edge);
@@ -401,7 +395,7 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 		if (objects != null) {
 			remove(objects);
 		}
-		fireGraphExpansionChanged(new Rectangle());
+		fireGraphExpansionChanged();
 	}
 
 	@Override
@@ -549,20 +543,24 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	public Rectangle getExtendedBoundary() {
 
 		if (parent == null) {
-			return depot.getExpansion();
+			return transform.transformToGraph(depot.getExpansion());
 		}
 		return super.getExtendedBoundary();
 	}
 
-	@Override
-	public void setBounds(Rectangle bounds) {
 
-		super.setBounds(bounds);
-		//		if (parent == null) {
-		//			boundary = new Rectangle(bounds);
-		//		} else {
-		//			super.setBounds(bounds);
-		//		}
+	@Override
+	public void setTransformer(Transform transform) {
+
+		super.setTransformer(transform);
+		transform.addListener(new TransformValueChangeListener() {
+
+			@Override
+			public void scaleValuesChanged() {
+
+				fireGraphExpansionChanged();
+			}
+		});
 	}
 
 	@Override
@@ -781,40 +779,40 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	}
 
 	@Override
-	public void visitNodes(GraphNodeVisitor visitor, boolean preOrder) {
+	public void visitGraphObjects(GraphObjectVisitor visitor, boolean preOrder) {
 
-		visitNodes(this, visitor, preOrder);
+		visitGraphObjects(this, visitor, preOrder);
 	}
 
-	private boolean visitNodes(VisualGraph visualGraph, GraphNodeVisitor visitor, boolean preOrder) {
+	private boolean visitGraphObjects(VisualGraph visualGraph, GraphObjectVisitor visitor, boolean preOrder) {
 
-		final List<VisualNode> nodes = visualGraph.getNodes();
+		final List<VisualGraphObject> vgos = visualGraph.getGraphObjects();
 		if (preOrder) {
-			for (final VisualGraphObject node : nodes) {
+			for (final VisualGraphObject node : vgos) {
 				if (node instanceof VisualGraph == false) {
-					if (!visitor.visit((VisualNode) node)) {
+					if (!visitor.visit( node)) {
 						return false;
 					}
 				}
 			}
-			for (final VisualGraphObject node : nodes) {
+			for (final VisualGraphObject node : vgos) {
 				if (node instanceof VisualGraph) {
-					if (!visitNodes((VisualGraph) node, visitor, preOrder)) {
+					if (!visitGraphObjects((VisualGraph) node, visitor, preOrder)) {
 						return false;
 					}
 				}
 			}
 		} else {
-			for (final VisualGraphObject node : nodes) {
+			for (final VisualGraphObject node : vgos) {
 				if (node instanceof VisualGraph) {
-					if (!visitNodes((VisualGraph) node, visitor, preOrder)) {
+					if (!visitGraphObjects((VisualGraph) node, visitor, preOrder)) {
 						return false;
 					}
 				}
 			}
-			for (final VisualGraphObject node : nodes) {
+			for (final VisualGraphObject node : vgos) {
 				if (node instanceof VisualGraph == false) {
-					if (!visitor.visit((VisualNode) node)) {
+					if (!visitor.visit( node)) {
 						return false;
 					}
 				}
@@ -980,13 +978,13 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 		}
 	}
 
-	protected void fireGraphExpansionChanged(Rectangle newExpansion) {
+	protected void fireGraphExpansionChanged() {
 
 		if (!fireEvents) {
 			return;
 		}
 		for (final GraphViewListener l : graphViewListener) {
-			l.graphExpansionChanged(this, newExpansion);
+			l.graphExpansionChanged(this);
 		}
 	}
 

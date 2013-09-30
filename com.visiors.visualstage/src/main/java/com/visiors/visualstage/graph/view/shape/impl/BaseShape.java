@@ -4,7 +4,6 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
 
-import com.google.inject.Inject;
 import com.visiors.visualstage.graph.UIDGen;
 import com.visiors.visualstage.graph.view.shape.LayoutData;
 import com.visiors.visualstage.graph.view.shape.Shape;
@@ -19,7 +18,6 @@ public abstract class BaseShape implements Shape {
 	protected String name;
 	protected boolean selected;
 	protected boolean highlighted;
-	@Inject
 	protected Transform transform;
 	protected Rectangle boundary;
 	protected Insets margin;
@@ -49,6 +47,8 @@ public abstract class BaseShape implements Shape {
 
 		return (String) PropertyUtil.getProperty(properties, "name");
 	}
+
+
 
 	@Override
 	public void setPresentationID(String presentationID) {

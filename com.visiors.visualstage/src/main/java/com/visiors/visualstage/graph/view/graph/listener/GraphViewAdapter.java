@@ -91,7 +91,7 @@ public class GraphViewAdapter implements GraphViewListener {
 	}
 
 	@Override
-	public void graphExpansionChanged(VisualGraph graph, Rectangle newBoundary) {
+	public void graphExpansionChanged(VisualGraph graph) {
 
 	}
 

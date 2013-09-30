@@ -16,6 +16,7 @@ import com.visiors.visualstage.document.ViewListener;
 import com.visiors.visualstage.document.layer.Layer;
 import com.visiors.visualstage.document.layer.LayerManager;
 import com.visiors.visualstage.document.listener.GraphDocumentListener;
+import com.visiors.visualstage.editor.DI;
 import com.visiors.visualstage.exception.InvalidLayerRemovalException;
 import com.visiors.visualstage.graph.view.graph.VisualGraph;
 import com.visiors.visualstage.graph.view.graph.listener.GraphViewAdapter;
@@ -53,32 +54,32 @@ public class DefaultGraphDocument implements GraphDocument {
 	private PropertyList properties;
 	private boolean useImageCaching;
 
-	protected LayerManager layerManager;
-
 	private PropertyBinder propertyBinder;
+	protected LayerManager layerManager;
+	@Inject
 	protected StageDesigner stageDesigner;
-	protected final ToolManager toolManager;
+	@Inject
+	protected ToolManager toolManager;
 	@Inject
 	SVGDocumentBuilder svgDocumentBuilder;
+	@Inject
 	protected UndoRedoHandler undoRedoHandler;
-
+	@Inject
 	protected Validator validator;
+	@Inject
+	protected Transform transform;
 
 	private String svgBackground;
 	private String svgFilter;
 	private String svgTransformation;
 
 	@Inject
-	public DefaultGraphDocument(LayerManager layerManager, StageDesigner stageDesigner, ToolManager toolManager,
-			Validator validator) {
+	public DefaultGraphDocument(LayerManager layerManager) {
 
-		this.stageDesigner = stageDesigner;
-		this.toolManager = toolManager;
-		this.validator = validator;
 		this.layerManager = layerManager;
-
-		stageDesigner.addViewListener(viewListener);
+		DI.injectMembers(this);
 		addLayer(0);
+		stageDesigner.addViewListener(viewListener);
 	}
 
 	@Override
@@ -124,6 +125,22 @@ public class DefaultGraphDocument implements GraphDocument {
 	}
 
 	@Override
+	public double getZoom() {
+
+		return transform.getScale();
+	}
+
+	@Override
+	public void setZoom(double value) {
+
+		if(transform.getScale() != value){
+			transform.setScale( Math.min(10.0, Math.max(0.01,value)));
+			getGraph().getTransformer().setScale(value);
+			fireViewInvalid();
+		}
+	}
+
+	@Override
 	public void setActiveLayer(int id) {
 
 		final Layer previousActiveLayer = layerManager.getSelectedLayer();
@@ -133,6 +150,7 @@ public class DefaultGraphDocument implements GraphDocument {
 		}
 		final Layer newActivelayer = layerManager.selectLayer(id);
 		final VisualGraph visualGraph = newActivelayer.getVisualGraph();
+		visualGraph.setTransformer(transform);
 		visualGraph.addGraphViewListener(graphViewListener);
 	}
 
@@ -222,6 +240,18 @@ public class DefaultGraphDocument implements GraphDocument {
 		fireViewInvalid();
 	}
 
+	@Override
+	public void setTransformer(Transform transform) {
+		this.transform = transform;
+
+	}
+
+	@Override
+	public Transform getTransformer() {
+
+		return transform;
+	}
+
 	// /////////////////////////////////////////////////
 
 	@Override
@@ -252,8 +282,8 @@ public class DefaultGraphDocument implements GraphDocument {
 		toolManager.drawHints(awtCanvas, context, true);
 
 		awtCanvas.gfx.setStroke(new BasicStroke(1f));
-		awtCanvas.gfx.setColor(Color.blue);
-		awtCanvas.gfx.drawRect(2, 2, (int) viewport.getWidth() - 4, (int) viewport.getHeight() - 4);
+		awtCanvas.gfx.setColor(Color.orange);
+		awtCanvas.gfx.drawRect(0, 0, (int) viewport.getWidth() -1, (int) viewport.getHeight() -1);
 		return awtCanvas.image;
 	}
 
@@ -279,12 +309,9 @@ public class DefaultGraphDocument implements GraphDocument {
 		Rectangle r;
 		if (stageDesigner.getViewMode() == ViewMode.page) {
 			r = stageDesigner.getDocumentBoundary();
-			r.grow(0, 50);
 		} else {
 			r = getGraph().getExtendedBoundary();
 		}
-
-		// r.grow(MARGIN, MARGIN);
 
 		if (stageDesigner.isRulerVisible()) {
 			final int rulerSize = stageDesigner.getRulerSize();
@@ -325,9 +352,8 @@ public class DefaultGraphDocument implements GraphDocument {
 		Rectangle boundary = graph.getBounds();
 		final Rectangle viewport = new Rectangle(-context.getViewport().x, -context.getViewport().y, boundary.width,
 				boundary.height);
-		Transform xform = graph.getTransformer();
 
-		svgDocumentBuilder.createEmptyDocument(viewport, xform, config);
+		svgDocumentBuilder.createEmptyDocument(viewport, null, config);
 
 		for (DrawingSubject drawingSubject : subject) {
 			svgDocumentBuilder.addContent(graph.getViewDescriptor(context.getResolution(), drawingSubject));
@@ -391,9 +417,9 @@ public class DefaultGraphDocument implements GraphDocument {
 		}
 
 		@Override
-		public void graphExpansionChanged(VisualGraph graph, Rectangle newExpansion) {
+		public void graphExpansionChanged(VisualGraph graph) {
 
-			fireGraphExpansionChanged(newExpansion);
+			fireGraphExpansionChanged();
 		}
 
 	};
@@ -403,7 +429,7 @@ public class DefaultGraphDocument implements GraphDocument {
 		@Override
 		public void viewModeChanged() {
 
-			fireGraphExpansionChanged(getDocumentBoundary());
+			fireGraphExpansionChanged();
 		}
 	};
 
@@ -442,10 +468,10 @@ public class DefaultGraphDocument implements GraphDocument {
 		}
 	}
 
-	protected void fireGraphExpansionChanged(Rectangle r) {
+	protected void fireGraphExpansionChanged() {
 
 		for (final GraphDocumentListener l : graphDocumentListener) {
-			l.graphExpansionChanged(r);
+			l.graphExpansionChanged();
 		}
 	}
 

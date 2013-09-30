@@ -16,6 +16,7 @@ import org.junit.Test;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import com.visiors.visualstage.document.GraphDocument;
+import com.visiors.visualstage.editor.impl.GraphEditor;
 import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.graph.VisualGraph;
 import com.visiors.visualstage.graph.view.node.VisualNode;
