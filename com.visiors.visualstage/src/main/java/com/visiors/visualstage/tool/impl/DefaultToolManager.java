@@ -3,8 +3,6 @@ package com.visiors.visualstage.tool.impl;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 import com.visiors.visualstage.document.GraphDocument;
 import com.visiors.visualstage.exception.InvalidToolNameException;
@@ -30,11 +28,13 @@ import com.visiors.visualstage.tool.ToolManager;
  */
 public class DefaultToolManager implements ToolManager {
 
+	public static final String TOOL_SCROLLBAR = "Scroll-Bar Tool";
 	public static final String TOOL_SELECTION = "Selection Tool";
 	public static final String TOOL_MARQUEE_SELECTION = "Marquee Selection Tool";
 	public static final String TOOL_OBJECT_EVENT_MEDIATOR = "Object event mediator Tool";
-	public static final String TOOL_MOVE_TOOL = "Object Move Tool";
+	public static final String TOOL_MOVE_SELECTION = "Object Move Tool";
 	public static final String TOOL_DUPLICATE_ON_MOVE = "Duplicate on Move Tool";
+	public static final String TOOL_NAVIGATION = "Navigation Tool";
 
 	public static final String TOOL_EDGE_CREATION = "Edge Creation Tool";
 	public static final String TOOL_AUTO_ALIGNMENT = "Auto Alignment Tool";
@@ -42,35 +42,41 @@ public class DefaultToolManager implements ToolManager {
 	public static final String TOOL_PORT_EDIT = "Port Editing Tool";
 	public static final String TOOL_NODE_CREATION = "Node Creation Tool";
 
-	private final Map<String, Tool> tools = new TreeMap<String, Tool>();
+	private final List<Tool> tools = new ArrayList<Tool>();
 	private GraphDocument graphDocument;
 
 	public DefaultToolManager() {
 
 		/* Register the basic tools */
 
+		registerTool(new ScrollTool(TOOL_SCROLLBAR));
+		registerTool(new NavigationTool(TOOL_NAVIGATION));
 		registerTool(new SelectionTool(TOOL_SELECTION));
 		registerTool(new MarqueeSelectionTool(TOOL_MARQUEE_SELECTION));
 		registerTool(new ObjectEditTool(TOOL_OBJECT_EVENT_MEDIATOR));
 		registerTool(new DuplicateOnMoveTool(TOOL_DUPLICATE_ON_MOVE));
-		registerTool(new MoveSelectionTool(TOOL_MOVE_TOOL));
-		// registerTool(new EdgeCreationTool());
+		registerTool(new MoveSelectionTool(TOOL_MOVE_SELECTION));
+		//		registerTool(new EdgeCreationTool());
 		// registerTool(new NodeCreationTool());
 		// registerTool(new AutoSnapTool());
 		// registerTool(new PortEditingTool());
 		// registerTool(new FormComposeTool());
+		activateTool(TOOL_SCROLLBAR, true);
 		activateTool(TOOL_SELECTION, true);
 		activateTool(TOOL_MARQUEE_SELECTION, true);
-		activateTool(TOOL_OBJECT_EVENT_MEDIATOR, true);
 		activateTool(TOOL_DUPLICATE_ON_MOVE, true);
-		activateTool(TOOL_MOVE_TOOL, true);
+		activateTool(TOOL_OBJECT_EVENT_MEDIATOR, true);
+		activateTool(TOOL_MOVE_SELECTION, true);
+		activateTool(TOOL_NAVIGATION, true);
 	}
+
+
 
 	@Override
 	public void setScope(GraphDocument graphDocument) {
 
 		this.graphDocument = graphDocument;
-		for (final Tool tool : tools.values()) {
+		for (final Tool tool : tools) {
 			tool.setScope(graphDocument);
 		}
 	}
@@ -78,29 +84,33 @@ public class DefaultToolManager implements ToolManager {
 	@Override
 	public void registerTool(Tool tool) {
 
-		if (tools.containsKey(tool.getName())) {
+		if (getTool(tool.getName()) != null) {
 			throw new IllegalArgumentException("An interaction tool with this name is already registered");
 		}
-		tools.put(tool.getName(), tool);
-		tool.setActive(false);
+		tools.add(tool);
 	}
 
 	@Override
 	public Tool getTool(String toolName) {
 
-		return tools.get(toolName);
+		for (Tool tool : tools) {
+			if(tool.getName() != null && tool.getName().equals(toolName)) {
+				return tool;
+			}
+		}
+		return null;
 	}
 
 	@Override
 	public List<Tool> getAllTools() {
 
-		return new ArrayList<Tool>(tools.values());
+		return new ArrayList<Tool>(tools);
 	}
 
 	@Override
 	public void deactivateAllTools() {
 
-		for (final Tool tool : tools.values()) {
+		for (final Tool tool : tools) {
 			if (!tool.isActive()) {
 				tool.setActive(false);
 			}
@@ -111,7 +121,7 @@ public class DefaultToolManager implements ToolManager {
 	public List<Tool> getActiveTools() {
 
 		final List<Tool> result = new ArrayList<Tool>();
-		for (final Tool tool : tools.values()) {
+		for (final Tool tool : tools) {
 			if (tool.isActive()) {
 				result.add(tool);
 			}
@@ -122,14 +132,16 @@ public class DefaultToolManager implements ToolManager {
 	@Override
 	public void activateTool(String name, boolean activate) {
 
-		if (!tools.containsKey(name)) {
+		final Tool tool = getTool(name);
+		if (tool == null) {
 
 			throw new InvalidToolNameException("Invalid tool. A tool with the name '" + name
 					+ "' could not be found. Please check the " + "' was not registered");
 		}
-
-		tools.get(name).setActive(activate);
+		tool.setActive(activate);
 	}
+
+
 
 	/* Delegate all mouse and key events to currently active interaction-tool */
 
@@ -137,7 +149,7 @@ public class DefaultToolManager implements ToolManager {
 	public void drawHints(AWTCanvas awtCanvas, DrawingContext context, boolean onTop) {
 
 		if (context.getResolution() == Resolution.SCREEN) {
-			for (final Tool tool : tools.values()) {
+			for (final Tool tool : tools) {
 				if (tool.isActive()) {
 					tool.drawHints(awtCanvas, context, onTop);
 				}
@@ -148,7 +160,7 @@ public class DefaultToolManager implements ToolManager {
 	@Override
 	public boolean mousePressed(Point pt, int button, int functionKey) {
 
-		for (final Tool tool : tools.values()) {
+		for (final Tool tool : tools) {
 			if (tool.isActive()) {
 
 				if (tool.mousePressed(transform(pt), button, functionKey)) {
@@ -162,7 +174,7 @@ public class DefaultToolManager implements ToolManager {
 	@Override
 	public boolean mouseReleased(Point pt, int button, int functionKey) {
 
-		for (final Tool tool : tools.values()) {
+		for (final Tool tool : tools) {
 			if (tool.isActive()) {
 				if (tool.mouseReleased(transform(pt), button, functionKey)) {
 					return true;
@@ -175,7 +187,7 @@ public class DefaultToolManager implements ToolManager {
 	@Override
 	public boolean mouseDoubleClicked(Point pt, int button, int functionKey) {
 
-		for (final Tool tool : tools.values()) {
+		for (final Tool tool : tools) {
 			if (tool.isActive()) {
 				if (tool.mouseDoubleClicked(transform(pt), button, functionKey)) {
 					return true;
@@ -188,7 +200,7 @@ public class DefaultToolManager implements ToolManager {
 	@Override
 	public boolean mouseMoved(Point pt, int button, int functionKey) {
 
-		for (final Tool tool : tools.values()) {
+		for (final Tool tool : tools) {
 			if (tool.isActive()) {
 				if (tool.mouseMoved(transform(pt), button, functionKey)) {
 					return true;
@@ -201,7 +213,7 @@ public class DefaultToolManager implements ToolManager {
 	@Override
 	public boolean mouseDragged(Point pt, int button, int functionKey) {
 
-		for (final Tool tool : tools.values()) {
+		for (final Tool tool : tools) {
 			if (tool.isActive()) {
 				if (tool.mouseDragged(transform(pt), button, functionKey)) {
 					return true;
@@ -212,9 +224,35 @@ public class DefaultToolManager implements ToolManager {
 	}
 
 	@Override
+	public boolean mouseEntered(Point pt, int button, int functionKey) {
+
+		for (final Tool tool : tools) {
+			if (tool.isActive()) {
+				if (tool.mouseEntered(transform(pt), button, functionKey)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public boolean mouseExited(Point pt, int button, int functionKey) {
+
+		for (final Tool tool : tools) {
+			if (tool.isActive()) {
+				if (tool.mouseExited(transform(pt), button, functionKey)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	@Override
 	public boolean keyPressed(int keyChar, int keyCode) {
 
-		for (final Tool tool : tools.values()) {
+		for (final Tool tool : tools) {
 			if (tool.isActive()) {
 				if (tool.keyPressed(keyChar, keyCode)) {
 					return true;
@@ -227,7 +265,7 @@ public class DefaultToolManager implements ToolManager {
 	@Override
 	public boolean keyReleased(int keyChar, int keyCode) {
 
-		for (final Tool tool : tools.values()) {
+		for (final Tool tool : tools) {
 			if (tool.isActive()) {
 				if (tool.keyReleased(keyChar, keyCode)) {
 					return true;
@@ -247,7 +285,7 @@ public class DefaultToolManager implements ToolManager {
 	@Override
 	public void cancelInteraction() {
 
-		for (final Tool tool : tools.values()) {
+		for (final Tool tool : tools) {
 			if (tool.isActive()) {
 				tool.cancelInteraction();
 			}
@@ -257,7 +295,7 @@ public class DefaultToolManager implements ToolManager {
 	@Override
 	public void terminateInteraction() {
 
-		for (final Tool tool : tools.values()) {
+		for (final Tool tool : tools) {
 			if (tool.isActive()) {
 				tool.terminateInteraction();
 			}
@@ -267,7 +305,7 @@ public class DefaultToolManager implements ToolManager {
 	@Override
 	public boolean isInteracting() {
 
-		for (final Tool tool : tools.values()) {
+		for (final Tool tool : tools) {
 			if (tool.isInteracting()) {
 				return true;
 			}
@@ -279,7 +317,7 @@ public class DefaultToolManager implements ToolManager {
 	public int getPreferredCursor() {
 
 		int cursor = Interactable.CURSOR_DEFAULT;
-		for (final Tool tool : tools.values()) {
+		for (final Tool tool : tools) {
 
 			if (tool.isActive()) {
 				cursor = tool.getPreferredCursor();

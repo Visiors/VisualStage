@@ -1,8 +1,8 @@
 package com.visiors.visualstage.document.impl;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +17,7 @@ import com.visiors.visualstage.document.layer.Layer;
 import com.visiors.visualstage.document.layer.LayerManager;
 import com.visiors.visualstage.document.listener.GraphDocumentListener;
 import com.visiors.visualstage.editor.DI;
+import com.visiors.visualstage.editor.Editor;
 import com.visiors.visualstage.exception.InvalidLayerRemovalException;
 import com.visiors.visualstage.graph.view.graph.VisualGraph;
 import com.visiors.visualstage.graph.view.graph.listener.GraphViewAdapter;
@@ -66,21 +67,26 @@ public class DefaultGraphDocument implements GraphDocument {
 	protected UndoRedoHandler undoRedoHandler;
 	@Inject
 	protected Validator validator;
-	@Inject
+
 	protected Transform transform;
 
 	private String svgBackground;
 	private String svgFilter;
 	private String svgTransformation;
+	private Editor editor;
+	private final Rectangle viewport = new Rectangle();
 
 	@Inject
-	public DefaultGraphDocument(LayerManager layerManager) {
+	public DefaultGraphDocument(LayerManager layerManager, Transform transform) {
 
 		this.layerManager = layerManager;
+		this.transform = transform;
 		DI.injectMembers(this);
 		addLayer(0);
 		stageDesigner.addViewListener(viewListener);
 	}
+
+
 
 	@Override
 	public String getTitle() {
@@ -92,6 +98,18 @@ public class DefaultGraphDocument implements GraphDocument {
 	public void setTitle(String title) {
 
 		this.title = title;
+	}
+
+	@Override
+	public void setEditor(Editor editor) {
+
+		this.editor = editor;
+	}
+
+	@Override
+	public Editor getEditor() {
+
+		return editor;
 	}
 
 	@PostConstruct
@@ -133,12 +151,49 @@ public class DefaultGraphDocument implements GraphDocument {
 	@Override
 	public void setZoom(double value) {
 
-		if(transform.getScale() != value){
-			transform.setScale( Math.min(10.0, Math.max(0.01,value)));
+		if (transform.getScale() != value) {
+			transform.setScale(Math.min(10.0, Math.max(0.01, value)));
 			getGraph().getTransformer().setScale(value);
 			fireViewInvalid();
 		}
 	}
+
+	@Override
+	public void setViewportPos(int x, int y) {
+
+		if (this.viewport.x != x || this.viewport.y != y) {
+			this.viewport.setLocation(x, y);
+			fireViewInvalid();
+		}
+
+	}
+	@Override
+	public Point getViewportPos() {
+
+		return this.viewport.getLocation();
+	}
+
+	@Override
+	public void setViewportSize(int w, int h) {
+
+		if (this.viewport.width != w || this.viewport.height != h) {
+			viewport.setSize(w, h);
+			fireViewInvalid();
+		}
+	}
+
+	@Override
+	public Dimension getViewportSize() {
+
+		return viewport.getSize();
+	}
+
+	@Override
+	public Rectangle getViewport() {
+
+		return new Rectangle(viewport);
+	}
+
 
 	@Override
 	public void setActiveLayer(int id) {
@@ -212,6 +267,15 @@ public class DefaultGraphDocument implements GraphDocument {
 		return layerManager.getLayerCount();
 	}
 
+
+
+	@Override
+	public ToolManager getToolManager() {
+
+		return toolManager;
+	}
+
+
 	@Override
 	public VisualGraph getGraph() {
 
@@ -242,6 +306,7 @@ public class DefaultGraphDocument implements GraphDocument {
 
 	@Override
 	public void setTransformer(Transform transform) {
+
 		this.transform = transform;
 
 	}
@@ -257,33 +322,36 @@ public class DefaultGraphDocument implements GraphDocument {
 	@Override
 	public synchronized Image getScreen(DrawingContext context) {
 
-		final Rectangle viewport = context.getViewport();
-		final AWTCanvas awtCanvas = new AWTCanvas((int) viewport.getWidth(), (int) viewport.getHeight());
 
 		if (viewport == null || viewport.isEmpty()) {
-			System.err.println("Warning: Cannot draw on the canvas with zero width/heigt!");
-			return awtCanvas.image;
+			System.err.println("Warning: view port is empty!");
+			return  new AWTCanvas(1, 1).image;
 		}
+		final AWTCanvas awtCanvas = new AWTCanvas((int) viewport.getWidth(), (int) viewport.getHeight());
 
 		final VisualGraph graph = getGraph();
 		// keep always the main graph view fit to the screen
 		graph.setBounds(viewport);
+		stageDesigner.paintBehind(awtCanvas, context);
 
 		toolManager.drawHints(awtCanvas, context, false);
-		stageDesigner.paintBehind(awtCanvas, context);
+
 		if (useImageCaching) {
 			graph.draw(awtCanvas, context, DrawingSubject.OBJECT);
 			graph.draw(awtCanvas, context, DrawingSubject.SELECTION_INDICATORS);
 			graph.draw(awtCanvas, context, DrawingSubject.PORTS);
 		} else {
-			awtCanvas.gfx.drawImage(getImage(context, null), 0, 0, null);
+			final Image img = getImage(context, null);
+			awtCanvas.gfx.drawImage(img, 0, 0, null);
 		}
-		stageDesigner.paintOver(awtCanvas, context);
+
 		toolManager.drawHints(awtCanvas, context, true);
 
-		awtCanvas.gfx.setStroke(new BasicStroke(1f));
-		awtCanvas.gfx.setColor(Color.orange);
-		awtCanvas.gfx.drawRect(0, 0, (int) viewport.getWidth() -1, (int) viewport.getHeight() -1);
+		stageDesigner.paintOver(awtCanvas, context);
+		// awtCanvas.gfx.setStroke(new BasicStroke(1f));
+		// awtCanvas.gfx.setColor(Color.orange);
+		// awtCanvas.gfx.drawRect(0, 0, (int) viewport.getWidth() -1, (int)
+		// viewport.getHeight() -1);
 		return awtCanvas.image;
 	}
 
@@ -296,11 +364,9 @@ public class DefaultGraphDocument implements GraphDocument {
 
 	private Image getImage(DrawingContext context, DocumentConfig config) {
 
-		final DrawingSubject[] subjects = new DrawingSubject[] { DrawingSubject.OBJECT,
-				DrawingSubject.SELECTION_INDICATORS, DrawingSubject.PORTS };
-		final String svgDocument = getSVGDocument(context, config, subjects);
-		final Image image = SVGUtil.svgToImage(svgDocument);
-		return image;
+		// pack everything in context. getSVGDocument will have only one parameter
+		final String svgDocument = getSVGDocument(context, config, context.getDrawingSubject());
+		return SVGUtil.svgToImage(svgDocument);
 	}
 
 	@Override
@@ -308,7 +374,7 @@ public class DefaultGraphDocument implements GraphDocument {
 
 		Rectangle r;
 		if (stageDesigner.getViewMode() == ViewMode.page) {
-			r = stageDesigner.getDocumentBoundary();
+			r = stageDesigner.getViewBoundary();
 		} else {
 			r = getGraph().getExtendedBoundary();
 		}
@@ -350,10 +416,10 @@ public class DefaultGraphDocument implements GraphDocument {
 
 		final VisualGraph graph = getGraph();
 		Rectangle boundary = graph.getBounds();
-		final Rectangle viewport = new Rectangle(-context.getViewport().x, -context.getViewport().y, boundary.width,
+		final Rectangle svgViewport = new Rectangle(-this.viewport.x, -this.viewport.y, boundary.width,
 				boundary.height);
 
-		svgDocumentBuilder.createEmptyDocument(viewport, null, config);
+		svgDocumentBuilder.createEmptyDocument(svgViewport, null, config);
 
 		for (DrawingSubject drawingSubject : subject) {
 			svgDocumentBuilder.addContent(graph.getViewDescriptor(context.getResolution(), drawingSubject));

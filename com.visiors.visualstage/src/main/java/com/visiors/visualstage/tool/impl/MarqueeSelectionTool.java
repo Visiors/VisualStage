@@ -124,9 +124,8 @@ public class MarqueeSelectionTool extends BaseTool {
 			awtCanvas.gfx.setStroke(dashedStroke);
 			awtCanvas.gfx.setColor(lineColor);
 			// awtCanvas.gfx.setXORMode(new Color(200, 220, 255));
-			final int x = (int) context.getViewport().getX();
-			final int y = (int) context.getViewport().getY();
-			awtCanvas.gfx.drawRect(x + marqueeRect.x, y + marqueeRect.y, marqueeRect.width - 1, marqueeRect.height - 1);
+			Rectangle vp = graphDocument.getViewport();
+			awtCanvas.gfx.drawRect(vp.x + marqueeRect.x, vp.y + marqueeRect.y, marqueeRect.width - 1, marqueeRect.height - 1);
 			// awtCanvas.gfx.setPaintMode();
 		}
 	}

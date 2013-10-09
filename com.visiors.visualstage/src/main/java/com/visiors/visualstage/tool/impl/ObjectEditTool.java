@@ -4,6 +4,7 @@ import java.awt.Point;
 
 import com.visiors.visualstage.graph.view.VisualGraphObject;
 import com.visiors.visualstage.tool.Interactable;
+import com.visiors.visualstage.util.GraphInteractionUtil;
 
 /**
  * 
@@ -78,7 +79,7 @@ public class ObjectEditTool extends BaseTool {
 
 	@Override
 	public boolean mouseMoved(Point pt, int button, int functionKey) {
-
+		hitObject = GraphInteractionUtil.getFirstHitObjectAt(visualGraph, pt);
 		if (hitObject != null) {
 			if (hitObject.mouseMoved(pt, button, functionKey)) {
 				return true;

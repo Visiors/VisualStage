@@ -1,15 +1,19 @@
 package com.visiors.visualstage.document;
 
+import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.Rectangle;
 
 import com.visiors.visualstage.document.listener.GraphDocumentListener;
+import com.visiors.visualstage.editor.Editor;
 import com.visiors.visualstage.graph.view.graph.VisualGraph;
 import com.visiors.visualstage.graph.view.graph.listener.GraphViewListener;
 import com.visiors.visualstage.handler.Undoable;
 import com.visiors.visualstage.property.PropertyOwner;
 import com.visiors.visualstage.renderer.Canvas;
 import com.visiors.visualstage.renderer.DrawingContext;
+import com.visiors.visualstage.tool.ToolManager;
 import com.visiors.visualstage.transform.Transform;
 import com.visiors.visualstage.validation.Validator;
 
@@ -20,6 +24,10 @@ public interface GraphDocument extends MultiLayerDocument, PropertyOwner, Undoab
 	public void setTitle(String title);
 
 	public VisualGraph getGraph();
+
+	public void setEditor(Editor editor);
+
+	public Editor getEditor();
 
 	public Validator getValidator();
 
@@ -33,14 +41,21 @@ public interface GraphDocument extends MultiLayerDocument, PropertyOwner, Undoab
 
 	public void setZoom(double value);
 
+	public void setViewportSize(int w, int h);
+
+	public Dimension getViewportSize();
+
+	public void setViewportPos(int x, int y);
+
+	public Point getViewportPos();
+
+	public Rectangle getViewport();
+
 	public void setTransformer(Transform transform);
 
 	public Transform getTransformer();
 
-	//
-	// public void fireEvents(boolean enable);
-	//
-	// public boolean isFiringEvents();
+	public ToolManager getToolManager();
 
 	public Image getScreen(DrawingContext context);
 
@@ -67,5 +82,7 @@ public interface GraphDocument extends MultiLayerDocument, PropertyOwner, Undoab
 	public void removeGraphViewListener(GraphViewListener listener);
 
 	public void invalidate();
+
+
 
 }

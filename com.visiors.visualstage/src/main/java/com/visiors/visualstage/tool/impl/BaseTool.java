@@ -91,6 +91,18 @@ public class BaseTool implements Tool {
 	}
 
 	@Override
+	public boolean mouseEntered(Point pt, int button, int functionKey) {
+
+		return false;
+	}
+
+	@Override
+	public boolean mouseExited(Point pt, int button, int functionKey) {
+
+		return false;
+	}
+
+	@Override
 	public int getPreferredCursor() {
 
 		return Interactable.CURSOR_DEFAULT;

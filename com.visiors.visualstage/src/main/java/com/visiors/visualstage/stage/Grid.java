@@ -21,7 +21,7 @@ public class Grid {
 	private final Color sublineColor;
 
 	/* Centimetre unit */
-	private static final int CROSS_SIZE = 4;
+	private static final int CROSS_SIZE = 3;
 	private final Transform transformer;
 
 	public Grid(Transform transformer) {
@@ -33,6 +33,10 @@ public class Grid {
 
 	public void draw(AWTCanvas awtCanvas, Rectangle r, double pixelsPreUnit, GridStyle style) {
 
+		if (transformer.getScale() < 0.01) {
+			return;
+		}
+
 		double transUnit = transformer.getScale() * pixelsPreUnit;
 
 		while (transUnit < pixelsPreUnit / 2) {
@@ -43,56 +47,49 @@ public class Grid {
 			transUnit /= 2;
 		}
 
-		double xOffset = Math.abs(transformer.getXTranslate() - r.x) % transUnit - transUnit;
-		double yOffset = Math.abs(transformer.getYTranslate() - r.y) % transUnit - transUnit;
-
-		if ((int) xOffset < 0) {
-			xOffset += transUnit;
-		}
-		if ((int) yOffset < 0) {
-			yOffset += transUnit;
-		}
+		final double xOffset = r.x % transUnit;
+		final double yOffset = r.y % transUnit;
 
 		awtCanvas.gfx.setStroke(solidStroke);
+
 		switch (style) {
 		case Line:
-
 			awtCanvas.gfx.setColor(sublineColor);
-			for (double x = xOffset + transUnit / 2; x <  r.width; x += transUnit) {
-				awtCanvas.gfx.drawLine((int) x,0, (int) x,  r.height);
-			}
-
-			for (double y =yOffset + transUnit / 2; y < r.height; y += transUnit) {
-				awtCanvas.gfx.drawLine(0, (int) y,  r.width, (int) y);
-			}
-
-			awtCanvas.gfx.setColor(lineColor);
-			for (double x = xOffset; x <  r.width; x += transUnit) {
+			for (double x = xOffset + transUnit / 2; x < r.width; x += transUnit) {
 				awtCanvas.gfx.drawLine((int) x, 0, (int) x, r.height);
 			}
 
-			for (double y = yOffset; y <+ r.height; y += transUnit) {
-				awtCanvas.gfx.drawLine(0, (int) y,  r.width, (int) y);
+			for (double y = yOffset + transUnit / 2; y < r.height; y += transUnit) {
+				awtCanvas.gfx.drawLine(0, (int) y, r.width, (int) y);
+			}
+
+			awtCanvas.gfx.setColor(lineColor);
+			for (double x = xOffset; x < r.width; x += transUnit) {
+				awtCanvas.gfx.drawLine((int) x, 0, (int) x, r.height);
+			}
+
+			for (double y = yOffset; y < +r.height; y += transUnit) {
+				awtCanvas.gfx.drawLine(0, (int) y, r.width, (int) y);
 			}
 
 			break;
 		case Dot:
 			awtCanvas.gfx.setColor(lineColor);
-			for (double y =  yOffset; y <  r.height; y += transUnit) {
-				for (double x =  xOffset; x < r.width; x += transUnit) {
+			for (double y = yOffset; y < r.height; y += transUnit) {
+				for (double x = xOffset; x < r.width; x += transUnit) {
 					awtCanvas.gfx.drawRect((int) x, (int) y, 1, 1);
 				}
 			}
 			break;
 		case Cross:
 			awtCanvas.gfx.setColor(lineColor);
-			for (double x =  xOffset; x < r.width; x += transUnit) {
-				for (double y =  yOffset - Grid.CROSS_SIZE; y <  r.height; y += transUnit) {
+			for (double x = xOffset; x < r.width; x += transUnit) {
+				for (double y = yOffset; y < r.height; y += transUnit) {
 					awtCanvas.gfx.drawLine((int) x, (int) y - Grid.CROSS_SIZE, (int) x, (int) y + Grid.CROSS_SIZE);
 				}
 			}
-			for (double y =  yOffset - Grid.CROSS_SIZE; y <  r.height; y += transUnit) {
-				for (double x =xOffset; x <  r.width; x += transUnit) {
+			for (double y = yOffset; y < r.height; y += transUnit) {
+				for (double x = xOffset; x < r.width; x += transUnit) {
 					awtCanvas.gfx.drawLine((int) x - Grid.CROSS_SIZE, (int) y, (int) x + Grid.CROSS_SIZE, (int) y);
 				}
 			}

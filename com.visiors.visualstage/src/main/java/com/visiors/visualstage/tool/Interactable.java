@@ -39,6 +39,10 @@ public interface Interactable {
 
 	boolean mouseMoved(Point pt, int button, int functionKey);
 
+	boolean mouseEntered(Point pt, int button, int functionKey);
+
+	boolean mouseExited(Point pt, int button, int functionKey);
+
 	boolean keyPressed(int keyChar, int keyCode);
 
 	boolean keyReleased(int keyChar, int keyCode);

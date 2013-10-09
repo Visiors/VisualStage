@@ -3,28 +3,19 @@ package com.visiors.visualstage.renderer;
 import java.awt.Rectangle;
 
 import com.google.common.base.Objects;
-import com.visiors.visualstage.transform.DefaultTransformer;
-import com.visiors.visualstage.transform.Transform;
 
 public class DefaultDrawingContext implements DrawingContext {
 
-	private final Resolution resolution;
-	private final Rectangle visibleBounds;
-	private final Transform transform;
+	private Resolution resolution = Resolution.SCREEN;
+	private Rectangle visibleBounds = new Rectangle();
+	private DrawingSubject[] subjects = new DrawingSubject[] { DrawingSubject.OBJECT, DrawingSubject.PORTS,
+			DrawingSubject.SELECTION_INDICATORS };
 
-	//
-	// public DefaultDrawingContext(Canvas canvas) {
-	//
-	// this(canvas.getResolution(), canvas.getCanvasBounds(),
-	// canvas.getTransform());
-	// }
-
-	public DefaultDrawingContext(Resolution resolution, Rectangle visibleBounds, Transform transform) {
+	public DefaultDrawingContext(Resolution resolution, Rectangle visibleBounds, DrawingSubject... subjects) {
 
 		this.resolution = resolution;
+		this.subjects = subjects;
 		this.visibleBounds = new Rectangle(visibleBounds);
-		this.transform = new DefaultTransformer((DefaultTransformer) transform);
-
 	}
 
 	@Override
@@ -33,30 +24,18 @@ public class DefaultDrawingContext implements DrawingContext {
 		return resolution;
 	}
 
-
-
 	@Override
-	public Rectangle getViewport() {
+	public DrawingSubject[] getDrawingSubject() {
 
-		return visibleBounds;
+		return subjects;
 	}
-
-
-	@Override
-	public Transform getTransform() {
-
-		return transform;
-	}
-
-
 
 	@Override
 	public boolean equals(Object obj) {
 
 		if (obj instanceof DefaultDrawingContext) {
 			final DefaultDrawingContext other = (DefaultDrawingContext) obj;
-			return Objects.equal(resolution, other.resolution) && Objects.equal(transform, other.transform)
-					&& Objects.equal(visibleBounds, other.visibleBounds);
+			return Objects.equal(resolution, other.resolution) && Objects.equal(visibleBounds, other.visibleBounds);
 		}
 		return false;
 	}
@@ -64,7 +43,7 @@ public class DefaultDrawingContext implements DrawingContext {
 	@Override
 	public int hashCode() {
 
-		return Objects.hashCode(resolution, visibleBounds, transform);
+		return Objects.hashCode(resolution, visibleBounds);
 	}
 
 	@Override

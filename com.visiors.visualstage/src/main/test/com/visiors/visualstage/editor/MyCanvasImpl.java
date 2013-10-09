@@ -2,14 +2,12 @@ package com.visiors.visualstage.editor;
 
 import java.awt.Color;
 import java.awt.Image;
-import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
 import com.visiors.visualstage.renderer.Canvas;
 import com.visiors.visualstage.renderer.DrawingContext;
+import com.visiors.visualstage.renderer.DrawingSubject;
 import com.visiors.visualstage.renderer.Resolution;
-import com.visiors.visualstage.transform.DefaultTransformer;
-import com.visiors.visualstage.transform.Transform;
 
 public class MyCanvasImpl implements Canvas {
 
@@ -24,7 +22,6 @@ public class MyCanvasImpl implements Canvas {
 		screen.getGraphics().drawRect(0,0,screenWidth-1, screenHeight-1);
 	}
 
-	@Override
 	public void draw(int x, int y, Image image) {
 
 		screen.getGraphics().drawImage(image, x, y, null);
@@ -39,14 +36,8 @@ public class MyCanvasImpl implements Canvas {
 	@Override
 	public DrawingContext getContext() {
 
-		// TODO Auto-generated method stub
 		return new DrawingContext() {
 
-			@Override
-			public Transform getTransform() {
-
-				return new DefaultTransformer();
-			}
 
 			@Override
 			public Resolution getResolution() {
@@ -54,10 +45,12 @@ public class MyCanvasImpl implements Canvas {
 				return Resolution.SCREEN;
 			}
 
-			@Override
-			public Rectangle getViewport() {
 
-				return new Rectangle(0, 0, screenWidth, screenHeight);
+
+			@Override
+			public DrawingSubject[] getDrawingSubject() {
+
+				return new DrawingSubject[] { DrawingSubject.OBJECT, DrawingSubject.PORTS, DrawingSubject.SELECTION_INDICATORS};
 			}
 		};
 	}

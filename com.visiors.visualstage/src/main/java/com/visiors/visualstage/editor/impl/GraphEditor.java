@@ -96,6 +96,7 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 
 	private GraphDocument createDocumentInstance(String title){
 		final GraphDocument document = DI.getInstance(GraphDocument.class);
+		document.setEditor(this);
 		applyDefaultConfiguration(document);
 		document.addGraphDocumentListener(this);
 		document.setTitle(title);
@@ -298,6 +299,18 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 	}
 
 	@Override
+	public boolean mouseEntered(Point pt, int button, int functionKey) {
+
+		return toolManager.mouseEntered(pt, button, functionKey);
+	}
+
+	@Override
+	public boolean mouseExited(Point pt, int button, int functionKey) {
+
+		return toolManager.mouseExited(pt, button, functionKey);
+	}
+
+	@Override
 	public boolean isInteracting() {
 
 		return toolManager.isInteracting();
@@ -362,7 +375,6 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 
 
 	protected void fireViewInvalid(GraphDocument documen) {
-
 		for (EditorListener listener : listeners) {
 			listener.viewInvalid(documen);
 		}

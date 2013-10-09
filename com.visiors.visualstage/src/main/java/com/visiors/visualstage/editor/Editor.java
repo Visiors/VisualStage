@@ -48,6 +48,7 @@ public interface Editor extends Interactable {
 
 	void removeEditorListener(EditorListener editorListener);
 
+
 	// public void registerInplaceTextEditor(InplaceTextditor editor);
 
 }

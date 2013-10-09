@@ -301,7 +301,7 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 			 */
 		}
 		startManipulating();
-		return false;
+		return true;
 	}
 
 	@Override
@@ -317,7 +317,7 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 			 */
 		}
 		endManipulating();
-		return false;
+		return true;
 	}
 
 	@Override
@@ -647,8 +647,8 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 		if (!boundary.equals(bounds)) {
 			if (attributes.isResizable()) {
 
-				final boolean singleMovement = oldRect == null;
-				if (singleMovement) {
+				final boolean isManipulationNotified = (oldRect != null);
+				if (!isManipulationNotified) {
 					startManipulating();
 				}
 
@@ -666,7 +666,7 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 
 				// System.err.println("interacting: " + getName());
 
-				if (singleMovement) {
+				if (!isManipulationNotified) {
 					endManipulating();
 				}
 
@@ -715,7 +715,6 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 
 		updateBoundaryProperties();
 
-		oldRect = null;
 
 		List<VisualEdge> edges = getIncomingEdges();
 		for (final VisualEdge edgeView : edges) {
@@ -725,7 +724,7 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 		for (final VisualEdge edgeView : edges) {
 			edgeView.endManipulating();
 		}
-
+		oldRect = null;
 	}
 
 	protected void updateBoundaryProperties() {
@@ -856,11 +855,11 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 
 			return getNodeViewDescriptor(resolution, subject);
 		}
-		if (subject == DrawingSubject.SELECTION_INDICATORS && resolution == Resolution.SCREEN) {
+		if (subject == DrawingSubject.SELECTION_INDICATORS) {
 
 			return getSelectionViewDescriptor(boundary);
 		}
-		if (subject == DrawingSubject.PORTS && resolution == Resolution.SCREEN) {
+		if (subject == DrawingSubject.PORTS ) {
 
 			return getPortsViewDescriptor(boundary);
 		}

@@ -34,7 +34,7 @@ public interface StageDesigner extends ScopeAwareHandler {
 
 	public ViewMode getViewMode();
 
-	public Rectangle getDocumentBoundary();
+	public Rectangle getViewBoundary();
 
 	public int getRulerSize();
 
