@@ -26,6 +26,7 @@ import javafx.stage.Stage;
 import com.visiors.minuetta.editor.MultiPageEditor;
 import com.visiors.minuetta.view.PropertyView;
 import com.visiors.minuetta.view.ShapeGallery;
+import com.visiors.visualstage.document.GraphDocument;
 
 public class Minuetta extends Application {
 
@@ -134,14 +135,26 @@ public class Minuetta extends Application {
 		HBox buttonBar = new HBox();
 
 		Button btn1 = ButtonBuilder.create().text("New").id("iphone").build();
-		Button btn2 = ButtonBuilder.create().text("Cut").id("iphone").build();
-		Button btn3 = ButtonBuilder.create().text("Paste").id("iphone").build();
+		Button btn2 = ButtonBuilder.create().text("Zoom In").id("ZoomIn").build();
+		Button btn3 = ButtonBuilder.create().text("Zoom Out").id("ZoomOut").build();
 		buttonBar.getChildren().addAll(btn1, new Separator(), btn2, btn3);
 		toolBar.getItems().addAll(spacer, buttonBar);
 
 		btn1.setOnAction(new EventHandler<ActionEvent>() {
 			@Override public void handle(ActionEvent e) {
 				multiPageEditor.newDocument(""+System.currentTimeMillis());
+			}
+		});
+		btn2.setOnAction(new EventHandler<ActionEvent>() {
+			@Override public void handle(ActionEvent e) {
+				final GraphDocument document = multiPageEditor.getEditor().getActiveDocument();
+				document.setZoom(document.getZoom() + 0.1);
+			}
+		});
+		btn3.setOnAction(new EventHandler<ActionEvent>() {
+			@Override public void handle(ActionEvent e) {
+				final GraphDocument document = multiPageEditor.getEditor().getActiveDocument();
+				document.setZoom(document.getZoom() - 0.1);
 			}
 		});
 		return toolBar;

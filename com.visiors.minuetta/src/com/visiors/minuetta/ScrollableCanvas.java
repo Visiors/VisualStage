@@ -3,186 +3,202 @@ package com.visiors.minuetta;
 import java.awt.Point;
 import java.awt.Rectangle;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.event.EventHandler;
-import javafx.geometry.Bounds;
-import javafx.geometry.Rectangle2D;
+import javafx.geometry.Orientation;
+import javafx.scene.Cursor;
 import javafx.scene.control.ScrollBar;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 
 import com.visiors.visualstage.document.GraphDocument;
-import com.visiors.visualstage.editor.EditorListener;
-import com.visiors.visualstage.editor.GraphEditor;
-import com.visiors.visualstage.renderer.Canvas;
+import com.visiors.visualstage.editor.impl.GraphEditor;
 import com.visiors.visualstage.tool.Interactable;
 
-public class ScrollableCanvas extends ScrollPane {
+public class ScrollableCanvas extends BorderPane {
 
 	protected ScrollBar hScrollbar;
 	protected ScrollBar vScrollbar;
 
 	protected final GraphEditor editor;
 	protected GraphCanvas canvas;
+	protected AutoScrollManager autoScrollManager;
+	private javafx.scene.shape.Rectangle cornerRect;
+	private int scrollBarWidth;
 
 	public ScrollableCanvas(GraphEditor editor) {
 
 		this.editor = editor;
-		canvas = new GraphCanvas();
-		//		canvas.prefWidthProperty().bind(this.widthProperty());
-		//		canvas.prefHeightProperty().bind(this.heightProperty());
-		setContent(canvas);
+		//		autoScrollManager = new AutoScrollManager(this);
 
+		addCanvas();
+		addVScrollbar();
+		addHScrollbar();
 		addListener();
 	}
 
 
-	public void update() {
+	public void invalidate() {
+		//canvas.invalidate();
+	}
 
-		editor.update();
+	private void addHScrollbar() {
+
+		HBox hBox = new HBox();
+		hScrollbar = new ScrollBar();
+		cornerRect = new javafx.scene.shape.Rectangle();
+		cornerRect.widthProperty().bind(vScrollbar.widthProperty());
+		cornerRect.heightProperty().bind(hScrollbar.heightProperty());
+		cornerRect.setFill( Color.SILVER);
+		hBox.setVisible(false);
+		hBox.getChildren().addAll(hScrollbar, cornerRect);
+		setBottom(hBox);
+		hBox.layout();
+	}
+
+	private void addVScrollbar() {
+
+		vScrollbar = new ScrollBar();
+		vScrollbar.setOrientation(Orientation.VERTICAL);
+		vScrollbar.setVisible(false);
+		setRight(vScrollbar);
+	}
+
+	private void addCanvas() {
+
+		canvas = new GraphCanvas(editor);
+		setCenter(canvas);
+		canvas.prefWidthProperty().bind(this.widthProperty());
+		canvas.prefHeightProperty().bind(this.heightProperty());
+	}
+
+	public GraphEditor getEditor() {
+
+		return editor;
+	}
+
+	/**
+	 * This method can be used to scroll view to a given location. An additional
+	 * space might be created if the target location is beyond the currently
+	 * available working area.
+	 * 
+	 * @param x
+	 *            Absolute x-position within the graph
+	 * @param y
+	 *            Absolute y-position within the graph
+	 * @param animated
+	 * 
+	 * @see #ensureVisible(Rectangle)
+	 * @see #getTransformer()
+	 */
+	public void scrollTo(double x, double y, boolean autoExpand, boolean animated) {
+
+		// if(autoExpand) {
+		// double width = getWidth();
+		// double height = getHeight();
+		// hScrollbar.setMin(Math.min(hScrollbar.getMin(), x - width));
+		// vScrollbar.setMin(Math.min(vScrollbar.getMin(), y - height));
+		// hScrollbar.setMax(Math.max(hScrollbar.getMax(), x + width));
+		// vScrollbar.setMax(Math.max(vScrollbar.getMax(), y + height));
+		// }
+
+		hScrollbar.setValue(x);
+		vScrollbar.setValue(y);
+
 	}
 
 
-	public void setScrollValueX(int y) {
+	public ScrollBar getHScrollbar() {
 
-		//		canvas.setYTranslate(-y);
-		update();
+		return hScrollbar;
 	}
 
-	public void setScrollValueY(int x) {
+	public ScrollBar getVScrollbar() {
 
-		//		canvas.setXTranslate(-x);
-		update();
+		return vScrollbar;
 	}
 
 
-
-	public Canvas getCanvas() {
+	public GraphCanvas getCanvas() {
 
 		return canvas;
 	}
 
-	private void xScrollValueChagned(int x) {
 
-		//		canvas.setXTranslate(-x);
-		update();
-
-	}
-	private void yScrollValueChagned(int y) {
-
-		// TODO Auto-generated method stub
-
+	@Override
+	protected void layoutChildren() {
+		super.layoutChildren();
+		updateViewport();
+		adjustScrollbars();
 	}
 
+	private void updateViewport() {
 
+		if(scrollBarWidth == 0) {
+			//			scrollBarWidth = (int) hScrollbar.getHeight();
+		}
 
-	private void updateCanvasViewportValues() {
-
-		Bounds viewPort = getViewportBounds();
-		canvas.setViewPort(new Rectangle2D(viewPort.getMinX(), viewPort.getMinY(), viewPort.getWidth(), viewPort.getHeight()));
+		final int x = (int) -hScrollbar.getValue();
+		final int y = (int) -vScrollbar.getValue();
+		final int w = (int) getWidth() -scrollBarWidth;
+		final int h = (int) getHeight() -scrollBarWidth;
+		//		canvas.setViewport(x, y, w, h);
 	}
 
 	void adjustScrollbars() {
 
-		final Rectangle paneBounds = new Rectangle((int)getWidth(), (int)getHeight());
+		final int windowWidth = (int) getWidth();
+		final int windowHeight = (int) getHeight();
+
 		final GraphDocument document = editor.getActiveDocument();
-		//		final Transform xform = document.getGraph().getTransformer();
-		//		final double tx = xform.getXTranslate();
-		//		final double ty = xform.getYTranslate();
-		//		final Rectangle graphRect = xform.transformToScreen(document.getDocumentBoundary());
+		final Rectangle graphDocumentBounds = document.getDocumentBoundary();
+		final double  maxWidth = graphDocumentBounds.getWidth() + 2 * windowWidth ;
+		//		maxWidth = Math.max(maxWidth, hScrollbar.getValue() + windowWidth*2);
+		final double maxHeight = graphDocumentBounds.getHeight() + 2 *  windowHeight;
+		final double hVisibleArea = windowWidth;
+		final double vVisibleArea = windowHeight ;
 
-		final Rectangle scrollRect =/* paneBounds.union*/(document.getDocumentBoundary() );
+		hScrollbar.setMin(-windowWidth);
+		hScrollbar.setMax(maxWidth-windowWidth);
+		hScrollbar.setUnitIncrement(20);
+		hScrollbar.setVisibleAmount(hVisibleArea);
 
-		//		System.err.println("----------------------" );
-		//		System.err.println("paneBounds: " + paneBounds);
-		//		System.err.println("document bounds: " + graphRect);
-		//		System.err.println("scrollRect: " + scrollRect);
-
-		canvas.prefWidthProperty().set(scrollRect.width);
-		canvas.prefHeightProperty().set(scrollRect.height);
-
-
-
-		//		scrollRect.translate((int) -tx, (int) -ty);
-
-		setHmin(scrollRect.x);
-		setHmax(scrollRect.x + scrollRect.width);
-		setVmin(scrollRect.y);
-		setVmax(scrollRect.y + scrollRect.height);
-		//		System.err.println(scrollRect);
-
-		//		// H-Scrollbar
-		//		hScrollbar.setUnitIncrement(20);
-		//		hScrollbar.setBlockIncrement(paneBounds.width);
-		//		hScrollbar.setVisibleAmount(paneBounds.width);
-		//		hScrollbar.setMinimum(scrollRect.x);
-		//		hScrollbar.setMaximum(scrollRect.x + scrollRect.width);
-		//		/* set visibility*/
-		//		hScrollbar.setVisible(graphRect.x < paneBounds.x || 
-		//				graphRect.x + graphRect.width > paneBounds.x + paneBounds.width);
-		//
-		//		// V-Scrollbar
-		//		vScrollbar.setUnitIncrement(20);
-		//		vScrollbar.setBlockIncrement(paneBounds.height);
-		//		vScrollbar.setVisibleAmount(paneBounds.height);
-		//		vScrollbar.setMinimum(scrollRect.y);
-		//		vScrollbar.setMaximum(scrollRect.y + scrollRect.height);
-		//		/* set visibility*/
-		//		vScrollbar.setVisible(graphRect.y < paneBounds.y
-		//				|| graphRect.y + graphRect.height > paneBounds.y + paneBounds.height);
-
+		vScrollbar.setMin(-windowHeight);
+		vScrollbar.setMax(maxHeight-windowHeight);
+		vScrollbar.setUnitIncrement(20);
+		vScrollbar.setVisibleAmount(vVisibleArea);
+		hScrollbar.setPrefWidth(windowWidth - cornerRect.getWidth());
 	}
 
 	private void addListener() {
 
-		editor.addEditorListener(new EditorListener(){
+		hScrollbar.valueProperty().addListener(new InvalidationListener() {
+
 			@Override
-			public void boundaryChangedListener(Rectangle newBoundary) {
-				adjustScrollbars();
+			public void invalidated(Observable observable) {
+
+				//invalidate();
 			}
 		});
 
-		widthProperty().addListener(new ChangeListener<Number>() {
+		vScrollbar.valueProperty().addListener(new InvalidationListener() {
+
 			@Override
-			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-				updateCanvasViewportValues();
-				adjustScrollbars();
+			public void invalidated(Observable observable) {
+
+				//invalidate();
 			}
 		});
 
-		heightProperty().addListener(new ChangeListener<Number>() {
-			@Override
-			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-				updateCanvasViewportValues();
-				adjustScrollbars();
-			}
-		});
-
-		hvalueProperty().addListener(new ChangeListener<Number>() {
-			@Override
-			public void changed(ObservableValue<? extends Number> ov,
-					Number old_val, Number new_val) {
-				updateCanvasViewportValues();
-				xScrollValueChagned(new_val.intValue());
-			}
-		});
-		vvalueProperty().addListener(new ChangeListener<Number>() {
-			@Override
-			public void changed(ObservableValue<? extends Number> ov,
-					Number old_val, Number new_val) {
-				updateCanvasViewportValues();
-				yScrollValueChagned(new_val.intValue());
-			}
-		});
 		addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
 
 			@Override
 			public void handle(MouseEvent e) {
 
-				if(getBoundsInLocal().contains(e.getX(), e.getY())){
+				if (e.getX() < canvas.getWidth() && e.getY() < canvas.getHeight()) {
 					if (editor.mousePressed(vsPoint(e), vsMouseButton(e), vsFunctionKey(e))) {
 						e.consume();
 					}
@@ -195,8 +211,10 @@ public class ScrollableCanvas extends ScrollPane {
 			@Override
 			public void handle(MouseEvent e) {
 
-				if (editor.mouseReleased(vsPoint(e), vsMouseButton(e), vsFunctionKey(e))) {
-					e.consume();
+				if (e.getX() < canvas.getWidth() && e.getY() < canvas.getHeight()) {
+					if (editor.mouseReleased(vsPoint(e), vsMouseButton(e), vsFunctionKey(e))) {
+						e.consume();
+					}
 				}
 			}
 		});
@@ -206,8 +224,12 @@ public class ScrollableCanvas extends ScrollPane {
 			@Override
 			public void handle(MouseEvent e) {
 
-				if (editor.mouseMoved(vsPoint(e), vsMouseButton(e), vsFunctionKey(e))) {
-					e.consume();
+				updateCursor();
+
+				if (e.getX() < canvas.getWidth() && e.getY() < canvas.getHeight()) {
+					if (editor.mouseMoved(vsPoint(e), vsMouseButton(e), vsFunctionKey(e))) {
+						e.consume();
+					}
 				}
 			}
 		});
@@ -217,41 +239,21 @@ public class ScrollableCanvas extends ScrollPane {
 			@Override
 			public void handle(MouseEvent e) {
 
-				if (editor.mouseDragged(vsPoint(e), vsMouseButton(e), vsFunctionKey(e))) {
-					e.consume();
+				if (e.getX() < canvas.getWidth() && e.getY() < canvas.getHeight()) {
+					if (editor.mouseDragged(vsPoint(e), vsMouseButton(e), vsFunctionKey(e))) {
+						e.consume();
+					}
 				}
 			}
 		});
 
-		addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
-
-			@Override
-			public void handle(KeyEvent e) {
-
-				if (editor.keyPressed(vsKeyChar(e), vsKeyCode(e))) {
-					e.consume();
-				}
-			}
-		});
-
-		addEventHandler(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>() {
-
-			@Override
-			public void handle(KeyEvent e) {
-
-				if (editor.keyReleased(vsKeyChar(e), vsKeyCode(e))) {
-					e.consume();
-				}
-			}
-		});		
 	}
-
 
 	private Point vsPoint(MouseEvent e) {
 
-		double dx = -getViewportBounds().getMinX();
-		double dy = -getViewportBounds().getMinY();
-		return /*canvas.getContext().getTransform().transformToGraph*/(new Point((int)( e.getX()+ dx), (int) (e.getY()+dy)));
+		double dx = hScrollbar.getValue();
+		double dy = vScrollbar.getValue();
+		return new Point((int) (e.getX() + dx), (int) (e.getY() + dy));
 	}
 
 	private int vsFunctionKey(MouseEvent e) {
@@ -283,15 +285,49 @@ public class ScrollableCanvas extends ScrollPane {
 		return 0;
 	}
 
-	private int vsKeyCode(KeyEvent e) {
 
-		final KeyCode code = e.getCode();
-		return code.ordinal();
+	private void updateCursor() {
+
+		Cursor cursor;
+		switch (editor.getPreferredCursor()) {
+		case Interactable.CURSOR_CROSSHAIR:
+			cursor = Cursor.DEFAULT;			
+			break;
+		case Interactable.CURSOR_E_RESIZE:
+			cursor = Cursor.E_RESIZE;			
+			break;
+		case Interactable.CURSOR_N_RESIZE:
+			cursor = Cursor.N_RESIZE;			
+			break;
+		case Interactable.CURSOR_W_RESIZE:
+			cursor = Cursor.W_RESIZE;			
+			break;
+		case Interactable.CURSOR_S_RESIZE:
+			cursor = Cursor.S_RESIZE;			
+			break;
+		case Interactable.CURSOR_SW_RESIZE:
+			cursor = Cursor.SW_RESIZE;			
+			break;
+		case Interactable.CURSOR_SE_RESIZE:
+			cursor = Cursor.SE_RESIZE;			
+			break;
+		case Interactable.CURSOR_NE_RESIZE:
+			cursor = Cursor.NE_RESIZE;			
+			break;
+		case Interactable.CURSOR_NW_RESIZE:
+			cursor = Cursor.NW_RESIZE;			
+			break;
+		case Interactable.CURSOR_MOVE:
+			cursor = Cursor.MOVE;			
+			break;
+		case Interactable.CURSOR_EDIT_TEXT:
+			cursor = Cursor.TEXT;			
+			break;
+		default:
+			cursor = Cursor.DEFAULT;			
+			break;
+		}
+		setCursor(cursor);
 	}
 
-	private int vsKeyChar(KeyEvent e) {
-
-		final String character = e.getCharacter();
-		return character.charAt(0);
-	}
 }

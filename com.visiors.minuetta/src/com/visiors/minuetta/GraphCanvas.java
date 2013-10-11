@@ -1,109 +1,241 @@
 package com.visiors.minuetta;
 
-import java.awt.Image;
-import java.awt.Rectangle;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.geometry.Rectangle2D;
+import javafx.event.EventHandler;
+import javafx.scene.Cursor;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
-import javafx.scene.layout.Pane;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.StackPane;
 
-import com.visiors.visualstage.renderer.DefaultDrawingContext;
-import com.visiors.visualstage.renderer.DrawingContext;
-import com.visiors.visualstage.renderer.Resolution;
-import com.visiors.visualstage.transform.DefaultTransformer;
-import com.visiors.visualstage.transform.Transform;
+import com.visiors.visualstage.document.GraphDocument;
+import com.visiors.visualstage.editor.Editor;
+import com.visiors.visualstage.editor.EditorListener;
+import com.visiors.visualstage.tool.Interactable;
 
-public class GraphCanvas extends Pane implements com.visiors.visualstage.renderer.Canvas {
+public class GraphCanvas extends StackPane implements EditorListener {
 
-	protected final DrawingContext context;
-	protected final Transform transform;
-	protected Resolution resolution;
+	protected final CanvasDrawingContext context;
 	ImageView imageViewer = new ImageView();
-	private final Rectangle viewPort = new Rectangle();
+	private final Editor editor;
 
-	public GraphCanvas() {
+	public GraphCanvas(Editor editor) {
 
 		super();
+		this.editor = editor;
+		this.context = new CanvasDrawingContext();
 		getChildren().add(imageViewer);
-		resolution = Resolution.SCREEN;
-		transform = new DefaultTransformer();
-		context = new DefaultDrawingContext(resolution, new Rectangle(), transform) {
+		setMinWidth(10);
+		setMinHeight(10);
+		editor.addEditorListener(this);
 
-			@Override
-			public Rectangle getClipBounds() {
-
-				return viewPort;
-			}
-
-			@Override
-			public Transform getTransform() {
-
-				return transform;
-			}
-		};
+		addInteractionListener();
+		addResizeListener();
 	}
 
 	@Override
-	public void draw(int x, int y, Image image) {
+	protected void layoutChildren() {
 
-		final BufferedImage bufferedImage = (BufferedImage) image;
+		final BufferedImage bufferedImage = (BufferedImage) editor.getActiveDocument().getScreen(context);
 		final WritableImage fxImage = SwingFXUtils.toFXImage(bufferedImage, null);
-
-		imageViewer.setTranslateX(x);
-		imageViewer.setTranslateY(y);
 		imageViewer.setImage(fxImage);
-
 	}
 
-	public void setViewPort(Rectangle2D r) {
+	private void invalidate() {
 
-		this.viewPort.setBounds((int) r.getMinX(), (int) r.getMinY(), (int) r.getWidth(), (int) r.getHeight());
+		requestLayout();
+	}
 
-		//		imageViewer.setViewport(new Rectangle2D(0, 0, r.getWidth(), r.getHeight()));
+	private void setViewport(int width, int height) {
+
+		editor.getActiveDocument().setViewportSize(width, height);
 	}
 
 	@Override
-	public DrawingContext getContext() {
+	public void viewInvalid(GraphDocument documen) {
 
-		return context;
+		invalidate();
+
 	}
 
-	public void setResolution(Resolution resolution) {
+	@Override
+	public void boundaryChangedListener() {
 
-		this.resolution = resolution;
+		invalidate();
 	}
 
-	public void setScale(double s) {
+	private void addResizeListener() {
 
-		transform.setScale(s);
+		widthProperty().addListener(new InvalidationListener() {
+
+			@Override
+			public void invalidated(Observable observable) {
+
+				setViewport((int) getWidth(), (int) getHeight());
+			}
+		});
+		heightProperty().addListener(new InvalidationListener() {
+
+			@Override
+			public void invalidated(Observable observable) {
+
+				setViewport((int) getWidth(), (int) getHeight());
+			}
+		});
 	}
 
-	public double getScale() {
+	private void addInteractionListener() {
 
-		return transform.getScale();
+		addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent e) {
+
+				if (editor.mousePressed(vsPoint(e), vsMouseButton(e), vsFunctionKey(e))) {
+					e.consume();
+				}
+			}
+		});
+
+		addEventFilter(MouseEvent.MOUSE_RELEASED, new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent e) {
+
+				if (editor.mouseReleased(vsPoint(e), vsMouseButton(e), vsFunctionKey(e))) {
+					e.consume();
+				}
+			}
+		});
+
+		addEventFilter(MouseEvent.MOUSE_MOVED, new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent e) {
+
+				updateCursor();
+
+				if (editor.mouseMoved(vsPoint(e), vsMouseButton(e), vsFunctionKey(e))) {
+					e.consume();
+				}
+			}
+		});
+
+		addEventFilter(MouseEvent.MOUSE_DRAGGED, new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent e) {
+
+				if (editor.mouseDragged(vsPoint(e), vsMouseButton(e), vsFunctionKey(e))) {
+					e.consume();
+				}
+			}
+		});
+		addEventFilter(MouseEvent.MOUSE_ENTERED, new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent e) {
+
+				if (editor.mouseEntered(vsPoint(e), vsMouseButton(e), vsFunctionKey(e))) {
+					e.consume();
+				}
+			}
+		});
+		addEventFilter(MouseEvent.MOUSE_EXITED, new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent e) {
+
+				if (editor.mouseExited(vsPoint(e), vsMouseButton(e), vsFunctionKey(e))) {
+					e.consume();
+				}
+			}
+		});
+
 	}
 
-	public void setXTranslate(double dx) {
+	private Point vsPoint(MouseEvent e) {
 
-		transform.setXTranslate(dx);
+		final Point offset = editor.getActiveDocument().getViewportPos();
+		return new Point((int) (e.getX() - offset.x), (int) (e.getY() - offset.y));
 	}
 
-	public double getXTranslate() {
+	private int vsFunctionKey(MouseEvent e) {
 
-		return transform.getXTranslate();
+		int key = 0;
+		if (e.isAltDown()) {
+			key |= Interactable.KEY_ALT;
+		}
+		if (e.isControlDown()) {
+			key |= Interactable.KEY_CONTROL;
+		}
+		if (e.isShiftDown()) {
+			key |= Interactable.KEY_SHIFT;
+		}
+		return key;
 	}
 
-	public void setYTranslate(double dy) {
+	private int vsMouseButton(MouseEvent e) {
 
-		transform.setYTranslate(dy);
+		if (e.isPrimaryButtonDown()) {
+			return Interactable.BUTTON_LEFT;
+		}
+		if (e.isMiddleButtonDown()) {
+			return Interactable.BUTTON_MIDDLE;
+		}
+		if (e.isSecondaryButtonDown()) {
+			return Interactable.BUTTON_RIGHT;
+		}
+		return 0;
 	}
 
-	public double getYTranslate() {
+	private void updateCursor() {
 
-		return transform.getYTranslate();
+		Cursor cursor;
+		switch (editor.getPreferredCursor()) {
+		case Interactable.CURSOR_CROSSHAIR:
+			cursor = Cursor.DEFAULT;
+			break;
+		case Interactable.CURSOR_E_RESIZE:
+			cursor = Cursor.E_RESIZE;
+			break;
+		case Interactable.CURSOR_N_RESIZE:
+			cursor = Cursor.N_RESIZE;
+			break;
+		case Interactable.CURSOR_W_RESIZE:
+			cursor = Cursor.W_RESIZE;
+			break;
+		case Interactable.CURSOR_S_RESIZE:
+			cursor = Cursor.S_RESIZE;
+			break;
+		case Interactable.CURSOR_SW_RESIZE:
+			cursor = Cursor.SW_RESIZE;
+			break;
+		case Interactable.CURSOR_SE_RESIZE:
+			cursor = Cursor.SE_RESIZE;
+			break;
+		case Interactable.CURSOR_NE_RESIZE:
+			cursor = Cursor.NE_RESIZE;
+			break;
+		case Interactable.CURSOR_NW_RESIZE:
+			cursor = Cursor.NW_RESIZE;
+			break;
+		case Interactable.CURSOR_MOVE:
+			cursor = Cursor.MOVE;
+			break;
+		case Interactable.CURSOR_EDIT_TEXT:
+			cursor = Cursor.TEXT;
+			break;
+		default:
+			cursor = Cursor.DEFAULT;
+			break;
+		}
+		setCursor(cursor);
 	}
 
 }
