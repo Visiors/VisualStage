@@ -107,7 +107,7 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 
 	protected void applyDefaultConfiguration(GraphDocument document) {
 
-		stageDesigner.setViewMode(ViewMode.plane);
+		stageDesigner.setViewMode(ViewMode.none);
 		stageDesigner.showGrid(true);
 		stageDesigner.showRuler(true);
 	}

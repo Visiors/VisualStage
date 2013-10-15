@@ -155,6 +155,8 @@ public class DefaultStageDesigner implements StageDesigner {
 			fillBackground(awtCanvas, context);
 			if (showGrid && context.getResolution() == Resolution.SCREEN) {
 				rPageBoundary.setBounds(viewport);
+				rPageBoundary.x -= 1;
+				rPageBoundary.y -= 1;
 				grid.draw(awtCanvas, rPageBoundary, systemUnit.getPixelsPerUnit(), GridStyle.Line); 
 				if(isRulerVisible()){
 					rPageBoundary.grow(-rulerSize/2, -rulerSize/2);  
@@ -176,6 +178,10 @@ public class DefaultStageDesigner implements StageDesigner {
 	private void paintRulers(AWTCanvas awtCanvas, DrawingContext context) {
 
 		final Rectangle viewport = graphDocument.getViewport();
+		viewport.x -= 1;
+		viewport.y -= 1;
+		viewport.width += rulerSize;
+		viewport.height += rulerSize;
 		hRuler.draw(awtCanvas.gfx, viewport, systemUnit.getPixelsPerUnit(), 5, "cm");
 		vRuler.draw(awtCanvas.gfx, viewport, systemUnit.getPixelsPerUnit(), 5, "cm");
 		cornerButton.draw(awtCanvas.gfx, viewport);

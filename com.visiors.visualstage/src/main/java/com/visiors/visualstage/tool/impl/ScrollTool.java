@@ -65,6 +65,18 @@ public class ScrollTool extends BaseTool {
 	}
 
 	@Override
+	public boolean mouseEntered(Point pt, int button, int functionKey) {
+
+		return hScrollBar.mouseEntered(pt, button, functionKey) || vScrollBar.mouseDragged(pt, button, functionKey);
+	}
+
+	@Override
+	public boolean mouseExited(Point pt, int button, int functionKey) {
+
+		return hScrollBar.mouseExited(pt, button, functionKey) || vScrollBar.mouseDragged(pt, button, functionKey);
+	}
+
+	@Override
 	public boolean keyPressed(int keyChar, int keyCode) {
 
 		return false;

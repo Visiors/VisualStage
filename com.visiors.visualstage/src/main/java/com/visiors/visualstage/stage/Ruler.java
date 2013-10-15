@@ -20,6 +20,7 @@ public class Ruler {
 	private final int style;
 	private final Color bkColor;
 	private final Color lineColor;
+	private final Color textColor;
 	private final Font font = new Font("SansSerif", Font.PLAIN, 10);
 	private final Transform transformer;
 
@@ -30,7 +31,8 @@ public class Ruler {
 		this.size = size;
 
 		bkColor = new Color(0xF1F8F8); // UIManager.getColor("MinuetLnF.Ruler.Background");
-		lineColor = new Color(0x4b5d6f); // UIManager.getColor("MinuetLnF.Ruler.Line.Color");
+		lineColor = new Color(0x8E9CAF); // UIManager.getColor("MinuetLnF.Ruler.Line.Color");
+		textColor = new Color(0x8334E70); // UIManager.getColor("MinuetLnF.Ruler.Line.Color");
 	}
 
 	public void draw(Graphics2D gfx2D, Rectangle r, double pixelsPreUnit, int outlineStep, String unitName) {
@@ -76,7 +78,7 @@ public class Ruler {
 				}
 			}
 			// ruler border
-			gfx2D.drawLine(0, size, r.width, size);
+			gfx2D.drawLine(size, size, r.width, size);
 		} else {
 			gfx2D.setColor(bkColor);
 			gfx2D.fillRect(0, 0, size, r.height);
@@ -90,7 +92,6 @@ public class Ruler {
 				if (outline) {
 					final String text = (int) Math.round((y - rTrans.y) / transUnit / fCompress) + " " + unitName;
 					drawString(gfx2D, text, 4, (int) y + 3, 90);
-
 				}
 			}
 			for (double y = rTrans.y, n = 0; y > 0; y -= transUnit, n++) {
@@ -103,15 +104,17 @@ public class Ruler {
 			}
 
 			// ruler border
-			gfx2D.drawLine(size, 0, size, r.height);
+			gfx2D.drawLine(size, size, size, r.height);
 		}
 	}
 
 	private void drawString(Graphics2D gfx2D, String text, int x, int y, int rotation) {
 
 		final double alpha = Math.toRadians(rotation);
+		gfx2D.setColor(textColor);
 		gfx2D.rotate(alpha, x, y);
 		gfx2D.drawString(text, x, y);
 		gfx2D.rotate(-alpha, x, y);
+		gfx2D.setColor(lineColor);
 	}
 }

@@ -127,7 +127,7 @@ public class NavigationTool extends BaseTool {
 		if (!onTop || !active) {
 			return;
 		}
-		this.rViewport = graphDocument.getViewport();
+		this.rViewport = graphDocument.getViewBoundary();
 		this.rView = getClientViewPort(rViewport);
 		final Rectangle rGraph = graphDocument.getGraph().getExtendedBoundary();
 		final double zoom = graphDocument.getZoom();

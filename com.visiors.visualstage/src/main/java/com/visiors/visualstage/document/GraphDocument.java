@@ -41,6 +41,8 @@ public interface GraphDocument extends MultiLayerDocument, PropertyOwner, Undoab
 
 	public void setZoom(double value);
 
+	public Rectangle getViewBoundary();
+
 	public void setViewportSize(int w, int h);
 
 	public Dimension getViewportSize();
@@ -82,7 +84,5 @@ public interface GraphDocument extends MultiLayerDocument, PropertyOwner, Undoab
 	public void removeGraphViewListener(GraphViewListener listener);
 
 	public void invalidate();
-
-
 
 }

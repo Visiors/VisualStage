@@ -86,8 +86,6 @@ public class DefaultGraphDocument implements GraphDocument {
 		stageDesigner.addViewListener(viewListener);
 	}
 
-
-
 	@Override
 	public String getTitle() {
 
@@ -167,6 +165,7 @@ public class DefaultGraphDocument implements GraphDocument {
 		}
 
 	}
+
 	@Override
 	public Point getViewportPos() {
 
@@ -194,6 +193,13 @@ public class DefaultGraphDocument implements GraphDocument {
 		return new Rectangle(viewport);
 	}
 
+	@Override
+	public Rectangle getViewBoundary() {
+
+		final Rectangle r = getViewport();
+		final int rulerWidth = stageDesigner.getRulerSize();
+		return new Rectangle(rulerWidth, rulerWidth, r.width - rulerWidth, r.height-rulerWidth);
+	}
 
 	@Override
 	public void setActiveLayer(int id) {
@@ -267,14 +273,11 @@ public class DefaultGraphDocument implements GraphDocument {
 		return layerManager.getLayerCount();
 	}
 
-
-
 	@Override
 	public ToolManager getToolManager() {
 
 		return toolManager;
 	}
-
 
 	@Override
 	public VisualGraph getGraph() {
@@ -322,10 +325,9 @@ public class DefaultGraphDocument implements GraphDocument {
 	@Override
 	public synchronized Image getScreen(DrawingContext context) {
 
-
 		if (viewport == null || viewport.isEmpty()) {
 			System.err.println("Warning: view port is empty!");
-			return  new AWTCanvas(1, 1).image;
+			return new AWTCanvas(1, 1).image;
 		}
 		final AWTCanvas awtCanvas = new AWTCanvas((int) viewport.getWidth(), (int) viewport.getHeight());
 
@@ -364,7 +366,8 @@ public class DefaultGraphDocument implements GraphDocument {
 
 	private Image getImage(DrawingContext context, DocumentConfig config) {
 
-		// pack everything in context. getSVGDocument will have only one parameter
+		// pack everything in context. getSVGDocument will have only one
+		// parameter
 		final String svgDocument = getSVGDocument(context, config, context.getDrawingSubject());
 		return SVGUtil.svgToImage(svgDocument);
 	}
@@ -415,13 +418,12 @@ public class DefaultGraphDocument implements GraphDocument {
 	protected String getSVGDocument(DrawingContext context, DocumentConfig config, DrawingSubject... subject) {
 
 		final VisualGraph graph = getGraph();
-		Rectangle boundary = graph.getBounds();
-		final Rectangle svgViewport = new Rectangle(-this.viewport.x, -this.viewport.y, boundary.width,
-				boundary.height);
+		final Rectangle boundary = graph.getBounds();
+		final Rectangle svgViewport = new Rectangle(-this.viewport.x, -this.viewport.y, boundary.width, boundary.height);
 
 		svgDocumentBuilder.createEmptyDocument(svgViewport, null, config);
 
-		for (DrawingSubject drawingSubject : subject) {
+		for (final DrawingSubject drawingSubject : subject) {
 			svgDocumentBuilder.addContent(graph.getViewDescriptor(context.getResolution(), drawingSubject));
 		}
 		svgDocumentBuilder.finlaizeDocument();
