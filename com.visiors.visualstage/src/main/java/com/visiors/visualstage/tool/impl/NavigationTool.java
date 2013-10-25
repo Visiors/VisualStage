@@ -127,7 +127,7 @@ public class NavigationTool extends BaseTool {
 		if (!onTop || !active) {
 			return;
 		}
-		this.rViewport = graphDocument.getViewBoundary();
+		this.rViewport = graphDocument.getCanvasBoundary();
 		this.rView = getClientViewPort(rViewport);
 		final Rectangle rGraph = graphDocument.getGraph().getExtendedBoundary();
 		final double zoom = graphDocument.getZoom();
@@ -161,7 +161,7 @@ public class NavigationTool extends BaseTool {
 
 	private void fillBackground(Graphics2D gfx, Rectangle view) {
 
-		gfx.setColor(new Color(255, 170, 120, 255));
+		gfx.setColor(new Color(100, 150, 200));
 		gfx.fillRect(view.x, view.y, view.width, view.height);
 		gfx.setColor(Color.orange);
 		gfx.drawRect(view.x, view.y, view.width, view.height);

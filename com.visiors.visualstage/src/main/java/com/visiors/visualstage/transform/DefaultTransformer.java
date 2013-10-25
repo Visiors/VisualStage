@@ -7,6 +7,10 @@ import java.util.List;
 
 public class DefaultTransformer extends SimpleTransformer implements Transform {
 
+	private int viewportWidth;
+	private int viewportHeight;
+	private Rectangle canvas = new Rectangle();
+
 	public DefaultTransformer() {
 
 		super();
@@ -18,24 +22,26 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 		listener = t.listener;
 	}
 
-	//    /*
-	//     * (non-Javadoc)
-	//     * @see com.visiors.visualstage.view.transform.Transform#setTransform(com.visiors.visualstage.view.transform.
-	//     * DefaultTransformer)
-	//     */
-	//    @Override
-	//    public void setTransform(DefaultTransformer t) {
+	// /*
+	// * (non-Javadoc)
+	// * @see
+	// com.visiors.visualstage.view.transform.Transform#setTransform(com.visiors.visualstage.view.transform.
+	// * DefaultTransformer)
+	// */
+	// @Override
+	// public void setTransform(DefaultTransformer t) {
 	//
-	//        double s = getScaleX();
-	//        super.setTransform(t);
-	//        listener = t.listener;
-	//        if (s != getScaleX()) {
-	//            fireScaleValueChanged();
-	//        }
-	//    }
+	// double s = getScaleX();
+	// super.setTransform(t);
+	// listener = t.listener;
+	// if (s != getScaleX()) {
+	// fireScaleValueChanged();
+	// }
+	// }
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see com.visiors.visualstage.view.transform.Transform#reset()
 	 */
 	@Override
@@ -46,6 +52,7 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see com.visiors.visualstage.view.transform.Transform#setScale(double)
 	 */
 	@Override
@@ -58,19 +65,9 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 		}
 	}
 
-	// @Override
-	// public void setScaleX(double sx) {
-	// super.setScaleX(sx);
-	// }
-	//
-	//
-	// @Override
-	// public void setScaleY(double sy) {
-	// super.setScaleY(sy);
-	// }
-
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see com.visiors.visualstage.view.transform.Transform#setShear(double)
 	 */
 	@Override
@@ -82,6 +79,7 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see com.visiors.visualstage.view.transform.Transform#setShearX(double)
 	 */
 	@Override
@@ -92,6 +90,7 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see com.visiors.visualstage.view.transform.Transform#setShearY(double)
 	 */
 	@Override
@@ -102,7 +101,9 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.visiors.visualstage.view.transform.Transform#setTranslateX(double)
+	 * 
+	 * @see
+	 * com.visiors.visualstage.view.transform.Transform#setTranslateX(double)
 	 */
 	@Override
 	public void setXTranslate(double tx) {
@@ -112,7 +113,9 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.visiors.visualstage.view.transform.Transform#setTranslateY(double)
+	 * 
+	 * @see
+	 * com.visiors.visualstage.view.transform.Transform#setTranslateY(double)
 	 */
 	@Override
 	public void setYTranslate(double ty) {
@@ -122,6 +125,7 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see com.visiors.visualstage.view.transform.Transform#setRotation(double)
 	 */
 	@Override
@@ -132,6 +136,7 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see com.visiors.visualstage.view.transform.Transform#getScaleX()
 	 */
 	@Override
@@ -142,6 +147,7 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see com.visiors.visualstage.view.transform.Transform#getScale()
 	 */
 	@Override
@@ -152,6 +158,7 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see com.visiors.visualstage.view.transform.Transform#getScaleY()
 	 */
 	@Override
@@ -162,6 +169,7 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see com.visiors.visualstage.view.transform.Transform#getShear()
 	 */
 	@Override
@@ -172,6 +180,7 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see com.visiors.visualstage.view.transform.Transform#getShearX()
 	 */
 	@Override
@@ -182,6 +191,7 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see com.visiors.visualstage.view.transform.Transform#getShearY()
 	 */
 	@Override
@@ -192,6 +202,7 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see com.visiors.visualstage.view.transform.Transform#getTranslateX()
 	 */
 	@Override
@@ -202,6 +213,7 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see com.visiors.visualstage.view.transform.Transform#getTranslateY()
 	 */
 	@Override
@@ -212,6 +224,7 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see com.visiors.visualstage.view.transform.Transform#getRotation()
 	 */
 	@Override
@@ -220,29 +233,77 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 		return super.getRotation();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see com.visiors.visualstage.view.transform.Transform#transformToScreen(java.awt.Point)
-	 */
 	@Override
-	public final Point transformToScreen(Point ptGraph) {
+	public int getViewportWidth() {
 
-		return super.transform(ptGraph, new Point());
+		return viewportWidth;
+	}
+
+	@Override
+	public void setViewportWidth(int w) {
+
+		this.viewportWidth = w;
+	}
+
+	@Override
+	public int getViewportHeight() {
+
+		return viewportHeight;
+	}
+
+	@Override
+	public void setViewportHeight(int h) {
+
+		this.viewportHeight = h;
+	}
+
+	@Override
+	public void setCanvasBoundary(Rectangle canvas) {
+
+		this.canvas = canvas;
+	}
+
+	@Override
+	public Rectangle getCanvasBoundary() {
+
+		return canvas;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.visiors.visualstage.view.transform.Transform#transformToGraph(java.awt.Point)
+	 * 
+	 * @see
+	 * com.visiors.visualstage.view.transform.Transform#transformToScreen(java
+	 * .awt.Point)
+	 */
+	@Override
+	public final Point transformToScreen(Point ptGraph) {
+
+		Point screen = super.transform(new Point(ptGraph.x, ptGraph.y), new Point());
+		screen.translate(-canvas.x, -canvas.y);
+		return screen;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.visiors.visualstage.view.transform.Transform#transformToGraph(java
+	 * .awt.Point)
 	 */
 	@Override
 	public final Point transformToGraph(Point ptScreen) {
 
+		ptScreen = new Point(ptScreen.x + canvas.x, ptScreen.y + canvas.y);
 		return createInverse().transform(ptScreen, new Point());
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.visiors.visualstage.view.transform.Transform#transformToScreen(java.awt.Rectangle)
+	 * 
+	 * @see
+	 * com.visiors.visualstage.view.transform.Transform#transformToScreen(java
+	 * .awt.Rectangle)
 	 */
 	@Override
 	public final Rectangle transformToScreen(Rectangle rGraph) {
@@ -254,20 +315,25 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.visiors.visualstage.view.transform.Transform#transformToGraph(java.awt.Rectangle)
+	 * 
+	 * @see
+	 * com.visiors.visualstage.view.transform.Transform#transformToGraph(java
+	 * .awt.Rectangle)
 	 */
 	@Override
 	public final Rectangle transformToGraph(Rectangle rScreen) {
 
 		Point newLocation = transformToScreen(rScreen.getLocation());
-		return new Rectangle(newLocation.x, newLocation.y, (int) (rScreen.width * getScaleX()),
+		return new Rectangle(newLocation.x - canvas.x, newLocation.y - canvas.y, (int) (rScreen.width * getScaleX()),
 				(int) (rScreen.height * getScaleY()));
 
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.visiors.visualstage.view.transform.Transform#transformToScreenX(int)
+	 * 
+	 * @see
+	 * com.visiors.visualstage.view.transform.Transform#transformToScreenX(int)
 	 */
 	@Override
 	public int transformToScreenX(int x) {
@@ -277,7 +343,9 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.visiors.visualstage.view.transform.Transform#transformToScreenY(int)
+	 * 
+	 * @see
+	 * com.visiors.visualstage.view.transform.Transform#transformToScreenY(int)
 	 */
 	@Override
 	public int transformToScreenY(int y) {
@@ -287,7 +355,9 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.visiors.visualstage.view.transform.Transform#transformToGraphX(int)
+	 * 
+	 * @see
+	 * com.visiors.visualstage.view.transform.Transform#transformToGraphX(int)
 	 */
 	@Override
 	public int transformToGraphX(int x) {
@@ -297,7 +367,9 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.visiors.visualstage.view.transform.Transform#transformToGraphY(int)
+	 * 
+	 * @see
+	 * com.visiors.visualstage.view.transform.Transform#transformToGraphY(int)
 	 */
 	@Override
 	public int transformToGraphY(int y) {
@@ -312,8 +384,10 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.visiors.visualstage.view.transform.Transform#addListener(com.visiors.visualstage.view.transform.
-	 * TransformValueChangeListener)
+	 * 
+	 * @see
+	 * com.visiors.visualstage.view.transform.Transform#addListener(com.visiors
+	 * .visualstage.view.transform. TransformValueChangeListener)
 	 */
 	@Override
 	public void addListener(TransformValueChangeListener l) {
@@ -326,8 +400,10 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.visiors.visualstage.view.transform.Transform#removeListener(com.visiors.visualstage.view.transform.
-	 * TransformValueChangeListener)
+	 * 
+	 * @see
+	 * com.visiors.visualstage.view.transform.Transform#removeListener(com.visiors
+	 * .visualstage.view.transform. TransformValueChangeListener)
 	 */
 	@Override
 	public void removeListener(TransformValueChangeListener l) {

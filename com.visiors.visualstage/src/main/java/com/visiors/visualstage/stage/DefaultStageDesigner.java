@@ -152,7 +152,6 @@ public class DefaultStageDesigner implements StageDesigner {
 		if (pageView == ViewMode.page) {
 			drawPages(awtCanvas, context);
 		} else if (pageView == ViewMode.plane) {
-			fillBackground(awtCanvas, context);
 			if (showGrid && context.getResolution() == Resolution.SCREEN) {
 				rPageBoundary.setBounds(viewport);
 				rPageBoundary.x -= 1;
@@ -300,13 +299,7 @@ public class DefaultStageDesigner implements StageDesigner {
 		}
 	}
 
-	private void fillBackground(AWTCanvas awtCanvas, DrawingContext context) {
 
-		// screen
-		final Rectangle viewport = graphDocument.getViewport();
-		awtCanvas.gfx.setColor(Color.white);
-		awtCanvas.gfx.fillRect(viewport.x, viewport.y, viewport.width, viewport.height);
-	}
 
 	@Override
 	public int getRulerSize() {

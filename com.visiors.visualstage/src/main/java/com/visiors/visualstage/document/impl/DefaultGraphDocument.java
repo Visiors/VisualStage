@@ -74,7 +74,6 @@ public class DefaultGraphDocument implements GraphDocument {
 	private String svgFilter;
 	private String svgTransformation;
 	private Editor editor;
-	private final Rectangle viewport = new Rectangle();
 
 	@Inject
 	public DefaultGraphDocument(LayerManager layerManager, Transform transform) {
@@ -159,8 +158,9 @@ public class DefaultGraphDocument implements GraphDocument {
 	@Override
 	public void setViewportPos(int x, int y) {
 
-		if (this.viewport.x != x || this.viewport.y != y) {
-			this.viewport.setLocation(x, y);
+		if (transform.getXTranslate() != x || transform.getYTranslate() != y) {
+			transform.setXTranslate(x);
+			transform.setYTranslate(y);
 			fireViewInvalid();
 		}
 
@@ -169,37 +169,48 @@ public class DefaultGraphDocument implements GraphDocument {
 	@Override
 	public Point getViewportPos() {
 
-		return this.viewport.getLocation();
+		return new Point((int) transform.getXTranslate(), (int) transform.getYTranslate());
 	}
 
 	@Override
 	public void setViewportSize(int w, int h) {
 
-		if (this.viewport.width != w || this.viewport.height != h) {
-			viewport.setSize(w, h);
+		if (transform.getViewportWidth() != w || transform.getViewportHeight() != h) {
+			transform.setViewportWidth(w);
+			transform.setViewportHeight(h);
+			updateCanvasBoundary();
 			fireViewInvalid();
 		}
+	}
+
+
+	private void updateCanvasBoundary() {
+
+		final int rulerWidth = stageDesigner.getRulerSize();
+		final Rectangle canvas = new Rectangle(rulerWidth, rulerWidth, transform.getViewportWidth()- rulerWidth, transform.getViewportHeight() - rulerWidth);
+		transform.setCanvasBoundary(canvas);
 	}
 
 	@Override
 	public Dimension getViewportSize() {
 
-		return viewport.getSize();
+		return new Dimension(transform.getViewportWidth(), transform.getViewportHeight());
 	}
 
 	@Override
 	public Rectangle getViewport() {
 
-		return new Rectangle(viewport);
+		return new Rectangle((int) transform.getXTranslate(), (int) transform.getYTranslate(),
+				transform.getViewportWidth(), transform.getViewportHeight());
 	}
 
 	@Override
-	public Rectangle getViewBoundary() {
+	public Rectangle getCanvasBoundary() {
 
-		final Rectangle r = getViewport();
-		final int rulerWidth = stageDesigner.getRulerSize();
-		return new Rectangle(rulerWidth, rulerWidth, r.width - rulerWidth, r.height-rulerWidth);
+		return transform.getCanvasBoundary();
 	}
+
+
 
 	@Override
 	public void setActiveLayer(int id) {
@@ -325,19 +336,20 @@ public class DefaultGraphDocument implements GraphDocument {
 	@Override
 	public synchronized Image getScreen(DrawingContext context) {
 
-		if (viewport == null || viewport.isEmpty()) {
+		final int viewPortWidth = transform.getViewportWidth();
+		final int viewPortHeight = transform.getViewportHeight();
+
+		if (viewPortWidth == 0 || viewPortHeight == 0) {
 			System.err.println("Warning: view port is empty!");
 			return new AWTCanvas(1, 1).image;
 		}
-		final AWTCanvas awtCanvas = new AWTCanvas((int) viewport.getWidth(), (int) viewport.getHeight());
+		final AWTCanvas awtCanvas = new AWTCanvas(viewPortWidth, viewPortHeight);
 
 		final VisualGraph graph = getGraph();
 		// keep always the main graph view fit to the screen
-		graph.setBounds(viewport);
+		graph.setBounds(new Rectangle( 0, 0, viewPortWidth, viewPortHeight));
 		stageDesigner.paintBehind(awtCanvas, context);
-
 		toolManager.drawHints(awtCanvas, context, false);
-
 		if (useImageCaching) {
 			graph.draw(awtCanvas, context, DrawingSubject.OBJECT);
 			graph.draw(awtCanvas, context, DrawingSubject.SELECTION_INDICATORS);
@@ -346,9 +358,7 @@ public class DefaultGraphDocument implements GraphDocument {
 			final Image img = getImage(context, null);
 			awtCanvas.gfx.drawImage(img, 0, 0, null);
 		}
-
 		toolManager.drawHints(awtCanvas, context, true);
-
 		stageDesigner.paintOver(awtCanvas, context);
 		// awtCanvas.gfx.setStroke(new BasicStroke(1f));
 		// awtCanvas.gfx.setColor(Color.orange);
@@ -419,10 +429,10 @@ public class DefaultGraphDocument implements GraphDocument {
 
 		final VisualGraph graph = getGraph();
 		final Rectangle boundary = graph.getBounds();
-		final Rectangle svgViewport = new Rectangle(-this.viewport.x, -this.viewport.y, boundary.width, boundary.height);
-
+		final Transform xform = getTransformer();
+		boundary.setLocation((int) -xform.getXTranslate(), (int) -xform.getYTranslate());
+		final Rectangle svgViewport = boundary;
 		svgDocumentBuilder.createEmptyDocument(svgViewport, null, config);
-
 		for (final DrawingSubject drawingSubject : subject) {
 			svgDocumentBuilder.addContent(graph.getViewDescriptor(context.getResolution(), drawingSubject));
 		}

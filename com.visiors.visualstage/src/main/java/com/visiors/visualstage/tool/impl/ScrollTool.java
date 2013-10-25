@@ -5,6 +5,7 @@ import java.awt.Point;
 import com.visiors.visualstage.document.GraphDocument;
 import com.visiors.visualstage.renderer.AWTCanvas;
 import com.visiors.visualstage.renderer.DrawingContext;
+import com.visiors.visualstage.tool.Interactable;
 
 /**
  * This tool must be installed on the top of mouse / keyboard processing chain.
@@ -89,11 +90,19 @@ public class ScrollTool extends BaseTool {
 	}
 
 	@Override
+	public int getPreferredCursor() {
+
+		int hCursor = hScrollBar.getPreferredCursor(); 
+		int vCursor = vScrollBar.getPreferredCursor(); 
+		return (hCursor != Interactable.CURSOR_DEFAULT ? hCursor : vCursor);
+	}
+
+	@Override
 	public void drawHints(AWTCanvas awtCanvas, DrawingContext context, boolean onTop) {
 
 		if (onTop) {
 			hScrollBar.draw(awtCanvas);
-			vScrollBar.draw(awtCanvas);
+			//			vScrollBar.draw(awtCanvas);
 		}
 	}
 
