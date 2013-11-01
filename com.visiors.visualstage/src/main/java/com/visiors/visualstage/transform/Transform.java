@@ -46,7 +46,7 @@ public interface Transform {
 
 	public Rectangle transformToScreen(Rectangle rGraph);
 
-	public Rectangle transformToGraph(Rectangle rScreen);
+	public Rectangle transformToGraph(Rectangle ptGraph);
 
 	public int transformToScreenX(int x);
 
@@ -55,6 +55,8 @@ public interface Transform {
 	public int transformToGraphX(int x);
 
 	public int transformToGraphY(int y);
+
+
 
 	public void addListener(TransformValueChangeListener l);
 

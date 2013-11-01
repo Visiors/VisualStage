@@ -543,7 +543,11 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	public Rectangle getExtendedBoundary() {
 
 		if (parent == null) {
-			return transform.transformToGraph(depot.getExpansion());
+			Rectangle rScreen = transform.transformToScreen(depot.getExpansion());
+			Rectangle rCanvas = transform.getCanvasBoundary();
+			rScreen.x -= rCanvas.x;
+			rScreen.y -= rCanvas.y;
+			return rScreen;
 		}
 		return super.getExtendedBoundary();
 	}

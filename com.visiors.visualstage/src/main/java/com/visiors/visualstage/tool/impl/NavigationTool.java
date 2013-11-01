@@ -1,10 +1,12 @@
 package com.visiors.visualstage.tool.impl;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Stroke;
 
 import com.visiors.visualstage.renderer.AWTCanvas;
 import com.visiors.visualstage.renderer.DefaultDrawingContext;
@@ -26,6 +28,9 @@ public class NavigationTool extends BaseTool {
 
 	private boolean modified;
 	private final boolean redraw = true;
+	private static Stroke dashedStroke = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0,
+			new float[] { 1, 2 }, 0);
+	private static Stroke continuedStroke = new BasicStroke(1.0f);
 	// private final Color bkColor = new Color(255, 120, 63, 164);
 	private boolean active;
 	private int xOffset;
@@ -161,7 +166,7 @@ public class NavigationTool extends BaseTool {
 
 	private void fillBackground(Graphics2D gfx, Rectangle view) {
 
-		gfx.setColor(new Color(100, 150, 200));
+		gfx.setColor(new Color(190, 200, 220));
 		gfx.fillRect(view.x, view.y, view.width, view.height);
 		gfx.setColor(Color.orange);
 		gfx.drawRect(view.x, view.y, view.width, view.height);
@@ -180,8 +185,8 @@ public class NavigationTool extends BaseTool {
 
 		g.setColor(new Color(255, 255, 255));
 		g.fillRect(rVista.x, rVista.y, rVista.width, rVista.height);
-		g.setColor(Color.yellow);
-		g.drawRect(rVista.x + 1, rVista.y + 1, rVista.width - 2, rVista.height - 2);
+		g.setColor(new Color(135, 145, 155));
+		g.drawRect(rVista.x , rVista.y , rVista.width , rVista.height );
 	}
 
 	private void drawHightlightedSection(Graphics2D g) {
@@ -197,7 +202,9 @@ public class NavigationTool extends BaseTool {
 
 	private void drawSections(Graphics2D g, Rectangle rVista, Rectangle view) {
 
-		g.setColor(Color.orange);
+		g.setColor(new Color(235, 245, 255));
+		g.setColor(new Color(135, 145, 155));
+		g.setStroke(dashedStroke);
 		int x = rVista.x;
 		while (x > view.x) {
 			g.drawLine(x, view.y, x, view.y + view.height);
@@ -218,6 +225,7 @@ public class NavigationTool extends BaseTool {
 			g.drawLine(view.x, y, view.x + view.width, y);
 			y += rVista.height;
 		}
+		g.setStroke(continuedStroke);
 	}
 
 

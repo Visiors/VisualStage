@@ -275,7 +275,6 @@ public class DefaultToolManager implements ToolManager {
 		return false;
 	}
 
-
 	private final Point transform(Point pt) {
 
 		return graphDocument.getTransformer().transformToGraph(pt);

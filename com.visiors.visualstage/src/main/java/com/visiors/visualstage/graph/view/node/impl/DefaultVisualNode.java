@@ -333,6 +333,18 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 		return false;
 	}
 
+
+	@Override
+	public boolean mouseEntered(Point pt, int button, int functionKey) {
+
+		return false;
+	}
+
+	@Override
+	public boolean mouseExited(Point pt, int button, int functionKey) {
+
+		return false;
+	}
 	@Override
 	public boolean keyPressed(int keyChar, int keyCode) {
 
@@ -1469,5 +1481,6 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 	//
 	// undoRedoHandler.registerAction(this, data);
 	// }
+
 
 }

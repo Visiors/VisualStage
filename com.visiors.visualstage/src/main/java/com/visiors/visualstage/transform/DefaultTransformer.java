@@ -313,21 +313,16 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 				(int) (rGraph.height * getScaleY()));
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.visiors.visualstage.view.transform.Transform#transformToGraph(java
-	 * .awt.Rectangle)
-	 */
+
 	@Override
-	public final Rectangle transformToGraph(Rectangle rScreen) {
+	public Rectangle transformToGraph(Rectangle rScreen) {
 
-		Point newLocation = transformToScreen(rScreen.getLocation());
-		return new Rectangle(newLocation.x - canvas.x, newLocation.y - canvas.y, (int) (rScreen.width * getScaleX()),
-				(int) (rScreen.height * getScaleY()));
-
+		Point newLocation = transformToGraph(rScreen.getLocation());
+		return new Rectangle(newLocation.x, newLocation.y, (int) (rScreen.width / getScaleX()),
+				(int) (rScreen.height / getScaleY()));
 	}
+
+
 
 	/*
 	 * (non-Javadoc)
