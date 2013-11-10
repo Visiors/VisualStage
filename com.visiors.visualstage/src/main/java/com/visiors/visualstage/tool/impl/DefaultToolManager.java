@@ -6,7 +6,6 @@ import java.util.List;
 
 import com.visiors.visualstage.document.GraphDocument;
 import com.visiors.visualstage.exception.InvalidToolNameException;
-import com.visiors.visualstage.interaction.impl.readonlymode.ReadOnlyTool;
 import com.visiors.visualstage.renderer.AWTCanvas;
 import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.renderer.Resolution;
@@ -16,60 +15,16 @@ import com.visiors.visualstage.tool.ToolManager;
 
 /**
  * This class allows registering tools which implement the interface
- * {@link Tool}. Tools can be activate switching between them. It registered the
- * following four basic interaction-tool:
- * <ul>
- * <li> {@link ReadOnlyTool}</li>
- * <li> {@link ToolllingTool}</li>
- * <li> {@link EdgeCreationTool}</li>
- * <li> {@link NodeCreationTool}</li>
- * </ul>
- * Custom {@link Tool}s can be registered and use at the run-time.
+ * {@link Tool}. 
  */
 public class DefaultToolManager implements ToolManager {
 
-	public static final String TOOL_SCROLLBAR = "Scroll-Bar Tool";
-	public static final String TOOL_SELECTION = "Selection Tool";
-	public static final String TOOL_MARQUEE_SELECTION = "Marquee Selection Tool";
-	public static final String TOOL_OBJECT_EVENT_MEDIATOR = "Object event mediator Tool";
-	public static final String TOOL_MOVE_SELECTION = "Object Move Tool";
-	public static final String TOOL_DUPLICATE_ON_MOVE = "Duplicate on Move Tool";
-	public static final String TOOL_NAVIGATION = "Navigation Tool";
 
-	public static final String TOOL_EDGE_CREATION = "Edge Creation Tool";
-	public static final String TOOL_AUTO_ALIGNMENT = "Auto Alignment Tool";
-	public static final String TOOL_ARRANGEMENT = "Arrangemen Toolt";
-	public static final String TOOL_PORT_EDIT = "Port Editing Tool";
-	public static final String TOOL_NODE_CREATION = "Node Creation Tool";
-
-	private final List<Tool> tools = new ArrayList<Tool>();
-	private GraphDocument graphDocument;
+	protected final List<Tool> tools = new ArrayList<Tool>();
+	protected GraphDocument graphDocument;
 
 	public DefaultToolManager() {
-
-		/* Register the basic tools */
-
-		registerTool(new ScrollTool(TOOL_SCROLLBAR));
-		registerTool(new NavigationTool(TOOL_NAVIGATION));
-		registerTool(new SelectionTool(TOOL_SELECTION));
-		registerTool(new MarqueeSelectionTool(TOOL_MARQUEE_SELECTION));
-		registerTool(new ObjectEditTool(TOOL_OBJECT_EVENT_MEDIATOR));
-		registerTool(new DuplicateOnMoveTool(TOOL_DUPLICATE_ON_MOVE));
-		registerTool(new MoveSelectionTool(TOOL_MOVE_SELECTION));
-		//		registerTool(new EdgeCreationTool());
-		// registerTool(new NodeCreationTool());
-		// registerTool(new AutoSnapTool());
-		// registerTool(new PortEditingTool());
-		// registerTool(new FormComposeTool());
-		activateTool(TOOL_SCROLLBAR, true);
-		activateTool(TOOL_SELECTION, true);
-		activateTool(TOOL_MARQUEE_SELECTION, true);
-		activateTool(TOOL_DUPLICATE_ON_MOVE, true);
-		activateTool(TOOL_OBJECT_EVENT_MEDIATOR, true);
-		activateTool(TOOL_MOVE_SELECTION, true);
-		activateTool(TOOL_NAVIGATION, true);
 	}
-
 
 
 	@Override

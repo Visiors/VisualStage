@@ -544,9 +544,9 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 
 		if (parent == null) {
 			Rectangle rScreen = transform.transformToScreen(depot.getExpansion());
-			Rectangle rCanvas = transform.getCanvasBoundary();
-			rScreen.x -= rCanvas.x;
-			rScreen.y -= rCanvas.y;
+			//			Rectangle rCanvas = transform.getCanvasBoundary();
+			//			rScreen.x += rCanvas.x;
+			//			rScreen.y += rCanvas.y;
 			return rScreen;
 		}
 		return super.getExtendedBoundary();

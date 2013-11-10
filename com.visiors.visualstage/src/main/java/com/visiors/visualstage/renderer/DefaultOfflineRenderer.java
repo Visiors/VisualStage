@@ -1,11 +1,11 @@
-package com.visiors.visualstage.tool.impl.scrollbar;
+package com.visiors.visualstage.renderer;
 
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
-public class DefaultOfflineRenderer implements OfflineRenderer {
+public class DefaultOfflineRenderer implements OffScreenRenderer {
 
 	private Image image;
 	private final DrawClient drawClient;
@@ -31,15 +31,18 @@ public class DefaultOfflineRenderer implements OfflineRenderer {
 	public void render(Graphics2D gfx) {
 
 		final Rectangle r = drawClient.getBounds();
-		if (image == null || isInvalidated()) {
-			image = new BufferedImage(r.width, r.height, BufferedImage.TYPE_INT_ARGB_PRE);
-			final Graphics2D g = (Graphics2D) image.getGraphics();
-			g.translate(-r.x, -r.y);
-			drawClient.draw(g);
-			g.translate(r.x, r.y);
-			invalidate();
-			System.err.println("re-creating image");
+		if(r != null && !r.isEmpty()) {
+			if ((image == null || isInvalidated()) ) 
+			{
+				image = new BufferedImage(r.width, r.height, BufferedImage.TYPE_INT_ARGB_PRE);
+				final Graphics2D g = (Graphics2D) image.getGraphics();
+				g.translate(-r.x, -r.y);
+				drawClient.draw(g);
+				g.translate(r.x, r.y);
+				invalidated = false;
+				//				System.err.println("re-creating image");
+			}
+			gfx.drawImage(image, r.x, r.y, null);
 		}
-		gfx.drawImage(image, r.x, r.y, null);
 	}
 }

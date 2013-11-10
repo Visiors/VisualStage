@@ -31,7 +31,16 @@ import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.property.impl.DefaultPropertyList;
 import com.visiors.visualstage.stage.StageDesigner;
 import com.visiors.visualstage.stage.StageDesigner.ViewMode;
+import com.visiors.visualstage.tool.Interactable;
 import com.visiors.visualstage.tool.ToolManager;
+import com.visiors.visualstage.tool.impl.DuplicateOnMoveTool;
+import com.visiors.visualstage.tool.impl.GridTool;
+import com.visiors.visualstage.tool.impl.MarqueeSelectionTool;
+import com.visiors.visualstage.tool.impl.MoveSelectionTool;
+import com.visiors.visualstage.tool.impl.NavigationTool;
+import com.visiors.visualstage.tool.impl.ObjectEditTool;
+import com.visiors.visualstage.tool.impl.PageViewTool;
+import com.visiors.visualstage.tool.impl.SelectionTool;
 import com.visiors.visualstage.util.PropertyUtil;
 
 public class GraphEditor implements Editor, GraphDocumentListener {
@@ -46,6 +55,21 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 	protected final ShapeCollection shapeCollection;
 	protected final FormatCollection formatCollection;
 	private final Map<String, GraphDocument> documents = Maps.newTreeMap();
+
+	// Base tools
+	public static final String TOOL_PAGE_VIEW = "Page View";
+	public static final String TOOL_GRID = "Grid Tool";
+	public static final String TOOL_SELECTION = "Selection Tool";
+	public static final String TOOL_MARQUEE_SELECTION = "Marquee Selection Tool";
+	public static final String TOOL_OBJECT_EVENT_MEDIATOR = "Object event mediator Tool";
+	public static final String TOOL_MOVE_SELECTION = "Object Move Tool";
+	public static final String TOOL_DUPLICATE_ON_MOVE = "Duplicate on Move Tool";
+	public static final String TOOL_NAVIGATION = "Navigation Tool";
+	public static final String TOOL_EDGE_CREATION = "Edge Creation Tool";
+	public static final String TOOL_AUTO_ALIGNMENT = "Auto Alignment Tool";
+	public static final String TOOL_ARRANGEMENT = "Arrangemen Toolt";
+	public static final String TOOL_PORT_EDIT = "Port Editing Tool";
+	public static final String TOOL_NODE_CREATION = "Node Creation Tool";
 
 	public GraphEditor() {
 
@@ -63,7 +87,10 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 		this.clipboardHandler = DI.getInstance(ClipboardHandler.class);
 		this.shapeCollection = DI.getInstance(ShapeCollection.class);
 		this.formatCollection = DI.getInstance(FormatCollection.class);
+
+		initTools();
 	}
+
 
 	@Override
 	public GraphDocument newDocument(String title) throws DocumentExistsException {
@@ -71,7 +98,7 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 		if (documents.containsKey(title)) {
 			throw new DocumentExistsException("A document with the name '" + title + "' already exists!");
 		}
-		return  createDocumentInstance(title);
+		return createDocumentInstance(title);
 	}
 
 	@Override
@@ -87,14 +114,15 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 		if (documents.containsKey(name)) {
 			throw new DocumentExistsException("A document with the name '" + name + "' already exists!");
 		}
-		final GraphDocument document = createDocumentInstance(name);		
+		final GraphDocument document = createDocumentInstance(name);
 		document.setProperties(documentProperties);
 		document.getGraph().setProperties(graphObjectProperties);
 		return document;
 
 	}
 
-	private GraphDocument createDocumentInstance(String title){
+	private GraphDocument createDocumentInstance(String title) {
+
 		final GraphDocument document = DI.getInstance(GraphDocument.class);
 		document.setEditor(this);
 		applyDefaultConfiguration(document);
@@ -114,27 +142,27 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 
 	@Override
 	public boolean closeDocument(String title) {
+
 		if (!documents.containsKey(title)) {
 			throw new DocumentExistsException("A document with the name '" + title + "' could not be found!");
 		}
 		GraphDocument document;
-		if(documents.size() == 1){
+		if (documents.size() == 1) {
 			setActiveDocument(null);
 			document = documents.remove(title);
-		}else{
+		} else {
 			List<GraphDocument> existingDocuments = getDocuments();
 			document = documents.remove(title);
 			int docIndex = existingDocuments.indexOf(document);
-			if(docIndex < existingDocuments.size()-1) {
-				setActiveDocument(existingDocuments.get(docIndex+1).getTitle());
+			if (docIndex < existingDocuments.size() - 1) {
+				setActiveDocument(existingDocuments.get(docIndex + 1).getTitle());
 			} else {
-				setActiveDocument(existingDocuments.get(docIndex-1).getTitle());
+				setActiveDocument(existingDocuments.get(docIndex - 1).getTitle());
 			}
 		}
 		document.removeGraphDocumentListener(this);
 		return true;
 	}
-
 
 	@Override
 	public String saveDocument(String title) {
@@ -157,8 +185,10 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 	@Override
 	public void setActiveDocument(String title) {
 
-		activeDocument = title == null ? null: getDocument(title);
-		if(activeDocument != null){ // TODO when activeDocument == null (last document closed) scope must be set on null
+		activeDocument = title == null ? null : getDocument(title);
+		if (activeDocument != null) { // TODO when activeDocument == null (last
+			// document closed) scope must be set on
+			// null
 			toolManager.setScope(activeDocument);
 			clipboardHandler.setScope(activeDocument);
 			selectionHandler.setScope(activeDocument);
@@ -176,12 +206,11 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 		return documents.get(title);
 	}
 
-
 	@Override
 	public void printDocument(String title) {
 
 		final GraphDocument document = getDocument(title);
-		//document.print(canvas, rPage, transform);
+		// document.print(canvas, rPage, transform);
 	}
 
 	@Override
@@ -190,8 +219,6 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 		final GraphDocument document = getDocument(currentTitle);
 		document.setTitle(currentTitle);
 	}
-
-
 
 	@Override
 	public GraphDocument getActiveDocument() {
@@ -204,7 +231,6 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 		return new ArrayList<GraphDocument>(documents.values());
 	}
 
-
 	@Override
 	public ShapeCollection getShapesCollection() {
 
@@ -216,7 +242,6 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 
 		return formatCollection;
 	}
-
 
 	@Override
 	public ClipboardHandler getClipboardHandler() {
@@ -254,86 +279,90 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 		throw new CloneNotSupportedException();
 	}
 
-
 	@Override
 	public boolean keyPressed(int keyChar, int keyCode) {
 
-		return toolManager.keyPressed(keyChar, keyCode);
-
+		return stageDesigner.keyPressed(keyChar, keyCode) || toolManager.keyPressed(keyChar, keyCode);
 	}
 
 	@Override
 	public boolean keyReleased(int keyChar, int keyCode) {
 
-		return toolManager.keyReleased(keyChar, keyCode);
+		return stageDesigner.keyReleased(keyChar, keyCode) || toolManager.keyReleased(keyChar, keyCode);
 	}
 
 	@Override
 	public boolean mouseDoubleClicked(Point pt, int button, int functionKey) {
 
-		return toolManager.mouseDoubleClicked(pt, button, functionKey);
+		return stageDesigner.mouseDoubleClicked(pt, button, functionKey)
+				|| toolManager.mouseDoubleClicked(pt, button, functionKey);
 	}
 
 	@Override
 	public boolean mouseDragged(Point pt, int button, int functionKey) {
 
-		return toolManager.mouseDragged(pt, button, functionKey);
+		return stageDesigner.mouseDragged(pt, button, functionKey) || toolManager.mouseDragged(pt, button, functionKey);
 	}
 
 	@Override
 	public boolean mouseMoved(Point pt, int button, int functionKey) {
 
-		return toolManager.mouseMoved(pt, button, functionKey);
+		return stageDesigner.mouseMoved(pt, button, functionKey) || toolManager.mouseMoved(pt, button, functionKey);
 	}
 
 	@Override
 	public boolean mousePressed(Point pt, int button, int functionKey) {
 
-		return toolManager.mousePressed(pt, button, functionKey);
+		return stageDesigner.mousePressed(pt, button, functionKey) || toolManager.mousePressed(pt, button, functionKey);
 	}
 
 	@Override
 	public boolean mouseReleased(Point pt, int button, int functionKey) {
 
-		return toolManager.mouseReleased(pt, button, functionKey);
+		return stageDesigner.mouseReleased(pt, button, functionKey)
+				|| toolManager.mouseReleased(pt, button, functionKey);
 	}
 
 	@Override
 	public boolean mouseEntered(Point pt, int button, int functionKey) {
 
-		return toolManager.mouseEntered(pt, button, functionKey);
+		return stageDesigner.mouseEntered(pt, button, functionKey) || toolManager.mouseEntered(pt, button, functionKey);
 	}
 
 	@Override
 	public boolean mouseExited(Point pt, int button, int functionKey) {
 
-		return toolManager.mouseExited(pt, button, functionKey);
+		return stageDesigner.mouseExited(pt, button, functionKey) || toolManager.mouseExited(pt, button, functionKey);
 	}
 
 	@Override
 	public boolean isInteracting() {
 
-		return toolManager.isInteracting();
+		return stageDesigner.isInteracting() || toolManager.isInteracting();
 	}
 
 	@Override
 	public void cancelInteraction() {
 
+		stageDesigner.cancelInteraction();
 		toolManager.cancelInteraction();
 	}
 
 	@Override
 	public void terminateInteraction() {
 
+		stageDesigner.cancelInteraction();
 		toolManager.cancelInteraction();
 	}
 
 	@Override
 	public int getPreferredCursor() {
 
+		if (stageDesigner.getPreferredCursor() != Interactable.CURSOR_DEFAULT) {
+			return stageDesigner.getPreferredCursor();
+		}
 		return toolManager.getPreferredCursor();
 	}
-
 
 	@Override
 	public void undoStackModified() {
@@ -342,24 +371,54 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 
 	}
 
-
 	@Override
 	public void graphExpansionChanged() {
 
 		fireBoundaryChanged();
 	}
 
-
 	@Override
 	public void viewInvalid(GraphDocument documen) {
 
-		fireViewInvalid( documen);		
+		fireViewInvalid(documen);
 	}
 
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////
-	///// Listener
+	private void initTools() {
+
+
+
+
+		/* Register the basic tools */
+
+		toolManager.registerTool(new NavigationTool(TOOL_NAVIGATION));
+		toolManager.registerTool(new SelectionTool(TOOL_SELECTION));
+		toolManager.registerTool(new MarqueeSelectionTool(TOOL_MARQUEE_SELECTION));
+		toolManager.registerTool(new ObjectEditTool(TOOL_OBJECT_EVENT_MEDIATOR));
+		toolManager.registerTool(new DuplicateOnMoveTool(TOOL_DUPLICATE_ON_MOVE));
+		toolManager.registerTool(new MoveSelectionTool(TOOL_MOVE_SELECTION));
+		toolManager.registerTool(new PageViewTool(TOOL_PAGE_VIEW));
+		toolManager.registerTool(new GridTool(TOOL_GRID));
+		//		registerTool(new EdgeCreationTool());
+		// registerTool(new NodeCreationTool());
+		// registerTool(new AutoSnapTool());
+		// registerTool(new PortEditingTool());
+		// registerTool(new FormComposeTool());
+		toolManager.activateTool(TOOL_SELECTION, true);
+		toolManager.activateTool(TOOL_MARQUEE_SELECTION, true);
+		toolManager.activateTool(TOOL_DUPLICATE_ON_MOVE, true);
+		toolManager.activateTool(TOOL_OBJECT_EVENT_MEDIATOR, true);
+		toolManager.activateTool(TOOL_MOVE_SELECTION, true);
+		toolManager.activateTool(TOOL_NAVIGATION, true);
+		toolManager.activateTool(TOOL_PAGE_VIEW, true);
+		toolManager.activateTool(TOOL_GRID, true);
+
+	}
+
+	// //////////////////////////////////////////////////////////////////////////////////////////////////////
+	// /// Listener
 	Set<EditorListener> listeners = new HashSet<EditorListener>();
+
 	@Override
 	public void addEditorListener(EditorListener editorListener) {
 
@@ -369,22 +428,21 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 	@Override
 	public void removeEditorListener(EditorListener editorListener) {
 
-		listeners.remove(editorListener);		
+		listeners.remove(editorListener);
 	}
 
-
-
 	protected void fireViewInvalid(GraphDocument documen) {
+
 		for (EditorListener listener : listeners) {
 			listener.viewInvalid(documen);
 		}
 	}
+
 	protected void fireBoundaryChanged() {
 
 		for (EditorListener listener : listeners) {
 			listener.boundaryChangedListener();
 		}
 	}
-
 
 }

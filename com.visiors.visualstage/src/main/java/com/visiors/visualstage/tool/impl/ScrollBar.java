@@ -7,22 +7,24 @@ import java.awt.Rectangle;
 import com.visiors.visualstage.document.GraphDocument;
 import com.visiors.visualstage.document.listener.GraphDocumentAdapter;
 import com.visiors.visualstage.renderer.AWTCanvas;
+import com.visiors.visualstage.renderer.DefaultOfflineRenderer;
+import com.visiors.visualstage.renderer.OffScreenRenderer;
 import com.visiors.visualstage.tool.Interactable;
-import com.visiors.visualstage.tool.impl.scrollbar.DefaultOfflineRenderer;
 import com.visiors.visualstage.tool.impl.scrollbar.DragHelper;
-import com.visiors.visualstage.tool.impl.scrollbar.OfflineRenderer;
 import com.visiors.visualstage.tool.impl.scrollbar.ScrollBarBackgroundPainter;
 import com.visiors.visualstage.tool.impl.scrollbar.ScrollBarButtonPainter;
 import com.visiors.visualstage.tool.impl.scrollbar.ScrollBarCornerSquarePainter;
+import com.visiors.visualstage.tool.impl.scrollbar.ScrollBarPagePainter;
 import com.visiors.visualstage.tool.impl.scrollbar.ScrollBarThumbPainter;
-import com.visiors.visualstage.tool.impl.scrollbar.ScrollbarStyle;
 import com.visiors.visualstage.transform.Transform;
 
 public class ScrollBar implements Interactable {
 
+	public  int size = 16;
+	public static final int zoomBarDomain = 7;
+	private final int unitIncrement = 20;
 	private int min;
 	private int max;
-	private final int unitIncrement = 20;
 	private int value;
 	private final boolean isHorizontal;
 	private final DragHelper dragHelper;
@@ -30,7 +32,9 @@ public class ScrollBar implements Interactable {
 	private final Rectangle rectPlusButton = new Rectangle();
 	private final Rectangle rectMinusButton = new Rectangle();
 	private final Rectangle rectScrollBar = new Rectangle();
+	private final Rectangle rectPageArea = new Rectangle();
 	private final Rectangle rectThumb = new Rectangle();
+	private final Rectangle rectCornderSquare = new Rectangle();
 	private boolean armed;
 	private Point mouseCurrentlyAt;
 	private Rectangle graphBoundary;
@@ -41,11 +45,14 @@ public class ScrollBar implements Interactable {
 	private int hitPage = -1;
 	private boolean zoomMinusArmed;
 	private boolean zoomPlusArmed;
-	private final OfflineRenderer thumbRenderer;
-	private final OfflineRenderer minusButtonRenderer;
-	private final OfflineRenderer plusButtonRenderer;
-	private final OfflineRenderer cornerSquareRenderer;
-	private final OfflineRenderer backgroundRenderer;
+	private boolean hitCornderButton;
+	private final OffScreenRenderer thumbRenderer;
+	private final OffScreenRenderer minusButtonRenderer;
+	private final OffScreenRenderer plusButtonRenderer;
+	private final OffScreenRenderer cornerSquareRenderer;
+	private final OffScreenRenderer backgroundRenderer;
+	private final OffScreenRenderer pageRenderer;
+	private final OffScreenRenderer cornderSquareRenderer;
 
 	public ScrollBar(boolean horizontal) {
 
@@ -56,6 +63,8 @@ public class ScrollBar implements Interactable {
 		this.plusButtonRenderer = new DefaultOfflineRenderer(new ScrollBarButtonPainter(this, false));
 		this.thumbRenderer = new DefaultOfflineRenderer(new ScrollBarThumbPainter(this));
 		this.cornerSquareRenderer = new DefaultOfflineRenderer(new ScrollBarCornerSquarePainter(this));
+		this.pageRenderer = new DefaultOfflineRenderer(new ScrollBarPagePainter(this));
+		this.cornderSquareRenderer = new DefaultOfflineRenderer(new ScrollBarCornerSquarePainter(this));
 	}
 
 	public void setGraphDocument(final GraphDocument graphDocument) {
@@ -69,10 +78,15 @@ public class ScrollBar implements Interactable {
 			@Override
 			public void graphExpansionChanged() {
 
+				System.err.println("Graph bounds: " + graphDocument.getGraph().getBounds());
 				Rectangle r = graphDocument.getGraph().getExtendedBoundary();
 				if (!r.equals(graphBoundary)) {
 					graphBoundary = r;
 					thumbRenderer.invalidate();
+					backgroundRenderer.invalidate();
+					pageRenderer.invalidate();
+					minusButtonRenderer.invalidate();
+					plusButtonRenderer.invalidate();
 					update();
 				}
 			}
@@ -142,35 +156,48 @@ public class ScrollBar implements Interactable {
 	@Override
 	public boolean mouseMoved(Point pt, int button, int functionKey) {
 
-		hitPage = -1;
-		zoomMinusArmed = false;
-		zoomPlusArmed = false;
-
 		final Point ptScreen = graphDocument.getTransformer().transformToScreen(pt);
-		final boolean hit = hitScrollbar(ptScreen);
-		boolean modified = hit != armed;
-		if (armed != hit) {
-			armed = hit;
-			minusButtonRenderer.invalidate();
-			plusButtonRenderer.invalidate();
-			thumbRenderer.invalidate();
-		}
-		if (hit) {
-			final boolean hitPageArea = hitPageArea(ptScreen);
-			if (hitPageArea) {
-				if (hitZoomMinus(ptScreen)) {
-					zoomMinusArmed = true;
-				} else if (hitZoomPlus(ptScreen)) {
-					zoomPlusArmed = true;
-				} else if (!hitTumb(ptScreen)) {
-					hitPage = getHitPage(ptScreen);
+		boolean hitCornerButton = hitCornderButton(ptScreen);
+		if (hitCornderButton != hitCornerButton) {
+			hitCornderButton = hitCornerButton;
+			cornderSquareRenderer.invalidate();
+			update();
+		} else {
+			boolean hitScrollbar = hitScrollbar(ptScreen);
+			if (armed != hitScrollbar) {
+				armed = hitScrollbar;
+				minusButtonRenderer.invalidate();
+				plusButtonRenderer.invalidate();
+				thumbRenderer.invalidate();
+				pageRenderer.invalidate();
+				hitPage = -1;
+				update();
+			}
+			if(armed){
+				boolean hitZoom = hitZoomMinus(ptScreen);
+				if (hitZoom != zoomMinusArmed) {
+					zoomMinusArmed = hitZoom;
+					thumbRenderer.invalidate();						
+				} 
+				hitZoom = hitZoomPlus(ptScreen);
+				if (hitZoom != zoomPlusArmed) {
+					zoomPlusArmed = hitZoom;
+					thumbRenderer.invalidate();						
+				} 
+
+				int newHitPage = -1;
+				if(!hitTumb(ptScreen) && !hitMinusButton(ptScreen) && !hitPlusButton(ptScreen)) {
+					newHitPage = getHitPage(ptScreen);
 				}
-				modified = true;
+				if( newHitPage != hitPage){			
+					hitPage = newHitPage;
+					pageRenderer.invalidate();
+				}
+				update();
 			}
 		}
-		if (modified) {
-			update();
-		}
+
+
 		return armed;
 	}
 
@@ -201,9 +228,16 @@ public class ScrollBar implements Interactable {
 	@Override
 	public boolean mouseExited(Point pt, int button, int functionKey) {
 
-		if (armed && !interacting) {
-			resetInteractionValues();
-			update();
+		if(! isInteracting()) {
+			if ((isArmed() || isCornderButtonHovered()) ) {
+				resetInteractionValues();
+				minusButtonRenderer.invalidate();
+				plusButtonRenderer.invalidate();
+				thumbRenderer.invalidate();
+				pageRenderer.invalidate();
+				cornerSquareRenderer.invalidate();
+				update();
+			}
 		}
 		return false;
 	}
@@ -241,6 +275,7 @@ public class ScrollBar implements Interactable {
 		armed = false;
 		zoomMinusArmed = false;
 		zoomPlusArmed = false;
+		hitCornderButton = false;
 		hitPage = -1;
 	}
 
@@ -255,7 +290,7 @@ public class ScrollBar implements Interactable {
 
 	private int cornerSquareSize() {
 
-		return ScrollbarStyle.size;
+		return size;
 	}
 
 	private void update() {
@@ -341,7 +376,7 @@ public class ScrollBar implements Interactable {
 
 	private void computeHScrollBarGeometry() {
 
-		this.canvasBoundary = graphDocument.getCanvasBoundary();
+		this.canvasBoundary = graphDocument.getClientBoundary();
 		computeScrollBarRect();
 		computeMinusButtonRect();
 		computePlusButtonRect();
@@ -349,6 +384,8 @@ public class ScrollBar implements Interactable {
 		computeThumbExpansion();
 		computeThumbPos();
 		computeThumbRect();
+		computePageAreaRect();
+		computeCornderSquareRect();
 	}
 
 	private int documentExpansion() {
@@ -381,7 +418,7 @@ public class ScrollBar implements Interactable {
 		}
 	}
 
-	private double documentViewportRatio() {
+	public double documentViewportRatio() {
 
 		return (double) documentExpansion() / getViewPortExpansion();
 	}
@@ -425,69 +462,73 @@ public class ScrollBar implements Interactable {
 	private void computeThumbRect() {
 
 		if (isHorizontal) {
-			rectThumb.setBounds(canvasBoundary.x + ScrollbarStyle.size + thumbPos, canvasBoundary.y
-					+ canvasBoundary.height - ScrollbarStyle.size, thumbExpansion, ScrollbarStyle.size);
+			rectThumb.setBounds(canvasBoundary.x + size + thumbPos, canvasBoundary.y + canvasBoundary.height - size,
+					thumbExpansion, size);
 
 		} else {
-			rectThumb.setBounds(canvasBoundary.x + canvasBoundary.width - ScrollbarStyle.size, canvasBoundary.y
-					+ ScrollbarStyle.size + thumbPos, ScrollbarStyle.size, thumbExpansion);
+			rectThumb.setBounds(canvasBoundary.x + canvasBoundary.width - size, canvasBoundary.y + size + thumbPos,
+					size, thumbExpansion);
 		}
+	}
+
+	public void computePageAreaRect() {
+
+		if (isHorizontal) {
+			rectPageArea.setBounds(rectMinusButton.x + rectMinusButton.width, rectScrollBar.y, rectPlusButton.x
+					- rectMinusButton.x - rectMinusButton.width, rectScrollBar.height);
+
+		} else {
+			rectPageArea.setBounds(rectScrollBar.x, rectMinusButton.y + rectMinusButton.height, rectScrollBar.width,
+					rectPlusButton.y - rectMinusButton.y - rectMinusButton.height);
+		}
+
 	}
 
 	private void computeScrollBarRect() {
 
 		if (isHorizontal) {
-			rectScrollBar.setBounds(canvasBoundary.x, canvasBoundary.y + canvasBoundary.height - ScrollbarStyle.size,
-					canvasBoundary.width - cornerSquareSize(), ScrollbarStyle.size);
+			rectScrollBar.setBounds(canvasBoundary.x, canvasBoundary.y + canvasBoundary.height - size,
+					canvasBoundary.width - cornerSquareSize(), size);
 
 		} else {
-			rectScrollBar.setBounds(canvasBoundary.x + canvasBoundary.width - ScrollbarStyle.size, canvasBoundary.y,
-					ScrollbarStyle.size, canvasBoundary.height - cornerSquareSize());
+			rectScrollBar.setBounds(canvasBoundary.x + canvasBoundary.width - size, canvasBoundary.y, size,
+					canvasBoundary.height - cornerSquareSize());
 		}
 	}
 
 	private void computeMinusButtonRect() {
 
-		if (isHorizontal) {
-			rectMinusButton.setBounds(canvasBoundary.x, canvasBoundary.y + canvasBoundary.height - ScrollbarStyle.size,
-					ScrollbarStyle.size, ScrollbarStyle.size);
-		} else {
-			rectMinusButton.setBounds(canvasBoundary.x + canvasBoundary.width - ScrollbarStyle.size, canvasBoundary.y,
-					ScrollbarStyle.size, ScrollbarStyle.size);
-		}
+		rectMinusButton.setBounds(rectScrollBar.x, rectScrollBar.y, size, size);
 	}
 
 	private void computePlusButtonRect() {
 
+		rectPlusButton.setBounds(rectScrollBar.x + rectScrollBar.width - size, rectScrollBar.y + rectScrollBar.height
+				- size, size, size);
+	}
+
+	private void computeCornderSquareRect() {
+
 		if (isHorizontal) {
-			rectPlusButton.setBounds(
-					canvasBoundary.x + canvasBoundary.width - ScrollbarStyle.size - cornerSquareSize(),
-					canvasBoundary.y + canvasBoundary.height - ScrollbarStyle.size, ScrollbarStyle.size,
-					ScrollbarStyle.size);
-		} else {
-			rectPlusButton.setBounds(canvasBoundary.x + canvasBoundary.width - ScrollbarStyle.size, canvasBoundary.y
-					+ canvasBoundary.height - ScrollbarStyle.size - cornerSquareSize(), ScrollbarStyle.size,
-					ScrollbarStyle.size);
+			rectCornderSquare.setBounds(rectScrollBar.x + rectScrollBar.width, rectScrollBar.y, size, size);
 		}
 	}
 
 	public void draw(AWTCanvas awtCanvas) {
 
 		if (graphDocument != null) {
+			// TODO move this
 			computeHScrollBarGeometry();
-			final Rectangle viewport = graphDocument.getCanvasBoundary();
-			drawHScrollBar(awtCanvas.gfx, viewport);
+
+			final Graphics2D g = awtCanvas.gfx;
+			backgroundRenderer.render(g);
+			pageRenderer.render(g);
+			thumbRenderer.render(g);
+			minusButtonRenderer.render(g);
+			plusButtonRenderer.render(g);
+			cornerSquareRenderer.render(g);
+			cornderSquareRenderer.render(g);
 		}
-
-	}
-
-	private void drawHScrollBar(Graphics2D gfx, Rectangle viewport) {
-
-		backgroundRenderer.render(gfx);
-		thumbRenderer.render(gfx);
-		minusButtonRenderer.render(gfx);
-		plusButtonRenderer.render(gfx);
-		cornerSquareRenderer.render(gfx);
 	}
 
 	private int getHitPage(Point pt) {
@@ -498,10 +539,10 @@ public class ScrollBar implements Interactable {
 		}
 		final double localPageWidth = getPageWidth();
 		if (isHorizontal) {
-			final int start = canvasBoundary.x + ScrollbarStyle.size;
+			final int start = canvasBoundary.x + size;
 			return (int) Math.floor((pt.x - start) / localPageWidth);
 		} else {
-			final int start = canvasBoundary.y + ScrollbarStyle.size;
+			final int start = canvasBoundary.y + size;
 			return (int) Math.floor((pt.y - start) / localPageWidth);
 		}
 	}
@@ -528,13 +569,18 @@ public class ScrollBar implements Interactable {
 		return rectThumb.contains(pt.x, pt.y);
 	}
 
+	private boolean hitCornderButton(Point pt) {
+
+		return rectCornderSquare.contains(pt);
+	}
+
 	private boolean hitZoomMinus(Point pt) {
 
 		if (hitTumb(pt)) {
 			if (isHorizontal) {
-				return pt.x < rectThumb.x + ScrollbarStyle.ZOOM_BAR_REGION;
+				return pt.x < rectThumb.x + zoomBarDomain;
 			} else {
-				return pt.y < rectThumb.y + ScrollbarStyle.ZOOM_BAR_REGION;
+				return pt.y < rectThumb.y + zoomBarDomain;
 			}
 		}
 		return false;
@@ -544,9 +590,9 @@ public class ScrollBar implements Interactable {
 
 		if (hitTumb(pt)) {
 			if (isHorizontal) {
-				return pt.x > rectThumb.x + rectThumb.width - ScrollbarStyle.ZOOM_BAR_REGION;
+				return pt.x > rectThumb.x + rectThumb.width - zoomBarDomain;
 			} else {
-				return pt.y > rectThumb.y + rectThumb.height - ScrollbarStyle.ZOOM_BAR_REGION;
+				return pt.y > rectThumb.y + rectThumb.height - zoomBarDomain;
 			}
 		}
 		return false;
@@ -572,9 +618,14 @@ public class ScrollBar implements Interactable {
 		setValue((int) scrollbarPageAreaToDocument(pageStart));
 	}
 
-	private double getPageWidth() {
+	public double getPageWidth() {
 
 		return scrollbarPageExpansion() / documentViewportRatio();
+	}
+
+	public double getTotalePageNumber() {
+
+		return documentViewportRatio();
 	}
 
 	public GraphDocument getGraphDocument() {
@@ -622,6 +673,16 @@ public class ScrollBar implements Interactable {
 		return rectThumb;
 	}
 
+	public Rectangle getRectPageArea() {
+
+		return rectPageArea;
+	}
+
+	public Rectangle getRectCornderSquare() {
+
+		return rectCornderSquare;
+	}
+
 	public boolean isZoomMinusArmed() {
 
 		return zoomMinusArmed;
@@ -630,5 +691,26 @@ public class ScrollBar implements Interactable {
 	public boolean isZoomPlusArmed() {
 
 		return zoomPlusArmed;
+	}
+
+	public int getHighlightedPage() {
+
+		return hitPage;
+	}
+
+	public int getSize() {
+
+		return size;
+	}
+
+	public void setSize(int size) {
+
+		this.size = size;	
+		update();
+	}
+
+	public boolean isCornderButtonHovered() {
+
+		return hitCornderButton;
 	}
 }

@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Rectangle;
 
+import com.visiors.visualstage.renderer.DrawClient;
 import com.visiors.visualstage.tool.impl.ScrollBar;
 
 public class ScrollBarBackgroundPainter implements DrawClient {
@@ -31,15 +32,15 @@ public class ScrollBarBackgroundPainter implements DrawClient {
 		final Rectangle r = scrollBar.getRectScrollBar();
 		final Paint p;
 		if (scrollBar.isHorizontal()) {
-			p = new GradientPaint(0, r.y, ScrollbarStyle.background1, 0, r.y + r.height,
-					ScrollbarStyle.background2);
+			p = new GradientPaint(0, r.y, ScrollbarStyle.backgroundColor1, 0, r.y + r.height,
+					ScrollbarStyle.backgroundColor2);
 		} else {
-			p = new GradientPaint(r.x, 0, ScrollbarStyle.background1, r.x + r.width, 0,
-					ScrollbarStyle.background2);
+			p = new GradientPaint(r.x, 0, ScrollbarStyle.backgroundColor1, r.x + r.width, 0,
+					ScrollbarStyle.backgroundColor2);
 		}
 		gfx.setPaint(p);
 		gfx.fillRect(r.x, r.y, r.width, r.height);
-		gfx.setColor(ScrollbarStyle.frame);
+		gfx.setColor(ScrollbarStyle.frameColor);
 		gfx.drawLine(r.x, r.y, r.x, r.y + r.height);
 		gfx.drawLine(r.x, r.y, r.x + r.width, r.y);
 	}

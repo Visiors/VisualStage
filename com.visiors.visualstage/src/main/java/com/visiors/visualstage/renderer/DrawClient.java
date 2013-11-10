@@ -1,4 +1,4 @@
-package com.visiors.visualstage.tool.impl.scrollbar;
+package com.visiors.visualstage.renderer;
 
 import java.awt.Graphics2D;
 import java.awt.Rectangle;

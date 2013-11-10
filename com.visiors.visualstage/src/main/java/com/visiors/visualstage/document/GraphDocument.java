@@ -41,7 +41,7 @@ public interface GraphDocument extends MultiLayerDocument, PropertyOwner, Undoab
 
 	public void setZoom(double value);
 
-	public Rectangle getCanvasBoundary();
+	public Rectangle getClientBoundary();
 
 	public void setViewportSize(int w, int h);
 
@@ -72,8 +72,6 @@ public interface GraphDocument extends MultiLayerDocument, PropertyOwner, Undoab
 	public void setSvgFilter(String svgDefID);
 
 	public void setSvgTransformation(String svgTransformId);
-
-	public Rectangle getDocumentBoundary();
 
 	public void addGraphDocumentListener(GraphDocumentListener listener);
 

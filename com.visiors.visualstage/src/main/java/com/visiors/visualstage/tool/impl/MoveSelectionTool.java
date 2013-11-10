@@ -31,7 +31,7 @@ public class MoveSelectionTool extends BaseTool {
 	@Inject
 	UndoRedoHandler undoRedoHandler;
 
-	protected MoveSelectionTool(String name) {
+	public MoveSelectionTool(String name) {
 
 		super(name);
 

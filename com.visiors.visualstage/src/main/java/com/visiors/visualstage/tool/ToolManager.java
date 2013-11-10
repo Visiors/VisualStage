@@ -2,12 +2,11 @@ package com.visiors.visualstage.tool;
 
 import java.util.List;
 
-import com.visiors.visualstage.handler.GraphViewHandler;
 import com.visiors.visualstage.handler.ScopeAwareHandler;
 import com.visiors.visualstage.renderer.AWTCanvas;
 import com.visiors.visualstage.renderer.DrawingContext;
 
-public interface ToolManager extends Interactable, GraphViewHandler, ScopeAwareHandler {
+public interface ToolManager extends Interactable, ScopeAwareHandler {
 
 	public void registerTool(Tool handler);
 

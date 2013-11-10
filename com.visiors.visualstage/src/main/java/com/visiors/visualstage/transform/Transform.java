@@ -64,15 +64,15 @@ public interface Transform {
 
 	public Object clone();
 
-	public int getViewportWidth();
+	public int getViewWidth();
 
-	public void setViewportWidth(int w);
+	public void setViewWidth(int w);
 
-	public int getViewportHeight();
+	public int getViewHeight();
 
-	public void setViewportHeight(int h);
+	public void setViewHeight(int h);
 
-	public Rectangle getCanvasBoundary();
+	public Rectangle getClientBounds();
 
-	public void setCanvasBoundary(Rectangle r);
+	public void setClientBounds(Rectangle r);
 }

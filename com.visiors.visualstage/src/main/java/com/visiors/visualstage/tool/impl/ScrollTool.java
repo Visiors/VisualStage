@@ -19,10 +19,11 @@ public class ScrollTool extends BaseTool {
 
 	private final ScrollBar hScrollBar;
 	private final ScrollBar vScrollBar;
+	private int size;
 
-	public ScrollTool(String name) {
+	public ScrollTool() {
 
-		super(name);
+		super("SCROLLBAR");
 		hScrollBar = new ScrollBar(true);
 		vScrollBar = new ScrollBar(false);
 	}
@@ -68,13 +69,13 @@ public class ScrollTool extends BaseTool {
 	@Override
 	public boolean mouseEntered(Point pt, int button, int functionKey) {
 
-		return hScrollBar.mouseEntered(pt, button, functionKey) || vScrollBar.mouseDragged(pt, button, functionKey);
+		return hScrollBar.mouseEntered(pt, button, functionKey) || vScrollBar.mouseEntered(pt, button, functionKey);
 	}
 
 	@Override
 	public boolean mouseExited(Point pt, int button, int functionKey) {
 
-		return hScrollBar.mouseExited(pt, button, functionKey) || vScrollBar.mouseDragged(pt, button, functionKey);
+		return hScrollBar.mouseExited(pt, button, functionKey) || vScrollBar.mouseExited(pt, button, functionKey);
 	}
 
 	@Override
@@ -102,8 +103,20 @@ public class ScrollTool extends BaseTool {
 
 		if (onTop) {
 			hScrollBar.draw(awtCanvas);
-			//			vScrollBar.draw(awtCanvas);
+			vScrollBar.draw(awtCanvas);
 		}
 	}
 
+
+	public void setSize(int size) {
+
+		this.size = size;
+		hScrollBar.setSize(size);
+		vScrollBar.setSize(size);
+	}
+
+	public int getSize() {
+
+		return size;
+	}
 }

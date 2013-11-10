@@ -5,18 +5,13 @@ import java.awt.print.PrinterJob;
 
 import com.visiors.visualstage.document.ViewListener;
 import com.visiors.visualstage.handler.ScopeAwareHandler;
-import com.visiors.visualstage.renderer.AWTCanvas;
-import com.visiors.visualstage.renderer.DrawingContext;
+import com.visiors.visualstage.tool.ToolManager;
 
-public interface StageDesigner extends ScopeAwareHandler {
+public interface StageDesigner extends ToolManager, ScopeAwareHandler {
 
 	public enum ViewMode {
 		page, plane, none
 	}
-
-	public void paintBehind(AWTCanvas awtCanvas, DrawingContext context);
-
-	public void paintOver(AWTCanvas awtCanvas, DrawingContext context);
 
 	public PrinterJob getPrinterJob();
 
@@ -38,7 +33,11 @@ public interface StageDesigner extends ScopeAwareHandler {
 
 	public int getRulerSize();
 
-	public void lockToCurrentSize(boolean lock);
+	public void setRulerSize(int size);
+
+	public int getScrollBarSize();
+
+	public void setScrollBarSize(int size);
 
 	public void addViewListener(ViewListener l);
 
