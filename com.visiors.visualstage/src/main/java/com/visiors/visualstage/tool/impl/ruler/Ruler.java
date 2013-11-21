@@ -53,11 +53,11 @@ public class Ruler extends BaseTool implements DrawClient {
 		final Transform xform = graphDocument.getTransformer();
 		final Rectangle canvas = new Rectangle();
 		if (horizintal) {
-			canvas.x = size - 1;
+			canvas.x = size;
 			canvas.height = size;
 			canvas.width = xform.getViewWidth();
 		} else {
-			canvas.y = size - 1;
+			canvas.y = size;
 			canvas.height = xform.getViewHeight();
 			canvas.width = size;
 		}
@@ -85,17 +85,18 @@ public class Ruler extends BaseTool implements DrawClient {
 		return pixelsPreUnit * graphDocument.getTransformer().getScale();
 	}
 
-	private double computeAdjustedUnitWidth(double unit) {
+	private double computeNormalizedUnitWidth() {
 
+		final Transform xform = graphDocument.getTransformer();
 		final double pixelsPreUnit = systemUnit.getPixelsPerUnit();
-		//		while (unit < pixelsPreUnit / 2) {
-		//			unit *= 2;
-		//		}
-		//
-		//		while (unit > pixelsPreUnit * 2.5) {
-		//			unit /= 2.5;
-		//		}
-		return unit;
+		final double transUnit = xform.getScale() * pixelsPreUnit;
+		final double f = transUnit / pixelsPreUnit;
+		if (f > 1.0) {
+			return transUnit / Math.round(f);
+		} else if (f < 1.0) {
+			return  transUnit * Math.round(1.0 / f);
+		}
+		return transUnit;
 	}
 
 	private String composeText(int value) {
@@ -107,63 +108,49 @@ public class Ruler extends BaseTool implements DrawClient {
 	public void draw(Graphics2D gfx) {
 
 		final double unit = computeUnitWidth();
-		final double adjustedUnit = computeAdjustedUnitWidth(unit);
+		final double adjustedUnit = computeNormalizedUnitWidth();
 		final Transform xform = graphDocument.getTransformer();
 		final int sublineHeight = (int) (0.75 * size);
 		boolean isOutline;
 		final Rectangle r = getBounds();
+		int n = 0;
 
-		r.translate((int) xform.getXTranslate(), (int) xform.getYTranslate());
+		gfx.setFont(font);
+		gfx.setColor(bkColor);
+		// background
+		gfx.fillRect(r.x, r.y, r.width, r.height);
+		gfx.setColor(lineColor);
 
 		if (horizintal) {
-			gfx.setColor(bkColor);
-			gfx.fillRect(0, 0, r.width, size);
-			gfx.setColor(lineColor);
-			gfx.setFont(font);
-			for (int x = r.x, n = 0; x < r.width; x += adjustedUnit, n++) {
-				isOutline = n % outlineStep == 0;
-				gfx.drawLine(x, size, x, (isOutline ? 0 : sublineHeight));
-				if (isOutline) {
-					final String text = composeText((int) ((x - r.x) / unit));
-					drawString(gfx, text, x + 3, size - 6);
-				}
-			}
+			final double fullUnit = (unit * outlineStep);
+			final double tx = xform.getXTranslate();
+			final double offset = tx % fullUnit - fullUnit;
 
-			for (int x = r.x, n = 0; x > 0; x -= adjustedUnit, n++) {
-				isOutline = n % outlineStep == 0;
-				gfx.drawLine(x, size, x, (isOutline ? 0 : sublineHeight));
+			for (double x = r.x + offset; x < r.width; x += adjustedUnit) {
+				isOutline = n++ % outlineStep == 0;
+				gfx.drawLine((int) x, size, (int) x, (isOutline ? 0 : sublineHeight));
 				if (isOutline) {
-					final String text = composeText((int) ((x - r.x) / unit));
-					drawString(gfx, text, x + 3, size - 6);
+					final String text = composeText((int) ((x - tx) / unit));
+					drawString(gfx, text, (int) (x + 3), size - 6);
 				}
 			}
-			// ruler border
-			gfx.drawLine(size, size - 1, r.width, size - 1);
+			// border
+			gfx.drawLine(r.x, r.y + r.height - 1, r.x + r.width, r.y + r.height - 1);
 		} else {
+			final double fullUnit = (unit * outlineStep);
+			final double ty = xform.getYTranslate();
+			final double offset = ty % fullUnit - fullUnit;
 
-			gfx.setColor(bkColor);
-			gfx.fillRect(0, 0, size, r.height);
-			gfx.setColor(lineColor);
-			gfx.setFont(font);
-			for (int y = r.y, n = 0; y < r.height; y += adjustedUnit, n++) {
-				isOutline = n % outlineStep == 0;
-				gfx.drawLine(size, y, (isOutline ? 0 : sublineHeight), y);
+			for (double y = r.y + offset; y < r.height; y += adjustedUnit) {
+				isOutline = n++ % outlineStep == 0;
+				gfx.drawLine(size, (int) y, (isOutline ? 0 : sublineHeight), (int) y);
 				if (isOutline) {
-					final String text = composeText((int) ((y - r.y) / unit));
-					drawRotatedString(gfx, text, 4, y + 3, 90);
+					final String text = composeText((int) ((y - ty) / unit));
+					drawRotatedString(gfx, text, 4, (int) y + 3, 90);
 				}
 			}
-			for (int y = r.y, n = 0; y > 0; y -= adjustedUnit, n++) {
-				isOutline = n % outlineStep == 0;
-				gfx.drawLine(size, y, (isOutline ? 0 : sublineHeight), y);
-				if (isOutline) {
-					final String text = composeText((int) ((y - r.y) / unit));
-					drawRotatedString(gfx, text, 4, y + 3, 90);
-				}
-			}
-
-			// ruler border
-			gfx.drawLine(size - 1, size, size - 1, r.height);
+			// border
+			gfx.drawLine(r.x + r.width - 1, r.y, r.x + r.width - 1, r.y + r.height);
 		}
 	}
 

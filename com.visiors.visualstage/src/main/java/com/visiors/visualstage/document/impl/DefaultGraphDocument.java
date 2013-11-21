@@ -148,8 +148,7 @@ public class DefaultGraphDocument implements GraphDocument {
 	public void setZoom(double value) {
 
 		if (transform.getScale() != value) {
-			transform.setScale(Math.min(10.0, Math.max(0.01, value)));
-			getGraph().getTransformer().setScale(value);
+			transform.setScale(Math.min(10.0, Math.max(0.05, value)));
 			fireViewInvalid();
 		}
 	}

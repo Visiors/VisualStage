@@ -3,7 +3,6 @@ package com.visiors.visualstage.tool.impl.scrollbar;
 import java.awt.Point;
 
 import com.visiors.visualstage.document.GraphDocument;
-import com.visiors.visualstage.tool.impl.ScrollBar;
 import com.visiors.visualstage.transform.Transform;
 
 

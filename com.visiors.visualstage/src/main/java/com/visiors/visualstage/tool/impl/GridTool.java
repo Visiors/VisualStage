@@ -20,13 +20,12 @@ public class GridTool extends BaseTool {
 	};
 
 	private final Color lineColor = new Color(0xD8E5E5);
-	private final Color sublineColor  = new Color(0xEBF2F2);
+	private final Color sublineColor = new Color(0xEBF2F2);
 	private static Stroke solidStroke = new BasicStroke(1.0f);
 	private final SystemUnit systemUnit;
 
 	/* Centimetre unit */
 	private static final int CROSS_SIZE = 3;
-
 
 	public GridTool(String name) {
 
@@ -37,34 +36,32 @@ public class GridTool extends BaseTool {
 	@Override
 	public void drawHints(AWTCanvas awtCanvas, DrawingContext context, boolean onTop) {
 
-		if(!onTop && context.getResolution() == Resolution.SCREEN){
+		if (!onTop && context.getResolution() == Resolution.SCREEN) {
 			final Transform xform = graphDocument.getTransformer();
 			final Rectangle r = graphDocument.getClientBoundary();
-			r.x += xform.getXTranslate(); 
-			r.y += xform.getYTranslate(); 
-			draw(awtCanvas.gfx, r, systemUnit.getPixelsPerUnit(), GridStyle.Line) ;
+			r.x += xform.getXTranslate();
+			r.y += xform.getYTranslate();
+			draw(awtCanvas.gfx, r, GridStyle.Line);
 		}
 	}
 
+	private double computeNormalizedUnitWidth() {
 
-	public void draw(Graphics2D gfx, Rectangle r, double pixelsPreUnit, GridStyle style) {
-
-		final Transform transformer = graphDocument.getTransformer();
-
-		if (transformer.getScale() < 0.01) {
-			return;
+		final Transform xform = graphDocument.getTransformer();
+		final double pixelsPreUnit = systemUnit.getPixelsPerUnit();
+		final double transUnit = xform.getScale() * pixelsPreUnit;
+		final double f = transUnit / pixelsPreUnit;
+		if (f > 1.0) {
+			return transUnit / Math.round(f);
+		} else if (f < 1.0) {
+			return  transUnit * Math.round(1.0 / f);
 		}
+		return transUnit;
+	}
 
-		double transUnit = transformer.getScale() * pixelsPreUnit;
+	public void draw(Graphics2D gfx, Rectangle r, GridStyle style) {
 
-		//		while (transUnit < pixelsPreUnit / 2) {
-		//			transUnit *= 2;
-		//		}
-		//
-		//		while (transUnit > pixelsPreUnit * 2) {
-		//			transUnit /= 2;
-		//		}
-
+		final double transUnit = computeNormalizedUnitWidth();
 		final double xOffset = r.x % transUnit;
 		final double yOffset = r.y % transUnit;
 
@@ -76,16 +73,13 @@ public class GridTool extends BaseTool {
 			for (double x = xOffset + transUnit / 2; x < r.width; x += transUnit) {
 				gfx.drawLine((int) x, 0, (int) x, r.height);
 			}
-
 			for (double y = yOffset + transUnit / 2; y < r.height; y += transUnit) {
 				gfx.drawLine(0, (int) y, r.width, (int) y);
 			}
-
 			gfx.setColor(lineColor);
 			for (double x = xOffset; x < r.width; x += transUnit) {
 				gfx.drawLine((int) x, 0, (int) x, r.height);
 			}
-
 			for (double y = yOffset; y < +r.height; y += transUnit) {
 				gfx.drawLine(0, (int) y, r.width, (int) y);
 			}
@@ -111,15 +105,5 @@ public class GridTool extends BaseTool {
 				}
 			}
 		}
-
-		gfx.setColor(lineColor);
-		gfx.drawRect(0, 0, r.width, r.height);
 	}
-
-	private void drawLineStyle() {
-
-		// TODO Auto-generated method stub
-
-	}
-
 }

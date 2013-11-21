@@ -4,7 +4,6 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
 import com.visiors.visualstage.renderer.DrawClient;
-import com.visiors.visualstage.tool.impl.ScrollBar;
 
 public class ScrollBarPagePainter implements DrawClient {
 

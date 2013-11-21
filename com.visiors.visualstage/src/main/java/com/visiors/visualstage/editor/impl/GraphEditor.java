@@ -37,7 +37,6 @@ import com.visiors.visualstage.tool.impl.DuplicateOnMoveTool;
 import com.visiors.visualstage.tool.impl.GridTool;
 import com.visiors.visualstage.tool.impl.MarqueeSelectionTool;
 import com.visiors.visualstage.tool.impl.MoveSelectionTool;
-import com.visiors.visualstage.tool.impl.NavigationTool;
 import com.visiors.visualstage.tool.impl.ObjectEditTool;
 import com.visiors.visualstage.tool.impl.PageViewTool;
 import com.visiors.visualstage.tool.impl.SelectionTool;
@@ -64,7 +63,6 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 	public static final String TOOL_OBJECT_EVENT_MEDIATOR = "Object event mediator Tool";
 	public static final String TOOL_MOVE_SELECTION = "Object Move Tool";
 	public static final String TOOL_DUPLICATE_ON_MOVE = "Duplicate on Move Tool";
-	public static final String TOOL_NAVIGATION = "Navigation Tool";
 	public static final String TOOL_EDGE_CREATION = "Edge Creation Tool";
 	public static final String TOOL_AUTO_ALIGNMENT = "Auto Alignment Tool";
 	public static final String TOOL_ARRANGEMENT = "Arrangemen Toolt";
@@ -391,7 +389,6 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 
 		/* Register the basic tools */
 
-		toolManager.registerTool(new NavigationTool(TOOL_NAVIGATION));
 		toolManager.registerTool(new SelectionTool(TOOL_SELECTION));
 		toolManager.registerTool(new MarqueeSelectionTool(TOOL_MARQUEE_SELECTION));
 		toolManager.registerTool(new ObjectEditTool(TOOL_OBJECT_EVENT_MEDIATOR));
@@ -409,7 +406,6 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 		toolManager.activateTool(TOOL_DUPLICATE_ON_MOVE, true);
 		toolManager.activateTool(TOOL_OBJECT_EVENT_MEDIATOR, true);
 		toolManager.activateTool(TOOL_MOVE_SELECTION, true);
-		toolManager.activateTool(TOOL_NAVIGATION, true);
 		toolManager.activateTool(TOOL_PAGE_VIEW, true);
 		toolManager.activateTool(TOOL_GRID, true);
 

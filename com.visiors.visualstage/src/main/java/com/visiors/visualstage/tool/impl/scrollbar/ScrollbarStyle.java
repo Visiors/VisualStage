@@ -40,4 +40,5 @@ public class ScrollbarStyle {
 	public static final Color cornderSquareArmedColor2 = new Color(215,226,248);
 	public static final Color cornderSquareArmedFrameColor = new Color(190,190,225);
 	public static final Color cornderSquareFrameHoeveredColor = new Color(0x9098AC);
+	public static final Color cornderSquareToggledColor = new Color(235, 130, 70);
 }

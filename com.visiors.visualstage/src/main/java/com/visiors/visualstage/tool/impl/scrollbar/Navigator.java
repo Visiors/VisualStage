@@ -1,4 +1,4 @@
-package com.visiors.visualstage.tool.impl;
+package com.visiors.visualstage.tool.impl.scrollbar;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -13,8 +13,9 @@ import com.visiors.visualstage.renderer.DefaultDrawingContext;
 import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.renderer.DrawingSubject;
 import com.visiors.visualstage.renderer.Resolution;
-import com.visiors.visualstage.stage.StageDesigner;
 import com.visiors.visualstage.tool.Interactable;
+import com.visiors.visualstage.tool.impl.BaseTool;
+import com.visiors.visualstage.transform.Transform;
 
 /**
  * This tool must be installed on the top of mouse / keyboard processing chain.
@@ -24,7 +25,7 @@ import com.visiors.visualstage.tool.Interactable;
  * @author Shane
  * 
  */
-public class NavigationTool extends BaseTool {
+public class Navigator extends BaseTool {
 
 	private boolean modified;
 	private final boolean redraw = true;
@@ -32,16 +33,15 @@ public class NavigationTool extends BaseTool {
 			new float[] { 1, 2 }, 0);
 	private static Stroke continuedStroke = new BasicStroke(1.0f);
 	// private final Color bkColor = new Color(255, 120, 63, 164);
-	private boolean active;
 	private int xOffset;
 	private int yOffset;
 	private Rectangle rVista;
 	private Point mousePressedAt;
 	private Rectangle rHitSection;
-	private Rectangle rView;
-	private Rectangle rViewport;
+	private Rectangle canvasBoundary;
+	private Rectangle scrollableArea;
 
-	public NavigationTool(String name) {
+	public Navigator(String name) {
 
 		super(name);
 
@@ -64,6 +64,8 @@ public class NavigationTool extends BaseTool {
 			if (xOffset != 0 || yOffset != 0) {
 				graphDocument.invalidate();
 			}
+			setActive(false);
+			graphDocument.invalidate();
 		}
 		return active;
 	}
@@ -102,28 +104,37 @@ public class NavigationTool extends BaseTool {
 	@Override
 	public boolean keyPressed(int keyChar, int keyCode) {
 
-		if (!active && isControlKeyPressed(keyCode)) {
-			active = true;
-			graphDocument.invalidate();
-			return true;
-		}
+		//		if (!active && isControlKeyPressed(keyCode)) {
+		//			active = true;
+		//			graphDocument.invalidate();
+		//			return true;
+		//		}
 		return active;
 	}
 
 	@Override
 	public boolean keyReleased(int keyChar, int keyCode) {
 
-		if (active) {
-			active = false;
-			rHitSection = null;
-			rViewport = null;
-			xOffset = 0;
-			yOffset = 0;
-			graphDocument.invalidate();
-			return true;
-		}
+		//		if (active) {
+		//			active = false;
+		//			rHitSection = null;
+		//			canvasBoundary = null;
+		//			xOffset = 0;
+		//			yOffset = 0;
+		//			graphDocument.invalidate();
+		//			return true;
+		//		}
 
 		return active;
+	}
+
+	@Override
+	public void setActive(boolean activated) {
+		rHitSection = null;
+		canvasBoundary = null;
+		xOffset = 0;
+		yOffset = 0;
+		super.setActive(activated);
 	}
 
 	@Override
@@ -132,32 +143,45 @@ public class NavigationTool extends BaseTool {
 		if (!onTop || !active) {
 			return;
 		}
-		this.rViewport = graphDocument.getClientBoundary();
-		this.rView = getClientViewPort(rViewport);
-		final Rectangle rGraph = graphDocument.getGraph().getExtendedBoundary();
+		this.canvasBoundary = graphDocument.getClientBoundary();
+		//TODO fix this
+		canvasBoundary.width -= 16;
+		canvasBoundary.height -= 16;
+		this.scrollableArea = computeScrollableArea();
+
 		final double zoom = graphDocument.getZoom();
 		try {
-			final double scale = computeLocalZoom(rView, rGraph);
-			final Rectangle view = computeLocalViewPort(scale, rView, rGraph);
-			this.rVista = computeVistaWindow(scale, rViewport, view, rGraph);
+			final double scale = computeLocalZoom();
+			final Rectangle view = computeLocalViewPort(scale);
+			this.rVista = computeVistaWindow(scale, view);
 
-			fillBackground(awtCanvas.gfx, /*view*/rView);
-			drawSections(awtCanvas.gfx, rVista, rView);
+			fillBackground(awtCanvas.gfx, /*view*/canvasBoundary);
+			drawSections(awtCanvas.gfx, rVista, canvasBoundary);
 			drawHightlightedSection(awtCanvas.gfx);
 			drawVistaWindow(awtCanvas.gfx, rVista);
-			drawGraph(awtCanvas.gfx, scale * zoom, rGraph, view);
+			drawGraph(awtCanvas.gfx, scale * zoom, view);
 
 		} finally {
 			graphDocument.setZoom(zoom);
 		}
 	}
 
-	private void drawGraph(Graphics2D gfx, double scale, Rectangle rGraph, Rectangle view) {
+	private Rectangle computeScrollableArea() {
+
+		final Rectangle rScrollableArea = new Rectangle(graphDocument.getGraph().getExtendedBoundary());
+		rScrollableArea.width = Math.max(rScrollableArea.width, canvasBoundary.width);
+		rScrollableArea.height = Math.max(rScrollableArea.height, canvasBoundary.height);
+		rScrollableArea.width += canvasBoundary.width * 2; 
+		rScrollableArea.height += canvasBoundary.height * 2; 
+		return rScrollableArea;
+	}
+
+	private void drawGraph(Graphics2D gfx, double scale, Rectangle view) {
 
 		graphDocument.setZoom(scale);
 		final DrawingSubject[] subjects = new DrawingSubject[] { DrawingSubject.OBJECT };
-		final Rectangle r = new Rectangle((int) (-rGraph.x * scale), (int) (-rGraph.y * scale), rGraph.width,
-				rGraph.height);
+		final Rectangle r = new Rectangle((int) (-scrollableArea.x * scale), (int) (-scrollableArea.y * scale), scrollableArea.width,
+				scrollableArea.height);
 		final DrawingContext ctx = new DefaultDrawingContext(Resolution.SCREEN_LOW_DETAIL, r, subjects);
 		final Image img = graphDocument.getImage(ctx);
 		gfx.drawImage(img, view.x, view.y, null);
@@ -166,18 +190,20 @@ public class NavigationTool extends BaseTool {
 
 	private void fillBackground(Graphics2D gfx, Rectangle view) {
 
-		gfx.setColor(new Color(190, 200, 220));
-		gfx.fillRect(view.x, view.y, view.width, view.height);
-		gfx.setColor(Color.orange);
-		gfx.drawRect(view.x, view.y, view.width, view.height);
+		gfx.setColor(new Color(247,248,252));
+
+		gfx.fillRect(canvasBoundary.x, canvasBoundary.y, canvasBoundary.width-1, canvasBoundary.height-1);
+		//		gfx.setColor(Color.red);
+		//		gfx.drawRect(canvasBoundary.x, canvasBoundary.y, canvasBoundary.width-1, canvasBoundary.height-1);
 	}
 
-	private Rectangle computeVistaWindow(double scale, Rectangle viewPort, Rectangle view, Rectangle rGraph) {
+	private Rectangle computeVistaWindow(double scale, Rectangle view) {
 
-		final int x = xOffset + view.x + (int) ((-rGraph.x - viewPort.x) * scale);
-		final int y = yOffset + view.y + (int) ((-rGraph.y - viewPort.y) * scale);
-		final int w = view.width * viewPort.width / rGraph.width;
-		final int h = view.height * viewPort.height / rGraph.height;
+		final Transform xform = graphDocument.getTransformer();
+		final int x = xOffset + view.x + (int) (xform.getXTranslate() * scale);
+		final int y = yOffset + view.y + (int) (xform.getYTranslate() * scale);
+		final int w = view.width * canvasBoundary.width / scrollableArea.width;
+		final int h = view.height * canvasBoundary.height / scrollableArea.height;
 		return new Rectangle(x, y, w, h);
 	}
 
@@ -205,6 +231,7 @@ public class NavigationTool extends BaseTool {
 		g.setColor(new Color(235, 245, 255));
 		g.setColor(new Color(135, 145, 155));
 		g.setStroke(dashedStroke);
+
 		int x = rVista.x;
 		while (x > view.x) {
 			g.drawLine(x, view.y, x, view.y + view.height);
@@ -229,40 +256,29 @@ public class NavigationTool extends BaseTool {
 	}
 
 
-	private Rectangle getClientViewPort(Rectangle viewport) {
 
-		final Rectangle r = new Rectangle(viewport);
-		final StageDesigner stage = graphDocument.getEditor().getStageDesigner();
-		if (stage.isRulerVisible()) {
-			final int rulerSize = 0;
-			r.translate(-viewport.x + rulerSize, -viewport.y + rulerSize);
-			r.width -= rulerSize;
-			r.height -= rulerSize;
-		}
-		return r;
-	}
 
-	private Rectangle computeLocalViewPort(double scale, Rectangle rView, Rectangle rGraph) {
+	private Rectangle computeLocalViewPort(double scale) {
 
 		// Centre graph
-		final int w = (int) ((rGraph.width) * scale);
-		final int h = (int) (rGraph.height * scale);
-		final int x = rView.x + (rView.width - w) / 2;
-		final int y = rView.y + (rView.height - h) / 2;
+		final int w = (int) ((scrollableArea.width) * scale);
+		final int h = (int) (scrollableArea.height * scale);
+		final int x = canvasBoundary.x + (canvasBoundary.width - w) / 2;
+		final int y = canvasBoundary.y + (canvasBoundary.height - h) / 2;
 		return new Rectangle(x, y, w, h);
 	}
 
-	private double computeLocalZoom(Rectangle rView, Rectangle rGraph) {
+	private double computeLocalZoom() {
 
 		// compute the required scale
-		final double dx = (double) rView.width / rGraph.width;
-		final double dy = (double) rView.height / rGraph.height;
+		final double dx = (double) canvasBoundary.width / scrollableArea.width;
+		final double dy = (double) canvasBoundary.height / scrollableArea.height;
 		return Math.min(0.5, Math.min(dx, dy));
 	}
 
 	private Rectangle getHitSection(Point mouseAt) {
 
-		if (rView == null || rVista == null || rViewport == null) {
+		if (canvasBoundary == null || rVista == null || canvasBoundary == null) {
 			return null;
 		}
 		int a = 0;
@@ -270,11 +286,11 @@ public class NavigationTool extends BaseTool {
 		int row = 0;
 		int col = 0;
 
-		mouseAt.x += rViewport.x;
-		mouseAt.y += rViewport.y;
+		mouseAt.x += canvasBoundary.x;
+		mouseAt.y += canvasBoundary.y;
 
 		int x = rVista.x;
-		while (x > rView.x) {
+		while (x > canvasBoundary.x) {
 			a--;
 			if (mouseAt.x < x && mouseAt.x > x - rVista.width) {
 				col = a;
@@ -284,7 +300,7 @@ public class NavigationTool extends BaseTool {
 		}
 		x = rVista.x;
 		a = 0;
-		while (x < rView.x + rView.width) {
+		while (x < canvasBoundary.x + canvasBoundary.width) {
 			if (mouseAt.x > x && mouseAt.x < x + rVista.width) {
 				col = a;
 				break;
@@ -293,7 +309,7 @@ public class NavigationTool extends BaseTool {
 			x += rVista.width;
 		}
 		int y = rVista.y;
-		while (y > rView.y) {
+		while (y > canvasBoundary.y) {
 			b--;
 			if (mouseAt.y < y && mouseAt.y > y - rVista.height) {
 				row = b;
@@ -303,7 +319,7 @@ public class NavigationTool extends BaseTool {
 		}
 		y = rVista.y;
 		b = 0;
-		while (y < rView.y + rView.height) {
+		while (y < canvasBoundary.y + canvasBoundary.height) {
 			if (mouseAt.y > y && mouseAt.y < y + rVista.height) {
 				row = b;
 				break;

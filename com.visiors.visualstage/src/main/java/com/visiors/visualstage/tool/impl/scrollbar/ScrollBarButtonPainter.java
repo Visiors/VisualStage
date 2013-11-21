@@ -6,7 +6,6 @@ import java.awt.Polygon;
 import java.awt.Rectangle;
 
 import com.visiors.visualstage.renderer.DrawClient;
-import com.visiors.visualstage.tool.impl.ScrollBar;
 
 public class ScrollBarButtonPainter implements DrawClient {
 
