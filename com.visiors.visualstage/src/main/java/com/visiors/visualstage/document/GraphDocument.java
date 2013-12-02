@@ -51,8 +51,6 @@ public interface GraphDocument extends MultiLayerDocument, PropertyOwner, Undoab
 
 	public Point getViewportPos();
 
-	public Rectangle getViewport();
-
 	public void setTransformer(Transform transform);
 
 	public Transform getTransformer();

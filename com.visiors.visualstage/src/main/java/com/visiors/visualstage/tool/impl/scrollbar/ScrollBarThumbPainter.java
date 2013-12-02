@@ -25,7 +25,7 @@ public class ScrollBarThumbPainter implements DrawClient {
 	@Override
 	public void draw(Graphics2D gfx) {
 
-		Rectangle r = getBounds();
+		final Rectangle r = getBounds();
 		if (scrollBar.isArmed()) {
 			drawActiveThumg(gfx, r);
 			drawZoomBar(gfx, r);

@@ -28,26 +28,27 @@ public class ScrollBarCornerButtonPainter implements DrawClient {
 
 		final Rectangle r = getBounds();
 		final Paint p;
-		if(scrollBarButton.isToggled()){
-			p = new GradientPaint(r.x , r.y, ScrollbarStyle.cornderSquareToggledColor, r.x + r.width, r.y + r.height,
+		if (scrollBarButton.isToggled()) {
+			p = new GradientPaint(r.x, r.y, ScrollbarStyle.cornderSquareToggledColor, r.x + r.width, r.y + r.height,
 					ScrollbarStyle.cornderSquareArmedColor2);
 
-		}else{
+		} else {
 			if (scrollBarButton.isHovered()) {
-				p = new GradientPaint(r.x , r.y, ScrollbarStyle.cornderSquareArmedColor1, r.x + r.width, r.y + r.height,
+				p = new GradientPaint(r.x, r.y, ScrollbarStyle.cornderSquareArmedColor1, r.x + r.width, r.y + r.height,
 						ScrollbarStyle.cornderSquareArmedColor2);
-			}else{
+			} else {
 				p = new GradientPaint(r.x, r.y, ScrollbarStyle.cornderSquareColor1, r.x + r.width, r.y + r.height,
 						ScrollbarStyle.cornderSquareColor2);
 			}
 		}
 		gfx.setPaint(p);
-		gfx.fillRect(r.x , r.y , r.width , r.height);
+		gfx.fillRect(r.x, r.y, r.width, r.height);
 		gfx.setColor(ScrollbarStyle.cornderSquareFrameColor);
-		gfx.drawRect(r.x , r.y , r.width , r.height);
+		gfx.drawRect(r.x, r.y, r.width, r.height);
 		if (scrollBarButton.isHovered()) {
 			gfx.setColor(ScrollbarStyle.cornderSquareFrameHoeveredColor);
-			//			gfx.drawRect(r.x +r.width/3, r.y +r.height/3, r.width /2, r.height/2);
+			// gfx.drawRect(r.x +r.width/3, r.y +r.height/3, r.width /2,
+			// r.height/2);
 		}
 	}
 }

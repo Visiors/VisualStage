@@ -16,7 +16,7 @@ public class SVGDocumentConfig implements DocumentConfig {
 	 * @see com.visiors.visualstage.svg.DocumentConfig#getBachgroundColor()
 	 */
 	@Override
-	public String getBachgroundColor() {
+	public String getBackgroundColor() {
 
 		return backgroundColor;
 	}

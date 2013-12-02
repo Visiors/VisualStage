@@ -19,7 +19,7 @@ public class ScrollBarPagePainter implements DrawClient {
 	@Override
 	public Rectangle getBounds() {
 
-		return scrollBar.getRectScrollBar();
+		return scrollBar.getRectPageArea();
 	}
 
 	@Override
@@ -58,6 +58,9 @@ public class ScrollBarPagePainter implements DrawClient {
 				gfx.drawString(text, rPage.x + rPage.width / 2 - fontSize / 2, rPage.y + rPage.height / 2);
 			}
 		}
+
+		//		gfx.setColor(Color.red);
+		//		gfx.fillRect(rPage.x, rPage.y, rPage.width, rPage.height);
 	}
 
 	private void drawPageDivider(Graphics2D gfx, int pageNumber, Rectangle rPage) {

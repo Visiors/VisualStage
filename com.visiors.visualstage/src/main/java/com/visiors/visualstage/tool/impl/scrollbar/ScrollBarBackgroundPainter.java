@@ -11,13 +11,11 @@ public class ScrollBarBackgroundPainter implements DrawClient {
 
 	private final ScrollBar scrollBar;
 
-
 	public ScrollBarBackgroundPainter(ScrollBar scrollBar) {
 
 		super();
 		this.scrollBar = scrollBar;
 	}
-
 
 	@Override
 	public Rectangle getBounds() {

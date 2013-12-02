@@ -1,21 +1,17 @@
 package com.visiors.visualstage.renderer;
 
-import java.awt.Rectangle;
-
 import com.google.common.base.Objects;
 
 public class DefaultDrawingContext implements DrawingContext {
 
 	private Resolution resolution = Resolution.SCREEN;
-	private Rectangle visibleBounds = new Rectangle();
 	private DrawingSubject[] subjects = new DrawingSubject[] { DrawingSubject.OBJECT, DrawingSubject.PORTS,
 			DrawingSubject.SELECTION_INDICATORS };
 
-	public DefaultDrawingContext(Resolution resolution, Rectangle visibleBounds, DrawingSubject... subjects) {
+	public DefaultDrawingContext(Resolution resolution, DrawingSubject... subjects) {
 
 		this.resolution = resolution;
 		this.subjects = subjects;
-		this.visibleBounds = new Rectangle(visibleBounds);
 	}
 
 	@Override
@@ -30,12 +26,14 @@ public class DefaultDrawingContext implements DrawingContext {
 		return subjects;
 	}
 
+
+
 	@Override
 	public boolean equals(Object obj) {
 
 		if (obj instanceof DefaultDrawingContext) {
 			final DefaultDrawingContext other = (DefaultDrawingContext) obj;
-			return Objects.equal(resolution, other.resolution) && Objects.equal(visibleBounds, other.visibleBounds);
+			return Objects.equal(resolution, other.resolution);
 		}
 		return false;
 	}
@@ -43,7 +41,7 @@ public class DefaultDrawingContext implements DrawingContext {
 	@Override
 	public int hashCode() {
 
-		return Objects.hashCode(resolution, visibleBounds);
+		return Objects.hashCode(resolution);
 	}
 
 	@Override

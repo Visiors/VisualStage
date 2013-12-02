@@ -40,7 +40,7 @@ import com.visiors.visualstage.transform.Transform;
 import com.visiors.visualstage.validation.Validator;
 
 /**
- * This class contains all componets that are shared between all layers
+ * This class contains all components that are shared between all layers
  * 
  * 
  * 
@@ -73,6 +73,7 @@ public class DefaultGraphDocument implements GraphDocument {
 	private String svgFilter;
 	private String svgTransformation;
 	private Editor editor;
+	private final Dimension viewPortSize = new Dimension();
 
 	@Inject
 	public DefaultGraphDocument(LayerManager layerManager, Transform transform) {
@@ -81,7 +82,7 @@ public class DefaultGraphDocument implements GraphDocument {
 		this.transform = transform;
 		DI.injectMembers(this);
 		addLayer(0);
-		stageDesigner.addViewListener(viewListener);
+		stageDesigner.addViewListener(viewListener);		
 	}
 
 	@Override
@@ -161,7 +162,6 @@ public class DefaultGraphDocument implements GraphDocument {
 			transform.setYTranslate(y);
 			fireViewInvalid();
 		}
-
 	}
 
 	@Override
@@ -173,31 +173,24 @@ public class DefaultGraphDocument implements GraphDocument {
 	@Override
 	public void setViewportSize(int w, int h) {
 
-		if (transform.getViewWidth() != w || transform.getViewHeight() != h) {
-			transform.setViewWidth(w);
-			transform.setViewHeight(h);
-			transform.setClientBounds(stageDesigner.getViewBoundary());
-			fireViewInvalid();
+		if (viewPortSize.width != w || viewPortSize.height != h) {
+			viewPortSize.width = w;
+			viewPortSize.height = h;
+			invalidate();
 		}
 	}
 
 	@Override
 	public Dimension getViewportSize() {
 
-		return new Dimension(transform.getViewWidth(), transform.getViewHeight());
-	}
-
-	@Override
-	public Rectangle getViewport() {
-
-		return new Rectangle((int) transform.getXTranslate(), (int) transform.getYTranslate(),
-				transform.getViewWidth(), transform.getViewHeight());
+		return new Dimension(viewPortSize);
 	}
 
 	@Override
 	public Rectangle getClientBoundary() {
 
-		return new Rectangle(transform.getClientBounds());
+		return new Rectangle(transform.getViewX(), transform.getViewY(), transform.getViewWidth(),
+				transform.getViewHeight());
 	}
 
 	@Override
@@ -303,6 +296,13 @@ public class DefaultGraphDocument implements GraphDocument {
 	@Override
 	public void invalidate() {
 
+		final int rulerSize = stageDesigner.getRulerSize();
+		final int scrollBarSize = stageDesigner.getScrollBarSize();
+		transform.setViewX(rulerSize);
+		transform.setViewY(rulerSize);
+		transform.setViewWidth(viewPortSize.width - rulerSize - scrollBarSize);
+		transform.setViewHeight(viewPortSize.height - rulerSize - scrollBarSize);
+
 		fireViewInvalid();
 	}
 
@@ -324,17 +324,17 @@ public class DefaultGraphDocument implements GraphDocument {
 	@Override
 	public synchronized Image getScreen(DrawingContext context) {
 
-		final int viewPortWidth = transform.getViewWidth();
-		final int viewPortHeight = transform.getViewHeight();
+		final Rectangle rClientBounds = getClientBoundary();
 
-		if (viewPortWidth == 0 || viewPortHeight == 0) {
+		if (rClientBounds.isEmpty()) {
 			System.err.println("Warning: view port is empty!");
 			return new AWTCanvas(1, 1).image;
 		}
-		final AWTCanvas awtCanvas = new AWTCanvas(viewPortWidth, viewPortHeight);
-		final VisualGraph graph = getGraph();
+		final Dimension canvasSize = getViewportSize();
+		final AWTCanvas awtCanvas = new AWTCanvas(canvasSize.width, canvasSize.height);
 		// keep always the main graph view fit to the screen
-		graph.setBounds(new Rectangle(0, 0, viewPortWidth, viewPortHeight));
+		final VisualGraph graph = getGraph();
+		graph.setBounds(rClientBounds);
 		stageDesigner.drawHints(awtCanvas, context, false);
 		toolManager.drawHints(awtCanvas, context, false);
 		if (useImageCaching) {
@@ -342,30 +342,54 @@ public class DefaultGraphDocument implements GraphDocument {
 			graph.draw(awtCanvas, context, DrawingSubject.SELECTION_INDICATORS);
 			graph.draw(awtCanvas, context, DrawingSubject.PORTS);
 		} else {
-			final Image img = getImage(context, null);
+			final Image img = getImage(context, null, computeClipRect());
 			awtCanvas.gfx.drawImage(img, 0, 0, null);
 		}
 		toolManager.drawHints(awtCanvas, context, true);
 		stageDesigner.drawHints(awtCanvas, context, true);
-		// awtCanvas.gfx.setStroke(new BasicStroke(1f));
-		// awtCanvas.gfx.setColor(Color.orange);
-		// awtCanvas.gfx.drawRect(0, 0, (int) viewport.getWidth() -1, (int)
-		// viewport.getHeight() -1);
+		//		awtCanvas.gfx.setStroke(new BasicStroke(1f));
+		//		awtCanvas.gfx.setColor(Color.orange);
+		//		awtCanvas.gfx.drawRect(rClientBounds.x, rClientBounds.y, rClientBounds.width-1, rClientBounds.height-1);
 		return awtCanvas.image;
+	}
+
+	private Rectangle computeDocRect() {
+
+		final Transform xform = getTransformer();
+		final Rectangle clipRect = getGraph().getExtendedBoundary();
+		final Rectangle clientBounds = getClientBoundary();
+		clipRect.x -= xform.getXTranslate() + clientBounds.x ;
+		clipRect.y -= xform.getYTranslate() + clientBounds.y ;
+		clipRect.width +=  clientBounds.x   ;
+		clipRect.height += clientBounds.y; 
+		return clipRect;
+	}
+
+	private Rectangle computeClipRect() {
+
+		final Rectangle clientArea = getClientBoundary();
+		final Transform xform = getTransformer();
+
+		clientArea.width += clientArea.x;
+		clientArea.height += clientArea.y;
+		clientArea.x = (int) (-xform.getXTranslate());
+		clientArea.y = (int) (-xform.getYTranslate());
+		return clientArea;
 	}
 
 	@Override
 	public Image getImage(DrawingContext context) {
 
 		final DocumentConfig config = new SVGDocumentConfig(svgBackground, svgFilter, svgTransformation);
-		return getImage(context, config);
+		return getImage(context, config, computeDocRect());
 	}
 
-	private Image getImage(DrawingContext context, DocumentConfig config) {
+
+	private Image getImage(DrawingContext context, DocumentConfig config, Rectangle clipRect) {
 
 		// pack everything in context. getSVGDocument will have only one
 		// parameter
-		final String svgDocument = getSVGDocument(context, config, context.getDrawingSubject());
+		final String svgDocument = getSVGDocument(context, config, clipRect, context.getDrawingSubject());
 		return SVGUtil.svgToImage(svgDocument);
 	}
 
@@ -392,15 +416,12 @@ public class DefaultGraphDocument implements GraphDocument {
 
 	}
 
-	protected String getSVGDocument(DrawingContext context, DocumentConfig config, DrawingSubject... subject) {
+	protected String getSVGDocument(DrawingContext context, DocumentConfig config, Rectangle clippingRect, DrawingSubject... subject) {
 
-		final Transform xform = getTransformer();
-		final Rectangle clientArea = xform.getClientBounds();
-		clientArea.x = (int) (-xform.getXTranslate() );
-		clientArea.y = (int) (-xform.getYTranslate() );
 
 		final VisualGraph graph = getGraph();
-		svgDocumentBuilder.createEmptyDocument(clientArea, null, config);
+
+		svgDocumentBuilder.createEmptyDocument(clippingRect, null, config);
 		for (final DrawingSubject drawingSubject : subject) {
 			svgDocumentBuilder.addContent(graph.getViewDescriptor(context.getResolution(), drawingSubject));
 		}
@@ -412,7 +433,7 @@ public class DefaultGraphDocument implements GraphDocument {
 	public String getSVGDocument(DrawingContext context) {
 
 		final DocumentConfig config = new SVGDocumentConfig(svgBackground, svgFilter, svgTransformation);
-		return getSVGDocument(context, config, DrawingSubject.OBJECT);
+		return getSVGDocument(context, config, computeDocRect(), DrawingSubject.OBJECT);
 	}
 
 	@Override

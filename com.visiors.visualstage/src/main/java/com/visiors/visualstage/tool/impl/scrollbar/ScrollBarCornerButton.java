@@ -12,17 +12,18 @@ import com.visiors.visualstage.tool.Interactable;
 public class ScrollBarCornerButton implements Interactable {
 
 	private final Rectangle bounds = new Rectangle();
-	private GraphDocument graphDocument;
 	private final OffScreenRenderer offlineRenderer;
 	private final Rectangle canvasBoundary = new Rectangle();
+	private GraphDocument graphDocument;
 	private boolean hit;
 	private int size = 16;
 	private final Navigator navigator;
+	private boolean isButtonToggle;
 
-	public ScrollBarCornerButton() {
+	public ScrollBarCornerButton(ScrollBar hScrollBar, ScrollBar vScrollBar) {
 
 		this.offlineRenderer = new DefaultOfflineRenderer(new ScrollBarCornerButtonPainter(this));
-		this.navigator = new Navigator("NAVIGATOR");
+		this.navigator = new Navigator(hScrollBar, vScrollBar);
 	}
 
 	public void setGraphDocument(final GraphDocument graphDocument) {
@@ -30,6 +31,7 @@ public class ScrollBarCornerButton implements Interactable {
 		this.navigator.setScope(graphDocument);
 		this.graphDocument = graphDocument;
 		this.navigator.setActive(false);
+		this.isButtonToggle = false;
 	}
 
 	@Override
@@ -63,7 +65,7 @@ public class ScrollBarCornerButton implements Interactable {
 	public boolean mouseMoved(Point pt, int button, int functionKey) {
 
 		final Point ptScreen = graphDocument.getTransformer().transformToScreen(pt);
-		boolean hit = isHit(ptScreen);
+		final boolean hit = isHit(ptScreen);
 		if (this.hit != hit) {
 			this.hit = hit;
 			offlineRenderer.invalidate();
@@ -139,6 +141,10 @@ public class ScrollBarCornerButton implements Interactable {
 	public void draw(AWTCanvas awtCanvas) {
 
 		if (graphDocument != null) {
+			if (isButtonToggle != isToggled()) {
+				isButtonToggle = isToggled();
+				offlineRenderer.invalidate();
+			}
 			updateBounds();
 			offlineRenderer.render(awtCanvas.gfx);
 			navigator.drawHints(awtCanvas, null, true);
@@ -150,8 +156,8 @@ public class ScrollBarCornerButton implements Interactable {
 		final Rectangle r = graphDocument.getClientBoundary();
 		if (!r.equals(canvasBoundary)) {
 			canvasBoundary.setBounds(r);
-			bounds.setBounds(canvasBoundary.x + canvasBoundary.width - size, canvasBoundary.y + canvasBoundary.height
-					- size, size, size);
+			bounds.setBounds(canvasBoundary.x + canvasBoundary.width, canvasBoundary.y + canvasBoundary.height, size,
+					size);
 			offlineRenderer.invalidate();
 		}
 	}

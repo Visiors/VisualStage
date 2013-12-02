@@ -103,11 +103,11 @@ public class DefaultSVGDocumentBuilder implements SVGDocumentBuilder {
 
 		if (config != null) {
 			// background for the view box
-			if (config.getBachgroundColor() != null) {
-				if (!usedReferences.contains(config.getBachgroundColor())) {
-					usedReferences.add(config.getBachgroundColor());
+			if (config.getBackgroundColor() != null) {
+				if (!usedReferences.contains(config.getBackgroundColor())) {
+					usedReferences.add(config.getBackgroundColor());
 				}
-				svg.append(" <rect x='0' y='0' width='100%' height='100%' style='fill:url(#" + config.getBachgroundColor() + ")' />");
+				svg.append(" <rect x='0' y='0' width='100%' height='100%' style='fill:url(#" + config.getBackgroundColor() + ")' />");
 
 				lineBreak();
 			}

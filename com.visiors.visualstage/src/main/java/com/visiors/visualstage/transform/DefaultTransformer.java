@@ -9,7 +9,8 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 
 	private int viewportWidth;
 	private int viewportHeight;
-	private Rectangle clientBounds = new Rectangle();
+	private int viewportX;
+	private int viewportY;
 
 	public DefaultTransformer() {
 
@@ -257,17 +258,33 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 		this.viewportHeight = h;
 	}
 
-	@Override
-	public void setClientBounds(Rectangle clientBounds) {
 
-		this.clientBounds = clientBounds;
+	@Override
+	public void setViewX(int viewportX) {
+
+		this.viewportX = viewportX;
+	}
+
+
+	@Override
+	public int getViewX() {
+
+		return viewportX;
 	}
 
 	@Override
-	public Rectangle getClientBounds() {
+	public int getViewY() {
 
-		return new Rectangle(clientBounds);
+		return viewportY;
 	}
+
+
+	@Override
+	public void setViewY(int viewportY) {
+
+		this.viewportY = viewportY;
+	}
+
 
 	/*
 	 * (non-Javadoc)
@@ -280,7 +297,7 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 	public final Point transformToScreen(Point ptGraph) {
 
 		Point screen = super.transform(new Point(ptGraph.x, ptGraph.y), new Point());
-		screen.translate(clientBounds.x, clientBounds.y);
+		screen.translate(viewportX, viewportY);
 		return screen;
 	}
 
@@ -294,7 +311,7 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 	@Override
 	public final Point transformToGraph(Point ptScreen) {
 
-		final Point pt = new Point(ptScreen.x - clientBounds.x, ptScreen.y - clientBounds.y);
+		final Point pt = new Point(ptScreen.x - viewportX, ptScreen.y - viewportY);
 		return createInverse().transform(pt, new Point());
 	}
 
@@ -330,7 +347,7 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 	@Override
 	public int transformToScreenX(int x) {
 
-		return transformX(x) + clientBounds.x;
+		return transformX(x) + viewportX;
 	}
 
 	/*
@@ -342,7 +359,7 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 	@Override
 	public int transformToScreenY(int y) {
 
-		return transformY(y) - clientBounds.y;
+		return transformY(y) - viewportY;
 	}
 
 	/*
@@ -354,7 +371,7 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 	@Override
 	public int transformToGraphX(int x) {
 
-		return createInverse().transformX(x + clientBounds.x);
+		return createInverse().transformX(x + viewportX);
 	}
 
 	/*
@@ -366,7 +383,7 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 	@Override
 	public int transformToGraphY(int y) {
 
-		return createInverse().transformY(y - clientBounds.y);
+		return createInverse().transformY(y - viewportY);
 	}
 
 	// ////////////////////////////////////////////////////////

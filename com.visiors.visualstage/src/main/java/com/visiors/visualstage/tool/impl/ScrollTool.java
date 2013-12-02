@@ -19,7 +19,7 @@ import com.visiors.visualstage.tool.impl.scrollbar.ScrollBarCornerButton;
  */
 public class ScrollTool extends BaseTool {
 
-	private int size;
+	private int size = 16;
 	private final ScrollBar hScrollBar;
 	private final ScrollBar vScrollBar;
 	private final ScrollBarCornerButton scrButton;
@@ -29,7 +29,7 @@ public class ScrollTool extends BaseTool {
 		super("SCROLLBAR");
 		hScrollBar = new ScrollBar(true);
 		vScrollBar = new ScrollBar(false);
-		scrButton = new ScrollBarCornerButton();
+		scrButton = new ScrollBarCornerButton(hScrollBar, vScrollBar);
 	}
 
 	@Override

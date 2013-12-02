@@ -560,7 +560,8 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 		final Rectangle r = getBounds();
 		if (!r.isEmpty()) {
 			// considering of 1 pixel for rounding inaccuracy
-			r.grow(ViewConstants.MARKER_SIZE + 1, ViewConstants.MARKER_SIZE + 1);
+			//TODO uncomment this asap
+			//r.grow(ViewConstants.MARKER_SIZE + 1, ViewConstants.MARKER_SIZE + 1);
 
 			// if (portSet != null && ViewConstants.HIGHTLIGHT_PORTS) {
 			// Port[] ports = portSet.getPorts();

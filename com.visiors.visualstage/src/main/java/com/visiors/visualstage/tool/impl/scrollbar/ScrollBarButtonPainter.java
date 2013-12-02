@@ -47,7 +47,7 @@ public class ScrollBarButtonPainter implements DrawClient {
 		if (scrollBar.isHorizontal()) {
 			drawArrowToWest(gfx, r.x + r.width / 3, r.y + r.height / 3, 4, 8);
 		} else {
-			drawArrowToNorth(gfx, r.x + r.width / 3-1, r.y + r.height / 3, 9, 4);
+			drawArrowToNorth(gfx, r.x + r.width / 3 - 1, r.y + r.height / 3, 9, 4);
 		}
 	}
 
@@ -71,13 +71,13 @@ public class ScrollBarButtonPainter implements DrawClient {
 						ScrollbarStyle.buttonArmedColor1);
 				gfx.setPaint(paint);
 				gfx.fillRect(r.x + 1, r.y + 1, r.width - 1, r.height - 2);
-				paint = new GradientPaint(0, r.y + r.height / 2 - 5, ScrollbarStyle.buttonArmedColor1, 0, r.y + r.height,
-						ScrollbarStyle.buttonArmedColor2);
+				paint = new GradientPaint(0, r.y + r.height / 2 - 5, ScrollbarStyle.buttonArmedColor1, 0, r.y
+						+ r.height, ScrollbarStyle.buttonArmedColor2);
 				gfx.setPaint(paint);
 				gfx.fillRect(r.x + 1, r.y + r.height / 2, r.width - 1, r.height / 2);
 
 				gfx.setColor(ScrollbarStyle.buttonFrameColor);
-				gfx.drawRect(r.x , r.y , r.width-1, r.height);
+				gfx.drawRect(r.x, r.y, r.width - 1, r.height);
 			} else {
 				GradientPaint paint = new GradientPaint(r.x, 0, ScrollbarStyle.buttonArmedColor2, r.x + r.width, 0,
 						ScrollbarStyle.buttonArmedColor1);
@@ -89,7 +89,7 @@ public class ScrollBarButtonPainter implements DrawClient {
 				gfx.fillRect(r.x + r.width / 2, r.y, r.width / 2, r.height);
 
 				gfx.setColor(ScrollbarStyle.buttonFrameColor);
-				gfx.drawRect(r.x , r.y , r.width, r.height-1);
+				gfx.drawRect(r.x, r.y, r.width, r.height - 1);
 			}
 		}
 	}
@@ -106,7 +106,7 @@ public class ScrollBarButtonPainter implements DrawClient {
 
 	private void drawArrowToNorth(Graphics2D gfx, int x, int y, int w, int h) {
 
-		gfx.fillPolygon(new Polygon(new int[] { x , x+ w / 2, x + w }, new int[] { y + h, y , y + h }, 3));
+		gfx.fillPolygon(new Polygon(new int[] { x, x + w / 2, x + w }, new int[] { y + h, y, y + h }, 3));
 	}
 
 	private void drawArrowToSouth(Graphics2D gfx, int x, int y, int w, int h) {

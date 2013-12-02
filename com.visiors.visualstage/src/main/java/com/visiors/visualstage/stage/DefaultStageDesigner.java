@@ -17,22 +17,17 @@ import com.visiors.visualstage.editor.DI;
 import com.visiors.visualstage.system.SystemUnit;
 import com.visiors.visualstage.tool.ToolManager;
 import com.visiors.visualstage.tool.impl.DefaultToolManager;
-import com.visiors.visualstage.tool.impl.GridTool;
 import com.visiors.visualstage.tool.impl.RulerTool;
 import com.visiors.visualstage.tool.impl.ScrollTool;
-import com.visiors.visualstage.transform.Transform;
 import com.visiors.visualstage.util.PrinterUtil;
 
 public class DefaultStageDesigner extends DefaultToolManager implements StageDesigner {
 
-	private boolean showGrid;
 
-	private ViewMode pageView = ViewMode.plane;
+	private ViewMode pageView = ViewMode.draft;
 
-
-	private final RulerTool ruler;
-	private GridTool gridTool;
-	private final ScrollTool scrollBar;
+	private final RulerTool rulerTool;
+	private final ScrollTool scrollBarTool;
 
 	private PageFormat pageFormat;
 	private final Color pageShadowColor = new Color(0x253D58);
@@ -41,7 +36,6 @@ public class DefaultStageDesigner extends DefaultToolManager implements StageDes
 	private boolean lockSize;
 	private Rectangle exBounds;
 	protected ToolManager toolManager;
-
 
 	private static Stroke dashedStroke = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0,
 			new float[] { 1, 2 }, 0);
@@ -52,11 +46,11 @@ public class DefaultStageDesigner extends DefaultToolManager implements StageDes
 	public DefaultStageDesigner() {
 
 		this.toolManager = DI.getInstance(ToolManager.class);
-		this.scrollBar = new ScrollTool();
-		this.ruler = new RulerTool();
-		toolManager.registerTool(ruler);
-		toolManager.registerTool(scrollBar);
-		scrollBar.setActive(true);
+		this.scrollBarTool = new ScrollTool();
+		this.rulerTool = new RulerTool();
+		toolManager.registerTool(rulerTool);
+		toolManager.registerTool(scrollBarTool);
+
 	}
 
 	@Override
@@ -113,83 +107,66 @@ public class DefaultStageDesigner extends DefaultToolManager implements StageDes
 	}
 
 	@Override
+	public Rectangle getPageBounds() {
+
+		if (pageView == ViewMode.page) {
+		} 
+		return graphDocument.getClientBoundary();
+	}
+
+	@Override
+	public boolean isScrollBarVisible() {
+
+		return scrollBarTool.isActive();
+	}
+
+	@Override
+	public void showScrollBar(boolean b) {
+
+		scrollBarTool.setActive(b);
+		if (graphDocument != null) {
+			graphDocument.invalidate();
+		}
+	}
+
+	@Override
 	public boolean isRulerVisible() {
 
-		return ruler.isActive();
+		return rulerTool.isActive();
 	}
 
 	@Override
 	public void showRuler(boolean showRuler) {
 
-		ruler.setActive(showRuler);
+		rulerTool.setActive(showRuler);
+		if (graphDocument != null) {
+			graphDocument.invalidate();
+		}
 	}
-
-	@Override
-	public boolean isGridVisible() {
-
-		return showGrid;
-	}
-
-	@Override
-	public void showGrid(boolean showGrid) {
-
-		this.showGrid = showGrid;
-	}
-
-	/*
-	 * @Override public void paintBehind(AWTCanvas awtCanvas, DrawingContext
-	 * context) {
-	 * 
-	 * final Rectangle viewport = graphDocument.getViewport();
-	 * 
-	 * if (pageView == ViewMode.page) { drawPages(awtCanvas, context); } else if
-	 * (pageView == ViewMode.plane) { if (showGrid && context.getResolution() ==
-	 * Resolution.SCREEN) { rPageBoundary.setBounds(viewport); rPageBoundary.x
-	 * -= 1; rPageBoundary.y -= 1; grid.draw(awtCanvas, rPageBoundary,
-	 * systemUnit.getPixelsPerUnit(), GridStyle.Line); if(ruler.isActive()){ int
-	 * rulerSize = ruler.getSize(); rPageBoundary.grow(-rulerSize/2,
-	 * -rulerSize/2); rPageBoundary.translate(rulerSize, rulerSize); } } } }
-	 */
-
 
 
 	@Override
 	public void setRulerSize(int size) {
 
-		ruler.setSize(size);	
-		graphDocument.getTransformer().setClientBounds(getViewBoundary());
+		rulerTool.setSize(size);
 	}
 
 	@Override
 	public int getRulerSize() {
 
-		return ruler.isActive() ? ruler.getSize() : 0;
+		return rulerTool.isActive() ? rulerTool.getSize() : 0;
 	}
-
 
 	@Override
 	public void setScrollBarSize(int size) {
 
-		scrollBar.setSize(size);
-		graphDocument.getTransformer().setClientBounds(getViewBoundary());
+		scrollBarTool.setSize(size);
 	}
 
 	@Override
 	public int getScrollBarSize() {
 
-		return scrollBar.isActive() ? scrollBar.getSize() : 0;
-	}
-
-
-
-	@Override
-	public Rectangle getViewBoundary() {
-
-		final Transform xform = graphDocument.getTransformer();
-		final int rulerSize = getRulerSize();
-		final int scrollBarSize = getScrollBarSize();
-		return new Rectangle(rulerSize, rulerSize, xform.getViewWidth() - rulerSize - scrollBarSize, 
-				xform.getViewHeight() - rulerSize - scrollBarSize);
+		return scrollBarTool.isActive() ? scrollBarTool.getSize() : 0;
 	}
 
 	// //////////////////////////////////////////////////////////////////////////

@@ -10,7 +10,7 @@ import com.visiors.visualstage.tool.ToolManager;
 public interface StageDesigner extends ToolManager, ScopeAwareHandler {
 
 	public enum ViewMode {
-		page, plane, none
+		page, draft
 	}
 
 	public PrinterJob getPrinterJob();
@@ -21,15 +21,13 @@ public interface StageDesigner extends ToolManager, ScopeAwareHandler {
 
 	public void showRuler(boolean showRuler);
 
-	public boolean isGridVisible();
+	public void showScrollBar(boolean b);
 
-	public void showGrid(boolean showGrid);
+	public boolean isScrollBarVisible();
 
 	public void setViewMode(ViewMode mode);
 
 	public ViewMode getViewMode();
-
-	public Rectangle getViewBoundary();
 
 	public int getRulerSize();
 
@@ -42,4 +40,7 @@ public interface StageDesigner extends ToolManager, ScopeAwareHandler {
 	public void addViewListener(ViewListener l);
 
 	public void removeViewListener(ViewListener l);
+
+	public Rectangle getPageBounds();
+
 }

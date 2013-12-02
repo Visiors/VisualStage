@@ -55,10 +55,10 @@ public class Ruler extends BaseTool implements DrawClient {
 		if (horizintal) {
 			canvas.x = size;
 			canvas.height = size;
-			canvas.width = xform.getViewWidth();
+			canvas.width = xform.getViewWidth() +size;
 		} else {
 			canvas.y = size;
-			canvas.height = xform.getViewHeight();
+			canvas.height = xform.getViewHeight() + size;
 			canvas.width = size;
 		}
 		return canvas;

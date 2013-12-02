@@ -72,7 +72,13 @@ public interface Transform {
 
 	public void setViewHeight(int h);
 
-	public Rectangle getClientBounds();
+	public int getViewX();
 
-	public void setClientBounds(Rectangle r);
+	public void setViewX(int x);
+
+	public int getViewY();
+
+	public void setViewY(int y);
+
+
 }
