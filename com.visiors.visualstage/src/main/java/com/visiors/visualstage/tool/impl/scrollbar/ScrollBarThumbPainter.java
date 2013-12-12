@@ -74,6 +74,10 @@ public class ScrollBarThumbPainter implements DrawClient {
 					ScrollbarStyle.thumbRounding);
 		} else {
 			gfx.setColor(ScrollbarStyle.thumbColor);
+
+			final GradientPaint p = new GradientPaint(r.x, 0, ScrollbarStyle.backgroundColor2, r.x + r.width, 0,
+					ScrollbarStyle.backgroundColor1);
+			gfx.setPaint(p);
 			gfx.fillRect(r.x + 1, r.y + 1, r.width - 2, r.height);
 			gfx.setColor(ScrollbarStyle.thumbFrameColor);
 			gfx.drawRoundRect(r.x, r.y + 1, r.width, r.height - 2, ScrollbarStyle.thumbRounding,

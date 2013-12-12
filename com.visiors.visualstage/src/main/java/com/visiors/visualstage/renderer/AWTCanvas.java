@@ -26,4 +26,8 @@ public class AWTCanvas {
 		gfx = (Graphics2D) image.getGraphics();
 	}
 
+	public Image getImage(){
+		return image;
+	}
+
 }

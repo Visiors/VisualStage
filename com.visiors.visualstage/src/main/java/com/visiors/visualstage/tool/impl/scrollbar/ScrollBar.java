@@ -67,6 +67,7 @@ public class ScrollBar implements Interactable {
 
 			@Override
 			public void graphExpansionChanged() {
+
 				final Rectangle r = graphDocument.getGraph().getExtendedBoundary();
 				if (!r.equals(graphBoundary)) {
 					graphBoundary = r;
@@ -84,23 +85,21 @@ public class ScrollBar implements Interactable {
 	public void setMin(int min) {
 
 		final Transform xform = graphDocument.getTransformer();
-		min -=  isHorizontal ?  xform.getViewX() : xform.getViewY();
+		min -= isHorizontal ? xform.getViewX() : xform.getViewY();
 		this.min = Math.min(min, 0);
 	}
 
 	public void setMax(int max) {
 
 		final Transform xform = graphDocument.getTransformer();
-		max -=  isHorizontal ?  xform.getViewX() : xform.getViewY();
+		max -= isHorizontal ? xform.getViewX() : xform.getViewY();
 		this.max = Math.max(max, 0);
 	}
-
 
 	public int getMin() {
 
 		return min;
 	}
-
 
 	public int getMax() {
 
@@ -342,15 +341,14 @@ public class ScrollBar implements Interactable {
 		} else {
 			offset = mouseCurrentlyAt.y - dragHelper.mousePressedAt.y;
 		}
-		moveThumb(offset,dragHelper.initialValue , (dragHelper.initialThumbPos + dragHelper.initialThumbExpansion), 
+		moveThumb(offset, dragHelper.initialValue, (dragHelper.initialThumbPos + dragHelper.initialThumbExpansion),
 				-dragHelper.initialThumbPos);
 	}
 
 	void moveThumb(int offset, int ancore, int max, int min) {
 
 		offset = Math.max(offset, min);
-		offset = Math.min(offset, scrollbarPageExpansion()
-				- max);
+		offset = Math.min(offset, scrollbarPageExpansion() - max);
 		final int newViewportPos = (int) (ancore + offset * documentScrollableRatio());
 		setValue(newViewportPos);
 	}
@@ -392,9 +390,9 @@ public class ScrollBar implements Interactable {
 	private int scrollbarPageExpansion() {
 
 		if (isHorizontal) {
-			return rectPlusButton.x - rectMinusButton.x  - rectMinusButton.width ;
+			return rectPlusButton.x - rectMinusButton.x - rectMinusButton.width;
 		} else {
-			return rectPlusButton.y - rectMinusButton.y  - rectMinusButton.height ;
+			return rectPlusButton.y - rectMinusButton.y - rectMinusButton.height;
 		}
 	}
 
@@ -423,7 +421,7 @@ public class ScrollBar implements Interactable {
 
 	private double documentPageAreaRatio() {
 
-		if(isHorizontal) {
+		if (isHorizontal) {
 			return canvasBoundary.width / documentScrollableRatio();
 		} else {
 			return canvasBoundary.height / documentScrollableRatio();
@@ -477,14 +475,13 @@ public class ScrollBar implements Interactable {
 	private void computeScrollBarRect() {
 
 		if (isHorizontal) {
-			rectScrollBar.setBounds(canvasBoundary.x, canvasBoundary.y + canvasBoundary.height, canvasBoundary.width
-					, size);
+			rectScrollBar.setBounds(canvasBoundary.x, canvasBoundary.y + canvasBoundary.height, canvasBoundary.width,
+					size);
 		} else {
 			rectScrollBar.setBounds(canvasBoundary.x + canvasBoundary.width, canvasBoundary.y, size,
-					canvasBoundary.height );
+					canvasBoundary.height);
 		}
 	}
-
 
 	private void computeMinusButtonRect() {
 
@@ -494,11 +491,11 @@ public class ScrollBar implements Interactable {
 	private void computePlusButtonRect() {
 
 		if (isHorizontal) {
-			rectPlusButton.setBounds(rectScrollBar.x + rectScrollBar.width-size, rectScrollBar.y + rectScrollBar.height
-					- size, size, size);
+			rectPlusButton.setBounds(rectScrollBar.x + rectScrollBar.width - size, rectScrollBar.y
+					+ rectScrollBar.height - size, size, size);
 		} else {
 			rectPlusButton.setBounds(rectScrollBar.x + rectScrollBar.width - size, rectScrollBar.y
-					+ rectScrollBar.height-size, size, size);
+					+ rectScrollBar.height - size, size, size);
 		}
 	}
 

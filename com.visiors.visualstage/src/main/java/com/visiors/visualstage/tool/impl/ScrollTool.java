@@ -117,7 +117,7 @@ public class ScrollTool extends BaseTool {
 		if (onTop) {
 			hScrollBar.draw(awtCanvas);
 			vScrollBar.draw(awtCanvas);
-			scrButton.draw(awtCanvas);
+			scrButton.draw(awtCanvas,  context);
 		}
 	}
 

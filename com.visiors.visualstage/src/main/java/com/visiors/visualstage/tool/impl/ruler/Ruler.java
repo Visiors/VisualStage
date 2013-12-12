@@ -118,7 +118,7 @@ public class Ruler extends BaseTool implements DrawClient {
 		gfx.setFont(font);
 		gfx.setColor(bkColor);
 		// background
-		gfx.fillRect(r.x, r.y, r.width, r.height);
+		gfx.fillRect(r.x, r.y, r.width-1, r.height-1);
 		gfx.setColor(lineColor);
 
 		if (horizintal) {

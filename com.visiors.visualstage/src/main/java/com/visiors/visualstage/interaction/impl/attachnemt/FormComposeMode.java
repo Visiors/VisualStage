@@ -216,7 +216,7 @@ public class FormComposeMode extends BaseTool {
 		}
 
 		final VisualNode[] nodes = visualGraph.getNodes();
-		final Transform xform = visualGraph.getTransform();
+		final TransformEffect xform = visualGraph.getTransform();
 		boolean slotUsed;
 		Point pt;
 		for (VisualNode node : nodes) {
@@ -300,7 +300,7 @@ public class FormComposeMode extends BaseTool {
 		final String slot = hitComponent.getSlot();
 		final Dimension size = hitComponent.getSize();
 		final Point offset = hitComponent.getOffset();
-		Transform xform = visualGraph.getTransform();
+		TransformEffect xform = visualGraph.getTransform();
 		final Rectangle b = xform.transformToScreen(hitNode.getViewport());
 		final Point pt = new Point(b.x, b.y - size.height - 50);
 

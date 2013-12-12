@@ -6,6 +6,7 @@ import java.awt.Rectangle;
 import com.visiors.visualstage.document.GraphDocument;
 import com.visiors.visualstage.renderer.AWTCanvas;
 import com.visiors.visualstage.renderer.DefaultOfflineRenderer;
+import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.renderer.OffScreenRenderer;
 import com.visiors.visualstage.tool.Interactable;
 
@@ -138,7 +139,7 @@ public class ScrollBarCornerButton implements Interactable {
 		return bounds.contains(pt);
 	}
 
-	public void draw(AWTCanvas awtCanvas) {
+	public void draw(AWTCanvas awtCanvas, DrawingContext context) {
 
 		if (graphDocument != null) {
 			if (isButtonToggle != isToggled()) {
@@ -147,7 +148,7 @@ public class ScrollBarCornerButton implements Interactable {
 			}
 			updateBounds();
 			offlineRenderer.render(awtCanvas.gfx);
-			navigator.drawHints(awtCanvas, null, true);
+			navigator.drawHints(awtCanvas, context, true);
 		}
 	}
 

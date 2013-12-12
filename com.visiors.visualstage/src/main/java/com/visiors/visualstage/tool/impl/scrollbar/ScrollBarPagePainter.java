@@ -43,6 +43,11 @@ public class ScrollBarPagePainter implements DrawClient {
 
 	private void drawPageNumber(Graphics2D gfx, int pageNumber, Rectangle rPage) {
 
+		// gfx.setColor(ScrollbarStyle.backgroundColor1);
+		// gfx.fillRect(rPage.x+1, rPage.y, 16, rPage.height);
+		// gfx.setColor(Color.lightGray);
+		// gfx.drawRect(rPage.x, rPage.y, 16, rPage.height);
+
 		final int fontSize = ScrollbarStyle.pageFont.getSize();
 		final boolean pageHightlighted = isHightlighted(pageNumber);
 		gfx.setFont(ScrollbarStyle.pageFont);
@@ -59,8 +64,6 @@ public class ScrollBarPagePainter implements DrawClient {
 			}
 		}
 
-		//		gfx.setColor(Color.red);
-		//		gfx.fillRect(rPage.x, rPage.y, rPage.width, rPage.height);
 	}
 
 	private void drawPageDivider(Graphics2D gfx, int pageNumber, Rectangle rPage) {

@@ -79,10 +79,10 @@ public class GridTool extends BaseTool {
 				gfx.drawLine(r.x , (int) y,r.x +  r.width, (int) y);
 			}
 			gfx.setColor(lineColor);
-			for (double x = xOffset; x < r.x + r.width; x += transUnit) {
+			for (double x = xOffset + transUnit; x < r.x + r.width; x += transUnit) {
 				gfx.drawLine((int) x, r.y, (int) x, r.y + r.height);
 			}
-			for (double y = yOffset; y < r.y + r.height; y += transUnit) {
+			for (double y = yOffset + transUnit; y < r.y + r.height; y += transUnit) {
 				gfx.drawLine(r.x, (int) y, r.x + r.width, (int) y);
 			}
 			break;
