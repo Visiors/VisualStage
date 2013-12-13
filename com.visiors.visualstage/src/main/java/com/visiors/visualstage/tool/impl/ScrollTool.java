@@ -106,9 +106,20 @@ public class ScrollTool extends BaseTool {
 	@Override
 	public int getPreferredCursor() {
 
-		int hCursor = hScrollBar.getPreferredCursor();
-		int vCursor = vScrollBar.getPreferredCursor();
-		return (hCursor != Interactable.CURSOR_DEFAULT ? hCursor : vCursor);
+		int cursor = hScrollBar.getPreferredCursor();
+		if(cursor !=  Interactable.CURSOR_DEFAULT) {
+			return cursor;
+		}
+		cursor = vScrollBar.getPreferredCursor();
+		if(cursor !=  Interactable.CURSOR_DEFAULT) {
+			return cursor;
+		}
+		cursor = scrButton.getPreferredCursor();
+		if(cursor !=  Interactable.CURSOR_DEFAULT) {
+			return cursor;
+		}
+
+		return Interactable.CURSOR_DEFAULT;
 	}
 
 	@Override

@@ -126,7 +126,7 @@ public class ScrollBarCornerButton implements Interactable {
 	@Override
 	public int getPreferredCursor() {
 
-		return 0;
+		return navigator.isActive() ?  navigator.getPreferredCursor() : Interactable.CURSOR_DEFAULT;
 	}
 
 	public Rectangle getBounds() {

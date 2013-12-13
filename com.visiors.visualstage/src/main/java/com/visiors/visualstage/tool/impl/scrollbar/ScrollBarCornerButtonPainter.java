@@ -1,5 +1,6 @@
 package com.visiors.visualstage.tool.impl.scrollbar;
 
+import java.awt.Color;
 import java.awt.GradientPaint;
 import java.awt.Graphics2D;
 import java.awt.Paint;
@@ -50,5 +51,8 @@ public class ScrollBarCornerButtonPainter implements DrawClient {
 			// gfx.drawRect(r.x +r.width/3, r.y +r.height/3, r.width /2,
 			// r.height/2);
 		}
+
+		gfx.setColor(new Color(130, 150, 170));
+		gfx.fillRoundRect(r.x + 5, r.y + 5, r.width - 9, r.height - 9, 0, 0);
 	}
 }
