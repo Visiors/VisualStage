@@ -1,6 +1,5 @@
 package com.visiors.visualstage.tool.impl.scrollbar;
 
-import java.awt.Color;
 import java.awt.GradientPaint;
 import java.awt.Graphics2D;
 import java.awt.Paint;
@@ -35,10 +34,9 @@ public class ScrollBarBackgroundPainter implements DrawClient {
 			gfx.setPaint(p);
 		} else {
 
-			gfx.setColor(new Color(255, 255, 255));
-			// p = new GradientPaint(r.x, 0, ScrollbarStyle.backgroundColor2,
-			// r.x + r.width, 0,
-			// ScrollbarStyle.backgroundColor2);
+			p = new GradientPaint(r.x, 0, ScrollbarStyle.backgroundColor1, r.x + r.width, 0,
+					ScrollbarStyle.backgroundColor2);
+			gfx.setPaint(p);
 		}
 		gfx.fillRect(r.x, r.y, r.width, r.height);
 		gfx.setColor(ScrollbarStyle.frameColor);

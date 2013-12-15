@@ -83,9 +83,9 @@ public class ScrollBarPagePainter implements DrawClient {
 		if (isHightlighted(pageNumber)) {
 			gfx.setColor(ScrollbarStyle.pageHeightlightedColor);
 			if (scrollBar.isHorizontal()) {
-				gfx.fillRect(rPage.x, rPage.y + 2, rPage.width - 1, rPage.height - 3);
+				gfx.fillRect(rPage.x + 2, rPage.y + 2, rPage.width - 3, rPage.height - 3);
 			} else {
-				gfx.fillRect(rPage.x + 2, rPage.y, rPage.width - 3, rPage.height - 1);
+				gfx.fillRect(rPage.x + 2, rPage.y + 2, rPage.width - 3, rPage.height - 3);
 			}
 		}
 	}

@@ -9,6 +9,7 @@ import com.visiors.visualstage.renderer.DefaultOfflineRenderer;
 import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.renderer.OffScreenRenderer;
 import com.visiors.visualstage.tool.Interactable;
+import com.visiors.visualstage.tool.impl.BaseTool;
 
 public class ScrollBarCornerButton implements Interactable {
 
@@ -96,12 +97,27 @@ public class ScrollBarCornerButton implements Interactable {
 	@Override
 	public boolean keyPressed(int keyChar, int keyCode) {
 
+		if (BaseTool.isShiftKeyPressed(keyCode) && BaseTool.isControlKeyPressed(keyCode)) {
+			if (!this.navigator.isActive()) {
+				this.navigator.setActive(true);
+				this.navigator.setAutoClose(false);
+				offlineRenderer.invalidate();
+				graphDocument.invalidate();
+				return true;
+			}
+		}
+
 		return navigator.keyPressed(keyChar, keyCode);
 	}
 
 	@Override
 	public boolean keyReleased(int keyChar, int keyCode) {
 
+		if (this.navigator.isActive()) {
+			this.navigator.setActive(false);
+			graphDocument.invalidate();
+			return true;
+		}
 		return navigator.keyReleased(keyChar, keyCode);
 	}
 
@@ -126,7 +142,7 @@ public class ScrollBarCornerButton implements Interactable {
 	@Override
 	public int getPreferredCursor() {
 
-		return navigator.isActive() ?  navigator.getPreferredCursor() : Interactable.CURSOR_DEFAULT;
+		return navigator.isActive() ? navigator.getPreferredCursor() : Interactable.CURSOR_DEFAULT;
 	}
 
 	public Rectangle getBounds() {
@@ -178,6 +194,7 @@ public class ScrollBarCornerButton implements Interactable {
 
 		if (this.navigator.isActive() != b) {
 			this.navigator.setActive(b);
+			this.navigator.setAutoClose(true);
 			offlineRenderer.invalidate();
 			graphDocument.invalidate();
 		}

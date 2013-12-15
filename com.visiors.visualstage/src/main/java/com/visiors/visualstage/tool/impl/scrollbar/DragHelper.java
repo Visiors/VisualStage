@@ -11,12 +11,9 @@ public class DragHelper {
 	public int initialValue;
 	public int initialThumbExpansion;
 	public double initialZoom;
-	public int initialGraphStartXPos;
-	public int initialGraphEndXPos;
-	public int initialGraphStartYPos;
-	public int initialGraphEndYPos;
 	public int initialThumbPos;
 	public Point mousePressedAt;
+	public int initialGraphAtScreenLeft;
 
 	public DragHelper(ScrollBar scrollBar) {
 
@@ -32,11 +29,6 @@ public class DragHelper {
 		initialThumbPos = scrollBar.getThumbPos();
 		initialThumbExpansion = scrollBar.getThumbExpansion();
 		initialZoom = graphDocument.getTransformer().getScale();
-		// initialGraphStartXPos = xform.transformToGraphX(0);
-		// initialGraphEndXPos = xform.transformToGraphX(canvasBoundary.x +
-		// canvasBoundary.width );
-		// initialGraphStartYPos = xform.transformToGraphY(0);
-		// initialGraphEndYPos = xform.transformToGraphY(canvasBoundary.y +
-		// canvasBoundary.height);
+		initialGraphAtScreenLeft = xform.transformToGraphX(0);
 	}
 }

@@ -19,7 +19,7 @@ import com.visiors.visualstage.tool.impl.scrollbar.ScrollBarCornerButton;
  */
 public class ScrollTool extends BaseTool {
 
-	private int size = 16;
+	private int size = 15;
 	private final ScrollBar hScrollBar;
 	private final ScrollBar vScrollBar;
 	private final ScrollBarCornerButton scrButton;
@@ -94,13 +94,15 @@ public class ScrollTool extends BaseTool {
 	@Override
 	public boolean keyPressed(int keyChar, int keyCode) {
 
-		return false;
+		return scrButton.keyPressed(keyChar, keyCode) || hScrollBar.keyPressed(keyChar, keyCode)
+				|| vScrollBar.keyPressed(keyChar, keyCode);
 	}
 
 	@Override
 	public boolean keyReleased(int keyChar, int keyCode) {
 
-		return false;
+		return scrButton.keyReleased(keyChar, keyCode) || hScrollBar.keyReleased(keyChar, keyCode)
+				|| vScrollBar.keyReleased(keyChar, keyCode);
 	}
 
 	@Override

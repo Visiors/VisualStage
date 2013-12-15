@@ -129,22 +129,22 @@ public class BaseTool implements Tool {
 
 	}
 
-	protected boolean isControlKeyPressed(int key) {
+	public static boolean isControlKeyPressed(int key) {
 
 		return (key & Interactable.KEY_CONTROL) != 0;
 	}
 
-	protected boolean isShiftKeyPressed(int key) {
+	public static boolean isShiftKeyPressed(int key) {
 
 		return (key & Interactable.KEY_SHIFT) != 0;
 	}
 
-	protected boolean isAltKeyPressed(int key) {
+	public static boolean isAltKeyPressed(int key) {
 
 		return (key & Interactable.KEY_ALT) != 0;
 	}
 
-	protected boolean isFunctionKeyPressed(int key) {
+	public static boolean isFunctionKeyPressed(int key) {
 		return key != 0;
 	}
 
