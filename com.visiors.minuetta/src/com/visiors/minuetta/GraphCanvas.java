@@ -160,9 +160,7 @@ public class GraphCanvas extends StackPane implements EditorListener {
 	}
 
 	private Point vsPoint(MouseEvent e) {
-
-		final Point offset = editor.getActiveDocument().getViewportPos();
-		return new Point((int) (e.getX() - offset.x), (int) (e.getY() - offset.y));
+		return new Point((int) e.getX() , (int) e.getY() );
 	}
 
 	private int vsFunctionKey(MouseEvent e) {

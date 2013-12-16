@@ -48,8 +48,8 @@ public class EditorPage extends Tab implements EventHandler<Event> {
 		for (int n = 0; n < 10; ++n) {
 
 			VisualNode node = graph.createNode();
-			node.setBounds(new Rectangle(100, 100, 100, 100));
-			int x = rnd.nextInt(400);
+			node.setBounds(new Rectangle(0, 0, 100, 100));
+			int x = rnd.nextInt(1400);
 			int y = rnd.nextInt(400);
 			node.move(x, y);
 

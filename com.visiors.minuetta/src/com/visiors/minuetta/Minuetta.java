@@ -137,7 +137,11 @@ public class Minuetta extends Application {
 		Button btn1 = ButtonBuilder.create().text("New").id("iphone").build();
 		Button btn2 = ButtonBuilder.create().text("Zoom In").id("ZoomIn").build();
 		Button btn3 = ButtonBuilder.create().text("Zoom Out").id("ZoomOut").build();
-		buttonBar.getChildren().addAll(btn1, new Separator(), btn2, btn3);
+		Button btn4 = ButtonBuilder.create().text("Zoom 100%").id("Zoom100").build();
+		Button btn5 = ButtonBuilder.create().text(" (0, 0)").id("Origin").build();
+		Button btn6 = ButtonBuilder.create().text("Show/Hide Ruler").id("Ruler").build();
+		Button btn7 = ButtonBuilder.create().text("Show/Hide ScrollBar").id("ScrollBar").build();
+		buttonBar.getChildren().addAll(btn1, new Separator(), btn2, btn3, btn4, btn5, btn6, btn7);
 		toolBar.getItems().addAll(spacer, buttonBar);
 
 		btn1.setOnAction(new EventHandler<ActionEvent>() {
@@ -155,6 +159,30 @@ public class Minuetta extends Application {
 			@Override public void handle(ActionEvent e) {
 				final GraphDocument document = multiPageEditor.getEditor().getActiveDocument();
 				document.setZoom(document.getZoom() - 0.1);
+			}
+		});
+		btn4.setOnAction(new EventHandler<ActionEvent>() {
+			@Override public void handle(ActionEvent e) {
+				final GraphDocument document = multiPageEditor.getEditor().getActiveDocument();
+				document.setZoom(1.0);
+			}
+		});
+		btn5.setOnAction(new EventHandler<ActionEvent>() {
+			@Override public void handle(ActionEvent e) {
+				final GraphDocument document = multiPageEditor.getEditor().getActiveDocument();
+				document.setViewportPos(0, 0);
+			}
+		});
+		btn6.setOnAction(new EventHandler<ActionEvent>() {
+			@Override public void handle(ActionEvent e) {
+				boolean b = multiPageEditor.getEditor().getStageDesigner().isRulerVisible();
+				multiPageEditor.getEditor().getStageDesigner().showRuler(!b);
+			}
+		});
+		btn7.setOnAction(new EventHandler<ActionEvent>() {
+			@Override public void handle(ActionEvent e) {
+				boolean b = multiPageEditor.getEditor().getStageDesigner().isScrollBarVisible();
+				multiPageEditor.getEditor().getStageDesigner().showScrollBar(!b);
 			}
 		});
 		return toolBar;
