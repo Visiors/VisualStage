@@ -6,6 +6,7 @@ import com.visiors.visualstage.document.GraphDocument;
 import com.visiors.visualstage.renderer.AWTCanvas;
 import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.tool.Interactable;
+import com.visiors.visualstage.tool.impl.scrollbar.MouseScroller;
 import com.visiors.visualstage.tool.impl.scrollbar.ScrollBar;
 import com.visiors.visualstage.tool.impl.scrollbar.ScrollBarCornerButton;
 
@@ -23,6 +24,7 @@ public class ScrollTool extends BaseTool {
 	private final ScrollBar hScrollBar;
 	private final ScrollBar vScrollBar;
 	private final ScrollBarCornerButton scrButton;
+	private final MouseScroller autoScroller;
 
 	public ScrollTool() {
 
@@ -30,6 +32,9 @@ public class ScrollTool extends BaseTool {
 		hScrollBar = new ScrollBar(true);
 		vScrollBar = new ScrollBar(false);
 		scrButton = new ScrollBarCornerButton(hScrollBar, vScrollBar);
+		autoScroller = new MouseScroller(hScrollBar, vScrollBar);
+
+		autoScroller.setActive(true);
 	}
 
 	@Override
@@ -45,21 +50,23 @@ public class ScrollTool extends BaseTool {
 	public boolean mousePressed(Point pt, int button, int functionKey) {
 
 		return scrButton.mousePressed(pt, button, functionKey) || hScrollBar.mousePressed(pt, button, functionKey)
-				|| vScrollBar.mousePressed(pt, button, functionKey);
+				|| vScrollBar.mousePressed(pt, button, functionKey)
+				|| autoScroller.mousePressed(pt, button, functionKey);
 	}
 
 	@Override
 	public boolean mouseReleased(Point pt, int button, int functionKey) {
 
 		return scrButton.mouseReleased(pt, button, functionKey) || hScrollBar.mouseReleased(pt, button, functionKey)
-				|| vScrollBar.mouseReleased(pt, button, functionKey);
+				|| vScrollBar.mouseReleased(pt, button, functionKey)
+				|| autoScroller.mouseReleased(pt, button, functionKey);
 	}
 
 	@Override
 	public boolean mouseMoved(Point pt, int button, int functionKey) {
 
 		return scrButton.mouseMoved(pt, button, functionKey) || hScrollBar.mouseMoved(pt, button, functionKey)
-				|| vScrollBar.mouseMoved(pt, button, functionKey);
+				|| vScrollBar.mouseMoved(pt, button, functionKey) || autoScroller.mouseMoved(pt, button, functionKey);
 	}
 
 	@Override
@@ -67,57 +74,60 @@ public class ScrollTool extends BaseTool {
 
 		return scrButton.mouseDoubleClicked(pt, button, functionKey)
 				|| hScrollBar.mouseDoubleClicked(pt, button, functionKey)
-				|| vScrollBar.mouseDoubleClicked(pt, button, functionKey);
+				|| vScrollBar.mouseDoubleClicked(pt, button, functionKey)
+				|| autoScroller.mouseDoubleClicked(pt, button, functionKey);
 	}
 
 	@Override
 	public boolean mouseDragged(Point pt, int button, int functionKey) {
 
 		return scrButton.mouseDragged(pt, button, functionKey) || hScrollBar.mouseDragged(pt, button, functionKey)
-				|| vScrollBar.mouseDragged(pt, button, functionKey);
+				|| vScrollBar.mouseDragged(pt, button, functionKey)
+				|| autoScroller.mouseDragged(pt, button, functionKey);
 	}
 
 	@Override
 	public boolean mouseEntered(Point pt, int button, int functionKey) {
 
 		return scrButton.mouseEntered(pt, button, functionKey) || hScrollBar.mouseEntered(pt, button, functionKey)
-				|| vScrollBar.mouseEntered(pt, button, functionKey);
+				|| vScrollBar.mouseEntered(pt, button, functionKey)
+				|| autoScroller.mouseEntered(pt, button, functionKey);
 	}
 
 	@Override
 	public boolean mouseExited(Point pt, int button, int functionKey) {
 
 		return scrButton.mouseExited(pt, button, functionKey) || hScrollBar.mouseExited(pt, button, functionKey)
-				|| vScrollBar.mouseExited(pt, button, functionKey);
+				|| vScrollBar.mouseExited(pt, button, functionKey) || autoScroller.mouseExited(pt, button, functionKey);
 	}
 
 	@Override
 	public boolean keyPressed(int keyChar, int keyCode) {
 
 		return scrButton.keyPressed(keyChar, keyCode) || hScrollBar.keyPressed(keyChar, keyCode)
-				|| vScrollBar.keyPressed(keyChar, keyCode);
+				|| vScrollBar.keyPressed(keyChar, keyCode) || autoScroller.keyPressed(keyChar, keyCode);
 	}
 
 	@Override
 	public boolean keyReleased(int keyChar, int keyCode) {
 
 		return scrButton.keyReleased(keyChar, keyCode) || hScrollBar.keyReleased(keyChar, keyCode)
-				|| vScrollBar.keyReleased(keyChar, keyCode);
+				|| vScrollBar.keyReleased(keyChar, keyCode) || autoScroller.keyReleased(keyChar, keyCode);
 	}
 
 	@Override
 	public int getPreferredCursor() {
 
 		int cursor = hScrollBar.getPreferredCursor();
-		if(cursor !=  Interactable.CURSOR_DEFAULT) {
+		if (cursor != Interactable.CURSOR_DEFAULT) {
 			return cursor;
 		}
 		cursor = vScrollBar.getPreferredCursor();
-		if(cursor !=  Interactable.CURSOR_DEFAULT) {
+		if (cursor != Interactable.CURSOR_DEFAULT) {
 			return cursor;
 		}
 		cursor = scrButton.getPreferredCursor();
-		if(cursor !=  Interactable.CURSOR_DEFAULT) {
+		if (cursor != Interactable.CURSOR_DEFAULT) {
 			return cursor;
 		}
 
@@ -130,7 +140,7 @@ public class ScrollTool extends BaseTool {
 		if (onTop) {
 			hScrollBar.draw(awtCanvas);
 			vScrollBar.draw(awtCanvas);
-			scrButton.draw(awtCanvas,  context);
+			scrButton.draw(awtCanvas, context);
 		}
 	}
 

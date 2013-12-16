@@ -40,7 +40,9 @@ public class DefaultOfflineRenderer implements OffScreenRenderer {
 				drawClient.draw(g);
 				g.translate(r.x, r.y);
 				invalidated = false;
-				//				System.err.println("re-creating image");
+				//System.err.println("creating image");
+			} else {
+				//System.err.println("re-using image");
 			}
 			gfx.drawImage(image, r.x, r.y, null);
 		}

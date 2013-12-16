@@ -182,7 +182,7 @@ public class Navigator extends BaseTool implements ViewProvider {
 
 	private Rectangle getCanvasBoundary() {
 
-		return new Rectangle(hScrollBar.getCanvasBoundary());
+		return hScrollBar.getCanvasBoundary();
 	}
 
 	private Rectangle getScrollableArea() {
@@ -579,8 +579,8 @@ public class Navigator extends BaseTool implements ViewProvider {
 			final double distanceToOrig = step * distChangePerIteration;
 			final double xDistanceToOrig = distanceToOrig * Math.cos(alpha);
 			final double yDistanceToOrig = distanceToOrig * Math.sin(alpha);
-			transitionCurrentOffset.x = (int) xDistanceToOrig;
-			transitionCurrentOffset.y = (int) yDistanceToOrig;
+			transitionCurrentOffset.x = (int) Math.round(xDistanceToOrig);
+			transitionCurrentOffset.y = (int) Math.round(yDistanceToOrig);
 			// create image of view for this step
 			images[it] = new BufferedImage(rClient.x + rClient.width, rClient.y + rClient.height,
 					BufferedImage.TYPE_INT_ARGB_PRE);
@@ -590,16 +590,6 @@ public class Navigator extends BaseTool implements ViewProvider {
 		return images;
 	}
 
-	// private Point computeScaleTranslation(double scaleBefore, double
-	// scaleAfter, Point anchor, Point pointToKeepFix) {
-	//
-	// final double scaleChange = (scaleAfter - scaleBefore) / scaleBefore;
-	// final int dx = (pointToKeepFix.x - anchor.x - 16);
-	// final int x = (int) (dx * (scaleChange + 1) - dx);
-	// final int dy = (pointToKeepFix.y - anchor.y - 16);
-	// final int y = (int) (dy * (scaleChange + 1) - dy);
-	// return new Point(x, y);
-	// }
 
 	private Image getBackgroundSnapshot() {
 
