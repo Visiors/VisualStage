@@ -38,7 +38,6 @@ import com.visiors.visualstage.tool.impl.GridTool;
 import com.visiors.visualstage.tool.impl.MarqueeSelectionTool;
 import com.visiors.visualstage.tool.impl.MoveSelectionTool;
 import com.visiors.visualstage.tool.impl.ObjectEditTool;
-import com.visiors.visualstage.tool.impl.PageViewTool;
 import com.visiors.visualstage.tool.impl.SelectionTool;
 import com.visiors.visualstage.util.PropertyUtil;
 
@@ -394,7 +393,6 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 		toolManager.registerTool(new ObjectEditTool(TOOL_OBJECT_EVENT_MEDIATOR));
 		toolManager.registerTool(new DuplicateOnMoveTool(TOOL_DUPLICATE_ON_MOVE));
 		toolManager.registerTool(new MoveSelectionTool(TOOL_MOVE_SELECTION));
-		toolManager.registerTool(new PageViewTool(TOOL_PAGE_VIEW));
 		toolManager.registerTool(new GridTool(TOOL_GRID));
 		//		registerTool(new EdgeCreationTool());
 		// registerTool(new NodeCreationTool());
@@ -406,8 +404,7 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 		toolManager.activateTool(TOOL_DUPLICATE_ON_MOVE, true);
 		toolManager.activateTool(TOOL_OBJECT_EVENT_MEDIATOR, true);
 		toolManager.activateTool(TOOL_MOVE_SELECTION, true);
-		toolManager.activateTool(TOOL_PAGE_VIEW, true);
-		toolManager.activateTool(TOOL_GRID, true);
+		//		toolManager.activateTool(TOOL_GRID, true);
 
 	}
 

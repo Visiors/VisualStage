@@ -52,9 +52,17 @@ public interface Transform {
 
 	public int transformToScreenY(int y);
 
+	public int transformToScreenDX(int w);
+
+	public int transformToScreenDY(int h);
+
 	public int transformToGraphX(int x);
 
 	public int transformToGraphY(int y);
+
+	public int transformToGraphDX(int w);
+
+	public int transformToGraphDY(int h);
 
 
 

@@ -359,7 +359,7 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 	@Override
 	public int transformToScreenY(int y) {
 
-		return transformY(y) - viewportY;
+		return transformY(y) + viewportY;
 	}
 
 	/*
@@ -383,7 +383,31 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 	@Override
 	public int transformToGraphY(int y) {
 
-		return createInverse().transformY(y - viewportY);
+		return createInverse().transformY(y + viewportY);
+	}
+
+	@Override
+	public int transformToGraphDX(int w) {
+
+		return (int) (w / getScale());
+	}
+
+	@Override
+	public int transformToGraphDY(int h) {
+
+		return (int) (h / getScale());
+	}
+
+	@Override
+	public int transformToScreenDX(int w) {
+
+		return (int) (w * getScale());
+	}
+
+	@Override
+	public int transformToScreenDY(int h) {
+
+		return (int) (h * getScale());
 	}
 
 	// ////////////////////////////////////////////////////////

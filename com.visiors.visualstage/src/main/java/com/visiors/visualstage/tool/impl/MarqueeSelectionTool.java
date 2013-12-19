@@ -16,12 +16,13 @@ import com.visiors.visualstage.transform.Transform;
 
 public class MarqueeSelectionTool extends BaseTool {
 
-	private final Rectangle marqueeRect = new Rectangle();
-	private final Color lineColor;
-	private List<VisualGraphObject> existingSelection;
-	private Point mousePressedPos;
 	private static Stroke dashedStroke = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0,
 			new float[] { 3, 1 }, 0);
+	private final Rectangle marqueeRect = new Rectangle();
+	private final Color lineColor = new Color(0x9999aa);;
+	private List<VisualGraphObject> existingSelection;
+	private Point mousePressedPos;
+	private Point mouseCurrentPos;
 
 	@Inject
 	private UndoRedoHandler undoRedoHandler;
@@ -29,8 +30,6 @@ public class MarqueeSelectionTool extends BaseTool {
 	public MarqueeSelectionTool(String name) {
 
 		super(name);
-
-		lineColor = new Color(0x9999aa); // UIManager.getColor("MinuetLnF.Marquee.Color");
 	}
 
 	@Override
@@ -39,11 +38,7 @@ public class MarqueeSelectionTool extends BaseTool {
 		// undoRedoHandler.stratOfGroupAction();
 		final List<VisualGraphObject> hit = visualGraph.getHitObjects(pt);
 		if (hit.isEmpty()) {
-			final Transform transformer = visualGraph.getTransformer();
-			mousePressedPos = transformer.transformToScreen(pt);
-			//			final Point vp = graphDocument.getViewportPos();
-			//			pt.translate(vp.x,  vp.y);
-
+			mousePressedPos = pt;
 			if (isControlKeyPressed(functionKey)) {
 				existingSelection = visualGraph.getSelection();
 			}
@@ -67,44 +62,46 @@ public class MarqueeSelectionTool extends BaseTool {
 	public boolean mouseDragged(Point pt, int button, int functionKey) {
 
 		if (mousePressedPos != null) {
-			final Transform transformer = visualGraph.getTransformer();
-			adjustMarqueeRect(mousePressedPos, transformer.transformToScreen(pt));
+			mouseCurrentPos = pt;
+			updateMarqueeRect();
 			updateObjectSelectionState(isControlKeyPressed(functionKey));
 			graphDocument.invalidate();
 		}
 		return false;
 	}
 
-	void adjustMarqueeRect(Point pt1, Point pt2) {
+	void updateMarqueeRect() {
 
-		marqueeRect.x = Math.min(pt1.x, pt2.x);
-		marqueeRect.y = Math.min(pt1.y, pt2.y);
-		marqueeRect.width = Math.abs(pt2.x - pt1.x);
-		marqueeRect.height = Math.abs(pt2.y - pt1.y);
+		if (mousePressedPos != null && mouseCurrentPos != null) {
 
+			final Transform transformer = visualGraph.getTransformer();
+			final Point pt1Screen = transformer.transformToScreen(mousePressedPos);
+			final Point pt2Screen = transformer.transformToScreen(mouseCurrentPos);
+			marqueeRect.x = Math.min(pt1Screen.x, pt2Screen.x);
+			marqueeRect.y = Math.min(pt1Screen.y, pt2Screen.y);
+			marqueeRect.width = Math.abs(pt2Screen.x - pt1Screen.x);
+			marqueeRect.height = Math.abs(pt2Screen.y - pt1Screen.y);
+		}
 	}
 
 	private void updateObjectSelectionState(boolean xorSelectionMode) {
 
 		final List<VisualGraphObject> objects = visualGraph.getGraphObjects();
 		final Transform transformer = visualGraph.getTransformer();
-		Rectangle r;
 
 		// -select only objects inside the selection rectangle
 		if (!xorSelectionMode) {
 			visualGraph.clearSelection();
 			for (final VisualGraphObject vobj : objects) {
-				r = transformer.transformToScreen(vobj.getBounds());
-				if (marqueeRect.contains(r)) {
+				if (marqueeRect.contains(transformer.transformToScreen(vobj.getBounds()))) {
 					vobj.setSelected(true);
 				}
 			}
 		} else {
-			// -keep the selection state of objects outside the marquee.
-			// -Invert the selection state of objects inside the marquee
+			// -keep the selection state of objects outside the marquee
+			// -Invert the selection state of objects inside
 			for (final VisualGraphObject vobj : objects) {
-				r = transformer.transformToScreen(vobj.getBounds());
-				if (marqueeRect.contains(r)) {
+				if (marqueeRect.contains(transformer.transformToScreen(vobj.getBounds()))) {
 					vobj.setSelected(existingSelection == null || !existingSelection.contains(vobj));
 				}
 			}
@@ -122,12 +119,16 @@ public class MarqueeSelectionTool extends BaseTool {
 	@Override
 	public void drawHints(AWTCanvas awtCanvas, DrawingContext context, boolean onTop) {
 
-		if (onTop && !marqueeRect.isEmpty()) {
-			awtCanvas.gfx.setStroke(dashedStroke);
-			awtCanvas.gfx.setColor(lineColor);
-			// awtCanvas.gfx.setXORMode(new Color(200, 220, 255));
-			awtCanvas.gfx.drawRect( marqueeRect.x,  marqueeRect.y, marqueeRect.width - 1, marqueeRect.height - 1);
-			// awtCanvas.gfx.setPaintMode();
+		if (onTop) {
+
+			if (!marqueeRect.isEmpty()) {
+				awtCanvas.gfx.setStroke(dashedStroke);
+				awtCanvas.gfx.setColor(lineColor);
+				Rectangle rClient = graphDocument.getClientBoundary();
+				awtCanvas.gfx.setClip(rClient);
+				awtCanvas.gfx.drawRect(marqueeRect.x, marqueeRect.y, marqueeRect.width - 1, marqueeRect.height - 1);
+				awtCanvas.gfx.setClip(null);
+			}
 		}
 	}
 }

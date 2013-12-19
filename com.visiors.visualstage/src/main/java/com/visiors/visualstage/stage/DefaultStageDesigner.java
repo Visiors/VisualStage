@@ -5,21 +5,19 @@ import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.Stroke;
 import java.awt.print.PageFormat;
-import java.awt.print.Paper;
 import java.awt.print.PrinterJob;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.google.inject.Inject;
-import com.visiors.visualstage.document.GraphDocument;
 import com.visiors.visualstage.document.ViewListener;
 import com.visiors.visualstage.editor.DI;
 import com.visiors.visualstage.system.SystemUnit;
 import com.visiors.visualstage.tool.ToolManager;
 import com.visiors.visualstage.tool.impl.DefaultToolManager;
+import com.visiors.visualstage.tool.impl.PageLayoutViewTool;
 import com.visiors.visualstage.tool.impl.RulerTool;
 import com.visiors.visualstage.tool.impl.ScrollTool;
-import com.visiors.visualstage.util.PrinterUtil;
 
 public class DefaultStageDesigner extends DefaultToolManager implements StageDesigner {
 
@@ -28,6 +26,7 @@ public class DefaultStageDesigner extends DefaultToolManager implements StageDes
 
 	private final RulerTool rulerTool;
 	private final ScrollTool scrollBarTool;
+	private final PageLayoutViewTool pageLayoutPreviewTool;
 
 	private PageFormat pageFormat;
 	private final Color pageShadowColor = new Color(0x253D58);
@@ -43,41 +42,21 @@ public class DefaultStageDesigner extends DefaultToolManager implements StageDes
 	@Inject
 	SystemUnit systemUnit;
 
+
 	public DefaultStageDesigner() {
 
 		this.toolManager = DI.getInstance(ToolManager.class);
 		this.scrollBarTool = new ScrollTool();
 		this.rulerTool = new RulerTool();
+		this.pageLayoutPreviewTool = new PageLayoutViewTool();
 		toolManager.registerTool(rulerTool);
 		toolManager.registerTool(scrollBarTool);
+		toolManager.registerTool(pageLayoutPreviewTool);
+
+		pageLayoutPreviewTool.setActive(true);
 
 	}
 
-	@Override
-	public void setScope(GraphDocument graphDocument) {
-
-		super.setScope(graphDocument);
-
-		printerJob = PrinterJob.getPrinterJob();
-		pageFormat = printerJob.defaultPage();
-		final Paper paper = pageFormat.getPaper();
-		final double[] paperSize = PrinterUtil.getPaperSize("letter");
-		final double w = /*
-		 * 200 / PrinterUtil.mmPerInch *
-		 * PrinterUtil.PRINT_DPI;/
-		 */paperSize[0];
-		final double h = /*
-		 * 200 / PrinterUtil.mmPerInch *
-		 * PrinterUtil.PRINT_DPI;/
-		 */paperSize[1];
-
-		paper.setSize(w, h);
-
-		final double margin = systemUnit.mmToDPI(15);
-		paper.setImageableArea(margin, margin, w - 2 * margin, h - 2 * margin);
-		pageFormat.setOrientation(PageFormat.PORTRAIT);
-		pageFormat.setPaper(paper);
-	}
 
 	@Override
 	public void setViewMode(ViewMode mode) {
