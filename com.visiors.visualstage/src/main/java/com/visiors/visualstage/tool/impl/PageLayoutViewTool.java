@@ -27,7 +27,7 @@ public class PageLayoutViewTool extends BaseTool {
 	private static Stroke pageFrameStroke = new BasicStroke(1.0f);
 	private final PageFormat pageFormat;
 	private final PrinterJob printerJob;
-	private Rectangle exGraphBoundary;
+	private Rectangle graphBoundary;
 	private final SystemUnit systemUnit;
 	private int wImageable;
 	private int hImageable;
@@ -72,17 +72,17 @@ public class PageLayoutViewTool extends BaseTool {
 	public void setScope(GraphDocument graphDocument) {
 
 		super.setScope(graphDocument);
+		final Transform xform = visualGraph.getTransformer();
 
-		exGraphBoundary = graphDocument.getGraph().getExtendedBoundary();
+		graphBoundary = xform.transformToGraph(graphDocument.getGraph().getExtendedBoundary());
+
 		graphDocument.addGraphDocumentListener(new GraphDocumentAdapter() {
 
 			@Override
 			public void graphExpansionChanged() {
 
-				final Rectangle r = PageLayoutViewTool.this.graphDocument.getGraph().getExtendedBoundary();
-				if (!r.equals(exGraphBoundary)) {
-					exGraphBoundary = r;
-				}
+				graphBoundary = xform.transformToGraph(PageLayoutViewTool.this.graphDocument.getGraph()
+						.getExtendedBoundary());
 			}
 		});
 	}
@@ -114,33 +114,31 @@ public class PageLayoutViewTool extends BaseTool {
 		gfx.drawLine(rPage.x + 3, rPage.y + rPage.height + 1, rPage.x + rPage.width + 1, rPage.y + rPage.height + 1);
 		// paper border
 		gfx.setStroke(pageFrameStroke);
-		gfx.setColor(Color.black);
+		gfx.setColor(new Color(120, 130, 140));
 		gfx.drawRect(rPage.x, rPage.y, rPage.width, rPage.height);
 		// printable area
 		gfx.setColor(new Color(220, 230, 240));
 		gfx.drawRect(rPrintable.x, rPrintable.y, rPrintable.width, rPrintable.height);
 		// page dividers
-		final int leftMarginSceen = xform.transformToScreenX(leftMargin);
 		final int wImageableSceen = xform.transformToScreenDX(wImageable);
-		final int topMarginSceen = xform.transformToScreenY(topMargin);
 		final int hImageableSceen = xform.transformToScreenDY(hImageable);
 		if (rPrintable.width > hImageableSceen) {
 			gfx.setStroke(dashedStroke);
-			gfx.setColor(Color.gray);
+			gfx.setColor(new Color(150, 170, 200));
 			for (int x = rPrintable.x + wImageableSceen; x < rPrintable.x + rPrintable.width - 10; x += wImageableSceen) {
-				gfx.drawLine(x, rPrintable.y, x, rPrintable.y + rPrintable.height);
+				gfx.drawLine(x, rPrintable.y + 2, x, rPrintable.y + rPrintable.height);
 			}
 		}
 		if (rPrintable.height > hImageableSceen) {
 			gfx.setStroke(dashedStroke);
-			gfx.setColor(Color.gray);
+			gfx.setColor(new Color(150, 170, 200));
 			for (int y = rPrintable.y + hImageableSceen; y < rPrintable.y + rPrintable.height - 10; y += hImageableSceen) {
-				gfx.drawLine(rPrintable.x, y, rPrintable.x + rPrintable.width, y);
+				gfx.drawLine(rPrintable.x + 2, y, rPrintable.x + rPrintable.width, y);
 			}
 		}
 	}
 
-	private Rectangle computePageRect(Transform xform) {
+	public Rectangle computePageRect(Transform xform) {
 
 		final Rectangle printable = computePrintableRect(xform);
 		printable.x -= xform.transformToScreenDX(leftMargin);
@@ -151,8 +149,6 @@ public class PageLayoutViewTool extends BaseTool {
 	}
 
 	private Rectangle computePrintableRect(Transform xform) {
-
-		final Rectangle graphBoundary = xform.transformToGraph(exGraphBoundary);
 
 		int x1 = Math.min(leftMargin, graphBoundary.x);
 		int y1 = Math.min(topMargin, graphBoundary.y);
@@ -202,4 +198,5 @@ public class PageLayoutViewTool extends BaseTool {
 		}
 		return y2;
 	}
+
 }

@@ -1,6 +1,7 @@
 package com.visiors.visualstage.document.impl;
 
 import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -82,7 +83,7 @@ public class DefaultGraphDocument implements GraphDocument {
 		this.transform = transform;
 		DI.injectMembers(this);
 		addLayer(0);
-		stageDesigner.addViewListener(viewListener);		
+		stageDesigner.addViewListener(viewListener);
 	}
 
 	@Override
@@ -298,8 +299,8 @@ public class DefaultGraphDocument implements GraphDocument {
 
 		final int rulerSize = stageDesigner.getRulerSize();
 		final int scrollBarSize = stageDesigner.getScrollBarSize();
-		transform.setViewX(rulerSize);
-		transform.setViewY(rulerSize);
+		transform.setViewportX(rulerSize);
+		transform.setViewportY(rulerSize);
 		transform.setViewWidth(viewPortSize.width - rulerSize - scrollBarSize);
 		transform.setViewHeight(viewPortSize.height - rulerSize - scrollBarSize);
 
@@ -324,19 +325,37 @@ public class DefaultGraphDocument implements GraphDocument {
 	@Override
 	public synchronized Image getScreen(DrawingContext context) {
 
-		final Rectangle rClientBounds = getClientBoundary();
+		final Rectangle rClient = getClientBoundary();
 
-		if (rClientBounds.isEmpty()) {
+		if (rClient.isEmpty()) {
 			System.err.println("Warning: view port is empty!");
 			return new AWTCanvas(1, 1).image;
 		}
-		final Dimension canvasSize = getViewportSize();
-		final AWTCanvas awtCanvas = new AWTCanvas(canvasSize.width, canvasSize.height);
-		// keep always the main graph view fit to the screen
-		final VisualGraph graph = getGraph();
-		graph.setBounds(rClientBounds);
+
+		final AWTCanvas awtCanvas = createCanvas();
+		// - keep always the main graph view fit to the screen
+		resizeGraph(rClient);
+		// - paint the background items behind the graph
 		stageDesigner.drawHints(awtCanvas, context, false);
 		toolManager.drawHints(awtCanvas, context, false);
+		// - paint the graph
+		drawGraph(awtCanvas, context);
+		// - paint items on the top of graph
+		toolManager.drawHints(awtCanvas, context, true);
+		stageDesigner.drawHints(awtCanvas, context, true);
+		// - draw frame
+		drawFrame(awtCanvas.gfx);
+		return awtCanvas.image;
+	}
+
+	private void resizeGraph(Rectangle rClientBounds) {
+
+		final VisualGraph graph = getGraph();		
+		graph.setBounds(rClientBounds);
+	}
+
+	private void drawGraph(AWTCanvas awtCanvas, DrawingContext context) {
+		final VisualGraph graph = getGraph();
 		if (useImageCaching) {
 			graph.draw(awtCanvas, context, DrawingSubject.OBJECT);
 			graph.draw(awtCanvas, context, DrawingSubject.SELECTION_INDICATORS);
@@ -344,24 +363,35 @@ public class DefaultGraphDocument implements GraphDocument {
 		} else {
 			final Image img = getImage(context, null, computeClipRect());
 			awtCanvas.gfx.drawImage(img, 0, 0, null);
-		}
-		toolManager.drawHints(awtCanvas, context, true);
-		stageDesigner.drawHints(awtCanvas, context, true);
-		//		awtCanvas.gfx.setStroke(new BasicStroke(1f));
-		//		awtCanvas.gfx.setColor(Color.orange);
-		//		awtCanvas.gfx.drawRect(rClientBounds.x, rClientBounds.y, rClientBounds.width-1, rClientBounds.height-1);
-		return awtCanvas.image;
+		}		
 	}
 
-	private Rectangle computeDocRect() {
+	private AWTCanvas createCanvas() {
+
+		final Dimension canvasSize = getViewportSize();
+		return new AWTCanvas(canvasSize.width, canvasSize.height);
+	}
+
+	private void drawFrame(Graphics2D gfx) {
+
+		// awtCanvas.gfx.setStroke(new BasicStroke(1f));
+		// awtCanvas.gfx.setColor(Color.orange);
+		// awtCanvas.gfx.drawRect(rClientBounds.x, rClientBounds.y,
+		// rClientBounds.width-1, rClientBounds.height-1);
+		// awtCanvas.gfx.setColor(Color.red);
+		// awtCanvas.gfx.drawRect(0, 0, canvasSize.width-1,
+		// canvasSize.height-1);
+	}
+
+	private Rectangle computeDocumentBoundary() {
 
 		final Transform xform = getTransformer();
 		final Rectangle clipRect = getGraph().getExtendedBoundary();
 		final Rectangle clientBounds = getClientBoundary();
-		clipRect.x -= xform.getXTranslate() + clientBounds.x ;
-		clipRect.y -= xform.getYTranslate() + clientBounds.y ;
-		clipRect.width +=  clientBounds.x   ;
-		clipRect.height += clientBounds.y; 
+		clipRect.x -= xform.getXTranslate() + clientBounds.x;
+		clipRect.y -= xform.getYTranslate() + clientBounds.y;
+		clipRect.width += clientBounds.x;
+		clipRect.height += clientBounds.y;
 		return clipRect;
 	}
 
@@ -381,9 +411,8 @@ public class DefaultGraphDocument implements GraphDocument {
 	public Image getImage(DrawingContext context) {
 
 		final DocumentConfig config = new SVGDocumentConfig(svgBackground, svgFilter, svgTransformation);
-		return getImage(context, config, computeDocRect());
+		return getImage(context, config, computeDocumentBoundary());
 	}
-
 
 	private Image getImage(DrawingContext context, DocumentConfig config, Rectangle clipRect) {
 
@@ -416,8 +445,8 @@ public class DefaultGraphDocument implements GraphDocument {
 
 	}
 
-	protected String getSVGDocument(DrawingContext context, DocumentConfig config, Rectangle clippingRect, DrawingSubject... subject) {
-
+	protected String getSVGDocument(DrawingContext context, DocumentConfig config, Rectangle clippingRect,
+			DrawingSubject... subject) {
 
 		final VisualGraph graph = getGraph();
 
@@ -433,7 +462,7 @@ public class DefaultGraphDocument implements GraphDocument {
 	public String getSVGDocument(DrawingContext context) {
 
 		final DocumentConfig config = new SVGDocumentConfig(svgBackground, svgFilter, svgTransformation);
-		return getSVGDocument(context, config, computeDocRect(), DrawingSubject.OBJECT);
+		return getSVGDocument(context, config, computeDocumentBoundary(), DrawingSubject.OBJECT);
 	}
 
 	@Override

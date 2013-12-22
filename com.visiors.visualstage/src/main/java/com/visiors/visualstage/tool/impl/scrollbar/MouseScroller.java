@@ -17,8 +17,12 @@ public class MouseScroller extends BaseTool {
 	private boolean actionActivated;
 	private final ScrollBar hScrollBar;
 	private final ScrollBar vScrollBar;
-	private final Point autoScroll = new Point();
 	private Timer timer;
+	private int mouseDragFunctionKey;
+	private int mouseDragPressedButton;
+	private final Point mouseDragPosition = new Point();
+	private final Point scrollPosChange = new Point();
+	private boolean sendingDragEvent;
 
 	public MouseScroller(ScrollBar hScrollBar, ScrollBar vScrollBar) {
 
@@ -50,30 +54,36 @@ public class MouseScroller extends BaseTool {
 	@Override
 	public boolean mouseDragged(Point pt, int button, int functionKey) {
 
+		if (sendingDragEvent) {
+			return false;
+		}
 		stopTimer();
 
 		final Point ptScreen = transformer().transformToScreen(pt);
-		final Rectangle r = getCanvasBoundary();
-
-		actionActivated = !r.contains(ptScreen);
+		final Rectangle rClient = getCanvasBoundary();
+		actionActivated = !getCanvasBoundary().contains(ptScreen);
 		if (actionActivated) {
-			autoScroll.setLocation(0, 0);
+			this.mouseDragPressedButton = button;
+			this.mouseDragFunctionKey = functionKey;
+			this.mouseDragPosition.setLocation(ptScreen);
+
+			scrollPosChange.setLocation(0, 0);
 			int dx = 0, dy = 0;
 			final int x = ptScreen.x;
 			final int y = ptScreen.y;
-			if (x < r.x) {
-				dx = x - r.x;
-				autoScroll.x = (int) Math.floor(dx * ACCELERATION_GROWTH_FACTOR);
-			} else if (x > r.width - r.x) {
-				dx = x - r.width + r.x;
-				autoScroll.x = (int) Math.ceil(dx * ACCELERATION_GROWTH_FACTOR);
+			if (x < rClient.x) {
+				dx = x - rClient.x;
+				scrollPosChange.x = (int) Math.floor(dx * ACCELERATION_GROWTH_FACTOR);
+			} else if (x > rClient.width - rClient.x) {
+				dx = x - rClient.width + rClient.x;
+				scrollPosChange.x = (int) Math.ceil(dx * ACCELERATION_GROWTH_FACTOR);
 			}
-			if (y < r.y) {
-				dy = y - r.y;
-				autoScroll.y = (int) Math.floor(dy * ACCELERATION_GROWTH_FACTOR);
-			} else if (y > r.height - r.y) {
-				dy = y - r.height + r.y;
-				autoScroll.y = (int) Math.ceil(dy * ACCELERATION_GROWTH_FACTOR);
+			if (y < rClient.y) {
+				dy = y - rClient.y;
+				scrollPosChange.y = (int) Math.floor(dy * ACCELERATION_GROWTH_FACTOR);
+			} else if (y > rClient.height - rClient.y) {
+				dy = y - rClient.height + rClient.y;
+				scrollPosChange.y = (int) Math.ceil(dy * ACCELERATION_GROWTH_FACTOR);
 			}
 			if (dx != 0 || dy != 0) {
 				if (!isTimerRunning()) {
@@ -112,8 +122,9 @@ public class MouseScroller extends BaseTool {
 			@Override
 			public void run() {
 
-				hScrollBar.setValue(hScrollBar.getValue() + autoScroll.x);
-				vScrollBar.setValue(vScrollBar.getValue() + autoScroll.y);
+				hScrollBar.setValue(hScrollBar.getValue() + scrollPosChange.x);
+				vScrollBar.setValue(vScrollBar.getValue() + scrollPosChange.y);
+				fireDragEvent();
 			}
 
 		}, TIMER_START_SCROLLING, TIMER_DELAY);
@@ -124,4 +135,15 @@ public class MouseScroller extends BaseTool {
 		return timer != null;
 	}
 
+	private synchronized void fireDragEvent() {
+
+		if (actionActivated) {
+			try {
+				sendingDragEvent = true;
+				graphDocument.getEditor().mouseDragged(mouseDragPosition, mouseDragPressedButton, mouseDragFunctionKey);
+			} finally {
+				sendingDragEvent = false;
+			}
+		}
+	}
 }

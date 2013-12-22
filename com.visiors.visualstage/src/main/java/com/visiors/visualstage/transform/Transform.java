@@ -82,11 +82,11 @@ public interface Transform {
 
 	public int getViewX();
 
-	public void setViewX(int x);
+	public void setViewportX(int x);
 
 	public int getViewY();
 
-	public void setViewY(int y);
+	public void setViewportY(int y);
 
 
 }

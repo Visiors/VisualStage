@@ -44,6 +44,7 @@ public class ScrollTool extends BaseTool {
 		hScrollBar.setGraphDocument(graphDocument);
 		vScrollBar.setGraphDocument(graphDocument);
 		scrButton.setGraphDocument(graphDocument);
+		autoScroller.setScope(graphDocument);
 	}
 
 	@Override

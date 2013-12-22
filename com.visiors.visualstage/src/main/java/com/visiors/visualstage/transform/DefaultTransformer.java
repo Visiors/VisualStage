@@ -260,7 +260,7 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 
 
 	@Override
-	public void setViewX(int viewportX) {
+	public void setViewportX(int viewportX) {
 
 		this.viewportX = viewportX;
 	}
@@ -280,7 +280,7 @@ public class DefaultTransformer extends SimpleTransformer implements Transform {
 
 
 	@Override
-	public void setViewY(int viewportY) {
+	public void setViewportY(int viewportY) {
 
 		this.viewportY = viewportY;
 	}

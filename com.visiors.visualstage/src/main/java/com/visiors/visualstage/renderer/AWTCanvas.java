@@ -1,6 +1,5 @@
 package com.visiors.visualstage.renderer;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
@@ -16,8 +15,8 @@ public class AWTCanvas {
 
 		image = new BufferedImage(width, height,BufferedImage.TYPE_INT_ARGB_PRE);
 		gfx = (Graphics2D) image.getGraphics();
-		gfx.setColor(Color.white);
-		gfx.fillRect(0, 0, width, height);
+		//		gfx.setColor(Color.white);
+		//		gfx.fillRect(0, 0, width, height);
 		gfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 	}
 

@@ -33,12 +33,12 @@ public class ScrollbarStyle {
 	public static final Color buttonArrowColor = new Color(0x9098AC);
 	public static final Color buttonArrowArmedColor = new Color(0x565F7D);
 
-	public static final Color cornderSquareColor1 = new Color(0xFFFFFF);
-	public static final Color cornderSquareColor2 = new Color(215, 226, 248);
-	public static final Color cornderSquareFrameColor = new Color(190, 190, 190);
-	public static final Color cornderSquareArmedColor1 = new Color(180, 190, 200);
-	public static final Color cornderSquareArmedColor2 = new Color(215, 226, 248);
-	public static final Color cornderSquareArmedFrameColor = new Color(190, 190, 225);
-	public static final Color cornderSquareFrameHoeveredColor = new Color(0x9098AC);
-	public static final Color cornderSquareToggledColor = new Color(235, 130, 70);
+	public static final Color cornerButtonColor1 = new Color(0xFFFFFF);
+	public static final Color cornerButtonColor2 = new Color(215, 226, 248);
+	public static final Color cornerButtonFrameColor = new Color(190, 190, 190);
+	public static final Color cornerButtonArmedColor1 = new Color(252,201,45);
+	public static final Color cornerButtonArmedColor2 = new Color(215, 226, 248);
+	public static final Color cornerButtonArmedFrameColor = new Color(190, 190, 225);
+	public static final Color cornerButtonFrameHoeveredColor = new Color(0x9098AC);
+	public static final Color cornerButtonToggledColor = new Color(252,162,11);
 }
