@@ -21,7 +21,7 @@ import com.visiors.visualstage.validation.Validator;
  */
 public class MoveSelectionTool extends BaseTool {
 
-
+	protected static final double PRESISTION_FACTOR = 20.0;
 	protected Point mousePressedPos;
 	protected VisualGraphObject hitObject;
 	protected Rectangle hitObjectOringalPos;
@@ -30,12 +30,23 @@ public class MoveSelectionTool extends BaseTool {
 	protected Validator validator;
 	@Inject
 	UndoRedoHandler undoRedoHandler;
+	private Point currentMousePos;
 
 	public MoveSelectionTool(String name) {
 
 		super(name);
 
 		DI.injectMembers(this);
+	}
+
+	@Override
+	public boolean keyPressed(int keyChar, int keyCode) {
+
+		if (isMoving() && isAltKeyPressed(keyCode)) {
+			mousePressedPos = currentMousePos;
+			hitObjectOringalPos = hitObject.getBounds();
+		}
+		return false;
 	}
 
 	@Override
@@ -62,11 +73,12 @@ public class MoveSelectionTool extends BaseTool {
 
 	@Override
 	public boolean mouseDragged(Point pt, int button, int functionKey) {
+
 		if (hitObject != null) {
 			if (!isMoving()) {
 				onStartMoving();
 			}
-			moveSelection(pt);
+			moveSelection(pt, isAltKeyPressed(functionKey));
 			return true;
 		}
 		return false;
@@ -104,13 +116,17 @@ public class MoveSelectionTool extends BaseTool {
 		return hitObject != null ? Interactable.CURSOR_MOVE : Interactable.CURSOR_DEFAULT;
 	}
 
-	private synchronized void moveSelection(Point pt) {
+	private synchronized void moveSelection(Point pt, boolean fineTuning) {
 
 		if (hitObject != null) {
+			final double presistionFactor = fineTuning ? PRESISTION_FACTOR : 1.0;
 			final Point hitObjectCurrentPos = hitObject.getBounds().getLocation();
-			final int dx = mousePressedPos.x - pt.x + hitObjectCurrentPos.x - hitObjectOringalPos.x;
-			final int dy = mousePressedPos.y - pt.y + hitObjectCurrentPos.y - hitObjectOringalPos.y;
+			final int dx = (int) ((mousePressedPos.x - pt.x) / presistionFactor) + hitObjectCurrentPos.x
+					- hitObjectOringalPos.x;
+			final int dy = (int) ((mousePressedPos.y - pt.y) / presistionFactor) + hitObjectCurrentPos.y
+					- hitObjectOringalPos.y;
 			final List<VisualGraphObject> selection = visualGraph.getSelection();
+			this.currentMousePos = pt;
 			moveConnectedEdges(selection, dx, dy);
 			moveEdges(selection, dx, dy);
 			moveNodes(selection, dx, dy);

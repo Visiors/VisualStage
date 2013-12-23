@@ -14,9 +14,7 @@ import com.visiors.visualstage.transform.Transform;
 
 public class ScrollBar implements Interactable {
 
-	public int size = 15;
-	public static final int zoomBarDomain = 7;
-	private final int unitIncrement = 20;
+	public int size = StageStyleConstants.scrollbar_defaultSize;
 	private int min;
 	private int max;
 	private int value;
@@ -308,13 +306,15 @@ public class ScrollBar implements Interactable {
 
 	private void onPlusZoomChanged() {
 
-		final int dxMouse = Math.max(dragHelper.initialThumbPos, mouseCurrentlyAt.x) - dragHelper.initialThumbPos - dragHelper.initialThumbExpansion;
-		double thumbChange = (double)(dragHelper.initialThumbExpansion + dxMouse) / dragHelper.initialThumbExpansion;
-		double newZoom = dragHelper.initialZoom / thumbChange ;
+		final int dxMouse = Math.max(dragHelper.initialThumbPos, mouseCurrentlyAt.x) - dragHelper.initialThumbPos
+				- dragHelper.initialThumbExpansion;
+		final double thumbChange = (double) (dragHelper.initialThumbExpansion + dxMouse)
+				/ dragHelper.initialThumbExpansion;
+		double newZoom = dragHelper.initialZoom / thumbChange;
 		newZoom = Math.max(newZoom, 0.1);
 		newZoom = Math.min(newZoom, 10);
-		double xtranslate = scrollbarPageAreaToDocument(dragHelper.initialThumbPos);
-		setValue((int)  xtranslate);
+		final double xtranslate = scrollbarPageAreaToDocument(dragHelper.initialThumbPos);
+		setValue((int) xtranslate);
 		graphDocument.getTransformer().setScale(newZoom);
 	}
 
@@ -340,7 +340,7 @@ public class ScrollBar implements Interactable {
 
 	private void onButtonClick(boolean minus) {
 
-		final int newValue = getValue() + (minus ? -unitIncrement : unitIncrement);
+		final int newValue = getValue() + StageStyleConstants.scrollbar_unitIncrement * (minus ? -1 : 1);
 		setValue(newValue);
 	}
 
@@ -384,14 +384,14 @@ public class ScrollBar implements Interactable {
 			setMin(graphBoundary.x - mergin);
 			final int maxValue = graphBoundary.x + graphBoundary.width;
 			final int pages = (graphBoundary.x + graphBoundary.width - min) / canvasBoundary.width + 1;
-			final int diffToFullPage =  pages * canvasBoundary.width - (maxValue - min);
+			final int diffToFullPage = pages * canvasBoundary.width - (maxValue - min);
 			setMax(maxValue + diffToFullPage + mergin);
 		} else {
 			final int mergin = canvasBoundary.height;
 			setMin(graphBoundary.y - mergin);
 			final int maxValue = graphBoundary.y + graphBoundary.height;
 			final int pages = (graphBoundary.y + graphBoundary.height - min) / canvasBoundary.height + 1;
-			final int diffToFullPage =   pages * canvasBoundary.height - (maxValue - min);
+			final int diffToFullPage = pages * canvasBoundary.height - (maxValue - min);
 			setMax(maxValue + diffToFullPage + mergin);
 		}
 	}
@@ -432,7 +432,7 @@ public class ScrollBar implements Interactable {
 
 	private void computeThumbPos() {
 
-		//		if (!zoomMinusArmed && !zoomPlusArmed) 
+		// if (!zoomMinusArmed && !zoomPlusArmed)
 		{
 			thumbPos = (int) convertDocumentToScrollbarPageArea(-min);
 			thumbPos = Math.min(Math.max(thumbPos, 0), scrollbarPageExpansion() - thumbExpansion);
@@ -546,9 +546,9 @@ public class ScrollBar implements Interactable {
 
 		if (hitTumb(pt)) {
 			if (isHorizontal) {
-				return pt.x < rectThumb.x + zoomBarDomain;
+				return pt.x < rectThumb.x + StageStyleConstants.scrollbar_zoomBarDomain;
 			} else {
-				return pt.y < rectThumb.y + zoomBarDomain;
+				return pt.y < rectThumb.y + StageStyleConstants.scrollbar_zoomBarDomain;
 			}
 		}
 		return false;
@@ -558,9 +558,9 @@ public class ScrollBar implements Interactable {
 
 		if (hitTumb(pt)) {
 			if (isHorizontal) {
-				return pt.x > rectThumb.x + rectThumb.width - zoomBarDomain;
+				return pt.x > rectThumb.x + rectThumb.width - StageStyleConstants.scrollbar_zoomBarDomain;
 			} else {
-				return pt.y > rectThumb.y + rectThumb.height - zoomBarDomain;
+				return pt.y > rectThumb.y + rectThumb.height - StageStyleConstants.scrollbar_zoomBarDomain;
 			}
 		}
 		return false;

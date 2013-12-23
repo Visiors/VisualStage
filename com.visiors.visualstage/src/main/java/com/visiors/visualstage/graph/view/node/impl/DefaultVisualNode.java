@@ -1064,8 +1064,8 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 
 			Point pt;
 			final Port[] port = portSet.getPorts();
-			final double sx = transform.getScaleX();
-			final double sy = transform.getScaleY();
+			final double sx = transform.getScale();
+			final double sy = transform.getScale();
 			for (final Port element : port) {
 				pt = element.getPosition();
 				appendPortIndicatorDescriotor(sb, pt.x * sx, pt.y * sy, element.isHighlighted());

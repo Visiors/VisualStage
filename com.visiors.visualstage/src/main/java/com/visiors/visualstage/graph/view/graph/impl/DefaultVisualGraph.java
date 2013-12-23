@@ -37,7 +37,7 @@ import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.renderer.DrawingSubject;
 import com.visiors.visualstage.renderer.Resolution;
 import com.visiors.visualstage.transform.Transform;
-import com.visiors.visualstage.transform.TransformValueChangeListener;
+import com.visiors.visualstage.transform.TransformAdapter;
 import com.visiors.visualstage.util.PropertyUtil;
 
 public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph, VisualNodeListener, EdgeViewListener {
@@ -557,10 +557,10 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	public void setTransformer(Transform transform) {
 
 		super.setTransformer(transform);
-		transform.addListener(new TransformValueChangeListener() {
+		transform.addListener(new TransformAdapter() {
 
 			@Override
-			public void scaleValuesChanged() {
+			public void scaleChanged() {
 
 				fireGraphExpansionChanged();
 			}

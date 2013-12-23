@@ -84,8 +84,8 @@ public class DefaultSVGDocumentBuilder implements SVGDocumentBuilder {
 		svg.append(",").append(transform.getYTranslate()).append(") ");
 
 		// scale
-		svg.append(" scale(").append(transform.getScaleX()).append(",");
-		svg.append(transform.getScaleY()).append(")'");
+		svg.append(" scale(").append(transform.getScale()).append(",");
+		svg.append(transform.getScale()).append(")'");
 		/* // rotate
 		 * svg.append(" rotate(").append(transform.getRotation
 		 * ()).append(")"); // shear

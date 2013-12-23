@@ -1,5 +1,7 @@
 package com.visiors.visualstage.graph;
 
+import com.visiors.visualstage.exception.IDInvalidException;
+
 
 /**
  * This class generates unique ids that can used throughout the graph framework.<br>

@@ -30,26 +30,25 @@ public class ScrollBarCornerButtonPainter implements DrawClient {
 		final Rectangle r = getBounds();
 		final Paint p;
 		if (scrollBarButton.isToggled()) {
-			p = new GradientPaint(r.x, r.y, ScrollbarStyle.cornerButtonToggledColor, r.x + r.width, r.y + r.height,
-					ScrollbarStyle.cornerButtonArmedColor2);
+			p = new GradientPaint(r.x, r.y, StageStyleConstants.scrollbar_cornerButtonToggledColor, r.x + r.width, r.y
+					+ r.height, StageStyleConstants.scrollbar_cornerButtonArmedColor2);
 
 		} else {
 			if (scrollBarButton.isHovered()) {
-				p = new GradientPaint(r.x, r.y, ScrollbarStyle.cornerButtonArmedColor1, r.x + r.width, r.y + r.height,
-						ScrollbarStyle.cornerButtonArmedColor2);
+				p = new GradientPaint(r.x, r.y, StageStyleConstants.scrollbar_cornerButtonArmedColor1, r.x + r.width, r.y
+						+ r.height, StageStyleConstants.scrollbar_cornerButtonArmedColor2);
 			} else {
-				p = new GradientPaint(r.x, r.y, ScrollbarStyle.cornerButtonColor1, r.x + r.width, r.y + r.height,
-						ScrollbarStyle.cornerButtonColor2);
+				p = new GradientPaint(r.x, r.y, StageStyleConstants.scrollbar_cornerButtonColor1, r.x + r.width, r.y
+						+ r.height, StageStyleConstants.scrollbar_cornerButtonColor2);
 			}
 		}
 		gfx.setPaint(p);
 		gfx.fillRect(r.x, r.y, r.width, r.height);
-		gfx.setColor(ScrollbarStyle.cornerButtonFrameColor);
+		gfx.setColor(StageStyleConstants.scrollbar_cornerButtonFrameColor);
 		gfx.drawRect(r.x, r.y, r.width, r.height);
+
 		if (scrollBarButton.isHovered()) {
-			gfx.setColor(ScrollbarStyle.cornerButtonFrameHoeveredColor);
-			// gfx.drawRect(r.x +r.width/3, r.y +r.height/3, r.width /2,
-			// r.height/2);
+			gfx.setColor(StageStyleConstants.scrollbar_cornerButtonFrameHoeveredColor);
 		}
 
 		gfx.setColor(new Color(130, 150, 170));

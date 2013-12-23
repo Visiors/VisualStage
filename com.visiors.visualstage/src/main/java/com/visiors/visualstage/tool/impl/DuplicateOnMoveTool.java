@@ -14,8 +14,6 @@ import com.visiors.visualstage.handler.UndoRedoHandler;
 import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.util.GraphInteractionUtil;
 
-
-
 public class DuplicateOnMoveTool extends BaseTool {
 
 	@Inject
@@ -29,7 +27,6 @@ public class DuplicateOnMoveTool extends BaseTool {
 		DI.injectMembers(this);
 	}
 
-
 	@Override
 	public boolean mousePressed(Point pt, int button, int functionKey) {
 
@@ -37,13 +34,12 @@ public class DuplicateOnMoveTool extends BaseTool {
 		return false;
 	}
 
-
 	@Override
 	public boolean mouseDragged(Point pt, int button, int functionKey) {
 
 		if (isControlKeyPressed(functionKey) && doDuplicate) {
-			VisualGraphObject hitObject = GraphInteractionUtil.getFirstHitObjectAt(visualGraph, pt);
-			if (hitObject != null ) {
+			final VisualGraphObject hitObject = GraphInteractionUtil.getFirstHitObjectAt(visualGraph, pt);
+			if (hitObject != null) {
 				duplicateSelection(pt);
 				doDuplicate = false;
 				return true;
@@ -52,26 +48,23 @@ public class DuplicateOnMoveTool extends BaseTool {
 		return false;
 	}
 
-
 	void duplicateSelection(Point pt) {
 
 		try {
 			undoRedoHandler.stratOfGroupAction();
 			final List<VisualGraphObject> selection = visualGraph.getSelection();
 			final List<VisualGraphObject> duplicates = new ArrayList<VisualGraphObject>();
-			for (VisualGraphObject vgo : selection) {
-				PropertyList properties = vgo.getProperties();
-				if(vgo instanceof VisualNode) {
+			for (final VisualGraphObject vgo : selection) {
+				final PropertyList properties = vgo.getProperties();
+				if (vgo instanceof VisualNode) {
 					duplicates.add(visualGraph.createNode(properties));
-				}
-				else if(vgo instanceof VisualEdge) {
-					duplicates.add(  visualGraph.createEdge(properties));
-				}
-				else if(vgo instanceof VisualGraph) {
+				} else if (vgo instanceof VisualEdge) {
+					duplicates.add(visualGraph.createEdge(properties));
+				} else if (vgo instanceof VisualGraph) {
 					duplicates.add(visualGraph.createSubgraph(properties));
 				}
 			}
-			for (VisualGraphObject visualGraphObject : selection) {
+			for (final VisualGraphObject visualGraphObject : selection) {
 				visualGraph.toFront(visualGraphObject);
 			}
 

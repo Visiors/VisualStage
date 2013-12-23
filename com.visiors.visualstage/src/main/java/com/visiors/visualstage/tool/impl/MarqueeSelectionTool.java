@@ -124,7 +124,7 @@ public class MarqueeSelectionTool extends BaseTool {
 			if (!marqueeRect.isEmpty()) {
 				awtCanvas.gfx.setStroke(dashedStroke);
 				awtCanvas.gfx.setColor(lineColor);
-				Rectangle rClient = graphDocument.getClientBoundary();
+				final Rectangle rClient = graphDocument.getClientBoundary();
 				awtCanvas.gfx.setClip(rClient);
 				awtCanvas.gfx.drawRect(marqueeRect.x, marqueeRect.y, marqueeRect.width - 1, marqueeRect.height - 1);
 				awtCanvas.gfx.setClip(null);

@@ -84,7 +84,7 @@ public class Navigator extends BaseTool implements ViewProvider {
 
 	public boolean isAutoClose() {
 
-		return false;// autoClose;
+		return autoClose;
 	}
 
 	@Override
@@ -338,16 +338,15 @@ public class Navigator extends BaseTool implements ViewProvider {
 		try {
 			gfx.translate(-transitionCurrentOffset.x, -transitionCurrentOffset.y);
 			drawCanvas(gfx);
-			//			drawVistaWindowBackground(gfx);
 			drawSections(gfx);
-			if(useCache) {
+			if (useCache) {
 				graphRenderer.render(gfx);
 			} else {
 				drawGraph(gfx);
 				graphRenderer.invalidate();
 			}
 			drawFilter(gfx);
-			//drawHightlightedSection(gfx);
+			// drawHightlightedSection(gfx);
 			drawVistaWindowFrame(gfx);
 		} finally {
 			gfx.translate(transitionCurrentOffset.x, transitionCurrentOffset.y);
@@ -358,13 +357,13 @@ public class Navigator extends BaseTool implements ViewProvider {
 
 		final Rectangle rClient = getCanvasBoundary();
 		final Rectangle rVista = computeVistaWindowRect();
-		gfx.setColor(new Color(245, 245, 255, 120));
+		gfx.setColor(StageStyleConstants.navigator_filterColorOutsideViewport);
 		gfx.fillRect(rClient.x, rClient.y, rVista.x - rClient.x, rClient.height);
-		gfx.fillRect(rVista.x + rVista.width, rClient.y, rClient.x + rClient.width - rVista.x
-				- rClient.x, rClient.height);
+		gfx.fillRect(rVista.x + rVista.width, rClient.y, rClient.x + rClient.width - rVista.x - rClient.x,
+				rClient.height);
 		gfx.fillRect(rVista.x, rClient.y, rVista.width, rVista.y - rClient.y);
-		gfx.fillRect(rVista.x, rVista.y + rVista.height, rVista.width, rClient.y + rClient.height
-				- rVista.y - rVista.height);
+		gfx.fillRect(rVista.x, rVista.y + rVista.height, rVista.width, rClient.y + rClient.height - rVista.y
+				- rVista.height);
 	}
 
 	private void drawCanvas(Graphics2D gfx) {
@@ -373,21 +372,13 @@ public class Navigator extends BaseTool implements ViewProvider {
 		final Rectangle scrollableArea = getScrollableArea();
 		canvasBoundary.translate(transitionCurrentOffset.x, transitionCurrentOffset.y);
 		scrollableArea.translate(transitionCurrentOffset.x, transitionCurrentOffset.y);
-		gfx.setColor(new Color(234, 237, 248/* , 150 */));
-		//TODO graphDocument.getEditor().getStageDesigner().getBackground
-		gfx.setColor(new Color(206, 216, 231));		
+		// TODO graphDocument.getEditor().getStageDesigner().getBackground
+		gfx.setColor(new Color(206, 216, 231));
 
 		gfx.fillRect(canvasBoundary.x, canvasBoundary.y, canvasBoundary.width, canvasBoundary.height);
-		//		gfx.setColor(new Color(241, 243, 250));
-		//		gfx.fillRect(scrollableArea.x, scrollableArea.y, scrollableArea.width, scrollableArea.height);
-	}
-
-	private void drawVistaWindowBackground(Graphics2D g) {
-
-		final Rectangle rVista = computeVistaWindowRect();
-		g.setColor(new Color(255, 255, 255));
-		g.fillRect(rVista.x, rVista.y, rVista.width, rVista.height);
-
+		// gfx.setColor(new Color(241, 243, 250));
+		// gfx.fillRect(scrollableArea.x, scrollableArea.y,
+		// scrollableArea.width, scrollableArea.height);
 	}
 
 	private void drawVistaWindowFrame(Graphics2D g) {
@@ -395,19 +386,18 @@ public class Navigator extends BaseTool implements ViewProvider {
 		final Rectangle rVista = computeVistaWindowRect();
 
 		if (hoverVista) {
-			g.setColor(new Color(255, 150, 45, 40));
+			g.setColor(StageStyleConstants.navigator_vistaWindowArmedFrameShadowColor);
 			g.setStroke(vistaFrameShadowStroke);
 			g.drawRoundRect(rVista.x - 1, rVista.y - 1, rVista.width + 2, rVista.height + 2, 3, 3);
-			g.setColor(new Color(250, 150, 40));
+			g.setColor(StageStyleConstants.navigator_vistaWindowArmedFrameColor);
 			g.setStroke(vistaFrameStroke);
 			g.drawRoundRect(rVista.x, rVista.y, rVista.width, rVista.height, 3, 3);
 			g.setStroke(continuedStroke);
 		} else {
-			g.setColor(new Color(170, 170, 205, 50));
+			g.setColor(StageStyleConstants.navigator_vistaWindowFrameShadowColor);
 			g.setStroke(vistaFrameShadowStroke);
 			g.drawRoundRect(rVista.x - 2, rVista.y - 2, rVista.width + 4, rVista.height + 4, 3, 3);
-			g.setColor(new Color(100, 110, 120));
-			g.setColor(new Color(80, 100, 120));
+			g.setColor(StageStyleConstants.navigator_vistaWindowFrameColor);
 			g.setStroke(vistaFrameStroke);
 			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 			g.setStroke(new BasicStroke(1.0f));
@@ -440,20 +430,19 @@ public class Navigator extends BaseTool implements ViewProvider {
 		ptPage.translate(-rClient.x, -rClient.y);
 		final Point ptPageTopLeft = viewToNavigator(ptPage);
 
-
-		// adjust zoom 
+		// adjust zoom
 		final TransformPreserver preserver = new TransformPreserver(xform);
 		preserver.store().resetTranslate().setScale(localScale);
 		try {
 			// - create graph snapshot
 			imgGraph = graphDocument.getImage(ctx);
 			// - draw print page layout
-			StageDesigner sd = graphDocument.getEditor().getStageDesigner();
-			if ( sd.getViewMode() == ViewMode.draft) {
+			final StageDesigner sd = graphDocument.getEditor().getStageDesigner();
+			if (sd.getViewMode() == ViewMode.draft) {
 				// compute the page size for the current zoom
 				final Rectangle rPagePreview = pageLayoutPainter.computePageRect(xform);
-				final AWTCanvas canvas = new AWTCanvas(rPagePreview.width + rClient.x + 5 , rPagePreview.height
-						+ rClient.y + 5);	
+				final AWTCanvas canvas = new AWTCanvas(rPagePreview.width + rClient.x + 5, rPagePreview.height
+						+ rClient.y + 5);
 				preserver.setTranslate(-rPagePreview.x + rClient.x, -rPagePreview.y + rClient.y);
 				pageLayoutPainter.drawHints(canvas, ctx, false);
 				gfx.drawImage(canvas.getImage(), ptPageTopLeft.x - rClient.x, ptPageTopLeft.y - rClient.y, null);
@@ -463,8 +452,6 @@ public class Navigator extends BaseTool implements ViewProvider {
 		}
 		gfx.drawImage(imgGraph, ptGraphTopLeft.x - rClient.x, ptGraphTopLeft.y - rClient.y, null);
 	}
-
-
 
 	private Point viewToNavigator(Point ptView) {
 

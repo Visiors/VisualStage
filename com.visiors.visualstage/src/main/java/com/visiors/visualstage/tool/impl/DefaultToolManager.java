@@ -15,17 +15,16 @@ import com.visiors.visualstage.tool.ToolManager;
 
 /**
  * This class allows registering tools which implement the interface
- * {@link Tool}. 
+ * {@link Tool}.
  */
 public class DefaultToolManager implements ToolManager {
-
 
 	protected final List<Tool> tools = new ArrayList<Tool>();
 	protected GraphDocument graphDocument;
 
 	public DefaultToolManager() {
-	}
 
+	}
 
 	@Override
 	public void setScope(GraphDocument graphDocument) {
@@ -48,8 +47,8 @@ public class DefaultToolManager implements ToolManager {
 	@Override
 	public Tool getTool(String toolName) {
 
-		for (Tool tool : tools) {
-			if(tool.getName() != null && tool.getName().equals(toolName)) {
+		for (final Tool tool : tools) {
+			if (tool.getName() != null && tool.getName().equals(toolName)) {
 				return tool;
 			}
 		}
@@ -95,8 +94,6 @@ public class DefaultToolManager implements ToolManager {
 		}
 		tool.setActive(activate);
 	}
-
-
 
 	/* Delegate all mouse and key events to currently active interaction-tool */
 
@@ -234,7 +231,6 @@ public class DefaultToolManager implements ToolManager {
 
 		return graphDocument.getTransformer().transformToGraph(pt);
 	}
-
 
 	@Override
 	public void cancelInteraction() {

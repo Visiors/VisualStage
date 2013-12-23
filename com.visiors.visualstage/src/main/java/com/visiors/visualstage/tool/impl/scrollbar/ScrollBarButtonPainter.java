@@ -43,7 +43,8 @@ public class ScrollBarButtonPainter implements DrawClient {
 
 		final Rectangle r = scrollBar.getRectMinusButton();
 		drawButton(gfx, r, true);
-		gfx.setColor(scrollBar.isArmed() ? ScrollbarStyle.buttonArrowArmedColor : ScrollbarStyle.buttonArrowColor);
+		gfx.setColor(scrollBar.isArmed() ? StageStyleConstants.scrollbar_buttonArrowArmedColor
+				: StageStyleConstants.scrollbar_buttonArrowColor);
 		if (scrollBar.isHorizontal()) {
 			drawArrowToWest(gfx, r.x + r.width / 3, r.y + r.height / 3, 4, 8);
 		} else {
@@ -55,7 +56,8 @@ public class ScrollBarButtonPainter implements DrawClient {
 
 		final Rectangle r = scrollBar.getRectPlusButton();
 		drawButton(gfx, r, false);
-		gfx.setColor(scrollBar.isArmed() ? ScrollbarStyle.buttonArrowArmedColor : ScrollbarStyle.buttonArrowColor);
+		gfx.setColor(scrollBar.isArmed() ? StageStyleConstants.scrollbar_buttonArrowArmedColor
+				: StageStyleConstants.scrollbar_buttonArrowColor);
 		if (scrollBar.isHorizontal()) {
 			drawArrowToEast(gfx, r.x + r.width / 3, r.y + r.height / 3, 4, 8);
 		} else {
@@ -67,28 +69,28 @@ public class ScrollBarButtonPainter implements DrawClient {
 
 		if (scrollBar.isArmed()) {
 			if (scrollBar.isHorizontal()) {
-				GradientPaint paint = new GradientPaint(0, r.y, ScrollbarStyle.buttonArmedColor2, 0, r.y + r.height,
-						ScrollbarStyle.buttonArmedColor1);
+				GradientPaint paint = new GradientPaint(0, r.y, StageStyleConstants.scrollbar_buttonArmedColor2, 0, r.y
+						+ r.height, StageStyleConstants.scrollbar_buttonArmedColor1);
 				gfx.setPaint(paint);
 				gfx.fillRect(r.x + 1, r.y + 1, r.width - 1, r.height - 2);
-				paint = new GradientPaint(0, r.y + r.height / 2 - 5, ScrollbarStyle.buttonArmedColor1, 0, r.y
-						+ r.height, ScrollbarStyle.buttonArmedColor2);
+				paint = new GradientPaint(0, r.y + r.height / 2 - 5, StageStyleConstants.scrollbar_buttonArmedColor1, 0, r.y
+						+ r.height, StageStyleConstants.scrollbar_buttonArmedColor2);
 				gfx.setPaint(paint);
 				gfx.fillRect(r.x + 1, r.y + r.height / 2, r.width - 1, r.height / 2);
 
-				gfx.setColor(ScrollbarStyle.buttonFrameColor);
+				gfx.setColor(StageStyleConstants.scrollbar_buttonFrameColor);
 				gfx.drawRect(r.x, r.y, r.width - 1, r.height);
 			} else {
-				GradientPaint paint = new GradientPaint(r.x, 0, ScrollbarStyle.buttonArmedColor2, r.x + r.width, 0,
-						ScrollbarStyle.buttonArmedColor1);
+				GradientPaint paint = new GradientPaint(r.x, 0, StageStyleConstants.scrollbar_buttonArmedColor2, r.x
+						+ r.width, 0, StageStyleConstants.scrollbar_buttonArmedColor1);
 				gfx.setPaint(paint);
 				gfx.fillRect(r.x + 1, r.y + 1, r.width - 1, r.height - 2);
-				paint = new GradientPaint(r.x + r.width / 2 - 5, 0, ScrollbarStyle.buttonArmedColor1, r.x + r.width, 0,
-						ScrollbarStyle.buttonArmedColor2);
+				paint = new GradientPaint(r.x + r.width / 2 - 5, 0, StageStyleConstants.scrollbar_buttonArmedColor1, r.x
+						+ r.width, 0, StageStyleConstants.scrollbar_buttonArmedColor2);
 				gfx.setPaint(paint);
 				gfx.fillRect(r.x + r.width / 2, r.y, r.width / 2, r.height);
 
-				gfx.setColor(ScrollbarStyle.buttonFrameColor);
+				gfx.setColor(StageStyleConstants.scrollbar_buttonFrameColor);
 				gfx.drawRect(r.x, r.y, r.width, r.height - 1);
 			}
 		}

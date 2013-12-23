@@ -41,7 +41,7 @@ public class GridTool extends BaseTool {
 	public void drawHints(AWTCanvas awtCanvas, DrawingContext context, boolean onTop) {
 
 		if (!onTop && context.getResolution() == Resolution.SCREEN) {
-			//			final Rectangle r = graphDocument.getClientBoundary();
+			// final Rectangle r = graphDocument.getClientBoundary();
 			final Rectangle r = stageDesigner.getPageBounds();
 
 			draw(awtCanvas.gfx, r, GridStyle.Line);
@@ -57,7 +57,7 @@ public class GridTool extends BaseTool {
 		if (f > 1.0) {
 			return transUnit / Math.round(f);
 		} else if (f < 1.0) {
-			return  transUnit * Math.round(1.0 / f);
+			return transUnit * Math.round(1.0 / f);
 		}
 		return transUnit;
 	}
@@ -76,7 +76,7 @@ public class GridTool extends BaseTool {
 				gfx.drawLine((int) x, r.y, (int) x, r.y + r.height);
 			}
 			for (double y = yOffset + transUnit / 2; y < r.y + r.height; y += transUnit) {
-				gfx.drawLine(r.x , (int) y,r.x +  r.width, (int) y);
+				gfx.drawLine(r.x, (int) y, r.x + r.width, (int) y);
 			}
 			gfx.setColor(lineColor);
 			for (double x = xOffset + transUnit; x < r.x + r.width; x += transUnit) {
@@ -107,8 +107,8 @@ public class GridTool extends BaseTool {
 				}
 			}
 		}
-		//		gfx.setStroke(new BasicStroke(1f));
-		//		gfx.setColor(Color.red);
-		//		gfx.drawRect(r.x, r.y, r.width-1, r.height-1);
+		// gfx.setStroke(new BasicStroke(1f));
+		// gfx.setColor(Color.red);
+		// gfx.drawRect(r.x, r.y, r.width-1, r.height-1);
 	}
 }

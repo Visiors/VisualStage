@@ -9,6 +9,7 @@ import com.visiors.visualstage.tool.Interactable;
 import com.visiors.visualstage.tool.impl.scrollbar.MouseScroller;
 import com.visiors.visualstage.tool.impl.scrollbar.ScrollBar;
 import com.visiors.visualstage.tool.impl.scrollbar.ScrollBarCornerButton;
+import com.visiors.visualstage.tool.impl.scrollbar.StageStyleConstants;
 
 /**
  * This tool must be installed on the top of mouse / keyboard processing chain.
@@ -20,7 +21,7 @@ import com.visiors.visualstage.tool.impl.scrollbar.ScrollBarCornerButton;
  */
 public class ScrollTool extends BaseTool {
 
-	private int size = 15;
+	private int size = StageStyleConstants.scrollbar_defaultSize;
 	private final ScrollBar hScrollBar;
 	private final ScrollBar vScrollBar;
 	private final ScrollBarCornerButton scrButton;

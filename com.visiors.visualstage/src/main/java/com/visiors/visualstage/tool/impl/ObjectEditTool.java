@@ -79,6 +79,7 @@ public class ObjectEditTool extends BaseTool {
 
 	@Override
 	public boolean mouseMoved(Point pt, int button, int functionKey) {
+
 		hitObject = GraphInteractionUtil.getFirstHitObjectAt(visualGraph, pt);
 		if (hitObject != null) {
 			if (hitObject.mouseMoved(pt, button, functionKey)) {

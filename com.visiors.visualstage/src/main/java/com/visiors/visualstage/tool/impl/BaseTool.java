@@ -145,6 +145,7 @@ public class BaseTool implements Tool {
 	}
 
 	public static boolean isFunctionKeyPressed(int key) {
+
 		return key != 0;
 	}
 

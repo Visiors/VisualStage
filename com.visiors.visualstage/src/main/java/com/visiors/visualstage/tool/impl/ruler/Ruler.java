@@ -1,7 +1,5 @@
 package com.visiors.visualstage.tool.impl.ruler;
 
-import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.text.MessageFormat;
@@ -13,6 +11,7 @@ import com.visiors.visualstage.renderer.DrawClient;
 import com.visiors.visualstage.renderer.OffScreenRenderer;
 import com.visiors.visualstage.system.SystemUnit;
 import com.visiors.visualstage.tool.impl.BaseTool;
+import com.visiors.visualstage.tool.impl.scrollbar.StageStyleConstants;
 import com.visiors.visualstage.transform.Transform;
 
 public class Ruler extends BaseTool implements DrawClient {
@@ -25,11 +24,7 @@ public class Ruler extends BaseTool implements DrawClient {
 
 	private final SystemUnit systemUnit;
 
-	private int size = 16;
-	private final Color bkColor = new Color(0xF1F8F8);
-	private final Color lineColor = new Color(0x8E9CAF);
-	private final Color textColor = new Color(0x8334E70);
-	private final Font font = new Font("SansSerif", Font.PLAIN, 10);
+	private int size = 16;;
 	private final Rectangle oldViewBoudary = new Rectangle();
 	private double oldViewScale;
 
@@ -55,7 +50,7 @@ public class Ruler extends BaseTool implements DrawClient {
 		if (horizintal) {
 			canvas.x = size;
 			canvas.height = size;
-			canvas.width = xform.getViewWidth() +size;
+			canvas.width = xform.getViewWidth() + size;
 		} else {
 			canvas.y = size;
 			canvas.height = xform.getViewHeight() + size;
@@ -94,7 +89,7 @@ public class Ruler extends BaseTool implements DrawClient {
 		if (f > 1.0) {
 			return transUnit / Math.round(f);
 		} else if (f < 1.0) {
-			return  transUnit * Math.round(1.0 / f);
+			return transUnit * Math.round(1.0 / f);
 		}
 		return transUnit;
 	}
@@ -115,11 +110,11 @@ public class Ruler extends BaseTool implements DrawClient {
 		final Rectangle r = getBounds();
 		int n = 0;
 
-		gfx.setFont(font);
-		gfx.setColor(bkColor);
+		gfx.setFont(StageStyleConstants.ruler_textFont);
+		gfx.setColor(StageStyleConstants.ruler_backgroundColor);
 		// background
-		gfx.fillRect(r.x, r.y, r.width-1, r.height-1);
-		gfx.setColor(lineColor);
+		gfx.fillRect(r.x, r.y, r.width - 1, r.height - 1);
+		gfx.setColor(StageStyleConstants.ruler_lineColor);
 
 		if (horizintal) {
 			final double fullUnit = (unit * outlineStep);

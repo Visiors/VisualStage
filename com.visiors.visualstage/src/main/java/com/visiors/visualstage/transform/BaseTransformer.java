@@ -4,7 +4,7 @@ import java.awt.Point;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 
-class SimpleTransformer implements Cloneable {
+class BaseTransformer implements Cloneable {
 
 	static final long   serialVersionUID = 1330973210523860834L;
 
@@ -19,14 +19,14 @@ class SimpleTransformer implements Cloneable {
 
 	private double      rotation;
 
-	SimpleTransformer() {
+	BaseTransformer() {
 
 		m00 = m11 = 1.0;
 		m10 = m01 = m02 = m12 = 0.0;
 		rotation = 0;
 	}
 
-	SimpleTransformer(SimpleTransformer t) {
+	BaseTransformer(BaseTransformer t) {
 
 		m00 = t.m00;
 		m10 = t.m10;
@@ -37,7 +37,7 @@ class SimpleTransformer implements Cloneable {
 		rotation = t.rotation;
 	}
 
-	SimpleTransformer(double m00, double m10, double m01, double m11, double m02, double m12, double rotation) {
+	BaseTransformer(double m00, double m10, double m01, double m11, double m02, double m12, double rotation) {
 
 		this.m00 = m00;
 		this.m10 = m10;
@@ -131,7 +131,7 @@ class SimpleTransformer implements Cloneable {
 		this.rotation = rotation;
 	}
 
-	void setTransform(SimpleTransformer t) {
+	void setTransform(BaseTransformer t) {
 
 		setTransform(t.m00, t.m10, t.m01, t.m11, t.m02, t.m12, t.rotation);
 	}
@@ -147,10 +147,10 @@ class SimpleTransformer implements Cloneable {
 		rotation = angle;
 		double sin = Math.sin(angle);
 		double cos = Math.cos(angle);
-		if (Math.abs(cos) < SimpleTransformer.ZERO) {
+		if (Math.abs(cos) < BaseTransformer.ZERO) {
 			cos = 0.0;
 			sin = sin > 0.0 ? 1.0 : -1.0;
-		} else if (Math.abs(sin) < SimpleTransformer.ZERO) {
+		} else if (Math.abs(sin) < BaseTransformer.ZERO) {
 			sin = 0.0;
 			cos = cos > 0.0 ? 1.0 : -1.0;
 		}
@@ -177,10 +177,10 @@ class SimpleTransformer implements Cloneable {
 		return m00 * m11 - m01 * m10;
 	}
 
-	SimpleTransformer createInverse() {
+	BaseTransformer createInverse() {
 
 		double det = getDeterminant();
-		return new SimpleTransformer(m11 / det, // m00
+		return new BaseTransformer(m11 / det, // m00
 				-m10 / det, // m10
 				-m01 / det, // m01
 				m00 / det, // m11
@@ -350,8 +350,8 @@ class SimpleTransformer implements Cloneable {
 		if (obj == this) {
 			return true;
 		}
-		if (obj instanceof SimpleTransformer) {
-			SimpleTransformer t = (SimpleTransformer) obj;
+		if (obj instanceof BaseTransformer) {
+			BaseTransformer t = (BaseTransformer) obj;
 			return m00 == t.m00 && m01 == t.m01 && m02 == t.m02 && m10 == t.m10 && m11 == t.m11 && m12 == t.m12;
 		}
 		return false;

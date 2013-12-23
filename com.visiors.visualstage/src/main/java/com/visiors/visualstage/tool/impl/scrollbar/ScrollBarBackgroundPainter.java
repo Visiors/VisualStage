@@ -29,17 +29,17 @@ public class ScrollBarBackgroundPainter implements DrawClient {
 		final Rectangle r = scrollBar.getRectScrollBar();
 		final Paint p;
 		if (scrollBar.isHorizontal()) {
-			p = new GradientPaint(0, r.y, ScrollbarStyle.backgroundColor1, 0, r.y + r.height,
-					ScrollbarStyle.backgroundColor2);
+			p = new GradientPaint(0, r.y, StageStyleConstants.scrollbar_backgroundColor1, 0, r.y + r.height,
+					StageStyleConstants.scrollbar_backgroundColor2);
 			gfx.setPaint(p);
 		} else {
 
-			p = new GradientPaint(r.x, 0, ScrollbarStyle.backgroundColor1, r.x + r.width, 0,
-					ScrollbarStyle.backgroundColor2);
+			p = new GradientPaint(r.x, 0, StageStyleConstants.scrollbar_backgroundColor1, r.x + r.width, 0,
+					StageStyleConstants.scrollbar_backgroundColor2);
 			gfx.setPaint(p);
 		}
 		gfx.fillRect(r.x, r.y, r.width, r.height);
-		gfx.setColor(ScrollbarStyle.frameColor);
+		gfx.setColor(StageStyleConstants.scrollbar_frameColor);
 		gfx.drawLine(r.x, r.y, r.x, r.y + r.height);
 		gfx.drawLine(r.x, r.y, r.x + r.width, r.y);
 	}
