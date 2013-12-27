@@ -17,7 +17,6 @@ import com.visiors.visualstage.util.UnitUtil;
 /** This class uses the Batik SVG Toolkit to create a bitmap from a given SVG-file.
  * Please see http://xmlgraphics.apache.org/batik/license.html
  * 
- * @author skhani
  *
  */
 public class SVGTranscoder {

@@ -13,7 +13,7 @@ import java.awt.image.BufferedImage;
 import com.google.common.base.Objects;
 import com.visiors.visualstage.renderer.AWTCanvas;
 import com.visiors.visualstage.renderer.DefaultDrawingContext;
-import com.visiors.visualstage.renderer.DefaultOfflineRenderer;
+import com.visiors.visualstage.renderer.ComponentOfflineRenderer;
 import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.renderer.DrawingSubject;
 import com.visiors.visualstage.renderer.OffScreenRenderer;
@@ -31,7 +31,7 @@ import com.visiors.visualstage.tool.Interactable;
 import com.visiors.visualstage.tool.impl.BaseTool;
 import com.visiors.visualstage.tool.impl.PageLayoutViewTool;
 import com.visiors.visualstage.transform.Transform;
-import com.visiors.visualstage.transform.TransformPreserver;
+import com.visiors.visualstage.transform.TransformOperator;
 
 /**
  * This tool must be installed on the top of mouse / keyboard processing chain.
@@ -73,7 +73,7 @@ public class Navigator extends BaseTool implements ViewProvider {
 		this.vScrollBar = vScrollBar;
 		this.hDragHelper = new DragHelper(hScrollBar);
 		this.vDragHelper = new DragHelper(vScrollBar);
-		this.graphRenderer = new DefaultOfflineRenderer(new NavigatorGraphPainter(this));
+		this.graphRenderer = new ComponentOfflineRenderer(new NavigatorGraphPainter(this));
 		setAutoClose(true);
 	}
 
@@ -431,14 +431,14 @@ public class Navigator extends BaseTool implements ViewProvider {
 		final Point ptPageTopLeft = viewToNavigator(ptPage);
 
 		// adjust zoom
-		final TransformPreserver preserver = new TransformPreserver(xform);
+		final TransformOperator preserver = new TransformOperator(xform);
 		preserver.store().resetTranslate().setScale(localScale);
 		try {
 			// - create graph snapshot
 			imgGraph = graphDocument.getImage(ctx);
 			// - draw print page layout
 			final StageDesigner sd = graphDocument.getEditor().getStageDesigner();
-			if (sd.getViewMode() == ViewMode.draft) {
+			if (sd.getViewMode() == ViewMode.pageLayout) {
 				// compute the page size for the current zoom
 				final Rectangle rPagePreview = pageLayoutPainter.computePageRect(xform);
 				final AWTCanvas canvas = new AWTCanvas(rPagePreview.width + rClient.x + 5, rPagePreview.height
@@ -519,7 +519,7 @@ public class Navigator extends BaseTool implements ViewProvider {
 		blendEffect.setTimeInterval(20);
 
 		final EffectBatchProcessor effectProcessor = new DefaultEffectBatchProcessor();
-		effectProcessor.perform(blendEffect, transformEffect);
+		effectProcessor.perform(/*blendEffect,*/ transformEffect);
 		effectProcessor.addListener(new EffectListener() {
 
 			@Override

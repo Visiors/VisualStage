@@ -23,12 +23,12 @@ public class DefaultViewCache implements ViewCache {
 	public Image get(DrawingContext context, DrawingSubject subject) {
 
 		if (subject != DrawingSubject.OBJECT) {
-			return imageProvider.provide(context, subject);
+			return imageProvider.provideImage(context, subject);
 		}
 
 		Image image = map.get(context.getResolution());
 		if(image == null || imageProvider.isModified()) {
-			image = imageProvider.provide(context, subject);
+			image = imageProvider.provideImage(context, subject);
 			map.put( context.getResolution(), image);
 		}		
 		return image;

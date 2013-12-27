@@ -23,7 +23,7 @@ import com.visiors.visualstage.graph.view.node.VisualNode;
 import com.visiors.visualstage.graph.view.node.listener.NodeViewAdapter;
 import com.visiors.visualstage.graph.view.node.listener.VisualNodeListener;
 import com.visiors.visualstage.handler.UndoRedoHandler;
-import com.visiors.visualstage.pool.FormatCollection;
+import com.visiors.visualstage.pool.FormatDefinitionCollection;
 import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.property.impl.DefaultPropertyList;
 import com.visiors.visualstage.property.impl.DefaultPropertyUnit;
@@ -51,14 +51,14 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 	protected PropertyList properties;
 	protected SVGDescriptor svgLineDef;
 	protected SVGDescriptor svgSelDef;
-	protected String styleID = FormatCollection.DEFAULT_STYLE;
-	protected String presentationID = FormatCollection.DEFAULT_EDGE_PRESENTATION;
+	protected String styleID = FormatDefinitionCollection.DEFAULT_STYLE;
+	protected String presentationID = FormatDefinitionCollection.DEFAULT_EDGE_PRESENTATION;
 	protected Rectangle boundaryExt = new Rectangle();
 
 	private PropertyBinder propertyBinder;
 
 	@Inject
-	private FormatCollection formatCollection;
+	private FormatDefinitionCollection formatDefinitionCollection;
 	@Inject
 	protected UndoRedoHandler undoRedoHandler;
 	@Inject
@@ -370,7 +370,7 @@ public class DefaultVisualEdge extends DefaultVisualGraphObject implements Visua
 		styleID = PropertyUtil.getProperty(propertyList, "style", "");
 
 
-		svgLineDef = formatCollection.get(presentationID);
+		svgLineDef = formatDefinitionCollection.get(presentationID);
 		//		svgSelDef = SVGDefinitionPool.get(Constants.DEFAULT_EDGE_SELECTION_MARKER);
 	}
 

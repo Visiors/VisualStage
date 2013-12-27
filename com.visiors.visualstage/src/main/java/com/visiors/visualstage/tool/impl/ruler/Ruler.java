@@ -6,7 +6,7 @@ import java.text.MessageFormat;
 
 import com.visiors.visualstage.editor.DI;
 import com.visiors.visualstage.renderer.AWTCanvas;
-import com.visiors.visualstage.renderer.DefaultOfflineRenderer;
+import com.visiors.visualstage.renderer.ComponentOfflineRenderer;
 import com.visiors.visualstage.renderer.DrawClient;
 import com.visiors.visualstage.renderer.OffScreenRenderer;
 import com.visiors.visualstage.system.SystemUnit;
@@ -34,7 +34,7 @@ public class Ruler extends BaseTool implements DrawClient {
 		this.horizintal = horizintal;
 
 		systemUnit = DI.getInstance(SystemUnit.class);
-		this.offScreenRenderer = new DefaultOfflineRenderer(this);
+		this.offScreenRenderer = new ComponentOfflineRenderer(this);
 	}
 
 	public void setSize(int size) {

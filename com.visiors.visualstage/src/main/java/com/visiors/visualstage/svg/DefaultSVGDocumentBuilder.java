@@ -9,7 +9,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import com.google.inject.Inject;
-import com.visiors.visualstage.pool.FormatCollection;
+import com.visiors.visualstage.editor.DI;
+import com.visiors.visualstage.pool.FormatDefinitionCollection;
 import com.visiors.visualstage.transform.Transform;
 
 public class DefaultSVGDocumentBuilder implements SVGDocumentBuilder {
@@ -23,10 +24,11 @@ public class DefaultSVGDocumentBuilder implements SVGDocumentBuilder {
 	private int                       groups;
 	private final Map<String, String> documentAttributes = new HashMap<String, String>();
 	@Inject
-	private FormatCollection formatCollection; 
+	private FormatDefinitionCollection formatDefinitionCollection; 
 
 	public DefaultSVGDocumentBuilder() {
 
+		DI.injectMembers(this);
 		svg = new StringBuilder();
 		usedReferences = new ArrayList<String>();
 	}
@@ -116,7 +118,7 @@ public class DefaultSVGDocumentBuilder implements SVGDocumentBuilder {
 
 				// Transform
 				if (config.getTransformation() != null) {
-					SVGDescriptor def = formatCollection.get(config.getTransformation());
+					SVGDescriptor def = formatDefinitionCollection.get(config.getTransformation());
 					String xf = def.getAttribute("transform");
 					if (xf != null) {
 						svg.append(" transform='" + xf + "'");
@@ -189,7 +191,7 @@ public class DefaultSVGDocumentBuilder implements SVGDocumentBuilder {
 		defTag.append("\n<defs>");
 
 		for (int i = 0; i < usedReferences.size(); i++) {
-			SVGDescriptor def = formatCollection.get(usedReferences.get(i));
+			SVGDescriptor def = formatDefinitionCollection.get(usedReferences.get(i));
 			if (def == null) {
 
 				// System.err.println("Warning: The variable '" + usedReferences.get(i) +
@@ -209,7 +211,7 @@ public class DefaultSVGDocumentBuilder implements SVGDocumentBuilder {
 		String ref[] = getReferenceIDs(def.definition);
 		SVGDescriptor svgdef;
 		for (String r : ref) {
-			svgdef = formatCollection.get(r);
+			svgdef = formatDefinitionCollection.get(r);
 			if (svgdef == null) {
 				// System.err.println("DefaultSVGDocumentBuilder: Error while building the svg document: id: '" + r +
 				// "' Reason: the reference '" +svgdef+"' does not exists in the definition-pool");

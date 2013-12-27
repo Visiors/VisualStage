@@ -9,7 +9,6 @@ public interface ViewCache {
 
 	public Image get(DrawingContext context, DrawingSubject subject);
 
-
 	public void refresh();
 
 	void setProvider(GraphObjectImageProvider provider);

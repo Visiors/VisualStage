@@ -2,7 +2,7 @@ package com.visiors.visualstage.pool;
 
 import com.visiors.visualstage.property.PropertyList;
 
-public interface ShapeCollection {
+public interface ShapeDefinitionCollection {
 
 	public final String DEFAULT_NODE = "DEFAULT_NODE";
 	public final String DEFAULT_EDGE = "DEFAULT_EDGE";

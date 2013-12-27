@@ -23,10 +23,12 @@ import com.visiors.visualstage.handler.UndoRedoHandler;
 import com.visiors.visualstage.handler.impl.DefaultClipboardHandler;
 import com.visiors.visualstage.handler.impl.DefaultSelectionHander;
 import com.visiors.visualstage.handler.impl.DefaultUndoRedoHandler;
-import com.visiors.visualstage.pool.FormatCollection;
-import com.visiors.visualstage.pool.ShapeCollection;
-import com.visiors.visualstage.pool.TemplateFormatCollection;
-import com.visiors.visualstage.pool.TemplateShapeCollection;
+import com.visiors.visualstage.pool.DefaultFormatDefinitionCollection;
+import com.visiors.visualstage.pool.DefaultGraphBuilder;
+import com.visiors.visualstage.pool.DefaultShapeDefinitionCollection;
+import com.visiors.visualstage.pool.FormatDefinitionCollection;
+import com.visiors.visualstage.pool.GraphBuilder;
+import com.visiors.visualstage.pool.ShapeDefinitionCollection;
 import com.visiors.visualstage.stage.DefaultStageDesigner;
 import com.visiors.visualstage.stage.StageDesigner;
 import com.visiors.visualstage.svg.DefaultSVGDocumentBuilder;
@@ -137,12 +139,17 @@ public class GraphBindingModule extends BindingModule {
 	// binding the shapes collection
 	public void bindShapesCollection(Binder binder) {
 
-		binder.bind(ShapeCollection.class).to(TemplateShapeCollection.class).in(Singleton.class);
+		binder.bind(ShapeDefinitionCollection.class).to(DefaultShapeDefinitionCollection.class).in(Singleton.class);
 	}
 	// binding the format collection
 	public void bindFormatCollection(Binder binder) {
 
-		binder.bind(FormatCollection.class).to(TemplateFormatCollection.class).in(Singleton.class);
+		binder.bind(FormatDefinitionCollection.class).to(DefaultFormatDefinitionCollection.class).in(Singleton.class);
+	}
+	// binding the graph builder
+	public void bindGraphBuilder(Binder binder) {
+
+		binder.bind(GraphBuilder.class).to(DefaultGraphBuilder.class).in(Singleton.class);
 	}
 	// binding the default svg document builder  collection
 	public void bindSVGDocumentBuilder(Binder binder) {

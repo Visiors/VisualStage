@@ -1,11 +1,6 @@
 package com.visiors.visualstage.stage;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Rectangle;
-import java.awt.Stroke;
-import java.awt.print.PageFormat;
-import java.awt.print.PrinterJob;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +10,7 @@ import com.visiors.visualstage.editor.DI;
 import com.visiors.visualstage.system.SystemUnit;
 import com.visiors.visualstage.tool.ToolManager;
 import com.visiors.visualstage.tool.impl.DefaultToolManager;
+import com.visiors.visualstage.tool.impl.DragAndDropTool;
 import com.visiors.visualstage.tool.impl.PageLayoutViewTool;
 import com.visiors.visualstage.tool.impl.RulerTool;
 import com.visiors.visualstage.tool.impl.ScrollTool;
@@ -22,22 +18,14 @@ import com.visiors.visualstage.tool.impl.ScrollTool;
 public class DefaultStageDesigner extends DefaultToolManager implements StageDesigner {
 
 
-	private ViewMode pageView = ViewMode.draft;
+	private ViewMode pageView = ViewMode.pageLayout;
 
-	private final RulerTool rulerTool;
-	private final ScrollTool scrollBarTool;
-	private final PageLayoutViewTool pageLayoutPreviewTool;
-
-	private PageFormat pageFormat;
-	private final Color pageShadowColor = new Color(0x253D58);
-	private PrinterJob printerJob;
-	private final Rectangle rPageBoundary = new Rectangle();
-	private boolean lockSize;
-	private Rectangle exBounds;
+	protected RulerTool rulerTool;
+	protected ScrollTool scrollBarTool;
+	protected PageLayoutViewTool pageLayoutPreviewTool;
+	protected DragAndDropTool dragAndDropTool;
 	protected ToolManager toolManager;
 
-	private static Stroke dashedStroke = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0,
-			new float[] { 1, 2 }, 0);
 
 	@Inject
 	SystemUnit systemUnit;
@@ -49,11 +37,14 @@ public class DefaultStageDesigner extends DefaultToolManager implements StageDes
 		this.scrollBarTool = new ScrollTool();
 		this.rulerTool = new RulerTool();
 		this.pageLayoutPreviewTool = new PageLayoutViewTool();
+		this.dragAndDropTool = new DragAndDropTool();
 		toolManager.registerTool(rulerTool);
 		toolManager.registerTool(scrollBarTool);
 		toolManager.registerTool(pageLayoutPreviewTool);
+		toolManager.registerTool(dragAndDropTool);
 
 		pageLayoutPreviewTool.setActive(true);
+		dragAndDropTool.setActive(true);
 
 	}
 
@@ -73,22 +64,11 @@ public class DefaultStageDesigner extends DefaultToolManager implements StageDes
 		return pageView;
 	}
 
-	@Override
-	public PrinterJob getPrinterJob() {
-
-		return printerJob;
-	}
-
-	@Override
-	public void setPrinterJob(PrinterJob printerJob) {
-
-		this.printerJob = printerJob;
-	}
 
 	@Override
 	public Rectangle getPageBounds() {
 
-		if (pageView == ViewMode.page) {
+		if (pageView == ViewMode.pageLayout) {
 		} 
 		return graphDocument.getClientBoundary();
 	}

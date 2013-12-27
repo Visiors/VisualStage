@@ -16,11 +16,11 @@ import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.svg.SVGDescriptor;
 import com.visiors.visualstage.util.PropertyUtil;
 
-public class TemplateFormatCollection implements FormatCollection {
+public class DefaultFormatDefinitionCollection implements FormatDefinitionCollection {
 
 	private final Map<String, SVGDescriptor> svgDefinitionMap = new HashMap<String, SVGDescriptor>();
 
-	public TemplateFormatCollection() {
+	public DefaultFormatDefinitionCollection() {
 
 		loadDefaultFomatDefinition();
 		loadDefaultDecorationFomatDefinition();

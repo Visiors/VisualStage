@@ -5,7 +5,7 @@ import java.awt.Rectangle;
 
 import com.visiors.visualstage.document.GraphDocument;
 import com.visiors.visualstage.renderer.AWTCanvas;
-import com.visiors.visualstage.renderer.DefaultOfflineRenderer;
+import com.visiors.visualstage.renderer.ComponentOfflineRenderer;
 import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.renderer.OffScreenRenderer;
 import com.visiors.visualstage.tool.Interactable;
@@ -24,7 +24,7 @@ public class ScrollBarCornerButton implements Interactable {
 
 	public ScrollBarCornerButton(ScrollBar hScrollBar, ScrollBar vScrollBar) {
 
-		this.offlineRenderer = new DefaultOfflineRenderer(new ScrollBarCornerButtonPainter(this));
+		this.offlineRenderer = new ComponentOfflineRenderer(new ScrollBarCornerButtonPainter(this));
 		this.navigator = new Navigator(hScrollBar, vScrollBar);
 	}
 

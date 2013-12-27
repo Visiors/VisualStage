@@ -7,7 +7,7 @@ import java.awt.Rectangle;
 import com.visiors.visualstage.document.GraphDocument;
 import com.visiors.visualstage.document.listener.GraphDocumentAdapter;
 import com.visiors.visualstage.renderer.AWTCanvas;
-import com.visiors.visualstage.renderer.DefaultOfflineRenderer;
+import com.visiors.visualstage.renderer.ComponentOfflineRenderer;
 import com.visiors.visualstage.renderer.OffScreenRenderer;
 import com.visiors.visualstage.tool.Interactable;
 import com.visiors.visualstage.transform.Transform;
@@ -47,11 +47,11 @@ public class ScrollBar implements Interactable {
 
 		this.isHorizontal = horizontal;
 		this.dragHelper = new DragHelper(this);
-		this.backgroundRenderer = new DefaultOfflineRenderer(new ScrollBarBackgroundPainter(this));
-		this.minusButtonRenderer = new DefaultOfflineRenderer(new ScrollBarButtonPainter(this, true));
-		this.plusButtonRenderer = new DefaultOfflineRenderer(new ScrollBarButtonPainter(this, false));
-		this.thumbRenderer = new DefaultOfflineRenderer(new ScrollBarThumbPainter(this));
-		this.pageRenderer = new DefaultOfflineRenderer(new ScrollBarPagePainter(this));
+		this.backgroundRenderer = new ComponentOfflineRenderer(new ScrollBarBackgroundPainter(this));
+		this.minusButtonRenderer = new ComponentOfflineRenderer(new ScrollBarButtonPainter(this, true));
+		this.plusButtonRenderer = new ComponentOfflineRenderer(new ScrollBarButtonPainter(this, false));
+		this.thumbRenderer = new ComponentOfflineRenderer(new ScrollBarThumbPainter(this));
+		this.pageRenderer = new ComponentOfflineRenderer(new ScrollBarPagePainter(this));
 
 	}
 

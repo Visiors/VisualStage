@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import com.visiors.visualstage.svg.SVGDescriptor;
 
-public interface FormatCollection {
+public interface FormatDefinitionCollection {
 
 	public final String DEFAULT_STYLE = "DEFAULT_STYLE";
 	public final String DEFAULT_NODE_PRESENTATION = "DEFAULT_NODE_PRESENTATION";

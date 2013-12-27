@@ -53,7 +53,7 @@ public class DefaultGraphDocument implements GraphDocument {
 	private String title;
 	private boolean doDrawing = true;
 	private PropertyList properties;
-	private boolean useImageCaching;
+	private boolean useImageCaching = true;
 
 	private PropertyBinder propertyBinder;
 	protected LayerManager layerManager;
@@ -350,11 +350,12 @@ public class DefaultGraphDocument implements GraphDocument {
 
 	private void resizeGraph(Rectangle rClientBounds) {
 
-		final VisualGraph graph = getGraph();		
+		final VisualGraph graph = getGraph();
 		graph.setBounds(rClientBounds);
 	}
 
 	private void drawGraph(AWTCanvas awtCanvas, DrawingContext context) {
+
 		final VisualGraph graph = getGraph();
 		if (useImageCaching) {
 			graph.draw(awtCanvas, context, DrawingSubject.OBJECT);
@@ -363,7 +364,7 @@ public class DefaultGraphDocument implements GraphDocument {
 		} else {
 			final Image img = getImage(context, null, computeClipRect());
 			awtCanvas.gfx.drawImage(img, 0, 0, null);
-		}		
+		}
 	}
 
 	private AWTCanvas createCanvas() {

@@ -1,6 +1,7 @@
 package com.visiors.visualstage.graph.view;
 
 import java.awt.Image;
+import java.awt.Rectangle;
 
 import com.google.inject.Inject;
 import com.visiors.visualstage.attribute.Attribute;
@@ -13,7 +14,7 @@ import com.visiors.visualstage.property.impl.DefaultPropertyList;
 import com.visiors.visualstage.renderer.AWTCanvas;
 import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.renderer.DrawingSubject;
-import com.visiors.visualstage.renderer.VisualObjectSnapshotGenerator;
+import com.visiors.visualstage.renderer.ImageFactory;
 import com.visiors.visualstage.renderer.cache.DefaultViewCache;
 import com.visiors.visualstage.renderer.cache.GraphObjectImageProvider;
 import com.visiors.visualstage.renderer.cache.ViewCache;
@@ -34,10 +35,10 @@ GraphObjectImageProvider {
 	protected Attribute attributes;
 	protected PropertyList properties;
 	protected boolean modified;
-	protected final ViewCache viewCache;
+	protected final ViewCache offlineRenderer;
 	@Inject
 	protected SVGDocumentBuilder svgDocumentBuilder;
-	protected VisualObjectSnapshotGenerator snapshotGenerator;
+	protected ImageFactory snapshotGenerator;
 
 	protected DefaultVisualGraphObject() {
 
@@ -45,7 +46,7 @@ GraphObjectImageProvider {
 
 		this.properties = new DefaultPropertyList();
 		this.attributes = new DefaultAttribute();
-		this.viewCache = new DefaultViewCache(this);		
+		this.offlineRenderer = new DefaultViewCache(this);
 
 	}
 
@@ -97,36 +98,39 @@ GraphObjectImageProvider {
 		this.attributes = attributes;
 	}
 
-	//	public Validator getValidator() {
+	// public Validator getValidator() {
 	//
-	//		return validator;
-	//	}
+	// return validator;
+	// }
 	//
-	//	public void setValidator(Validator validator) {
+	// public void setValidator(Validator validator) {
 	//
-	//		this.validator = validator;
-	//	}
+	// this.validator = validator;
+	// }
 
 	@Override
 	public void draw(AWTCanvas awtCanvas, DrawingContext context, DrawingSubject subject) {
 
-		Image image = viewCache.get(context, subject);
+		Image image = offlineRenderer.get(context, subject);
 		if (image != null) {
-
-			int x = (int) transform.getXTranslate() + boundary.x;
-			int y = (int) transform.getYTranslate()+ boundary.y;
-			awtCanvas.gfx.drawImage(image, x, y, null);
+			final Rectangle boundary = transform.transformToScreen(getBounds());
+			final Rectangle extendedBoundary = transform.transformToScreen(getExtendedBoundary());
+			boundary.grow((extendedBoundary.width - boundary.width) / 2,
+					(extendedBoundary.height - boundary.height) / 2);
+			//			awtCanvas.gfx.setColor(Color.blue);
+			//			awtCanvas.gfx.drawRect(boundary.x, boundary.y, boundary.width, boundary.height);
+			awtCanvas.gfx.drawImage(image, boundary.x, boundary.y, null);
 		}
 	}
 
 	@Override
-	public Image provide(DrawingContext context, DrawingSubject subject) {
+	public Image provideImage(DrawingContext context, DrawingSubject subject) {
 
 		setModified(false);
-		if(snapshotGenerator == null) {
-			this.snapshotGenerator = new VisualObjectSnapshotGenerator(svgDocumentBuilder, this);
+		if (snapshotGenerator == null) {
+			this.snapshotGenerator = new ImageFactory(svgDocumentBuilder);
 		}
-		return snapshotGenerator.createSnapshot(context, subject);
+		return snapshotGenerator.createSnapshot(this, context, subject);
 	}
 
 	private Object VisualObjectSnapshotGenerator() {

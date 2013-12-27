@@ -25,8 +25,9 @@ import com.visiors.visualstage.handler.ClipboardHandler;
 import com.visiors.visualstage.handler.GroupingHandler;
 import com.visiors.visualstage.handler.SelectionHandler;
 import com.visiors.visualstage.handler.UndoRedoHandler;
-import com.visiors.visualstage.pool.FormatCollection;
-import com.visiors.visualstage.pool.ShapeCollection;
+import com.visiors.visualstage.pool.FormatDefinitionCollection;
+import com.visiors.visualstage.pool.GraphBuilder;
+import com.visiors.visualstage.pool.ShapeDefinitionCollection;
 import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.property.impl.DefaultPropertyList;
 import com.visiors.visualstage.stage.StageDesigner;
@@ -46,12 +47,13 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 	protected GraphDocument activeDocument;
 	protected final ToolManager toolManager;
 	protected final UndoRedoHandler undoRedoHandler;
+	protected final GraphBuilder graphBuilder;
 	protected final SelectionHandler selectionHandler;
 	protected final GroupingHandler groupingHandler;
 	protected final StageDesigner stageDesigner;
 	protected final ClipboardHandler clipboardHandler;
-	protected final ShapeCollection shapeCollection;
-	protected final FormatCollection formatCollection;
+	protected final ShapeDefinitionCollection shapeDefinitionCollection;
+	protected final FormatDefinitionCollection formatDefinitionCollection;
 	private final Map<String, GraphDocument> documents = Maps.newTreeMap();
 
 	// Base tools
@@ -82,8 +84,9 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 		this.selectionHandler = DI.getInstance(SelectionHandler.class);
 		this.groupingHandler = DI.getInstance(GroupingHandler.class);
 		this.clipboardHandler = DI.getInstance(ClipboardHandler.class);
-		this.shapeCollection = DI.getInstance(ShapeCollection.class);
-		this.formatCollection = DI.getInstance(FormatCollection.class);
+		this.graphBuilder = DI.getInstance(GraphBuilder.class);
+		this.shapeDefinitionCollection = DI.getInstance(ShapeDefinitionCollection.class);
+		this.formatDefinitionCollection = DI.getInstance(FormatDefinitionCollection.class);
 
 		initTools();
 	}
@@ -132,7 +135,7 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 
 	protected void applyDefaultConfiguration(GraphDocument document) {
 
-		stageDesigner.setViewMode(ViewMode.draft);
+		stageDesigner.setViewMode(ViewMode.pageLayout);
 		stageDesigner.showScrollBar(true);
 		stageDesigner.showRuler(true);
 	}
@@ -229,15 +232,15 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 	}
 
 	@Override
-	public ShapeCollection getShapesCollection() {
+	public ShapeDefinitionCollection getShapesCollection() {
 
-		return shapeCollection;
+		return shapeDefinitionCollection;
 	}
 
 	@Override
-	public FormatCollection getFormatsCollection() {
+	public FormatDefinitionCollection getFormatsCollection() {
 
-		return formatCollection;
+		return formatDefinitionCollection;
 	}
 
 	@Override
@@ -268,6 +271,12 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 	public UndoRedoHandler getUndoRedoHandler() {
 
 		return undoRedoHandler;
+	}
+
+	@Override
+	public GraphBuilder getGraphBuilder() {
+
+		return graphBuilder;
 	}
 
 	@Override

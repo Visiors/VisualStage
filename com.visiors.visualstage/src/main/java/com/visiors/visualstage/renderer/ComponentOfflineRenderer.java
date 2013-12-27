@@ -5,13 +5,13 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
-public class DefaultOfflineRenderer implements OffScreenRenderer {
+public class ComponentOfflineRenderer implements OffScreenRenderer {
 
 	private Image image;
 	private final DrawClient drawClient;
 	private boolean invalidated;
 
-	public DefaultOfflineRenderer(DrawClient drawClient) {
+	public ComponentOfflineRenderer(DrawClient drawClient) {
 
 		this.drawClient = drawClient;
 	}

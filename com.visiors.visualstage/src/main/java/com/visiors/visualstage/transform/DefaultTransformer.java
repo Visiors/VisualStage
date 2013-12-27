@@ -46,12 +46,12 @@ public class DefaultTransformer extends BaseTransformer implements Transform {
 
 	}
 	@Override
-	public void setScale(double s, boolean 	suppressEvent) {
+	public void setScale(double s, boolean 	triggerEvents) {
 
 		if (super.getScaleX() != s) {
 			setScaleX(s);
 			setScaleY(s);
-			if(!suppressEvent) {
+			if(triggerEvents) {
 				fireScaleChanged();
 			}
 		}
@@ -59,20 +59,20 @@ public class DefaultTransformer extends BaseTransformer implements Transform {
 
 
 	@Override
-	public void setXTranslate(double tx, boolean 	suppressEvent) {
+	public void setXTranslate(double tx, boolean 	triggerEvents) {
 
 		super.setXTranslate(tx);
-		if(!suppressEvent) {
+		if(triggerEvents) {
 			fireXTraslateChanged();
 		}
 	}
 
 
 	@Override
-	public void setYTranslate(double ty, boolean 	suppressEvent) {
+	public void setYTranslate(double ty, boolean 	triggerEvents) {
 
 		super.setYTranslate(ty);
-		if(!suppressEvent) {
+		if(triggerEvents) {
 			fireYTraslateChanged();
 		}
 	}

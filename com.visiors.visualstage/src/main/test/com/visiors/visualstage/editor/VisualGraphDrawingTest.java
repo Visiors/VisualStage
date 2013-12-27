@@ -20,8 +20,8 @@ import com.visiors.visualstage.editor.impl.GraphEditor;
 import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.graph.VisualGraph;
 import com.visiors.visualstage.graph.view.node.VisualNode;
-import com.visiors.visualstage.pool.FormatCollection;
-import com.visiors.visualstage.pool.ShapeCollection;
+import com.visiors.visualstage.pool.FormatDefinitionCollection;
+import com.visiors.visualstage.pool.ShapeDefinitionCollection;
 
 public class VisualGraphDrawingTest {
 
@@ -90,12 +90,12 @@ public class VisualGraphDrawingTest {
 
 	private void initShapeDefinitionCollection(Editor editor) throws IOException {
 
-		final ShapeCollection shapesCollection = editor.getShapesCollection();
+		final ShapeDefinitionCollection shapesCollection = editor.getShapesCollection();
 		String xmlContent = Files.toString(new File(
 				"src/main/test/com/visiors/visualstage/editor/GraphObjecDefinition.xml"), Charsets.UTF_8);
 		shapesCollection.loadAndPool(xmlContent);
 
-		final FormatCollection formatsCollection = editor.getFormatsCollection();
+		final FormatDefinitionCollection formatsCollection = editor.getFormatsCollection();
 		xmlContent = Files.toString(new File("src/main/test/com/visiors/visualstage/editor/FormatDefinition.xml"),
 				Charsets.UTF_8);
 		formatsCollection.loadAndPool(xmlContent);

@@ -5,8 +5,9 @@ import com.visiors.visualstage.handler.ClipboardHandler;
 import com.visiors.visualstage.handler.GroupingHandler;
 import com.visiors.visualstage.handler.SelectionHandler;
 import com.visiors.visualstage.handler.UndoRedoHandler;
-import com.visiors.visualstage.pool.FormatCollection;
-import com.visiors.visualstage.pool.ShapeCollection;
+import com.visiors.visualstage.pool.FormatDefinitionCollection;
+import com.visiors.visualstage.pool.GraphBuilder;
+import com.visiors.visualstage.pool.ShapeDefinitionCollection;
 import com.visiors.visualstage.stage.StageDesigner;
 import com.visiors.visualstage.tool.Interactable;
 
@@ -30,9 +31,9 @@ public interface Editor extends Interactable {
 
 	public boolean closeDocument(String title);
 
-	public ShapeCollection getShapesCollection();
+	public ShapeDefinitionCollection getShapesCollection();
 
-	public FormatCollection getFormatsCollection();
+	public FormatDefinitionCollection getFormatsCollection();
 
 	public SelectionHandler getSelectionHandler();
 
@@ -43,6 +44,8 @@ public interface Editor extends Interactable {
 	public UndoRedoHandler getUndoRedoHandler();
 
 	public ClipboardHandler getClipboardHandler();
+
+	public GraphBuilder getGraphBuilder();
 
 	void addEditorListener(EditorListener editorListener);
 

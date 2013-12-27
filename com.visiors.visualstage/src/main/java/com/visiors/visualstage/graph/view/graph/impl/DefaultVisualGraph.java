@@ -9,10 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.inject.Inject;
-import com.google.inject.Provider;
 import com.visiors.visualstage.constants.PropertyConstants;
 import com.visiors.visualstage.constants.XMLConstants;
-import com.visiors.visualstage.editor.DI;
 import com.visiors.visualstage.graph.view.Constants;
 import com.visiors.visualstage.graph.view.DefaultVisualGraphObject;
 import com.visiors.visualstage.graph.view.VisualGraphObject;
@@ -25,8 +23,8 @@ import com.visiors.visualstage.graph.view.node.VisualNode;
 import com.visiors.visualstage.graph.view.node.impl.DefaultVisualNode;
 import com.visiors.visualstage.graph.view.node.listener.VisualNodeListener;
 import com.visiors.visualstage.handler.UndoRedoHandler;
-import com.visiors.visualstage.pool.FormatCollection;
-import com.visiors.visualstage.pool.ShapeCollection;
+import com.visiors.visualstage.pool.FormatDefinitionCollection;
+import com.visiors.visualstage.pool.GraphBuilder;
 import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.property.PropertyUnit;
 import com.visiors.visualstage.property.impl.DefaultPropertyList;
@@ -52,16 +50,8 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	// private final GraphViewUndoHelper graphViewUndoHelper;
 	private boolean movingContent;
 	private final SubgraphEventMediator eventMediator;
-
-
 	@Inject
-	protected ShapeCollection shapeCollection;
-	@Inject
-	protected Provider<VisualNode> visualNodeProvider;
-	@Inject
-	protected Provider<VisualEdge> visualEdgeProvider;
-	@Inject
-	protected Provider<VisualGraph> visualGraphProvider;
+	protected GraphBuilder graphBuilder;
 	@Inject
 	protected UndoRedoHandler undoRedoHandler;
 
@@ -74,8 +64,8 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 		// graphViewUndoHelper = new GraphViewUndoHelper(this);
 		eventMediator = new SubgraphEventMediator(this);
 		new GraphContentManager(this); 
-		styleID = FormatCollection.DEFAULT_STYLE;
-		presentationID = FormatCollection.DEFAULT_SUBGRAPH_PRESENTATION;
+		styleID = FormatDefinitionCollection.DEFAULT_STYLE;
+		presentationID = FormatDefinitionCollection.DEFAULT_SUBGRAPH_PRESENTATION;
 
 	}
 
@@ -135,27 +125,23 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	@Override
 	public VisualNode createNode() {
 
-		return  createNode(ShapeCollection.DEFAULT_NODE);
+		final VisualNode visualNode = graphBuilder.createNode();
+		addNode(visualNode);
+		return visualNode;
 	}
 
 	@Override
 	public VisualNode createNode(String type) {
 
-		if (!shapeCollection.contains(type)) {
-			throw new IllegalArgumentException("The node '" + type
-					+ "' cannot be created beause the associated template could not be found.  "
-					+ "Please load the node's descriptor, or registere the associated node.");
-		}
-
-		return createNode(shapeCollection.get(type));
+		final VisualNode visualNode = graphBuilder.createNode(type);
+		addNode(visualNode);
+		return visualNode;
 	}
 
 	@Override
 	public VisualNode createNode(PropertyList properties) {
 
-		final VisualNode visualNode = visualNodeProvider.get();
-		DI.injectMembers(visualNode);
-		visualNode.setProperties(properties);
+		final VisualNode visualNode = graphBuilder.createNode(properties);
 		addNode(visualNode);
 		return visualNode;
 	}
@@ -163,26 +149,23 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	@Override
 	public VisualEdge createEdge() {
 
-		return createEdge(ShapeCollection.DEFAULT_EDGE);
+		final VisualEdge visualEdge = graphBuilder.createEdge();
+		addEdge(visualEdge);
+		return visualEdge;
 	}
 
 	@Override
 	public VisualEdge createEdge(String type) {
 
-		if (!shapeCollection.contains(type)) {
-			throw new IllegalArgumentException("The edge '" + type
-					+ "' cannot be created beause the associated template could not be found.  "
-					+ "Please load the edge's descriptor, or registere the associated edge.");
-		}
-		return createEdge(shapeCollection.get(type));
+		final VisualEdge visualEdge = graphBuilder.createEdge(type);
+		addEdge(visualEdge);
+		return visualEdge;
 	}
 
 	@Override
 	public VisualEdge createEdge(PropertyList properties) {
 
-		final VisualEdge visualEdge = visualEdgeProvider.get();
-		DI.injectMembers(visualEdge);
-		visualEdge.setProperties(properties);
+		final VisualEdge visualEdge = graphBuilder.createEdge(properties);
 		addEdge(visualEdge);
 		return visualEdge;
 	}
@@ -190,27 +173,23 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	@Override
 	public VisualGraph createSubgraph() {
 
-		return createSubgraph(ShapeCollection.DEFAULT_SUBGRAPH);
+		final VisualGraph visualGraph = graphBuilder.createSubgraph(properties);
+		addNode(visualGraph);
+		return visualGraph;
 	}
 
 	@Override
 	public VisualGraph createSubgraph(String type) {
 
-		if (!shapeCollection.contains(type)) {
-			throw new IllegalArgumentException("The subgraph '" + type
-					+ "' cannot be created beause the associated template could not be found.  "
-					+ "Please load the subgraph's descriptor, or registere the associated object.");
-		}
-
-		return createSubgraph(shapeCollection.get(type));
+		final VisualGraph visualGraph = graphBuilder.createSubgraph(type);
+		addNode(visualGraph);
+		return visualGraph;
 	}
 
 	@Override
 	public VisualGraph createSubgraph(PropertyList properties) {
 
-		final VisualGraph visualGraph = visualGraphProvider.get();
-		DI.injectMembers(visualGraph);
-		visualGraph.setProperties(properties);
+		final VisualGraph visualGraph = graphBuilder.createSubgraph(properties);
 		addNode(visualGraph);
 		return visualGraph;
 	}
@@ -745,7 +724,7 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	@Override
 	public void draw(AWTCanvas awtCanvas, DrawingContext context, DrawingSubject subject) {
 
-		super.draw(awtCanvas, context, subject);
+		//		super.draw(awtCanvas, context, subject);
 		for (final VisualGraphObject vgo : depot.getObjects()) {
 			vgo.draw(awtCanvas, context, subject);
 		}

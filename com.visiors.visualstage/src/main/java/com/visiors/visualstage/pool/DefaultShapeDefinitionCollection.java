@@ -18,7 +18,7 @@ import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.util.PropertyUtil;
 
 @Singleton
-public class TemplateShapeCollection implements ShapeCollection {
+public class DefaultShapeDefinitionCollection implements ShapeDefinitionCollection {
 
 	private final static String[] setctionTags = new String[] { XMLConstants.NODE_SECTION_TAG,
 			XMLConstants.EDGE_SECTION_TAG, XMLConstants.SUBGRAPH_SECTION_TAG };
@@ -28,7 +28,7 @@ public class TemplateShapeCollection implements ShapeCollection {
 
 	private final Map<String, PropertyList> shapeDefinitionMap = new HashMap<String, PropertyList>();
 
-	public TemplateShapeCollection() {
+	public DefaultShapeDefinitionCollection() {
 
 		loadDefaultDefinition();
 	}

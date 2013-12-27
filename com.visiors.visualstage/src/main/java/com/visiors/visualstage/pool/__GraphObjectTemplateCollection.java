@@ -21,11 +21,11 @@ import com.visiors.visualstage.graph.view.node.VisualNode;
  */
 
 @Singleton
-public class GraphObjectTemplateCollection {
+public class __GraphObjectTemplateCollection {
 
 	private final Map<String, VisualGraphObject> registeredGraphObjects = new HashMap<String, VisualGraphObject>();
 
-	private GraphObjectTemplateCollection() {
+	private __GraphObjectTemplateCollection() {
 
 		/* Singleton */
 	}

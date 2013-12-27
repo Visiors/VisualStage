@@ -13,7 +13,7 @@ import com.visiors.visualstage.editor.impl.GraphEditor;
 import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.graph.VisualGraph;
 import com.visiors.visualstage.graph.view.node.VisualNode;
-import com.visiors.visualstage.pool.ShapeCollection;
+import com.visiors.visualstage.pool.ShapeDefinitionCollection;
 
 public class VisualGraphIntegrityTest {
 
@@ -99,7 +99,7 @@ public class VisualGraphIntegrityTest {
 
 	private void initShapeDefinitionCollection(Editor editor) throws IOException {
 
-		ShapeCollection shapesCollection = editor.getShapesCollection();
+		ShapeDefinitionCollection shapesCollection = editor.getShapesCollection();
 		String xmlContent = Files.toString(new File("src/main/test/com/visiors/visualstage/editor/graphExample.xml"),
 				Charsets.UTF_8);
 		shapesCollection.loadAndPool(xmlContent);

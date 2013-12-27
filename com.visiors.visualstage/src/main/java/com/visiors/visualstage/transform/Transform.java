@@ -5,11 +5,11 @@ import java.awt.Rectangle;
 
 public interface Transform {
 
-	public void setScale(double s, boolean suppressEvent);
+	public void setScale(double s, boolean triggerEvents);
 
-	public void setXTranslate(double tx, boolean suppressEvent);
+	public void setXTranslate(double tx, boolean triggerEvents);
 
-	public void setYTranslate(double ty, boolean suppressEvent);
+	public void setYTranslate(double ty, boolean triggerEvents);
 
 	public void setScale(double s);
 
