@@ -13,10 +13,10 @@ import java.awt.image.BufferedImage;
 import com.google.common.base.Objects;
 import com.visiors.visualstage.renderer.AWTCanvas;
 import com.visiors.visualstage.renderer.DefaultDrawingContext;
-import com.visiors.visualstage.renderer.ComponentOfflineRenderer;
+import com.visiors.visualstage.renderer.DefaultComponentOfflineRenderer;
 import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.renderer.DrawingSubject;
-import com.visiors.visualstage.renderer.OffScreenRenderer;
+import com.visiors.visualstage.renderer.ComponentOffScreenRenderer;
 import com.visiors.visualstage.renderer.Resolution;
 import com.visiors.visualstage.renderer.effect.BlendEffect;
 import com.visiors.visualstage.renderer.effect.DefaultEffectBatchProcessor;
@@ -64,7 +64,7 @@ public class Navigator extends BaseTool implements ViewProvider {
 	private boolean takeSnapshot;
 	private DrawingContext context;
 	private boolean activated;
-	private final OffScreenRenderer graphRenderer;
+	private final ComponentOffScreenRenderer graphRenderer;
 
 	public Navigator(ScrollBar hScrollBar, ScrollBar vScrollBar) {
 
@@ -73,7 +73,7 @@ public class Navigator extends BaseTool implements ViewProvider {
 		this.vScrollBar = vScrollBar;
 		this.hDragHelper = new DragHelper(hScrollBar);
 		this.vDragHelper = new DragHelper(vScrollBar);
-		this.graphRenderer = new ComponentOfflineRenderer(new NavigatorGraphPainter(this));
+		this.graphRenderer = new DefaultComponentOfflineRenderer(new NavigatorGraphPainter(this));
 		setAutoClose(true);
 	}
 

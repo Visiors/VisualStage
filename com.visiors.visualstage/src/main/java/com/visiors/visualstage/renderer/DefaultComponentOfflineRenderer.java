@@ -5,15 +5,15 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
-public class ComponentOfflineRenderer implements OffScreenRenderer {
+public class DefaultComponentOfflineRenderer implements ComponentOffScreenRenderer {
 
 	private Image image;
-	private final DrawClient drawClient;
+	private final ComponentRenderer componentRenderer;
 	private boolean invalidated;
 
-	public ComponentOfflineRenderer(DrawClient drawClient) {
+	public DefaultComponentOfflineRenderer(ComponentRenderer componentRenderer) {
 
-		this.drawClient = drawClient;
+		this.componentRenderer = componentRenderer;
 	}
 
 	@Override
@@ -30,14 +30,14 @@ public class ComponentOfflineRenderer implements OffScreenRenderer {
 	@Override
 	public void render(Graphics2D gfx) {
 
-		final Rectangle r = drawClient.getBounds();
+		final Rectangle r = componentRenderer.getBounds();
 		if(r != null && !r.isEmpty()) {
 			if ((image == null || isInvalidated()) ) 
 			{
 				image = new BufferedImage(r.width, r.height, BufferedImage.TYPE_INT_ARGB_PRE);
 				final Graphics2D g = (Graphics2D) image.getGraphics();
 				g.translate(-r.x, -r.y);
-				drawClient.draw(g);
+				componentRenderer.draw(g);
 				g.translate(r.x, r.y);
 				invalidated = false;
 				//System.err.println("creating image");

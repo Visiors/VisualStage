@@ -5,16 +5,16 @@ import java.awt.Rectangle;
 
 import com.visiors.visualstage.document.GraphDocument;
 import com.visiors.visualstage.renderer.AWTCanvas;
-import com.visiors.visualstage.renderer.ComponentOfflineRenderer;
+import com.visiors.visualstage.renderer.DefaultComponentOfflineRenderer;
 import com.visiors.visualstage.renderer.DrawingContext;
-import com.visiors.visualstage.renderer.OffScreenRenderer;
+import com.visiors.visualstage.renderer.ComponentOffScreenRenderer;
 import com.visiors.visualstage.tool.Interactable;
 import com.visiors.visualstage.tool.impl.BaseTool;
 
 public class ScrollBarCornerButton implements Interactable {
 
 	private final Rectangle bounds = new Rectangle();
-	private final OffScreenRenderer offlineRenderer;
+	private final ComponentOffScreenRenderer offlineRenderer;
 	private final Rectangle canvasBoundary = new Rectangle();
 	private GraphDocument graphDocument;
 	private boolean hit;
@@ -24,7 +24,7 @@ public class ScrollBarCornerButton implements Interactable {
 
 	public ScrollBarCornerButton(ScrollBar hScrollBar, ScrollBar vScrollBar) {
 
-		this.offlineRenderer = new ComponentOfflineRenderer(new ScrollBarCornerButtonPainter(this));
+		this.offlineRenderer = new DefaultComponentOfflineRenderer(new ScrollBarCornerButtonPainter(this));
 		this.navigator = new Navigator(hScrollBar, vScrollBar);
 	}
 

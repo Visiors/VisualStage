@@ -5,9 +5,9 @@ import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Rectangle;
 
-import com.visiors.visualstage.renderer.DrawClient;
+import com.visiors.visualstage.renderer.ComponentRenderer;
 
-public class ScrollBarBackgroundPainter implements DrawClient {
+public class ScrollBarBackgroundPainter implements ComponentRenderer {
 
 	private final ScrollBar scrollBar;
 

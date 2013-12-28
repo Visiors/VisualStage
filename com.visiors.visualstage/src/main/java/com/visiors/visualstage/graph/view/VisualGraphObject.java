@@ -7,7 +7,6 @@ import com.visiors.visualstage.graph.view.shape.CompositeShape;
 import com.visiors.visualstage.renderer.AWTCanvas;
 import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.renderer.DrawingSubject;
-import com.visiors.visualstage.renderer.cache.Cacheable;
 import com.visiors.visualstage.tool.Manipulatable;
 
 /**
@@ -27,9 +26,7 @@ public interface VisualGraphObject extends CompositeShape, Manipulatable, Attrib
 
 	public void setParentGraph(VisualGraph graph);
 
-
 	public void move(int dx, int dy);
-
 
 
 	// public void fireEvents(boolean enable);

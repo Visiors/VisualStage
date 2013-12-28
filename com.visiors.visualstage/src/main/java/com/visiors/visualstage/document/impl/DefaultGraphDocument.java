@@ -150,7 +150,7 @@ public class DefaultGraphDocument implements GraphDocument {
 	public void setZoom(double value) {
 
 		if (transform.getScale() != value) {
-			transform.setScale(Math.min(10.0, Math.max(0.05, value)));
+			transform.setScale(Math.min(10.0, Math.max(0.05, value)), true);
 			fireViewInvalid();
 		}
 	}
@@ -361,7 +361,9 @@ public class DefaultGraphDocument implements GraphDocument {
 			graph.draw(awtCanvas, context, DrawingSubject.OBJECT);
 			graph.draw(awtCanvas, context, DrawingSubject.SELECTION_INDICATORS);
 			graph.draw(awtCanvas, context, DrawingSubject.PORTS);
-		} else {
+		} 
+		else
+		{
 			final Image img = getImage(context, null, computeClipRect());
 			awtCanvas.gfx.drawImage(img, 0, 0, null);
 		}

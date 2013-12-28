@@ -540,8 +540,9 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 
 			@Override
 			public void scaleChanged() {
-
+				invalidate();
 				fireGraphExpansionChanged();
+
 			}
 		});
 	}
@@ -730,7 +731,21 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 		}
 	}
 
+	@Override
+	public void invalidate() {
 
+		super.invalidate();
+		for (final VisualGraphObject vgo : depot.getObjects()) {
+			vgo.invalidate();
+		}
+	}
+
+
+
+	@Override
+	protected void onSizeChanged() {
+		// Do not invalidate the cache for sub-graphs
+	}
 
 
 	@Override

@@ -23,6 +23,8 @@ import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.property.impl.DefaultPropertyList;
 import com.visiors.visualstage.property.impl.DefaultPropertyUnit;
 import com.visiors.visualstage.property.impl.PropertyBinder;
+import com.visiors.visualstage.renderer.AWTCanvas;
+import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.renderer.DrawingSubject;
 import com.visiors.visualstage.renderer.Resolution;
 import com.visiors.visualstage.svg.SVGDescriptor;
@@ -659,7 +661,7 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 				}
 
 				if (bounds.width != boundary.width || bounds.height != boundary.height) {
-					setModified(true);
+					onSizeChanged();
 				}
 
 				boundary = new Rectangle(bounds);
@@ -680,6 +682,11 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 
 			}
 		}
+	}
+
+	protected void onSizeChanged() {
+
+		invalidate();
 	}
 
 	private void updateView() {
@@ -853,6 +860,14 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 	// g.dispose();
 	// return scaledImage;
 	// }
+
+	@Override
+	public void draw(AWTCanvas awtCanvas, DrawingContext context, DrawingSubject subject) {
+
+		if(subject != DrawingSubject.PORTS || arePortsilluminated()) {
+			super.draw(awtCanvas, context, subject);
+		}
+	}
 
 	@Override
 	public String getViewDescriptor(Resolution resolution, DrawingSubject subject) {
@@ -1364,7 +1379,7 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 		for (final VisualNodeListener l : nodeViewListener) {
 			l.nodeManipulated();
 		}
-		setModified(true);
+		invalidate();
 	}
 
 	protected void fireNodeSelectionChanged() {

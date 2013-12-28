@@ -6,9 +6,9 @@ import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Rectangle;
 
-import com.visiors.visualstage.renderer.DrawClient;
+import com.visiors.visualstage.renderer.ComponentRenderer;
 
-public class ScrollBarCornerButtonPainter implements DrawClient {
+public class ScrollBarCornerButtonPainter implements ComponentRenderer {
 
 	private final ScrollBarCornerButton scrollBarButton;
 

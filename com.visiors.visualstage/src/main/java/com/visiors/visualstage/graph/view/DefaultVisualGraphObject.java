@@ -1,8 +1,5 @@
 package com.visiors.visualstage.graph.view;
 
-import java.awt.Image;
-import java.awt.Rectangle;
-
 import com.google.inject.Inject;
 import com.visiors.visualstage.attribute.Attribute;
 import com.visiors.visualstage.attribute.DefaultAttribute;
@@ -15,9 +12,9 @@ import com.visiors.visualstage.renderer.AWTCanvas;
 import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.renderer.DrawingSubject;
 import com.visiors.visualstage.renderer.ImageFactory;
-import com.visiors.visualstage.renderer.cache.DefaultViewCache;
-import com.visiors.visualstage.renderer.cache.GraphObjectImageProvider;
-import com.visiors.visualstage.renderer.cache.ViewCache;
+import com.visiors.visualstage.renderer.cache.DefaultShapeOfflineRenderer;
+import com.visiors.visualstage.renderer.cache.DefaultShapeRenderer;
+import com.visiors.visualstage.renderer.cache.ShapeOffScreenRenderer;
 import com.visiors.visualstage.svg.SVGDocumentBuilder;
 
 /**
@@ -25,8 +22,7 @@ import com.visiors.visualstage.svg.SVGDocumentBuilder;
  * nodes, sub-graphs).
  * 
  */
-public abstract class DefaultVisualGraphObject extends BaseCompositeShape implements VisualGraphObject,
-GraphObjectImageProvider {
+public abstract class DefaultVisualGraphObject extends BaseCompositeShape implements VisualGraphObject, Cacheable {
 
 	protected static final int NONE = -1;
 	protected long id;
@@ -34,8 +30,7 @@ GraphObjectImageProvider {
 	protected CustomData customData;
 	protected Attribute attributes;
 	protected PropertyList properties;
-	protected boolean modified;
-	protected final ViewCache offlineRenderer;
+	protected final ShapeOffScreenRenderer offScreenRenderer;
 	@Inject
 	protected SVGDocumentBuilder svgDocumentBuilder;
 	protected ImageFactory snapshotGenerator;
@@ -46,7 +41,7 @@ GraphObjectImageProvider {
 
 		this.properties = new DefaultPropertyList();
 		this.attributes = new DefaultAttribute();
-		this.offlineRenderer = new DefaultViewCache(this);
+		this.offScreenRenderer = new DefaultShapeOfflineRenderer(new DefaultShapeRenderer(this));
 
 	}
 
@@ -63,15 +58,9 @@ GraphObjectImageProvider {
 	}
 
 	@Override
-	public void setModified(boolean modified) {
+	public void invalidate() {
 
-		this.modified = modified;
-	}
-
-	@Override
-	public boolean isModified() {
-
-		return modified;
+		offScreenRenderer.invalidate();
 	}
 
 	@Override
@@ -111,32 +100,8 @@ GraphObjectImageProvider {
 	@Override
 	public void draw(AWTCanvas awtCanvas, DrawingContext context, DrawingSubject subject) {
 
-		Image image = offlineRenderer.get(context, subject);
-		if (image != null) {
-			final Rectangle boundary = transform.transformToScreen(getBounds());
-			final Rectangle extendedBoundary = transform.transformToScreen(getExtendedBoundary());
-			boundary.grow((extendedBoundary.width - boundary.width) / 2,
-					(extendedBoundary.height - boundary.height) / 2);
-			//			awtCanvas.gfx.setColor(Color.blue);
-			//			awtCanvas.gfx.drawRect(boundary.x, boundary.y, boundary.width, boundary.height);
-			awtCanvas.gfx.drawImage(image, boundary.x, boundary.y, null);
+		if(subject != DrawingSubject.SELECTION_INDICATORS || isSelected()) {
+			offScreenRenderer.render(awtCanvas, context, subject);
 		}
 	}
-
-	@Override
-	public Image provideImage(DrawingContext context, DrawingSubject subject) {
-
-		setModified(false);
-		if (snapshotGenerator == null) {
-			this.snapshotGenerator = new ImageFactory(svgDocumentBuilder);
-		}
-		return snapshotGenerator.createSnapshot(this, context, subject);
-	}
-
-	private Object VisualObjectSnapshotGenerator() {
-
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

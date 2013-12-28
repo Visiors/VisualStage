@@ -3,9 +3,9 @@ package com.visiors.visualstage.tool.impl.scrollbar;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
-import com.visiors.visualstage.renderer.DrawClient;
+import com.visiors.visualstage.renderer.ComponentRenderer;
 
-public class NavigatorGraphPainter implements DrawClient {
+public class NavigatorGraphPainter implements ComponentRenderer {
 
 	private final Navigator navigator;
 

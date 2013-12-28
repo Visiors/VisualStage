@@ -6,20 +6,20 @@ import java.text.MessageFormat;
 
 import com.visiors.visualstage.editor.DI;
 import com.visiors.visualstage.renderer.AWTCanvas;
-import com.visiors.visualstage.renderer.ComponentOfflineRenderer;
-import com.visiors.visualstage.renderer.DrawClient;
-import com.visiors.visualstage.renderer.OffScreenRenderer;
+import com.visiors.visualstage.renderer.DefaultComponentOfflineRenderer;
+import com.visiors.visualstage.renderer.ComponentRenderer;
+import com.visiors.visualstage.renderer.ComponentOffScreenRenderer;
 import com.visiors.visualstage.system.SystemUnit;
 import com.visiors.visualstage.tool.impl.BaseTool;
 import com.visiors.visualstage.tool.impl.scrollbar.StageStyleConstants;
 import com.visiors.visualstage.transform.Transform;
 
-public class Ruler extends BaseTool implements DrawClient {
+public class Ruler extends BaseTool implements ComponentRenderer {
 
 	public static final int CENTIMETER = 0;
 	public static final int INCH = 1;
 	private final boolean horizintal;
-	private final OffScreenRenderer offScreenRenderer;
+	private final ComponentOffScreenRenderer componentOffScreenRenderer;
 	private final int outlineStep = 5;
 
 	private final SystemUnit systemUnit;
@@ -34,7 +34,7 @@ public class Ruler extends BaseTool implements DrawClient {
 		this.horizintal = horizintal;
 
 		systemUnit = DI.getInstance(SystemUnit.class);
-		this.offScreenRenderer = new ComponentOfflineRenderer(this);
+		this.componentOffScreenRenderer = new DefaultComponentOfflineRenderer(this);
 	}
 
 	public void setSize(int size) {
@@ -68,10 +68,10 @@ public class Ruler extends BaseTool implements DrawClient {
 			oldViewBoudary.setBounds((int) xform.getXTranslate(), (int) xform.getYTranslate(), xform.getViewWidth(),
 					xform.getViewHeight());
 			oldViewScale = xform.getScale();
-			offScreenRenderer.invalidate();
+			componentOffScreenRenderer.invalidate();
 		}
 
-		offScreenRenderer.render(awtCanvas.gfx);
+		componentOffScreenRenderer.render(awtCanvas.gfx);
 	}
 
 	private double computeUnitWidth() {

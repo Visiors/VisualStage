@@ -7,8 +7,8 @@ import java.awt.Rectangle;
 import com.visiors.visualstage.document.GraphDocument;
 import com.visiors.visualstage.document.listener.GraphDocumentAdapter;
 import com.visiors.visualstage.renderer.AWTCanvas;
-import com.visiors.visualstage.renderer.ComponentOfflineRenderer;
-import com.visiors.visualstage.renderer.OffScreenRenderer;
+import com.visiors.visualstage.renderer.DefaultComponentOfflineRenderer;
+import com.visiors.visualstage.renderer.ComponentOffScreenRenderer;
 import com.visiors.visualstage.tool.Interactable;
 import com.visiors.visualstage.transform.Transform;
 
@@ -37,21 +37,21 @@ public class ScrollBar implements Interactable {
 	private int hitPage = -1;
 	private boolean zoomMinusArmed;
 	private boolean zoomPlusArmed;
-	private final OffScreenRenderer thumbRenderer;
-	private final OffScreenRenderer minusButtonRenderer;
-	private final OffScreenRenderer plusButtonRenderer;
-	private final OffScreenRenderer backgroundRenderer;
-	private final OffScreenRenderer pageRenderer;
+	private final ComponentOffScreenRenderer thumbRenderer;
+	private final ComponentOffScreenRenderer minusButtonRenderer;
+	private final ComponentOffScreenRenderer plusButtonRenderer;
+	private final ComponentOffScreenRenderer backgroundRenderer;
+	private final ComponentOffScreenRenderer pageRenderer;
 
 	public ScrollBar(boolean horizontal) {
 
 		this.isHorizontal = horizontal;
 		this.dragHelper = new DragHelper(this);
-		this.backgroundRenderer = new ComponentOfflineRenderer(new ScrollBarBackgroundPainter(this));
-		this.minusButtonRenderer = new ComponentOfflineRenderer(new ScrollBarButtonPainter(this, true));
-		this.plusButtonRenderer = new ComponentOfflineRenderer(new ScrollBarButtonPainter(this, false));
-		this.thumbRenderer = new ComponentOfflineRenderer(new ScrollBarThumbPainter(this));
-		this.pageRenderer = new ComponentOfflineRenderer(new ScrollBarPagePainter(this));
+		this.backgroundRenderer = new DefaultComponentOfflineRenderer(new ScrollBarBackgroundPainter(this));
+		this.minusButtonRenderer = new DefaultComponentOfflineRenderer(new ScrollBarButtonPainter(this, true));
+		this.plusButtonRenderer = new DefaultComponentOfflineRenderer(new ScrollBarButtonPainter(this, false));
+		this.thumbRenderer = new DefaultComponentOfflineRenderer(new ScrollBarThumbPainter(this));
+		this.pageRenderer = new DefaultComponentOfflineRenderer(new ScrollBarPagePainter(this));
 
 	}
 

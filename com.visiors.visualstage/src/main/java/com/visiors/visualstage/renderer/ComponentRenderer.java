@@ -4,7 +4,7 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
 
-public interface DrawClient {
+public interface ComponentRenderer {
 
 
 	Rectangle getBounds();

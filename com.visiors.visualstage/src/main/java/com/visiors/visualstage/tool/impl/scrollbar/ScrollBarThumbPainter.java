@@ -4,9 +4,9 @@ import java.awt.GradientPaint;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
-import com.visiors.visualstage.renderer.DrawClient;
+import com.visiors.visualstage.renderer.ComponentRenderer;
 
-public class ScrollBarThumbPainter implements DrawClient {
+public class ScrollBarThumbPainter implements ComponentRenderer {
 
 	private final ScrollBar scrollBar;
 
