@@ -4,6 +4,9 @@ import com.visiors.visualstage.property.listener.PropertyListener;
 
 public interface Property {
 
+	String PATH_SEPARATOR = ":";
+
+	public String getFullName();
 
 	public String getName();
 

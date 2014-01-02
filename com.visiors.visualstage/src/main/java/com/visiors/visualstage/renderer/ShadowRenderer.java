@@ -1,271 +1,302 @@
 package com.visiors.visualstage.renderer;
 
-
-
 import java.awt.Color;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 
-
 public class ShadowRenderer {
 
+	// size of the shadow in pixels
+	private int size = 5;
 
-    // size of the shadow in pixels 
-    private int size = 5;
-    
-    // opacity of the shadow
-    private float opacity = 0.5f;
-    
-    // color of the shadow
-    private Color color = Color.BLACK;
-    
+	// opacity of the shadow
+	private float opacity = 0.5f;
 
-    public static int shadowSize = 3;
-    
-    public static BufferedImage makeShadow(BufferedImage source, int size, Color color) {
+	// color of the shadow
+	private Color color = Color.BLACK;
 
-    	if(size == 0)
-    		return source;
-    	
-    	ShadowRenderer sr = new ShadowRenderer(size , 0.3f, color);
-        BufferedImage imgShadow = sr.createShadow(source);
-        imgShadow.getGraphics().drawImage(source, 0, 0, null);
-        return imgShadow;
-    }
-    public static BufferedImage makeShadow(BufferedImage source) {
-    	
-    	if(shadowSize == 0)
-    		return source;
-    	
-    	ShadowRenderer sr = new ShadowRenderer(shadowSize , 0.2f, Color.darkGray);
-    	BufferedImage imgShadow = sr.createShadow(source);
-    	imgShadow.getGraphics().drawImage(source, 0, 0, null);
-    	return imgShadow;
-    }
-    
-    /**
-     * <p>Creates a default good looking shadow generator.
-     * The default shadow renderer provides the following default values:
-     * <ul>
-     *   <li><i>size</i>: 5 pixels</li>
-     *   <li><i>opacity</i>: 50%</li>
-     *   <li><i>color</i>: Black</li>
-     * </ul></p>
-     * <p>These properties provide a regular, good looking shadow.</p>
-     */
-    public ShadowRenderer() {
-        this(5, 0.5f, Color.BLACK);
-    }
-    
-    public ShadowRenderer(final int size, final float opacity, final Color color) {
-        setSize(size);
-        setOpacity(opacity);
-        setColor(color);
-    }
+	public static int shadowSize = 3;
 
-    public Color getColor() {
-        return color;
-    }
+	public static BufferedImage makeShadow(BufferedImage source, int size, Color color) {
 
-    public void setColor(final Color shadowColor) {
-        if (shadowColor != null) {
-            this.color = shadowColor;
-        }
-    }
+		if (size == 0) {
+			return source;
+		}
 
-    public float getOpacity() {
-        return opacity;
-    }
+		ShadowRenderer sr = new ShadowRenderer(size, 0.3f, color);
+		BufferedImage imgShadow = sr.createShadow(source);
+		imgShadow.getGraphics().drawImage(source, 0, 0, null);
+		return imgShadow;
+	}
 
-    public void setOpacity(final float shadowOpacity) {
-        float oldOpacity = this.opacity;
-        
-        if (shadowOpacity < 0.0) {
-            this.opacity = 0.0f;
-        } else if (shadowOpacity > 1.0f) {
-            this.opacity = 1.0f;
-        } else {
-            this.opacity = shadowOpacity;
-        }
-    }
+	public static Image createShadow(Image source) {
 
-    public int getSize() {
-        return size;
-    }
+		if (shadowSize == 0) {
+			return source;
+		}
 
+		BufferedImage bufferedImage = new BufferedImage(source.getWidth(null), source.getHeight(null),
+				BufferedImage.TYPE_INT_ARGB_PRE);
+		bufferedImage.getGraphics().drawImage(source, 0, 0, null);
 
-    public void setSize(final int shadowSize) {
-        int oldSize = this.size;
-        
-        if (shadowSize < 0) {
-            this.size = 0;
-        } else {
-            this.size = shadowSize;
-        }
-  
-    }
+		ShadowRenderer sr = new ShadowRenderer(shadowSize, 0.2f, Color.darkGray);
+		BufferedImage imgShadow = sr.createShadow(bufferedImage);
+		imgShadow.getGraphics().drawImage(source, 0, 0, null);
+		return imgShadow;
+	}
 
-    /**
-     * <p>Generates the shadow for a given picture and the current properties
-     * of the renderer.</p>
-     * <p>The generated image dimensions are computed as following:</p>
-     * <pre>
-     * width  = imageWidth  + 2 * shadowSize
-     * height = imageHeight + 2 * shadowSize
-     * </pre>
-     * @param image the picture from which the shadow must be cast
-     * @return the picture containing the shadow of <code>image</code> 
-     */
-    public BufferedImage createShadow(final BufferedImage image) {
-    
-        int shadowSize = size * 2;
+	/**
+	 * <p>
+	 * Creates a default good looking shadow generator. The default shadow
+	 * renderer provides the following default values:
+	 * <ul>
+	 * <li><i>size</i>: 5 pixels</li>
+	 * <li><i>opacity</i>: 50%</li>
+	 * <li><i>color</i>: Black</li>
+	 * </ul>
+	 * </p>
+	 * <p>
+	 * These properties provide a regular, good looking shadow.
+	 * </p>
+	 */
+	public ShadowRenderer() {
 
-        int srcWidth = image.getWidth();
-        int srcHeight = image.getHeight();
+		this(5, 0.5f, Color.BLACK);
+	}
 
-        int dstWidth = srcWidth + shadowSize;
-        int dstHeight = srcHeight + shadowSize;
+	public ShadowRenderer(final int size, final float opacity, final Color color) {
 
-        int left = size;
-        int right = shadowSize - left;
+		setSize(size);
+		setOpacity(opacity);
+		setColor(color);
+	}
 
-        int yStop = dstHeight - right;
+	public Color getColor() {
 
-        int shadowRgb = color.getRGB() & 0x00FFFFFF;
-        int[] aHistory = new int[shadowSize];
-        int historyIdx;
+		return color;
+	}
 
-        int aSum;
+	public void setColor(final Color shadowColor) {
 
-        BufferedImage dst = new BufferedImage(dstWidth, dstHeight,
-                                              BufferedImage.TYPE_INT_ARGB);
+		if (shadowColor != null) {
+			this.color = shadowColor;
+		}
+	}
 
-        int[] dstBuffer = new int[dstWidth * dstHeight];
-        int[] srcBuffer = new int[srcWidth * srcHeight];
+	public float getOpacity() {
 
-        getPixels(image, 0, 0, srcWidth, srcHeight, srcBuffer);
+		return opacity;
+	}
 
-        int lastPixelOffset = right * dstWidth;
-        float hSumDivider = 1.0f / shadowSize;
-        float vSumDivider = opacity / shadowSize;
+	public void setOpacity(final float shadowOpacity) {
 
-        int[] hSumLookup = new int[256 * shadowSize];
-        for (int i = 0; i < hSumLookup.length; i++) {
-            hSumLookup[i] = (int) (i * hSumDivider);
-        }
+		float oldOpacity = this.opacity;
 
-        int[] vSumLookup = new int[256 * shadowSize];
-        for (int i = 0; i < vSumLookup.length; i++) {
-            vSumLookup[i] = (int) (i * vSumDivider);
-        }
+		if (shadowOpacity < 0.0) {
+			this.opacity = 0.0f;
+		} else if (shadowOpacity > 1.0f) {
+			this.opacity = 1.0f;
+		} else {
+			this.opacity = shadowOpacity;
+		}
+	}
 
-        int srcOffset;
+	public int getSize() {
 
-        // horizontal pass : extract the alpha mask from the source picture and
-        // blur it into the destination picture
-        for (int srcY = 0, dstOffset = left * dstWidth; srcY < srcHeight; srcY++) {
+		return size;
+	}
 
-            // first pixels are empty
-            for (historyIdx = 0; historyIdx < shadowSize; ) {
-                aHistory[historyIdx++] = 0;
-            }
+	public void setSize(final int shadowSize) {
 
-            aSum = 0;
-            historyIdx = 0;
-            srcOffset = srcY * srcWidth;
+		int oldSize = this.size;
 
-            // compute the blur average with pixels from the source image
-            for (int srcX = 0; srcX < srcWidth; srcX++) {
+		if (shadowSize < 0) {
+			this.size = 0;
+		} else {
+			this.size = shadowSize;
+		}
 
-                int a = hSumLookup[aSum];
-                dstBuffer[dstOffset++] = a << 24;   // store the alpha value only
-                                                    // the shadow color will be added in the next pass
+	}
 
-                aSum -= aHistory[historyIdx]; // substract the oldest pixel from the sum
+	/**
+	 * <p>
+	 * Generates the shadow for a given picture and the current properties of
+	 * the renderer.
+	 * </p>
+	 * <p>
+	 * The generated image dimensions are computed as following:
+	 * </p>
+	 * 
+	 * <pre>
+	 * width  = imageWidth  + 2 * shadowSize
+	 * height = imageHeight + 2 * shadowSize
+	 * </pre>
+	 * 
+	 * @param image
+	 *            the picture from which the shadow must be cast
+	 * @return the picture containing the shadow of <code>image</code>
+	 */
+	public BufferedImage createShadow(final BufferedImage image) {
 
-                // extract the new pixel ...
-                a = srcBuffer[srcOffset + srcX] >>> 24;
-                aHistory[historyIdx] = a;   // ... and store its value into history
-                aSum += a;                  // ... and add its value to the sum
+		int shadowSize = size * 2;
 
-                if (++historyIdx >= shadowSize) {
-                    historyIdx -= shadowSize;
-                }
-            }
+		int srcWidth = image.getWidth();
+		int srcHeight = image.getHeight();
 
-            // blur the end of the row - no new pixels to grab
-            for (int i = 0; i < shadowSize; i++) {
+		int dstWidth = srcWidth + shadowSize;
+		int dstHeight = srcHeight + shadowSize;
 
-                int a = hSumLookup[aSum];
-                dstBuffer[dstOffset++] = a << 24;
+		int left = size;
+		int right = shadowSize - left;
 
-                // substract the oldest pixel from the sum ... and nothing new to add !
-                aSum -= aHistory[historyIdx];
+		int yStop = dstHeight - right;
 
-                if (++historyIdx >= shadowSize) {
-                    historyIdx -= shadowSize;
-                }
-            }
-        }
+		int shadowRgb = color.getRGB() & 0x00FFFFFF;
+		int[] aHistory = new int[shadowSize];
+		int historyIdx;
 
-        // vertical pass
-        for (int x = 0, bufferOffset = 0; x < dstWidth; x++, bufferOffset = x) {
+		int aSum;
 
-            aSum = 0;
+		BufferedImage dst = new BufferedImage(dstWidth, dstHeight, BufferedImage.TYPE_INT_ARGB);
 
-            // first pixels are empty
-            for (historyIdx = 0; historyIdx < left;) {
-                aHistory[historyIdx++] = 0;
-            }
+		int[] dstBuffer = new int[dstWidth * dstHeight];
+		int[] srcBuffer = new int[srcWidth * srcHeight];
 
-            // and then they come from the dstBuffer
-            for (int y = 0; y < right; y++, bufferOffset += dstWidth) {
-                int a = dstBuffer[bufferOffset] >>> 24;         // extract alpha
-                aHistory[historyIdx++] = a;                     // store into history
-                aSum += a;                                      // and add to sum
-            }
+		getPixels(image, 0, 0, srcWidth, srcHeight, srcBuffer);
 
-            bufferOffset = x;
-            historyIdx = 0;
+		int lastPixelOffset = right * dstWidth;
+		float hSumDivider = 1.0f / shadowSize;
+		float vSumDivider = opacity / shadowSize;
 
-            // compute the blur avera`ge with pixels from the previous pass
-            for (int y = 0; y < yStop; y++, bufferOffset += dstWidth) {
+		int[] hSumLookup = new int[256 * shadowSize];
+		for (int i = 0; i < hSumLookup.length; i++) {
+			hSumLookup[i] = (int) (i * hSumDivider);
+		}
 
-                int a = vSumLookup[aSum];
-                dstBuffer[bufferOffset] = a << 24 | shadowRgb;  // store alpha value + shadow color
+		int[] vSumLookup = new int[256 * shadowSize];
+		for (int i = 0; i < vSumLookup.length; i++) {
+			vSumLookup[i] = (int) (i * vSumDivider);
+		}
 
-                aSum -= aHistory[historyIdx];   // substract the oldest pixel from the sum
+		int srcOffset;
 
-                a = dstBuffer[bufferOffset + lastPixelOffset] >>> 24;   // extract the new pixel ...
-                aHistory[historyIdx] = a;                               // ... and store its value into history
-                aSum += a;                                              // ... and add its value to the sum
+		// horizontal pass : extract the alpha mask from the source picture and
+		// blur it into the destination picture
+		for (int srcY = 0, dstOffset = left * dstWidth; srcY < srcHeight; srcY++) {
 
-                if (++historyIdx >= shadowSize) {
-                    historyIdx -= shadowSize;
-                }
-            }
+			// first pixels are empty
+			for (historyIdx = 0; historyIdx < shadowSize;) {
+				aHistory[historyIdx++] = 0;
+			}
 
-            // blur the end of the column - no pixels to grab anymore
-            for (int y = yStop; y < dstHeight; y++, bufferOffset += dstWidth) {
+			aSum = 0;
+			historyIdx = 0;
+			srcOffset = srcY * srcWidth;
 
-                int a = vSumLookup[aSum];
-                dstBuffer[bufferOffset] = a << 24 | shadowRgb;
+			// compute the blur average with pixels from the source image
+			for (int srcX = 0; srcX < srcWidth; srcX++) {
 
-                aSum -= aHistory[historyIdx];   // substract the oldest pixel from the sum
+				int a = hSumLookup[aSum];
+				dstBuffer[dstOffset++] = a << 24; // store the alpha value only
+				// the shadow color will be added in the next pass
 
-                if (++historyIdx >= shadowSize) {
-                    historyIdx -= shadowSize;
-                }
-            }
-        }
+				aSum -= aHistory[historyIdx]; // substract the oldest pixel from
+				// the sum
 
-        setPixels(dst, 0, 0, dstWidth, dstHeight, dstBuffer);
-        return dst;
-    }
-    
-    public static int[] getPixels(BufferedImage img, int x, int y, int w,
-			int h, int[] pixels) {
+				// extract the new pixel ...
+				a = srcBuffer[srcOffset + srcX] >>> 24;
+				aHistory[historyIdx] = a; // ... and store its value into
+				// history
+				aSum += a; // ... and add its value to the sum
+
+				if (++historyIdx >= shadowSize) {
+					historyIdx -= shadowSize;
+				}
+			}
+
+			// blur the end of the row - no new pixels to grab
+			for (int i = 0; i < shadowSize; i++) {
+
+				int a = hSumLookup[aSum];
+				dstBuffer[dstOffset++] = a << 24;
+
+				// substract the oldest pixel from the sum ... and nothing new
+				// to add !
+				aSum -= aHistory[historyIdx];
+
+				if (++historyIdx >= shadowSize) {
+					historyIdx -= shadowSize;
+				}
+			}
+		}
+
+		// vertical pass
+		for (int x = 0, bufferOffset = 0; x < dstWidth; x++, bufferOffset = x) {
+
+			aSum = 0;
+
+			// first pixels are empty
+			for (historyIdx = 0; historyIdx < left;) {
+				aHistory[historyIdx++] = 0;
+			}
+
+			// and then they come from the dstBuffer
+			for (int y = 0; y < right; y++, bufferOffset += dstWidth) {
+				int a = dstBuffer[bufferOffset] >>> 24; // extract alpha
+			aHistory[historyIdx++] = a; // store into history
+			aSum += a; // and add to sum
+			}
+
+			bufferOffset = x;
+			historyIdx = 0;
+
+			// compute the blur avera`ge with pixels from the previous pass
+			for (int y = 0; y < yStop; y++, bufferOffset += dstWidth) {
+
+				int a = vSumLookup[aSum];
+				dstBuffer[bufferOffset] = a << 24 | shadowRgb; // store alpha
+				// value + shadow
+				// color
+
+				aSum -= aHistory[historyIdx]; // substract the oldest pixel from
+				// the sum
+
+				a = dstBuffer[bufferOffset + lastPixelOffset] >>> 24; // extract
+				// the new
+				// pixel
+				// ...
+				aHistory[historyIdx] = a; // ... and store its value into
+				// history
+				aSum += a; // ... and add its value to the sum
+
+				if (++historyIdx >= shadowSize) {
+					historyIdx -= shadowSize;
+				}
+			}
+
+			// blur the end of the column - no pixels to grab anymore
+			for (int y = yStop; y < dstHeight; y++, bufferOffset += dstWidth) {
+
+				int a = vSumLookup[aSum];
+				dstBuffer[bufferOffset] = a << 24 | shadowRgb;
+
+				aSum -= aHistory[historyIdx]; // substract the oldest pixel from
+				// the sum
+
+				if (++historyIdx >= shadowSize) {
+					historyIdx -= shadowSize;
+				}
+			}
+		}
+
+		setPixels(dst, 0, 0, dstWidth, dstHeight, dstBuffer);
+		return dst;
+	}
+
+	public static int[] getPixels(BufferedImage img, int x, int y, int w, int h, int[] pixels) {
+
 		if (w == 0 || h == 0) {
 			return new int[0];
 		}
@@ -273,13 +304,11 @@ public class ShadowRenderer {
 		if (pixels == null) {
 			pixels = new int[w * h];
 		} else if (pixels.length < w * h) {
-			throw new IllegalArgumentException(
-					"pixels array must have a length" + " >= w*h");
+			throw new IllegalArgumentException("pixels array must have a length" + " >= w*h");
 		}
 
 		int imageType = img.getType();
-		if (imageType == BufferedImage.TYPE_INT_ARGB
-				|| imageType == BufferedImage.TYPE_INT_RGB) {
+		if (imageType == BufferedImage.TYPE_INT_ARGB || imageType == BufferedImage.TYPE_INT_RGB) {
 			Raster raster = img.getRaster();
 			return (int[]) raster.getDataElements(x, y, w, h, pixels);
 		}
@@ -287,19 +316,17 @@ public class ShadowRenderer {
 		// Unmanages the image
 		return img.getRGB(x, y, w, h, pixels, 0, w);
 	}
-    
-    public static void setPixels(BufferedImage img, int x, int y, int w, int h,
-			int[] pixels) {
+
+	public static void setPixels(BufferedImage img, int x, int y, int w, int h, int[] pixels) {
+
 		if (pixels == null || w == 0 || h == 0) {
 			return;
 		} else if (pixels.length < w * h) {
-			throw new IllegalArgumentException(
-					"pixels array must have a length" + " >= w*h");
+			throw new IllegalArgumentException("pixels array must have a length" + " >= w*h");
 		}
 
 		int imageType = img.getType();
-		if (imageType == BufferedImage.TYPE_INT_ARGB
-				|| imageType == BufferedImage.TYPE_INT_RGB) {
+		if (imageType == BufferedImage.TYPE_INT_ARGB || imageType == BufferedImage.TYPE_INT_RGB) {
 			WritableRaster raster = img.getRaster();
 			raster.setDataElements(x, y, w, h, pixels);
 		} else {
@@ -307,6 +334,5 @@ public class ShadowRenderer {
 			img.setRGB(x, y, w, h, pixels, 0, w);
 		}
 	}
-
 
 }

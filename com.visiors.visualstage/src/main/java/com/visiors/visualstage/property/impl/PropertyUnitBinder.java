@@ -2,6 +2,7 @@ package com.visiors.visualstage.property.impl;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.List;
 
 import com.visiors.visualstage.property.PropertyList;
@@ -37,38 +38,47 @@ class PropertyUnitBinder implements PropertyListener {
 	private PropertyUnit propertyUnit;
 	private Method getter;
 	private Method setter;
-	private Object handlerClass;
+	private Object host;
 	private boolean internallyUpdatingMember;
 	private boolean internallyUpdatingProperty;
 
-	PropertyUnitBinder(Object handlerClass, PropertyUnit propertyUnit, String propertyPath) {
+	PropertyUnitBinder(Object handlerClass, PropertyUnit propertyUnit) {
 
-		this.handlerClass = handlerClass;
 		this.propertyUnit = propertyUnit;
+		host = handlerClass;
 		propertyUnit.addPropertyListener(this);
 
-		final String propertyFullName = propertyUnit.getName();
-		final String propertyName = propertyFullName.substring(propertyFullName.lastIndexOf(":")+1);
-
+		final String propertyName = propertyUnit.getName();
 		final String getterMethodName = "get" + capitalizeFirstLetter(propertyName);
-		try {
-			getter = handlerClass.getClass().getDeclaredMethod(getterMethodName, new Class[] {});
-		} catch (Exception e) {
-			System.err.println("Information: the attribute '" + propertyPath
+		getter = findDeclaredMethod(handlerClass.getClass(), getterMethodName, new Class[0]);
+		if (getter == null) {
+			System.err.println("Information: the attribute '" + propertyUnit.getFullName()
 					+ "' is not binded.  The getter method definition' " + getterMethodName
 					+ "()' was missing in the class '" + "'" + handlerClass.getClass().getName());
 		}
 
 		final String setterMethodName = "set" + capitalizeFirstLetter(propertyName);
-		final Class propertyType = propertyUnit.getType().getTypeClass();
-		try {
-			setter = handlerClass.getClass().getDeclaredMethod(setterMethodName, new Class[] { propertyType });
-		} catch (Exception e) {
-			System.err.println("Information: the attribute '" + propertyPath
+		final Class<?> propertyType = propertyUnit.getType().getTypeClass();
+		setter = findDeclaredMethod(handlerClass.getClass(), setterMethodName, new Class[] { propertyType });
+		if (setter == null) {
+			System.err.println("Information: the attribute '" + propertyUnit.getFullName()
 					+ "' is not binded. The setter method definition' " + setterMethodName
 					+ "(...)' was missing  in the class '" + "'" + handlerClass.getClass().getName());
 		}
+	}
 
+	private Method findDeclaredMethod(Class clazz, String method, Class<?>... parameters) {
+
+		try {
+			Method declaredMethod = clazz.getDeclaredMethod(method, parameters);
+			if (!Modifier.isPublic(declaredMethod.getModifiers())) {
+				declaredMethod.setAccessible(true);
+			}
+			return declaredMethod;
+		} catch (NoSuchMethodException e) {
+		} catch (SecurityException e) {
+		}
+		return null;
 	}
 
 	private String capitalizeFirstLetter(String name) {
@@ -86,7 +96,7 @@ class PropertyUnitBinder implements PropertyListener {
 		}
 		try {
 			internallyUpdatingProperty = true;
-			final Object value = getter.invoke(handlerClass, new Class[] {});
+			final Object value = getter.invoke(host, new Class[] {});
 			if (!equalValues(value)) {
 				propertyUnit.setValue(value);
 			}
@@ -106,10 +116,13 @@ class PropertyUnitBinder implements PropertyListener {
 
 		try {
 			internallyUpdatingMember = true;
-			if (getter != null && setter != null) {
-				final Object value = getter.invoke(handlerClass, new Class[] {});
+			if (setter != null) {
+				Object value = null;
+				if (getter != null) {
+					value = getter.invoke(host, new Class[] {});
+				}
 				if (!equalValues(value)) {
-					setter.invoke(handlerClass, propertyUnit.getValue());
+					setter.invoke(host, propertyUnit.getValue());
 				}
 			}
 		} catch (IllegalArgumentException e) {
@@ -143,11 +156,20 @@ class PropertyUnitBinder implements PropertyListener {
 
 		if (propertyUnit != null) {
 			propertyUnit.removePropertyListener(this);
-			handlerClass = null;
+			host = null;
 			propertyUnit = null;
 			getter = null;
 			setter = null;
 		}
 
+	}
+
+	@Override
+	public String toString() {
+
+		if (propertyUnit != null) {
+			return "property: " + propertyUnit.getFullName() + ", Implementation: " + host.getClass() ;
+		}
+		return super.toString();
 	}
 }

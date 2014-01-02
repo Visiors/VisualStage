@@ -25,8 +25,8 @@ public abstract class BaseShape implements Shape {
 	protected final Unit heightUnit = Unit.PERCENT;
 	protected int preferredWidth;
 	protected int preferredHeight;
-	protected String styleID;
-	protected String presentationID;
+	protected String styleId;
+	protected String presentationId;
 	protected PropertyList properties;
 	private LayoutData layoutData;
 
@@ -51,28 +51,28 @@ public abstract class BaseShape implements Shape {
 
 
 	@Override
-	public void setPresentationID(String presentationID) {
+	public void setPresentation(String presentation) {
 
-		this.presentationID = presentationID;
+		this.presentationId = presentation;
 
 	}
 
 	@Override
-	public String getPresentationID() {
+	public String getPresentation() {
 
-		return presentationID;
+		return presentationId;
 	}
 
 	@Override
-	public void setStyleID(String styleID) {
+	public void setStyle(String styleID) {
 
-		this.styleID = styleID;
+		this.styleId = styleID;
 	}
 
 	@Override
-	public String getStyleID() {
+	public String getStyle() {
 
-		return styleID;
+		return styleId;
 	}
 
 	@Override

@@ -7,8 +7,8 @@ import java.awt.Rectangle;
 import com.visiors.visualstage.document.GraphDocument;
 import com.visiors.visualstage.document.listener.GraphDocumentAdapter;
 import com.visiors.visualstage.renderer.AWTCanvas;
-import com.visiors.visualstage.renderer.DefaultComponentOfflineRenderer;
 import com.visiors.visualstage.renderer.ComponentOffScreenRenderer;
+import com.visiors.visualstage.renderer.DefaultComponentOfflineRenderer;
 import com.visiors.visualstage.tool.Interactable;
 import com.visiors.visualstage.transform.Transform;
 
@@ -26,7 +26,7 @@ public class ScrollBar implements Interactable {
 	private final Rectangle rectScrollBar = new Rectangle();
 	private final Rectangle rectPageArea = new Rectangle();
 	private final Rectangle rectThumb = new Rectangle();
-	private Rectangle graphBoundary;
+	private Rectangle graphBoundary = new Rectangle();
 	private Rectangle canvasBoundary;
 	private Point mouseCurrentlyAt;
 	// private final Rectangle rectCornderSquare = new Rectangle();

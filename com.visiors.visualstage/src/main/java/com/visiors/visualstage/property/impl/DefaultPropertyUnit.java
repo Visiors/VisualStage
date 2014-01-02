@@ -10,15 +10,14 @@ import com.visiors.visualstage.property.ValueRange;
 import com.visiors.visualstage.property.listener.PropertyListener;
 import com.visiors.visualstage.util.DeepCopy;
 
-public class DefaultPropertyUnit implements PropertyUnit {
+public class DefaultPropertyUnit extends BaseProperty implements PropertyUnit {
 
-	private String name;
+
 	private Object value;
-	private PropertyList parent;
+
 	private final ValueRange range;
 	private PropertyType type;
-	private boolean readOnly;
-	private boolean visible ;
+
 
 	public DefaultPropertyUnit() {
 
@@ -37,27 +36,13 @@ public class DefaultPropertyUnit implements PropertyUnit {
 
 	public DefaultPropertyUnit(String name, Object value, PropertyType type, String range) {
 
-		this.name = name;
-		this.value = value;
-		this.type = type ;
-		this.visible = true;
-		this.readOnly= false;
 		this.range = new DefaultValueRange(type, range);
+		setName(name);
+		setValue(value);
+		setType(type);
+
 	}
 
-
-
-	@Override
-	public String getName() {
-
-		return this.name;
-	}
-
-	@Override
-	public void setName(String name) {
-
-		this.name = name;
-	}
 
 	@Override
 	public Object getValue() {
@@ -90,17 +75,6 @@ public class DefaultPropertyUnit implements PropertyUnit {
 		this.type = type;
 	}
 
-	@Override
-	public PropertyList getParent() {
-
-		return this.parent;
-	}
-
-	@Override
-	public void setParent(PropertyList parent) {
-
-		this.parent = parent;
-	}
 
 	@Override
 	public PropertyUnit deepCopy() {
@@ -110,36 +84,9 @@ public class DefaultPropertyUnit implements PropertyUnit {
 		punit.setReadOnly(isReadOnly());
 		punit.setVisible(isVisible());
 
-		// for (PropertyListener l : propertyListener) {
-		// punit.addPropertyListener(l);
-		// }
-
 		return punit;
 	}
 
-	@Override
-	public void setVisible(boolean visible) {
-
-		this.visible = visible;
-	}
-
-	@Override
-	public boolean isVisible() {
-
-		return visible;
-	}
-
-	@Override
-	public void setReadOnly(boolean readOnly) {
-
-		this.readOnly = readOnly;
-	}
-
-	@Override
-	public boolean isReadOnly() {
-
-		return readOnly;
-	}
 
 	@Override
 	public String toString() {
@@ -147,36 +94,6 @@ public class DefaultPropertyUnit implements PropertyUnit {
 		StringBuffer sb = new StringBuffer();
 		sb.append(getName()).append("=").append(getValue());
 		return sb.toString();
-	}
-
-	// //////////////////////////////////////////////////////////////////////////
-	// Notifications - sending notification to listener
-
-	protected List<PropertyListener> propertyListener = new ArrayList<PropertyListener>();
-
-	protected void firePropertyChanged() {
-
-		List<PropertyList> path = new ArrayList<PropertyList>();
-
-		for (PropertyListener l : propertyListener) {
-			l.propertyChanged(path, this);
-		}
-	}
-
-	@Override
-	public void addPropertyListener(PropertyListener listener) {
-
-		if (!propertyListener.contains(listener)) {
-			this.propertyListener.add(listener);
-		}
-	}
-
-	@Override
-	public void removePropertyListener(PropertyListener listener) {
-
-		if (!propertyListener.contains(listener)) {
-			this.propertyListener.remove(listener);
-		}
 	}
 
 	@Override
@@ -209,4 +126,33 @@ public class DefaultPropertyUnit implements PropertyUnit {
 		return range.getDescreteDataSet();
 	}
 
+	// //////////////////////////////////////////////////////////////////////////
+	// Notifications - sending notification to listener
+
+	protected List<PropertyListener> propertyListener = new ArrayList<PropertyListener>();
+
+	protected void firePropertyChanged() {
+
+		List<PropertyList> path = new ArrayList<PropertyList>();
+
+		for (PropertyListener l : propertyListener) {
+			l.propertyChanged(path, this);
+		}
+	}
+
+	@Override
+	public void addPropertyListener(PropertyListener listener) {
+
+		if (!propertyListener.contains(listener)) {
+			this.propertyListener.add(listener);
+		}
+	}
+
+	@Override
+	public void removePropertyListener(PropertyListener listener) {
+
+		if (!propertyListener.contains(listener)) {
+			this.propertyListener.remove(listener);
+		}
+	}
 }

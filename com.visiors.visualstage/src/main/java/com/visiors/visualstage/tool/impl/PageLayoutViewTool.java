@@ -52,9 +52,9 @@ public class PageLayoutViewTool extends BaseTool {
 		final double[] paperSize = PrinterUtil.getPaperSize("letter");
 		final double margin = systemUnit.mmToDPI(15);
 		final double w = // 200 / PrinterUtil.mmPerInch * PrinterUtil.PRINT_DPI;
-		paperSize[0];
+				paperSize[0];
 		final double h = // 200 / PrinterUtil.mmPerInch * PrinterUtil.PRINT_DPI;
-		paperSize[1];
+				paperSize[1];
 		paper.setSize(w, h);
 		paper.setImageableArea(margin, margin, w - 2 * margin, h - 2 * margin);
 		pageFormat.setOrientation(PageFormat.PORTRAIT);
@@ -150,14 +150,18 @@ public class PageLayoutViewTool extends BaseTool {
 
 	private Rectangle computePrintableRect(Transform xform) {
 
+		if (graphBoundary.isEmpty()) {
+			graphBoundary.setLocation(leftMargin, topMargin);
+		}
+
 		int x1 = Math.min(leftMargin, graphBoundary.x);
 		int y1 = Math.min(topMargin, graphBoundary.y);
 		int x2 = Math.max(leftMargin + wImageable, graphBoundary.x + graphBoundary.width);
 		int y2 = Math.max(topMargin + hImageable, graphBoundary.y + graphBoundary.height);
 
 		x1 = mormalizeX1(x1);
-		x2 = mormalizeX2(x2);
 		y1 = mormalizeY1(y1);
+		x2 = mormalizeX2(x2);
 		y2 = mormalizeY2(y2);
 
 		return xform.transformToScreen(new Rectangle(x1, y1, x2 - x1, y2 - y1));

@@ -20,13 +20,13 @@ public interface Shape extends Interactable, PropertyOwner, Duplicatable {
 
 	public String getName();
 
-	public void setPresentationID(String presentationID);
+	public void setPresentation(String presentationId);
 
-	public String getPresentationID();
+	public String getPresentation();
 
-	void setStyleID(String styleID);
+	void setStyle(String styleId);
 
-	public String getStyleID();
+	public String getStyle();
 
 	public void setTransformer(Transform transform);
 
@@ -69,5 +69,7 @@ public interface Shape extends Interactable, PropertyOwner, Duplicatable {
 	public LayoutData getLayoutData();
 
 	public void setLayoutData(LayoutData data);
+
+
 
 }

@@ -70,7 +70,7 @@ public class PropertyBinder {
 	 * @param handlerClass
 	 *            the class that provides getter/setter methods
 	 */
-	public void setHandler(String propertyListPath, Object handlerClass) {
+	public synchronized void setHandler(String propertyListPath, Object handlerClass) {
 
 		hanlders.put(propertyListPath, handlerClass);
 	}
@@ -83,24 +83,24 @@ public class PropertyBinder {
 	 *            the property's path. The path can begin with the wildcard sign
 	 *            "*"
 	 */
-	public void save(String attributePath) {
+	public synchronized void save(String attributePath) {
 
-		//		PropertyUnitBinder binding = null;
-		//		if (attributePath.startsWith("*")) {
-		//			String relPath = attributePath.substring(attributePath.charAt(1) == ':' ? 2 : 1);
-		//			for (String key : bindings.keySet()) {
-		//				if (key.endsWith(relPath)) {
-		//					binding = bindings.get(key);
-		//					break;
-		//				}
-		//			}
-		//		} else {
-		//			binding = bindings.get(attributePath);
-		//		}
-		//		if (binding == null) {
-		//			throw new RuntimeException("Invalid binding: " + attributePath);
-		//		}
-		//		binding.updateProperty();
+		PropertyUnitBinder binding = null;
+		if (attributePath.startsWith("*")) {
+			String relPath = attributePath.substring(attributePath.charAt(1) == ':' ? 2 : 1);
+			for (String key : bindings.keySet()) {
+				if (key.endsWith(relPath)) {
+					binding = bindings.get(key);
+					break;
+				}
+			}
+		} else {
+			binding = bindings.get(attributePath);
+		}
+		if (binding == null) {
+			throw new RuntimeException("Invalid binding: " + attributePath);
+		}
+		binding.updateProperty();
 	}
 
 	/**
@@ -123,7 +123,7 @@ public class PropertyBinder {
 	 * @param attributePath
 	 *            the property's path
 	 */
-	public void load(String attributePath) {
+	public synchronized void load(String attributePath) {
 
 		PropertyUnitBinder binding = bindings.get(attributePath);
 		if (binding == null) {
@@ -137,7 +137,7 @@ public class PropertyBinder {
 	 * sync with the {@link PropertyList}
 	 * 
 	 */
-	public void loadAll() {
+	public synchronized void loadAll() {
 
 		// update the members
 		for (PropertyUnitBinder binding : bindings.values()) {
@@ -155,28 +155,25 @@ public class PropertyBinder {
 	 * @param propertyList
 	 *            the properties
 	 */
-	public void bind(PropertyList propertyList) {
+	public synchronized void bind(PropertyList propertyList) {
 
 		// un-bind old bindings
 		unbindAllPropertyUnits();
 
 		// bind all properties and class members
-		bindAllPropertyUnits(propertyList,propertyList.getName());
+		bindAllPropertyUnits(propertyList);
 	}
 
-	private void bindAllPropertyUnits(PropertyList properties, String path) {
+	private void bindAllPropertyUnits(PropertyList properties) {
 
-		for (int i = 0; i < properties.size(); i++) {
-			Property p = properties.get(i);
-			if (p instanceof PropertyList) {
-				PropertyList pl = (PropertyList) p;
-				String relPath = path + ":" + pl.getName();
-				bindAllPropertyUnits(pl, relPath);
-			} else if (p instanceof PropertyUnit) {
-				PropertyUnit pu = (PropertyUnit) p;
-				String relPath =  path + ":" + pu.getName();
-				Object handler = getHandlerForPropertyList(path);
-				bindings.put(relPath, new PropertyUnitBinder(handler, pu, relPath));
+		for (Property property : properties) {
+			if (property instanceof PropertyList) {
+				PropertyList pl = (PropertyList) property;
+				bindAllPropertyUnits(pl);
+			} else if (property instanceof PropertyUnit) {
+				PropertyUnit pu = (PropertyUnit) property;
+				Object handler = getHandlerForPropertyList(pu.getFullName());
+				bindings.put(pu.getFullName(), new PropertyUnitBinder(handler, pu));
 			}
 		}
 	}

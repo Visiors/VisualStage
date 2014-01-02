@@ -6,27 +6,28 @@ public class PropertyConstants {
 	public static String SEPARATOR = ":";
 
 	// - document
-	public static String DOCUMENT_PROPERTY_PREFIX = "Document";
+	public static String DOCUMENT_PROPERTY_PREFIX = "document";
 	public static String DOCUMENT_PROPERTY_SETTING = "setting";
-	public static String DOCUMENT_PROPERTY_ZOOM = "setting:zoom";
-	public static String DOCUMENT_PROPERTY_X_SCROLL = "setting:x-scroll_pos";
-	public static String DOCUMENT_PROPERTY_Y_SCROLL = "setting:y-scroll_pos";
-	public static String DOCUMENT_PROPERTY_GRAPH = "setting:graph";
+	public static String DOCUMENT_PROPERTY_ZOOM = "zoom";
+	public static String DOCUMENT_PROPERTY_X_SCROLL = "x-scroll_pos";
+	public static String DOCUMENT_PROPERTY_Y_SCROLL = "y-scroll_pos";
+	public static String DOCUMENT_PROPERTY_GRAPH = "graph";
 
 	// - node
-	public static String NODE_PROPERTY_PREFIX = "Node";
+	public static String NODES_PROPERTY_PREFIX = "nodes";
+	public static String NODE_PROPERTY_PREFIX = "node";
 	public static String NODE_PROPERTY_NAME = "name";
 	public static String NODE_PROPERTY_ID = "id";
-	public static String NODE_PROPERTY_X = "geomentry:x";
-	public static String NODE_PROPERTY_Y = "geomentry:y";
-	public static String NODE_PROPERTY_WIDTH = "geomentry:width";
-	public static String NODE_PROPERTY_HEIGHT = "geomentry:height";
+	public static String NODE_PROPERTY_X = "x";
+	public static String NODE_PROPERTY_Y = "y";
+	public static String NODE_PROPERTY_WIDTH = "width";
+	public static String NODE_PROPERTY_HEIGHT = "height";
 	public static String NODE_PROPERTY_PRESENTATION = "presentation";
 	public static String NODE_PROPERTY_STYLE = "style";
-	public static String NODE_PROPERTY_PARENT_ID = "parent_id";
+
 
 	// - edge
-	public static String EDGE_PROPERTY_PREFIX = "Edge";
+	public static String EDGE_PROPERTY_PREFIX = "edge";
 	public static String EDGE_PROPERTY_NAME = "name";
 	public static String EDGE_PROPERTY_TYPE = "type";
 	public static String EDGE_PROPERTY_ID = "id";
@@ -48,23 +49,23 @@ public class PropertyConstants {
 	public static String EDGE_PROPERTY_TYPE_ISOMETRIC = "Isometric";
 
 	// - graph
-	public static String GRAPH_PROPERTY_PREFIX = "Subgraph";
+	public static String GRAPH_PROPERTY_PREFIX = "subgraph";
 	public static String GRAPH_PROPERTY_NAME = "name";
 	public static String GRAPH_PROPERTY_ID = "id";
 	public static String GRAPH_PROPERTY_PARENT_ID = "parent_id";
 	public static String GRAPH_PROPERTY_PRESENTATION = "presentation";
-	public static String GRAPH_PROPERTY_X = "geomentry:x";
-	public static String GRAPH_PROPERTY_Y = "geomentry:y";
-	public static String GRAPH_PROPERTY_WIDTH = "geomentry:width";
-	public static String GRAPH_PROPERTY_HEIGHT = "geomentry:height";
-	public static String GRAPH_PROPERTY_INNER_MARGIN = "geomentry:inner_margin";
-	public static String GRAPH_PROPERTY_FIT_TO_CONTENT = "behavior:fit_to_content";
-	public static String GRAPH_PROPERTY_CONTENT_SELECTABEL = "content:selectable";
-	public static String GRAPH_PROPERTY_CONTENT_MOVABLE = "content:movable";
-	public static String GRAPH_PROPERTY_CONTENT_DELETABLE = "content:deletable";
+	public static String GRAPH_PROPERTY_X = "x";
+	public static String GRAPH_PROPERTY_Y = "y";
+	public static String GRAPH_PROPERTY_WIDTH = "width";
+	public static String GRAPH_PROPERTY_HEIGHT = "height";
+	public static String GRAPH_PROPERTY_INNER_MARGIN = "inner_margin";
+	public static String GRAPH_PROPERTY_FIT_TO_CONTENT = "fit_to_content";
+	public static String GRAPH_PROPERTY_CONTENT_SELECTABEL = "selectable";
+	public static String GRAPH_PROPERTY_CONTENT_MOVABLE = "movable";
+	public static String GRAPH_PROPERTY_CONTENT_DELETABLE = "deletable";
 
 	// - port
-	public static String PORTS_PROPERTY = "Ports";
+	public static String PORTS_PROPERTY = "ports";
 	public static String PORT_PROPERTY = "port";
 	public static String FORM_COMPONENT_PROPERTY = "component";
 

@@ -30,6 +30,7 @@ import com.visiors.visualstage.property.PropertyUnit;
 import com.visiors.visualstage.property.impl.DefaultPropertyList;
 import com.visiors.visualstage.property.impl.DefaultPropertyUnit;
 import com.visiors.visualstage.property.impl.PropertyBinder;
+import com.visiors.visualstage.property.impl.PropertyType;
 import com.visiors.visualstage.renderer.AWTCanvas;
 import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.renderer.DrawingSubject;
@@ -64,8 +65,8 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 		// graphViewUndoHelper = new GraphViewUndoHelper(this);
 		eventMediator = new SubgraphEventMediator(this);
 		new GraphContentManager(this); 
-		styleID = FormatDefinitionCollection.DEFAULT_STYLE;
-		presentationID = FormatDefinitionCollection.DEFAULT_SUBGRAPH_PRESENTATION;
+		styleId = FormatDefinitionCollection.DEFAULT_STYLE;
+		presentationId = FormatDefinitionCollection.DEFAULT_SUBGRAPH_PRESENTATION;
 
 	}
 
@@ -78,8 +79,8 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 		this.incomingEdges = new ArrayList<VisualEdge>(visualGraph.getIncomingEdges());
 		this.outgoingEdges = new ArrayList<VisualEdge>(visualGraph.getOutgoingEdges());
 		this.setProperties(visualGraph.getProperties());
-		this.setStyleID(visualGraph.getStyleID());
-		this.setPresentationID(visualGraph.getPresentationID());
+		this.setStyle(visualGraph.getStyle());
+		this.setPresentation(visualGraph.getPresentation());
 		if (visualGraph.getPortSet() != null) {
 			portSet = visualGraph.getPortSet();
 		}
@@ -553,12 +554,12 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 		// create the properties definition
 		PropertyList properties = new DefaultPropertyList(PropertyConstants.GRAPH_PROPERTY_PREFIX);
 		properties.add(new DefaultPropertyUnit(PropertyConstants.GRAPH_PROPERTY_ID, getID()));
-		properties.add(new DefaultPropertyUnit(PropertyConstants.GRAPH_PROPERTY_NAME, getName()));
+		properties.add(new DefaultPropertyUnit(PropertyConstants.GRAPH_PROPERTY_NAME, getName(), PropertyType.STRING));
 		properties.add(new DefaultPropertyUnit(PropertyConstants.GRAPH_PROPERTY_X, getX()));
 		properties.add(new DefaultPropertyUnit(PropertyConstants.GRAPH_PROPERTY_Y, getY()));
 		properties.add(new DefaultPropertyUnit(PropertyConstants.GRAPH_PROPERTY_WIDTH, getWidth()));
 		properties.add(new DefaultPropertyUnit(PropertyConstants.GRAPH_PROPERTY_HEIGHT, getHeight()));
-		properties.add(new DefaultPropertyUnit(PropertyConstants.GRAPH_PROPERTY_PRESENTATION, presentationID));
+		properties.add(new DefaultPropertyUnit(PropertyConstants.GRAPH_PROPERTY_PRESENTATION, presentationId));
 		properties.add(new DefaultPropertyUnit(PropertyConstants.GRAPH_PROPERTY_PARENT_ID, getParentGraphID()));
 
 		properties.add(new DefaultPropertyUnit(PropertyConstants.GRAPH_PROPERTY_FIT_TO_CONTENT, fitToContent));

@@ -11,14 +11,12 @@ import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.property.PropertyUnit;
 import com.visiors.visualstage.property.listener.PropertyListener;
 
-public class DefaultPropertyList implements PropertyList, PropertyListener {
+public class DefaultPropertyList extends BaseProperty implements PropertyList, PropertyListener {
 
-	protected String name;
 	private String contentText = "";
 	protected PropertyList parent;
 	protected Vector<Property> properties = new Vector<Property>();
-	protected boolean readOnly;
-	protected boolean visible;
+
 
 	public DefaultPropertyList() {
 		visible = true;
@@ -26,19 +24,7 @@ public class DefaultPropertyList implements PropertyList, PropertyListener {
 
 	public DefaultPropertyList(String name) {
 
-		this.name = name;
-	}
-
-	@Override
-	public void setName(String name) {
-
-		this.name = name;
-	}
-
-	@Override
-	public String getName() {
-
-		return this.name;
+		setName(name);
 	}
 
 	@Override
@@ -51,24 +37,6 @@ public class DefaultPropertyList implements PropertyList, PropertyListener {
 		}
 		return false;
 	}
-
-	// public boolean add(PropertyUnit property) {
-	// if (property != null) {
-	// property.setParent(this);
-	// property.addPropertyListener(this);
-	// return this.properties.add(property);
-	// }
-	// return false;
-	// }
-	//
-	// public boolean add(PropertyList propertyList) {
-	// if (propertyList != null) {
-	// propertyList.setParent(this);
-	// propertyList.addPropertyListener(this);
-	// return this.properties.add(propertyList);
-	// }
-	// return false;
-	// }
 
 	@Override
 	public Property get(String name) {
@@ -125,42 +93,9 @@ public class DefaultPropertyList implements PropertyList, PropertyListener {
 		return properties.remove(index) != null;
 	}
 
-	@Override
-	public PropertyList getParent() {
-
-		return this.parent;
-	}
-
-	@Override
-	public void setParent(PropertyList parent) {
-
-		this.parent = parent;
-	}
 
 
-	@Override
-	public void setVisible(boolean visible) {
 
-		this.visible = visible;
-	}
-
-	@Override
-	public boolean isVisible() {
-
-		return visible;
-	}
-
-	@Override
-	public void setReadOnly(boolean readOnly) {
-
-		this.readOnly = readOnly;
-	}
-
-	@Override
-	public boolean isReadOnly() {
-
-		return readOnly;
-	}
 
 	@Override
 	public PropertyList deepCopy() {
@@ -214,37 +149,7 @@ public class DefaultPropertyList implements PropertyList, PropertyListener {
 		return sb.toString();
 	}
 
-	// //////////////////////////////////////////////////////////////////////////
-	// Notifications - sending notification to listener
 
-	protected List<PropertyListener> propertyListener = new ArrayList<PropertyListener>();
-
-	@Override
-	public void addPropertyListener(PropertyListener listener) {
-
-		if (!propertyListener.contains(listener)) {
-			this.propertyListener.add(listener);
-		}
-
-	}
-
-	@Override
-	public void removePropertyListener(PropertyListener listener) {
-
-		if (!propertyListener.contains(listener)) {
-			this.propertyListener.remove(listener);
-		}
-
-	}
-
-	@Override
-	public void propertyChanged(List<PropertyList> path, PropertyUnit property) {
-
-		path.add(0, this);
-		for (PropertyListener l : propertyListener) {
-			l.propertyChanged(path, property);
-		}
-	}
 
 	@Override
 	public String getText() {
@@ -290,6 +195,38 @@ public class DefaultPropertyList implements PropertyList, PropertyListener {
 		public void remove() {
 
 			pl.remove(count);
+		}
+	}
+
+	// //////////////////////////////////////////////////////////////////////////
+	// Notifications - sending notification to listener
+
+	protected List<PropertyListener> propertyListener = new ArrayList<PropertyListener>();
+
+	@Override
+	public void addPropertyListener(PropertyListener listener) {
+
+		if (!propertyListener.contains(listener)) {
+			this.propertyListener.add(listener);
+		}
+
+	}
+
+	@Override
+	public void removePropertyListener(PropertyListener listener) {
+
+		if (!propertyListener.contains(listener)) {
+			this.propertyListener.remove(listener);
+		}
+
+	}
+
+	@Override
+	public void propertyChanged(List<PropertyList> path, PropertyUnit property) {
+
+		path.add(0, this);
+		for (PropertyListener l : propertyListener) {
+			l.propertyChanged(path, property);
 		}
 	}
 }

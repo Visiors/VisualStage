@@ -14,8 +14,8 @@ public class DefaultValueRange implements ValueRange {
 	private static final String GREATEROREQUAL = ">=";
 	private static final String LESS           = "<";
 	private static final String LESSOREQUAL    = "<=";
-	
-	private PropertyType type;
+
+	private final PropertyType type;
 	private String valueExpression;
 	private boolean isDescrete;
 	private Object[] descreteDataSet;
@@ -24,33 +24,34 @@ public class DefaultValueRange implements ValueRange {
 		this.type = type;
 		setExpression(valueExpression);
 	}
-	
+
 
 	private boolean isDescrete() {
-		if(valueExpression == null)
+		if(valueExpression == null) {
 			return false;
-		
-//		
-//		char c;
-//		int sepIndex = -1;
-//		String operator = "><=!&";
-//		for (int i = 0, len = valueExpression.length(); i < len;i++) {
-//			c = valueExpression.charAt(i);
-//			if(c == '|') {
-//				if(i == 0 || i == len-1)  // | at the very first and last position not accepted
-//					return false;
-//				if(i == sepIndex +1 ) // || not accepted
-//					return false;
-//			}
-//			if(operator.indexOf(c) != -1 ) // the list should have no other operator 
-//				return false;
-//		}
-//		
-//		return sepIndex != -1;
-		
+		}
+
+		//		
+		//		char c;
+		//		int sepIndex = -1;
+		//		String operator = "><=!&";
+		//		for (int i = 0, len = valueExpression.length(); i < len;i++) {
+		//			c = valueExpression.charAt(i);
+		//			if(c == '|') {
+		//				if(i == 0 || i == len-1)  // | at the very first and last position not accepted
+		//					return false;
+		//				if(i == sepIndex +1 ) // || not accepted
+		//					return false;
+		//			}
+		//			if(operator.indexOf(c) != -1 ) // the list should have no other operator 
+		//				return false;
+		//		}
+		//		
+		//		return sepIndex != -1;
+
 		return valueExpression.indexOf(LIST_SEPARATOR) != -1;
 	}
-	
+
 	@Override
 	public ValueRange deepCopy() {
 		// TODO Auto-generated method stub
@@ -68,19 +69,24 @@ public class DefaultValueRange implements ValueRange {
 
 
 
-	
+
 	private boolean isValidateType(Object value) {
-		
-		if(type == PropertyType.INTEGER)
+
+		if(type == PropertyType.INTEGER) {
 			return value instanceof Integer;
-		if(type == PropertyType.DOUBLE)
+		}
+		if(type == PropertyType.DOUBLE) {
 			return value instanceof Double;
-		if(type == PropertyType.FLOAT)
+		}
+		if(type == PropertyType.FLOAT) {
 			return value instanceof Float;
-		if(type == PropertyType.BOOLEAN)
+		}
+		if(type == PropertyType.BOOLEAN) {
 			return value instanceof Boolean;
-		if(type == PropertyType.STRING)
+		}
+		if(type == PropertyType.STRING) {
 			return value instanceof String;
+		}
 		return false;
 	}
 
@@ -96,33 +102,35 @@ public class DefaultValueRange implements ValueRange {
 
 	@Override
 	public boolean isValueValid(Object value) {
-		if(valueExpression == null)
+		if(valueExpression == null) {
 			return true;
-		
+		}
+
 		if(!isValidateType(value)) {
 			throw new AttributeException("Value must be from type " + type.toString());
 		}
-		
+
 		if(isDescrete) {
 			Object[] set = getDescreteDataSet();
 			if(set != null) {
-    			for (int i = 0; i < set.length; i++) {
-    				if(set[i].equals(value))
-    					return true;
-    			}
+				for (Object element : set) {
+					if(element.equals(value)) {
+						return true;
+					}
+				}
 			}
 			return false;
 		}
-		
+
 		return RangeValidator.isValid(value, valueExpression);
 	}
 
 
-    @Override
-    public void setExpression(String rangeExpression) {
-    	this.valueExpression = rangeExpression;
-    	this.isDescrete = isDescrete();
-    }
+	@Override
+	public void setExpression(String rangeExpression) {
+		this.valueExpression = rangeExpression;
+		this.isDescrete = isDescrete();
+	}
 
 
 
@@ -140,6 +148,6 @@ public class DefaultValueRange implements ValueRange {
 		return isDescrete;
 	}
 
-	
+
 
 }

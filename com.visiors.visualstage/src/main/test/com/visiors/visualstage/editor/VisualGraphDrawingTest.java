@@ -99,7 +99,6 @@ public class VisualGraphDrawingTest {
 		xmlContent = Files.toString(new File("src/main/test/com/visiors/visualstage/editor/FormatDefinition.xml"),
 				Charsets.UTF_8);
 		formatsCollection.loadAndPool(xmlContent);
-
 	}
 
 	@Test

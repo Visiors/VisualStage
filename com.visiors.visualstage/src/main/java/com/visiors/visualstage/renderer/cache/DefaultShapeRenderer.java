@@ -1,6 +1,5 @@
 package com.visiors.visualstage.renderer.cache;
 
-import java.awt.Color;
 import java.awt.Image;
 import java.awt.Rectangle;
 
@@ -47,11 +46,10 @@ public class DefaultShapeRenderer implements ShapeRenderer {
 		final Rectangle boundary = transform.transformToScreen(vgo.getBounds());
 		final Rectangle extendedBoundary = transform.transformToScreen(vgo.getExtendedBoundary());
 		boundary.grow((extendedBoundary.width - boundary.width) / 2, (extendedBoundary.height - boundary.height) / 2);
-		System.err.println((extendedBoundary.width - boundary.width) );
-		awtCanvas.gfx.setColor(Color.orange);
-		awtCanvas.gfx.drawRect(boundary.x, boundary.y, boundary.width,
-				boundary.height);
 		awtCanvas.gfx.drawImage(image, boundary.x, boundary.y, null);
+		//		awtCanvas.gfx.setColor(Color.orange);
+		//		awtCanvas.gfx.drawRect(boundary.x, boundary.y, boundary.width,
+		//				boundary.height);
 	}
 
 }

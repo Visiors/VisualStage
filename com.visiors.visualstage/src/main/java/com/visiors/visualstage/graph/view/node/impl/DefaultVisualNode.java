@@ -5,6 +5,7 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.base.Joiner;
 import com.google.inject.Inject;
 import com.visiors.visualstage.constants.PropertyConstants;
 import com.visiors.visualstage.graph.view.Constants;
@@ -23,13 +24,13 @@ import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.property.impl.DefaultPropertyList;
 import com.visiors.visualstage.property.impl.DefaultPropertyUnit;
 import com.visiors.visualstage.property.impl.PropertyBinder;
+import com.visiors.visualstage.property.impl.PropertyType;
 import com.visiors.visualstage.renderer.AWTCanvas;
 import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.renderer.DrawingSubject;
 import com.visiors.visualstage.renderer.Resolution;
 import com.visiors.visualstage.svg.SVGDescriptor;
 import com.visiors.visualstage.tool.Interactable;
-import com.visiors.visualstage.util.PropertyUtil;
 
 public class DefaultVisualNode extends DefaultVisualGraphObject implements VisualNode {
 
@@ -53,11 +54,12 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 	protected SVGDescriptor portDef;
 	protected SVGDescriptor portHLDef;
 	protected SVGDescriptor svgDef;
-	private PropertyBinder propertyBinder;
+	private volatile PropertyBinder propertyBinder;
 	@Inject
 	private FormatDefinitionCollection formatDefinitionCollection;
 	@Inject
 	protected UndoRedoHandler undoRedoHandler;
+
 	// private final VisualObjectSnapshotGenerator previewCreator;
 	// private final List<CachedImage> cachedImage;
 
@@ -69,13 +71,13 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 		this.portSet = new DefaultPortSet();
 		this.incomingEdges = new ArrayList<VisualEdge>();
 		this.outgoingEdges = new ArrayList<VisualEdge>();
-		this.boundary = new Rectangle(0, 0, 80, 50); 
+		this.boundary = new Rectangle(0, 0, 80, 50);
 
 		// previewCreator = new VisualObjectSnapshotGenerator(this);
 		// cachedImage = new ArrayList<CachedImage>();
 
-		styleID = FormatDefinitionCollection.DEFAULT_STYLE;
-		presentationID = FormatDefinitionCollection.DEFAULT_NODE_PRESENTATION;
+		styleId = FormatDefinitionCollection.DEFAULT_STYLE;
+		presentationId = FormatDefinitionCollection.DEFAULT_NODE_PRESENTATION;
 
 		initPropertyList();
 	}
@@ -89,8 +91,8 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 		this.incomingEdges = new ArrayList<VisualEdge>(node.getIncomingEdges());
 		this.outgoingEdges = new ArrayList<VisualEdge>(node.getOutgoingEdges());
 		this.setProperties(node.getProperties()); // TODO deep copy
-		this.setStyleID(node.getStyleID());
-		this.setPresentationID(node.getPresentationID());
+		this.setStyle(node.getStyle());
+		this.setPresentation(node.getPresentation());
 		this.setPortSet(node.getPortSet()); // TODO deep copy
 		this.setChildren(node.getChildren()); // TODO deep copy
 
@@ -99,20 +101,19 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 		}
 	}
 
-
 	protected void initPropertyList() {
 
 		// create the property definition
 		final PropertyList properties = new DefaultPropertyList(PropertyConstants.NODE_PROPERTY_PREFIX);
-		properties.add(new DefaultPropertyUnit(PropertyConstants.NODE_PROPERTY_ID, getID()));
-		properties.add(new DefaultPropertyUnit(PropertyConstants.NODE_PROPERTY_NAME, getName()));
-		properties.add(new DefaultPropertyUnit(PropertyConstants.NODE_PROPERTY_X, getX()));
-		properties.add(new DefaultPropertyUnit(PropertyConstants.NODE_PROPERTY_Y, getY()));
-		properties.add(new DefaultPropertyUnit(PropertyConstants.NODE_PROPERTY_WIDTH, getWidth()));
-		properties.add(new DefaultPropertyUnit(PropertyConstants.NODE_PROPERTY_HEIGHT, getHeight()));
-		properties.add(new DefaultPropertyUnit(PropertyConstants.NODE_PROPERTY_PRESENTATION, presentationID));
-		properties.add(new DefaultPropertyUnit(PropertyConstants.NODE_PROPERTY_STYLE, getStyleID()));
-		properties.add(new DefaultPropertyUnit(PropertyConstants.NODE_PROPERTY_PARENT_ID, getParentGraphID()));
+		//		properties.add(new DefaultPropertyUnit(PropertyConstants.NODE_PROPERTY_ID, getID()));
+		//		properties.add(new DefaultPropertyUnit(PropertyConstants.NODE_PROPERTY_NAME, getName(), PropertyType.STRING));
+		//		properties.add(new DefaultPropertyUnit(PropertyConstants.NODE_PROPERTY_X, getX()));
+		//		properties.add(new DefaultPropertyUnit(PropertyConstants.NODE_PROPERTY_Y, getY()));
+		//		properties.add(new DefaultPropertyUnit(PropertyConstants.NODE_PROPERTY_WIDTH, getWidth()));
+		//		properties.add(new DefaultPropertyUnit(PropertyConstants.NODE_PROPERTY_HEIGHT, getHeight()));
+		properties.add(new DefaultPropertyUnit(PropertyConstants.NODE_PROPERTY_PRESENTATION, presentationId,
+				PropertyType.STRING));
+		properties.add(new DefaultPropertyUnit(PropertyConstants.NODE_PROPERTY_STYLE, getStyle(), PropertyType.STRING));
 
 		// TODO add layout
 
@@ -122,7 +123,6 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 
 		propertyBinder = new PropertyBinder(this);
 		propertyBinder.setHandler(portsProperties.getName(), portSet);
-
 		propertyBinder.bind(properties);
 	}
 
@@ -130,7 +130,7 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 	public void setParentGraph(VisualGraph graph) {
 
 		super.setParentGraph(graph);
-		propertyBinder.save(PropertyConstants.NODE_PROPERTY_PARENT_ID);
+		//		propertyBinder.save(PropertyConstants.NODE_PROPERTY_PARENT_ID);
 	}
 
 	// @Override
@@ -335,7 +335,6 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 		return false;
 	}
 
-
 	@Override
 	public boolean mouseEntered(Point pt, int button, int functionKey) {
 
@@ -347,6 +346,7 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 
 		return false;
 	}
+
 	@Override
 	public boolean keyPressed(int keyChar, int keyCode) {
 
@@ -463,12 +463,12 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 	}
 
 	@Override
-	public void setPresentationID(String presentationID) {
+	public void setPresentation(String presentationId) {
 
-		super.setPresentationID(presentationID);
+		super.setPresentation(presentationId);
 
-		propertyBinder.save(PropertyConstants.NODE_PROPERTY_PRESENTATION);
-
+		String p = Joiner.on(PropertyConstants.SEPARATOR).join(PropertyConstants.NODES_PROPERTY_PREFIX, PropertyConstants.NODE_PROPERTY_PREFIX, PropertyConstants.NODE_PROPERTY_PRESENTATION);
+		//		propertyBinder.save(p);
 		// invalidatePreview();
 		//
 		// if (parent != null) {
@@ -476,17 +476,31 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 		// }
 	}
 
-	@Override
-	public void setStyleID(String styleID) {
 
-		super.setStyleID(styleID);
-		propertyBinder.save(PropertyConstants.NODE_PROPERTY_STYLE);
+	@Override
+	public String getPresentation() {
+
+		return super.getPresentation();
+	}
+
+
+	@Override
+	public void setStyle(String styleId) {
+
+		super.setStyle(styleId);
+		//		propertyBinder.save(PropertyConstants.NODE_PROPERTY_STYLE);
 
 		// invalidatePreview();
 
 		// if (parent != null) {
 		// parent.updateView();
-		// }
+		// }S
+	}
+
+	@Override
+	public String getStyle() {
+
+		return super.getStyle();
 	}
 
 	public long getParentGraphID() {
@@ -501,19 +515,21 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 	public void setProperties(PropertyList properties) {
 
 		super.setProperties(properties);
-
+		propertyBinder.bind(properties);
 		propertyBinder.loadAll();
 
-		final PropertyList portsProperty = PropertyUtil.findPropertyList(properties, PropertyConstants.PORTS_PROPERTY);
-		if (portsProperty != null) {
-			portSet.setProperties(portsProperty);
-			portSet.updatePosition(boundary);
-		}
+		// final PropertyList portsProperty =
+		// PropertyUtil.findPropertyList(properties,
+		// PropertyConstants.PORTS_PROPERTY);
+		// if (portsProperty != null) {
+		// portSet.setProperties(portsProperty);
+		// portSet.updatePosition(boundary);
+		// }
 
-
-		//TEST
-		//		presentationID = PropertyUtil.getProperty(properties, "presentation", "");
-		//		styleID = PropertyUtil.getProperty(properties, "style", "");
+		// TEST
+		// presentationId = PropertyUtil.getProperty(properties, "presentation",
+		// "");
+		// styleID = PropertyUtil.getProperty(properties, "style", "");
 	}
 
 	public int getX() {
@@ -560,16 +576,17 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 	public Rectangle getExtendedBoundary() {
 
 		final Rectangle r = getBounds();
-		if (!r.isEmpty()) {
-			//			considering of 1 pixel for rounding inaccuracy
-			r.grow(ViewConstants.MARKER_SIZE + 4, ViewConstants.MARKER_SIZE + 4);
+		if (!r.isEmpty() && transform != null) {
+			// considering of 1 pixel for rounding inaccuracy
+			r.grow(transform.transformToGraphDX(ViewConstants.MARKER_SIZE + 4),
+					transform.transformToGraphDY(ViewConstants.MARKER_SIZE + 4));
 
-			//			if (portSet != null && ViewConstants.HIGHTLIGHT_PORTS) {
-			//				Port[] ports = portSet.getPorts();
-			//				for (int i = 0; i < ports.length; i++) {
-			//					r = r.union(ports[i].getBounds());
-			//				}
-			//			}
+			// if (portSet != null && ViewConstants.HIGHTLIGHT_PORTS) {
+			// Port[] ports = portSet.getPorts();
+			// for (int i = 0; i < ports.length; i++) {
+			// r = r.union(ports[i].getBounds());
+			// }
+			// }
 
 		}
 		return r;
@@ -694,7 +711,6 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 		// if (form != null) {
 		// form.invalidate();
 		// }
-
 	}
 
 	@Override
@@ -727,7 +743,6 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 		fireNodeStoppedChangingBoundary(oldRect);
 
 		updateBoundaryProperties();
-
 
 		List<VisualEdge> edges = getIncomingEdges();
 		for (final VisualEdge edgeView : edges) {
@@ -762,7 +777,6 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 			setBounds(r);
 		}
 	}
-
 
 	// private synchronized void invalidatePreview() {
 	//
@@ -864,7 +878,7 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 	@Override
 	public void draw(AWTCanvas awtCanvas, DrawingContext context, DrawingSubject subject) {
 
-		if(subject != DrawingSubject.PORTS || arePortsilluminated()) {
+		if (subject != DrawingSubject.PORTS || arePortsilluminated()) {
 			super.draw(awtCanvas, context, subject);
 		}
 	}
@@ -880,19 +894,19 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 
 			return getSelectionViewDescriptor(boundary);
 		}
-		if (subject == DrawingSubject.PORTS ) {
+		if (subject == DrawingSubject.PORTS) {
 
 			return getPortsViewDescriptor(boundary);
 		}
 
-		throw new IllegalArgumentException("Unknown subject: " +subject);
+		throw new IllegalArgumentException("Unknown subject: " + subject);
 	}
 
 	// @Override
 	// public String[][] getSVGDocumentAttributes() {
 	//
 	// if (svgDef == null) {
-	// svgDef = formatCollection.get(presentationID);
+	// svgDef = formatCollection.get(presentationId);
 	// }
 	// if (svgDef != null) {
 	// return svgDef.getDocumentAttributes();
@@ -920,23 +934,23 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 		final boolean includeChildren = resolution != Resolution.SCREEN_LOW_DETAIL && resolution != Resolution.PREVIEW;
 
 		final StringBuffer desc = new StringBuffer();
-		if (presentationID != null) {
+		if (presentationId != null) {
 			if (svgDef == null) {
-				svgDef = formatDefinitionCollection.get(presentationID);
+				svgDef = formatDefinitionCollection.get(presentationId);
 			}
 			if (svgDef != null) {
 				final Rectangle b = transform.transformToScreen(boundary);
 				final double tx = transform.getXTranslate();
 				final double ty = transform.getYTranslate();
-				if (styleID != null) {
-					if (styleID.indexOf(':') == -1) { // TODO ?
-						desc.append("<g class='" + styleID + "'>");
+				if (styleId != null) {
+					if (styleId.indexOf(':') == -1) { // TODO ?
+						desc.append("<g class='" + styleId + "'>");
 					} else {
-						desc.append("<g style='" + styleID + "'>");
+						desc.append("<g style='" + styleId + "'>");
 					}
 				}
 				desc.append("<use xlink:href='#");
-				desc.append(presentationID);
+				desc.append(presentationId);
 				desc.append("' x='");
 				desc.append(b.x - tx);
 				desc.append("' y='");
@@ -949,14 +963,13 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 				if (includeChildren) {
 					appendChildrenViewDescriptor(resolution, subject, desc);
 				}
-				if (styleID != null) {
+				if (styleId != null) {
 					desc.append("</g>");
 				}
-			} 
-			else {
-				System.err.println("presentation-ID '" + presentationID
+			} else {
+				System.err.println("presentation-ID '" + presentationId
 						+ "' refes to an not existing graphical object.");
-				presentationID = null;// write it only once!
+				presentationId = null;// write it only once!
 			}
 		}
 
@@ -965,7 +978,7 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 
 	protected void appendChildrenViewDescriptor(Resolution resolution, DrawingSubject subject, StringBuffer desc) {
 
-		if(children != null){
+		if (children != null) {
 			for (final Shape shape : children) {
 				appendChildViewDescriptor(resolution, subject, desc, shape);
 			}
@@ -1012,7 +1025,7 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 			 * selection markers
 			 */
 			if (svgDef == null) {
-				svgDef = formatDefinitionCollection.get(presentationID);
+				svgDef = formatDefinitionCollection.get(presentationId);
 			}
 			if (svgDef != null && !svgDef.keepRatio) {
 				appendSelectionMarkDescriotor(desc, b.x + b.width / 2 - selDef.width / 2, b.y - selDef.height - 2);// N
@@ -1148,9 +1161,14 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 	@Override
 	public String getName() {
 
-		return "";// name;
+		return name;
 	}
 
+	public void setName(String name) {
+
+		this.name = name;
+
+	}
 
 	@Override
 	public Object deepCopy() {
@@ -1489,6 +1507,5 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 	//
 	// undoRedoHandler.registerAction(this, data);
 	// }
-
 
 }
