@@ -20,6 +20,10 @@ public interface StageDesigner extends ToolManager, ScopeAwareHandler {
 
 	public boolean isScrollBarVisible();
 
+	public void setAutoMouseScroll(boolean enable);
+
+	public boolean isAutoMouseScroll();
+
 	public void setViewMode(ViewMode mode);
 
 	public ViewMode getViewMode();

@@ -30,9 +30,9 @@ public class ScrollTool extends BaseTool {
 	public ScrollTool() {
 
 		super("SCROLLBAR");
-		hScrollBar = new ScrollBar(true);
-		vScrollBar = new ScrollBar(false);
-		scrButton = new ScrollBarCornerButton(hScrollBar, vScrollBar);
+		hScrollBar = new ScrollBar(true, "HSCROLLBAR");
+		vScrollBar = new ScrollBar(false, "VSCROLLBAR");
+		scrButton = new ScrollBarCornerButton(hScrollBar, vScrollBar, "CORNERBUTTON");
 		autoScroller = new MouseScroller(hScrollBar, vScrollBar);
 
 		autoScroller.setActive(true);
@@ -42,10 +42,20 @@ public class ScrollTool extends BaseTool {
 	public void setScope(GraphDocument graphDocument) {
 
 		super.setScope(graphDocument);
-		hScrollBar.setGraphDocument(graphDocument);
-		vScrollBar.setGraphDocument(graphDocument);
-		scrButton.setGraphDocument(graphDocument);
+		hScrollBar.setScope(graphDocument);
+		vScrollBar.setScope(graphDocument);
+		scrButton.setScope(graphDocument);
 		autoScroller.setScope(graphDocument);
+	}
+
+	public void setAutoMouseScroll(boolean active) {
+
+		autoScroller.setActive(active);
+	}
+
+	public boolean isAutoMouseScroll() {
+
+		return autoScroller.isActive();
 	}
 
 	@Override

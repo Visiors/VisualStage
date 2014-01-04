@@ -1,7 +1,7 @@
 .root {
--fx-base: rgb(255, 255, 255);
--fx-background: rgb(255,255,255);
--fx-control-inner-background:  rgb(255, 255, 255);
+-fx-base: rgb(144, 166, 200);
+-fx-background: rgb(255,0,0);
+-fx-control-inner-background:  rgb(244, 244, 255);
 }
  
 .tab {
@@ -39,16 +39,14 @@ linear-gradient(to bottom, derive(-fx-base,+50%), derive(-fx-base,-40%), derive(
 
 .gallery-titled-pane {
   
-  -fx-color: #a6b5c9;
+  -fx-color: #ffffff;
     -fx-font-family: "Helvetica";
     -fx-font-size: 12px;
     /*-fx-font-weight: BOLD;*/
     -fx-text-fill: white;
 } 
 
-.gallery-titled-pane > .title  {
- /*  -fx-background-color: white; */
-}
+
 .gallery-titled-pane > .title > .arrow-button .arrow {
  /*  -fx-background-color: white; */
 }

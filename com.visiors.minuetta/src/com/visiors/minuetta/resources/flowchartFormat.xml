@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<definitions>
+		<linearGradient id="defaultFlowChartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+			<stop offset="0.0" stop-color="#AAC7ED"/> 
+			<stop offset="1.0" stop-color="#74A0DD"/>
+		</linearGradient>
+	    <style type="text/css" id="default_flowchart_style">
+	    	<![CDATA[
+		      g.default_flowchart_style{ fill:url(#defaultFlowChartGradient); stroke: #3C6489; stroke-width: 1;  }	      
+	    	]]>
+	    </style>
+
+		<!-- symbols -->
+		<symbol id="presentation_fc_process">
+			<rect x="0" y="0" width="99.9%" height="99.9%" />
+		</symbol>
+		<symbol id="presentation_fc_decision" viewBox="0 0 80 50" preserveAspectRatio ="none">
+			<path d="M 1 26 L 39 1 L 79 26 L 39 49 z" />
+		</symbol>
+		<symbol id="presentation_fc_subprocess" >
+			<rect x="0" y="0" width="99.9%" height="99.9%" />
+			<line x1="10%" y1="0" x2="10%" y2="99%" />
+			<line x1="90%" y1="0" x2="90%" y2="99%" />
+		</symbol>
+		<symbol id="presentation_fc_document"  viewBox="0 0 80 50" preserveAspectRatio ="none">
+			<path d="M 0 0 L 80 0 L 80 40 C 40 30 40 55 0 40 z" />
+		</symbol>
+		<symbol id="presentation_fc_terminator"  viewBox="0 0 80 40" preserveAspectRatio ="none">
+			<path d="M 20 1 L 59 1 A 20 20 0 0 1 59 39 L 20 39 A 20 20 0 0 1 20 1 " />
+		</symbol>
+		<symbol id="presentation_fc_data"  viewBox="0 0 50 50" preserveAspectRatio ="none">
+			<path d="M 1 25 L 25 1 L 49 25 L 25 49 z" />
+		</symbol>
+		<symbol id="presentation_fc_database"  viewBox="0 0 80 40" preserveAspectRatio ="none">
+			<path d="M 15 1 L 64 1 A 15 20 0 0 1 64 39 L 15 39 A 15 20 0 0 1 15 1  M 64 39 A 15 20 0 0 1 64 1" />
+		</symbol>
+	</definitions>

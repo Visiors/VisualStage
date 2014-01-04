@@ -15,7 +15,7 @@ import com.visiors.visualstage.util.PropertyUtil;
 
 public class Repository {
 
-	Map<String, Map<String, RepositoryShapeItem>> shapesMap = Maps.newHashMap();
+	Map<String, Map<String, RepositoryItem>> shapesMap = Maps.newHashMap();
 	private final GraphEditor editor;
 
 	public Repository(GraphEditor editor) {
@@ -24,7 +24,7 @@ public class Repository {
 
 	}
 
-	public void loadRepository( String xml) {
+	public void loadRepository(String xml) {
 
 		if (!Strings.isNullOrEmpty(xml)) {
 			final PropertyList pl = convertToPropertyList(xml);
@@ -38,9 +38,9 @@ public class Repository {
 
 	}
 
-	public List<RepositoryShapeItem> getShapes(String category) {
+	public List<RepositoryItem> getShapes(String category) {
 
-		final Map<String, RepositoryShapeItem> shapes = shapesMap.get(category);
+		final Map<String, RepositoryItem> shapes = shapesMap.get(category);
 		if (shapes != null) {
 			return ImmutableList.copyOf(shapes.values());
 		}
@@ -62,22 +62,25 @@ public class Repository {
 		}
 	}
 
-	private void createCategory(PropertyList shapeProperties) {
+	private void createCategory(PropertyList shapes) {
 
-		final String category = PropertyUtil.getProperty(shapeProperties, "name", "");
-		for (final Property property : shapeProperties) {
-			addShape(category, (PropertyList) property);
+		final String category = PropertyUtil.getProperty(shapes, "name", "");
+		for (int i = 0; i < shapes.size(); i++) {
+			final Property shape = shapes.get(i);
+			if (shape instanceof PropertyList) {
+				addShape(category, (PropertyList) shape);
+			}
 		}
 	}
 
 	private void addShape(String category, PropertyList shapeProperties) {
 
-		Map<String, RepositoryShapeItem> shapes = shapesMap.get(category);
+		Map<String, RepositoryItem> shapes = shapesMap.get(category);
 		if (shapes == null) {
 			shapes = Maps.newHashMap();
 			shapesMap.put(category, shapes);
 		}
-		final RepositoryShapeItem repositoryShapeItem = new RepositoryShapeItem(editor, category, shapeProperties);
-		shapes.put(repositoryShapeItem.getShapeName(), repositoryShapeItem);
+		final RepositoryItem repositoryItem = new RepositoryItem(editor, category, shapeProperties);
+		shapes.put(repositoryItem.getShapeName(), repositoryItem);
 	}
 }

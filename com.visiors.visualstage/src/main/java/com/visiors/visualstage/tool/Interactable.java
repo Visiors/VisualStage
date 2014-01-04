@@ -47,6 +47,15 @@ public interface Interactable {
 
 	boolean keyReleased(int keyChar, int keyCode);
 
+	boolean onDragEntered(Point pt, String data);
+
+	boolean onDragExited(Point pt, String data);
+
+	boolean onDragOver(Point pt, String data);
+
+	boolean onDragDropped(Point pt, String data);
+
+
 	boolean isInteracting();
 
 	void cancelInteraction();

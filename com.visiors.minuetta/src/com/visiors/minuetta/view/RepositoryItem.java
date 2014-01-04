@@ -11,40 +11,37 @@ import com.visiors.visualstage.editor.impl.GraphEditor;
 import com.visiors.visualstage.graph.view.VisualGraphObject;
 import com.visiors.visualstage.pool.GraphBuilder;
 import com.visiors.visualstage.property.PropertyList;
-import com.visiors.visualstage.renderer.DefaultDrawingContext;
-import com.visiors.visualstage.renderer.DrawingContext;
-import com.visiors.visualstage.renderer.DrawingSubject;
 import com.visiors.visualstage.renderer.ImageFactory;
-import com.visiors.visualstage.renderer.Resolution;
+import com.visiors.visualstage.renderer.ShadowRenderer;
 import com.visiors.visualstage.svg.DefaultSVGDocumentBuilder;
 import com.visiors.visualstage.transform.DefaultTransformer;
 import com.visiors.visualstage.transform.Transform;
 import com.visiors.visualstage.util.PropertyUtil;
 
-public class RepositoryShapeItem {
+public class RepositoryItem {
 
 	private final String category;
 	private final String shapeName;
 	private String toolTip;
-	private final WritableImage image;
 	private final String localizedName;
 	private final String tooltip;
-	private final String type;
+	private final GraphBuilder.GraphObjectType type;
 	private final VisualGraphObject vgo;
 	private final GraphEditor editor;
-	private final int width = 40;
-	private final int height = 40;
+	private WritableImage image;
+	private final int defaultImageWidth = 50;
+	private final int defaultImageHeight = 50;
 
-	public RepositoryShapeItem(GraphEditor editor, String category, PropertyList shapeProperties) {
+	public RepositoryItem(GraphEditor editor, String category, PropertyList shapeProperties) {
 
 		this.editor = editor;
 		this.category = category;
 		this.shapeName = PropertyUtil.getProperty(shapeProperties, "name", "");
 		this.localizedName = PropertyUtil.getProperty(shapeProperties, "displayname", "");
 		this.tooltip = PropertyUtil.getProperty(shapeProperties, "tooltip", "");
-		this.type = PropertyUtil.getProperty(shapeProperties, "type", "");
-		this.image = createImage();
-		this.vgo = fetchGraphObject();
+		this.type = GraphBuilder.GraphObjectType.valueOf(PropertyUtil.getProperty(shapeProperties, "type", ""));
+		this.vgo = createGraphObject();
+		this.image = createImage(defaultImageWidth, defaultImageHeight);
 	}
 
 	public String getDisplayName() {
@@ -55,6 +52,11 @@ public class RepositoryShapeItem {
 	public String getShapeName() {
 
 		return shapeName;
+	}
+
+	public String getType() {
+
+		return type.name();
 	}
 
 	public VisualGraphObject getShape() {
@@ -82,41 +84,46 @@ public class RepositoryShapeItem {
 		return image;
 	}
 
-	private VisualGraphObject fetchGraphObject() {
+	public WritableImage getShapePreview(double scale) {
 
-		final GraphBuilder builder = editor.getGraphBuilder();
-
-		if (type.equalsIgnoreCase("edge")) {
-			return builder.createEdge(shapeName);
+		if (scale < 10) {
+			image = new WritableImage(1, 1);
+		} else {
+			image = createImage((int) (defaultImageWidth * scale / 100.0), (int) (defaultImageHeight * scale / 100.0));
 		}
-		if (type.equalsIgnoreCase("node")) {
-			return builder.createNode(shapeName);
-		}
-		if (type.equalsIgnoreCase("subgrph")) {
-			return builder.createSubgraph(shapeName);
-		}
-
-		return null;
-
+		return image;
 	}
 
-	private WritableImage createImage() {
+	private VisualGraphObject createGraphObject() {
 
+		final GraphBuilder builder = editor.getGraphBuilder();
+		return builder.create(type, shapeName);
+	}
+
+	private WritableImage createImage(int width, int height) {
+
+		WritableImage image = null;
 		if (vgo != null) {
-			return getImage();
+			image = getImage(width, height);
+		}
+		if (image != null) {
+			return image;
 		}
 		return new WritableImage(width, height);
 	}
 
-
-
-	private WritableImage getImage() {
+	private WritableImage getImage(int width, int height) {
 
 		final Transform transformer = createTransformation(vgo, width, height);
 		vgo.setTransformer(transformer);
-		final DrawingContext ctx = new DefaultDrawingContext(Resolution.SCREEN_LOW_DETAIL, DrawingSubject.OBJECT);
 		final ImageFactory imageMaker = new ImageFactory(new DefaultSVGDocumentBuilder());
-		final Image snapshot = imageMaker.createSnapshot(vgo, ctx, DrawingSubject.OBJECT);
+		Image snapshot = imageMaker.createSnapshot(vgo);
+		if (snapshot == null) {
+			return null;
+		}
+		// shadow
+		ShadowRenderer.shadowSize = 3;
+		snapshot = ShadowRenderer.createShadow(snapshot);
 		final WritableImage imageFx = new WritableImage(width, height);
 		return SwingFXUtils.toFXImage((BufferedImage) snapshot, imageFx);
 	}

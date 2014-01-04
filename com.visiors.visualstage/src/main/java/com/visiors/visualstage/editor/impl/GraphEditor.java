@@ -91,7 +91,6 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 		initTools();
 	}
 
-
 	@Override
 	public GraphDocument newDocument(String title) throws DocumentExistsException {
 
@@ -342,6 +341,30 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 	}
 
 	@Override
+	public boolean onDragDropped(Point pt, String data) {
+
+		return stageDesigner.onDragDropped(pt, data) || toolManager.onDragDropped(pt, data);
+	}
+
+	@Override
+	public boolean onDragEntered(Point pt, String data) {
+
+		return stageDesigner.onDragEntered(pt, data) || toolManager.onDragEntered(pt, data);
+	}
+
+	@Override
+	public boolean onDragExited(Point pt, String data) {
+
+		return stageDesigner.onDragExited(pt, data) || toolManager.onDragExited(pt, data);
+	}
+
+	@Override
+	public boolean onDragOver(Point pt, String data) {
+
+		return stageDesigner.onDragOver(pt, data) || toolManager.onDragOver(pt, data);
+	}
+
+	@Override
 	public boolean isInteracting() {
 
 		return stageDesigner.isInteracting() || toolManager.isInteracting();
@@ -389,11 +412,7 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 		fireViewInvalid(documen);
 	}
 
-
 	private void initTools() {
-
-
-
 
 		/* Register the basic tools */
 
@@ -403,7 +422,7 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 		toolManager.registerTool(new DuplicateOnMoveTool(TOOL_DUPLICATE_ON_MOVE));
 		toolManager.registerTool(new MoveSelectionTool(TOOL_MOVE_SELECTION));
 		toolManager.registerTool(new GridTool(TOOL_GRID));
-		//		registerTool(new EdgeCreationTool());
+		// registerTool(new EdgeCreationTool());
 		// registerTool(new NodeCreationTool());
 		// registerTool(new AutoSnapTool());
 		// registerTool(new PortEditingTool());
@@ -413,7 +432,7 @@ public class GraphEditor implements Editor, GraphDocumentListener {
 		toolManager.activateTool(TOOL_DUPLICATE_ON_MOVE, true);
 		toolManager.activateTool(TOOL_OBJECT_EVENT_MEDIATOR, true);
 		toolManager.activateTool(TOOL_MOVE_SELECTION, true);
-		//		toolManager.activateTool(TOOL_GRID, true);
+		// toolManager.activateTool(TOOL_GRID, true);
 
 	}
 

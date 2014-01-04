@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gallery>
+	<category name="Connectors" open="true">
+<!--		<object name="StraightEdge" type="edge" displayname="Straight" />-->
+<!--		<object name="PolygonalEdge" type="edge" displayname="Polyline" />-->
+<!--		<object name="CurvedPolygonal" type="edge" displayname="Curved Polyline" />-->
+<!--		<object name="OrthogonalEdge" type="edge" displayname="Orthogonal" />-->
+<!--		<object name="RoundedOrthogonal" type="edge" displayname="Rounded" />-->
+<!--		<object name="CurvedOrthogonal" type="edge" displayname="Curved" />-->
+<!--		<object name="IsometricEdge" type="edge" displayname="Isometric"/>-->
+	</category>
+	<category name="FlowChart" open="true">
+		<object name="FC_Process" type="node" displayname="Process"  tooltip="Process" />
+		<object name="FC_Decision" type="node" displayname="Decision"  tooltip="Decision" />
+		<object name="FC_Subprocess" type="node" displayname="Subprocess"  tooltip="Subprocess" />
+		<object name="FC_Document" type="node" displayname="Document" tooltip="Document"  />
+		<object name="FC_Terminator" type="node" displayname="Terminator"  tooltip="Terminator" />
+		<object name="FC_Data" type="node" displayname="Data" />
+		<object name="FC_Database" type="node" displayname="Database"  tooltip="Database" />
+	</category>
+</gallery>

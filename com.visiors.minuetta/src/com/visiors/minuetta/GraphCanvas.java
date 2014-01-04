@@ -10,7 +10,9 @@ import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.StackPane;
 
 import com.visiors.visualstage.document.GraphDocument;
@@ -157,10 +159,66 @@ public class GraphCanvas extends StackPane implements EditorListener {
 			}
 		});
 
+		addEventHandler(DragEvent.DRAG_ENTERED, new EventHandler<DragEvent>() {
+
+			@Override
+			public void handle(DragEvent e) {
+
+				/* the drag-and-drop gesture entered the target */
+				/* show to the user that it is an actual gesture target */
+				if (e.getDragboard().hasString()) {
+					if (editor.onDragEntered(vsPoint(e), e.getDragboard().getString())) {
+						e.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+						e.consume();
+					}
+				}
+			};
+		});
+
+		addEventHandler(DragEvent.DRAG_EXITED, new EventHandler<DragEvent>() {
+
+			@Override
+			public void handle(DragEvent e) {
+
+				if (editor.onDragExited(vsPoint(e), e.getDragboard().getString())) {
+					e.consume();
+				}
+			};
+		});
+
+		addEventHandler(DragEvent.DRAG_OVER, new EventHandler<DragEvent>() {
+
+			@Override
+			public void handle(DragEvent e) {
+
+				if (editor.onDragOver(vsPoint(e), e.getDragboard().getString())) {
+					e.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+					e.consume();
+				}
+			};
+		});
+
+		addEventHandler(DragEvent.DRAG_DROPPED, new EventHandler<DragEvent>() {
+
+			@Override
+			public void handle(DragEvent e) {
+
+				if (editor.onDragDropped(vsPoint(e), e.getDragboard().getString())) {
+					e.setDropCompleted(true);
+					e.consume();
+				}
+			};
+		});
 	}
 
 	private Point vsPoint(MouseEvent e) {
-		return new Point((int) e.getX() , (int) e.getY() );
+
+		return new Point((int) e.getX(), (int) e.getY());
+	}
+
+	private Point vsPoint(DragEvent e) {
+
+		return new Point((int) e.getX(), (int) e.getY());
 	}
 
 	private int vsFunctionKey(MouseEvent e) {

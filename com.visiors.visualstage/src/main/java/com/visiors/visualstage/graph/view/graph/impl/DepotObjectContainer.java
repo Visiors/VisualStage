@@ -2,6 +2,7 @@ package com.visiors.visualstage.graph.view.graph.impl;
 
 import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -93,6 +94,8 @@ public class DepotObjectContainer {
 			}
 		}
 		objects[idx].order = objects.length - 1;
+		List<DepotObject> sortedList = sortByDrawingOrder(Arrays.asList(objects));
+		objects = (DepotObject[]) sortedList.toArray(); 
 	}
 
 	public void toBack(VisualGraphObject obj) {
@@ -105,6 +108,8 @@ public class DepotObjectContainer {
 			}
 		}
 		objects[idx].order = 0;
+		List<DepotObject> sortedList = sortByDrawingOrder(Arrays.asList(objects));
+		objects = (DepotObject[]) sortedList.toArray(); 
 	}
 
 	public void moveForward(VisualGraphObject obj) {
@@ -118,6 +123,8 @@ public class DepotObjectContainer {
 				break;
 			}
 		}
+		List<DepotObject> sortedList = sortByDrawingOrder(Arrays.asList(objects));
+		objects = (DepotObject[]) sortedList.toArray(); 
 	}
 
 	public void moveBackward(VisualGraphObject obj) {
@@ -131,6 +138,8 @@ public class DepotObjectContainer {
 				break;
 			}
 		}
+		List<DepotObject> sortedList = sortByDrawingOrder(Arrays.asList(objects));
+		objects = (DepotObject[]) sortedList.toArray(); 
 	}
 
 	void setObjectBoundaryChanged(VisualGraphObject obj) {

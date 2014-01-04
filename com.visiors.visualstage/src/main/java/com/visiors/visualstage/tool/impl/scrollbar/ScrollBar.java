@@ -10,9 +10,10 @@ import com.visiors.visualstage.renderer.AWTCanvas;
 import com.visiors.visualstage.renderer.ComponentOffScreenRenderer;
 import com.visiors.visualstage.renderer.DefaultComponentOfflineRenderer;
 import com.visiors.visualstage.tool.Interactable;
+import com.visiors.visualstage.tool.impl.BaseTool;
 import com.visiors.visualstage.transform.Transform;
 
-public class ScrollBar implements Interactable {
+public class ScrollBar extends BaseTool{
 
 	public int size = StageStyleConstants.scrollbar_defaultSize;
 	private int min;
@@ -20,7 +21,6 @@ public class ScrollBar implements Interactable {
 	private int value;
 	private final boolean isHorizontal;
 	private final DragHelper dragHelper;
-	private GraphDocument graphDocument;
 	private final Rectangle rectPlusButton = new Rectangle();
 	private final Rectangle rectMinusButton = new Rectangle();
 	private final Rectangle rectScrollBar = new Rectangle();
@@ -43,8 +43,9 @@ public class ScrollBar implements Interactable {
 	private final ComponentOffScreenRenderer backgroundRenderer;
 	private final ComponentOffScreenRenderer pageRenderer;
 
-	public ScrollBar(boolean horizontal) {
+	public ScrollBar(boolean horizontal, String name) {
 
+		super(name );
 		this.isHorizontal = horizontal;
 		this.dragHelper = new DragHelper(this);
 		this.backgroundRenderer = new DefaultComponentOfflineRenderer(new ScrollBarBackgroundPainter(this));
@@ -52,11 +53,11 @@ public class ScrollBar implements Interactable {
 		this.plusButtonRenderer = new DefaultComponentOfflineRenderer(new ScrollBarButtonPainter(this, false));
 		this.thumbRenderer = new DefaultComponentOfflineRenderer(new ScrollBarThumbPainter(this));
 		this.pageRenderer = new DefaultComponentOfflineRenderer(new ScrollBarPagePainter(this));
-
 	}
 
-	public void setGraphDocument(final GraphDocument graphDocument) {
+	public void setScop( final GraphDocument graphDocument) {
 
+		super.setScope(graphDocument);
 		this.graphDocument = graphDocument;
 		this.value = isHorizontal ? graphDocument.getViewportPos().x : graphDocument.getViewportPos().y;
 
@@ -66,7 +67,7 @@ public class ScrollBar implements Interactable {
 			@Override
 			public void graphExpansionChanged() {
 
-				final Rectangle r = graphDocument.getGraph().getExtendedBoundary();
+				final Rectangle r = visualGraph.getExtendedBoundary();
 				if (!r.equals(graphBoundary)) {
 					graphBoundary = r;
 					thumbRenderer.invalidate();
@@ -109,7 +110,7 @@ public class ScrollBar implements Interactable {
 		this.value = value;
 		final Point vp = graphDocument.getViewportPos();
 		graphDocument.setViewportPos(isHorizontal ? -value : vp.x, !isHorizontal ? -value : vp.y);
-		graphBoundary = graphDocument.getGraph().getExtendedBoundary();
+		graphBoundary = visualGraph.getExtendedBoundary();
 	}
 
 	public int getValue() {
@@ -594,11 +595,6 @@ public class ScrollBar implements Interactable {
 	public double getTotalePageNumber() {
 
 		return documentViewportRatio();
-	}
-
-	public GraphDocument getGraphDocument() {
-
-		return graphDocument;
 	}
 
 	public int getThumbPos() {

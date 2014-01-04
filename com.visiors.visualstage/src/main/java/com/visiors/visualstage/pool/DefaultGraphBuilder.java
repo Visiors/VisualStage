@@ -3,6 +3,7 @@ package com.visiors.visualstage.pool;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.visiors.visualstage.editor.DI;
+import com.visiors.visualstage.graph.view.VisualGraphObject;
 import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.graph.VisualGraph;
 import com.visiors.visualstage.graph.view.node.VisualNode;
@@ -25,6 +26,21 @@ public class DefaultGraphBuilder implements GraphBuilder{
 	protected ShapeDefinitionCollection shapeDefinitionCollection;
 	@Inject
 	protected FormatDefinitionCollection formatDefinitionCollection;
+
+
+	@Override
+	public VisualGraphObject create(GraphObjectType type, String name) {
+
+		switch (type) {
+		case node:
+			return createNode(name);
+		case edge:
+			return createEdge(name);
+		case subgraph:
+			return createSubgraph(name);			
+		}
+		return null;
+	}
 
 
 	@Override

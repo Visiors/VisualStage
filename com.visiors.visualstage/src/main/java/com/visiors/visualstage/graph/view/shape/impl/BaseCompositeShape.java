@@ -6,7 +6,6 @@ import com.visiors.visualstage.graph.view.shape.CompositeLayout;
 import com.visiors.visualstage.graph.view.shape.CompositeShape;
 import com.visiors.visualstage.graph.view.shape.Shape;
 
-
 public abstract class BaseCompositeShape extends BaseShape implements CompositeShape {
 
 	protected List<Shape> children;
@@ -17,11 +16,10 @@ public abstract class BaseCompositeShape extends BaseShape implements CompositeS
 		super();
 	}
 
-
 	@Override
 	public void setChildren(List<Shape> children) {
 
-		this.children = children;		
+		this.children = children;
 	}
 
 	@Override

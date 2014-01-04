@@ -42,6 +42,8 @@ public interface Shape extends Interactable, PropertyOwner, Duplicatable {
 
 	public boolean isHit(Point pt);
 
+	public Point getPreferredGripPoint();
+
 	public void setSelected(boolean selected);
 
 	public boolean isSelected();

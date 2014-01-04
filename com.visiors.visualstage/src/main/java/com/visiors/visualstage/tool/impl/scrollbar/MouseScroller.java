@@ -54,7 +54,7 @@ public class MouseScroller extends BaseTool {
 	@Override
 	public boolean mouseDragged(Point pt, int button, int functionKey) {
 
-		if (sendingDragEvent) {
+		if (!isActive() || sendingDragEvent) {
 			return false;
 		}
 		stopTimer();

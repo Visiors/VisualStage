@@ -128,6 +128,18 @@ public class DefaultStageDesigner extends DefaultToolManager implements StageDes
 		return scrollBarTool.isActive() ? scrollBarTool.getSize() : 0;
 	}
 
+	@Override
+	public void setAutoMouseScroll(boolean active) {
+
+		scrollBarTool.setAutoMouseScroll(active);
+	}
+
+	@Override
+	public boolean isAutoMouseScroll() {
+
+		return scrollBarTool.isAutoMouseScroll();
+	}
+
 	// //////////////////////////////////////////////////////////////////////////
 	// Notifications - sending notification to listener
 

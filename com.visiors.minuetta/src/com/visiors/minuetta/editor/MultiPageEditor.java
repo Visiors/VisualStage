@@ -24,6 +24,7 @@ public class MultiPageEditor extends TabPane {
 	}
 
 
+
 	public void newDocument(String title) {
 
 		final Tab tab = new EditorPage(editor, title);
@@ -88,4 +89,5 @@ public class MultiPageEditor extends TabPane {
 
 		return editor;
 	}
+
 }

@@ -193,6 +193,12 @@ public abstract class BaseShape implements Shape {
 	}
 
 	@Override
+	public Point getPreferredGripPoint() {
+
+		return new Point(boundary.x + boundary.width /2, boundary.y + boundary.height /2);
+	}
+
+	@Override
 	public PropertyList getProperties() {
 
 		return properties;
@@ -251,6 +257,43 @@ public abstract class BaseShape implements Shape {
 
 		return false;
 	}
+
+	@Override
+	public boolean mouseEntered(Point pt, int button, int functionKey) {
+
+		return false;
+	}
+
+	@Override
+	public boolean mouseExited(Point pt, int button, int functionKey) {
+
+		return false;
+	}
+
+	@Override
+	public boolean onDragDropped(Point pt, String data) {
+
+		return false;
+	}
+
+	@Override
+	public boolean onDragEntered(Point pt, String data) {
+
+		return false;
+	}
+
+	@Override
+	public boolean onDragExited(Point pt, String data) {
+
+		return false;
+	}
+
+	@Override
+	public boolean onDragOver(Point pt, String data) {
+
+		return false;
+	}
+
 
 	@Override
 	public boolean isInteracting() {

@@ -1,11 +1,16 @@
 package com.visiors.visualstage.pool;
 
+import com.visiors.visualstage.graph.view.VisualGraphObject;
 import com.visiors.visualstage.graph.view.edge.VisualEdge;
 import com.visiors.visualstage.graph.view.graph.VisualGraph;
 import com.visiors.visualstage.graph.view.node.VisualNode;
 import com.visiors.visualstage.property.PropertyList;
 
 public interface GraphBuilder {
+
+	enum GraphObjectType {edge, node, subgraph}
+
+	public VisualGraphObject create(GraphObjectType type, String name);
 
 	public VisualNode createNode();
 

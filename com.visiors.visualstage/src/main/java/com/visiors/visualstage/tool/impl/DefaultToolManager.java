@@ -227,6 +227,58 @@ public class DefaultToolManager implements ToolManager {
 		return false;
 	}
 
+	@Override
+	public boolean onDragEntered(Point pt, String data) {
+
+		for (final Tool tool : tools) {
+			if (tool.isActive()) {
+				if (tool.onDragEntered(pt, data)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public boolean onDragExited(Point pt, String data) {
+
+		for (final Tool tool : tools) {
+			if (tool.isActive()) {
+				if (tool.onDragExited(pt, data)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public boolean onDragOver(Point pt, String data) {
+
+		for (final Tool tool : tools) {
+			if (tool.isActive()) {
+				if (tool.onDragOver(pt, data)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public boolean onDragDropped(Point pt, String data) {
+
+		for (final Tool tool : tools) {
+			if (tool.isActive()) {
+				if (tool.onDragDropped(pt, data)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	private final Point transform(Point pt) {
 
 		return graphDocument.getTransformer().transformToGraph(pt);

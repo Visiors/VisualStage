@@ -52,9 +52,9 @@ public class PageLayoutViewTool extends BaseTool {
 		final double[] paperSize = PrinterUtil.getPaperSize("letter");
 		final double margin = systemUnit.mmToDPI(15);
 		final double w = // 200 / PrinterUtil.mmPerInch * PrinterUtil.PRINT_DPI;
-				paperSize[0];
+		paperSize[0];
 		final double h = // 200 / PrinterUtil.mmPerInch * PrinterUtil.PRINT_DPI;
-				paperSize[1];
+		paperSize[1];
 		paper.setSize(w, h);
 		paper.setImageableArea(margin, margin, w - 2 * margin, h - 2 * margin);
 		pageFormat.setOrientation(PageFormat.PORTRAIT);

@@ -14,20 +14,17 @@ import javafx.scene.layout.HBox;
 
 import com.visiors.minuetta.view.PropertyView.GraphObject;
 
-
-public class PropertyView extends TableView<GraphObject>{
+public class PropertyView extends TableView<GraphObject> {
 
 	private final ObservableList<GraphObject> data = FXCollections.observableArrayList(new GraphObject("Name",
 			"Rectangle"), new GraphObject("X", "100"), new GraphObject("Y", "200"), new GraphObject("Style", "Simple"),
 			new GraphObject("Presentation", "Default"));
 
-
 	public PropertyView() {
-
 
 		setEditable(true);
 
-		TableColumn propertyCol = new TableColumn("Property");
+		final TableColumn propertyCol = new TableColumn("Property");
 		propertyCol.setMinWidth(40);
 		propertyCol.setCellValueFactory(new PropertyValueFactory<GraphObject, String>("Property"));
 		propertyCol.setCellFactory(TextFieldTableCell.forTableColumn());
@@ -40,7 +37,7 @@ public class PropertyView extends TableView<GraphObject>{
 			}
 		});
 
-		TableColumn valueCol = new TableColumn("Value");
+		final TableColumn valueCol = new TableColumn("Value");
 		valueCol.setMinWidth(40);
 		valueCol.setCellValueFactory(new PropertyValueFactory<GraphObject, String>("Value"));
 		valueCol.setCellFactory(TextFieldTableCell.forTableColumn());
@@ -63,14 +60,10 @@ public class PropertyView extends TableView<GraphObject>{
 		value.setMaxWidth(valueCol.getPrefWidth());
 		value.setPromptText("Value");
 
-
-		HBox hb = new HBox();
+		final HBox hb = new HBox();
 		hb.getChildren().addAll(property, value);
 		hb.setSpacing(3);
 	}
-
-
-
 
 	public static class GraphObject {
 

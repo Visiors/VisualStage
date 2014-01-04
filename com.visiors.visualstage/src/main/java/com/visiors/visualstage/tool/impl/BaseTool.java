@@ -48,6 +48,11 @@ public class BaseTool implements Tool {
 		return active;
 	}
 
+	public GraphDocument getGraphDocument() {
+
+		return graphDocument;
+	}
+
 	@Override
 	public boolean keyPressed(int keyChar, int keyCode) {
 
@@ -98,6 +103,30 @@ public class BaseTool implements Tool {
 
 	@Override
 	public boolean mouseExited(Point pt, int button, int functionKey) {
+
+		return false;
+	}
+
+	@Override
+	public boolean onDragDropped(Point pt, String data) {
+
+		return false;
+	}
+
+	@Override
+	public boolean onDragEntered(Point pt, String data) {
+
+		return false;
+	}
+
+	@Override
+	public boolean onDragExited(Point pt, String data) {
+
+		return false;
+	}
+
+	@Override
+	public boolean onDragOver(Point pt, String data) {
 
 		return false;
 	}

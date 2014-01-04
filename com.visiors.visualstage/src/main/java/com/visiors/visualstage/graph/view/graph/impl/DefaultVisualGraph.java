@@ -132,9 +132,9 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	}
 
 	@Override
-	public VisualNode createNode(String type) {
+	public VisualNode createNode(String name) {
 
-		final VisualNode visualNode = graphBuilder.createNode(type);
+		final VisualNode visualNode = graphBuilder.createNode(name);
 		addNode(visualNode);
 		return visualNode;
 	}
@@ -156,9 +156,9 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	}
 
 	@Override
-	public VisualEdge createEdge(String type) {
+	public VisualEdge createEdge(String name) {
 
-		final VisualEdge visualEdge = graphBuilder.createEdge(type);
+		final VisualEdge visualEdge = graphBuilder.createEdge(name);
 		addEdge(visualEdge);
 		return visualEdge;
 	}
@@ -180,9 +180,9 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 	}
 
 	@Override
-	public VisualGraph createSubgraph(String type) {
+	public VisualGraph createSubgraph(String name) {
 
-		final VisualGraph visualGraph = graphBuilder.createSubgraph(type);
+		final VisualGraph visualGraph = graphBuilder.createSubgraph(name);
 		addNode(visualGraph);
 		return visualGraph;
 	}
@@ -756,6 +756,7 @@ public class DefaultVisualGraph extends DefaultVisualNode implements VisualGraph
 		if (objects.length == 0) {
 			return super.getViewDescriptor(resolution, subject);
 		}
+
 
 		final StringBuffer svg = new StringBuffer();
 		final String subgraphDesc = super.getViewDescriptor(resolution, subject);
