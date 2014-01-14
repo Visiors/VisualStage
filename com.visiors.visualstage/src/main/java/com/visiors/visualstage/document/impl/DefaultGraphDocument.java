@@ -10,6 +10,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.visiors.visualstage.constants.PropertyConstants;
 import com.visiors.visualstage.document.GraphDocument;
@@ -455,7 +456,10 @@ public class DefaultGraphDocument implements GraphDocument {
 
 		svgDocumentBuilder.createEmptyDocument(clippingRect, null, config);
 		for (final DrawingSubject drawingSubject : subject) {
-			svgDocumentBuilder.addContent(graph.getViewDescriptor(context.getResolution(), drawingSubject));
+			String description = graph.getViewDescriptor(context.getResolution(), drawingSubject);
+			if(!Strings.isNullOrEmpty(description)) {
+				svgDocumentBuilder.addContent(description);
+			}
 		}
 		svgDocumentBuilder.finlaizeDocument();
 		return svgDocumentBuilder.getDocument();

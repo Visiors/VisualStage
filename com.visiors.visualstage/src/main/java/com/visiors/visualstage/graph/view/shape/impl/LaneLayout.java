@@ -16,8 +16,12 @@ import com.visiors.visualstage.graph.view.shape.Shape.Unit;
 public class LaneLayout implements CompositeLayout {
 
 	@Override
-	public boolean layout(CompositeShape container, List<Shape> shapes, boolean adjustContainerSize) {
+	public boolean layout(CompositeShape container, boolean adjustContainerSize) {
 
+		List<Shape> shapes = container.getChildren();
+		if(shapes == null || shapes.isEmpty()) {
+			return false;
+		}
 		final Rectangle bounds = container.getBounds();
 		int requiredContainerMinWidth = 0;
 		int requiredContaineMinHeight = 0;

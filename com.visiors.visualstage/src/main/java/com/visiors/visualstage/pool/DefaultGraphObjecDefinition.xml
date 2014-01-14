@@ -2,17 +2,13 @@
 <templates>
 	<nodes>
 		<node name="DEFAULT_NODE" presentation="DEFAULT_NODE_PRESENTATION" style="DEFAULT_STYLE">
-			<geomentry width="50" height="50" />
-			<form layout="flow">
-				<shape name="text" width="100%" height="10" x="0" y="0" layout_info="1 1"/>
-				<shape name="text" width="100%" height="10" x="0" y="0" layout_info="2 1"/>
-				<composite layout="lane" name="rectangle" width="100%" height="10" layout_info="3 1">
-					<shape name="rectangle" width="50%" height="50%"  layout_info="1 1"/>
-					<shape name="rectangle" width="50%" height="50%"  layout_info="1 2" />
-					<shape name="rectangle" width="50%" height="50%"  layout_info="2 1" />
-					<shape name="rectangle" width="50%" height="50%"  layout_info="2 2" />
-				</composite>
-			</form>
+			<geomentry width="80" height="50" />
+			<ports>
+				<port id="0" xRatio="0.5" yRatio="0.0" from="45" to="135"/>
+				<port id="1" xRatio="0.0" yRatio="0.5" from="135" to="225"/>
+				<port id="2" xRatio="0.5" yRatio="1.0" from="225" to="315"/>
+				<port id="3" xRatio="1.0" yRatio="0.5" from="315" to="405"/>
+			</ports>
 		</node>
 	</nodes>
 

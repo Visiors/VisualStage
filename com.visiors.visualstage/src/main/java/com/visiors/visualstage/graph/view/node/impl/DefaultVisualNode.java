@@ -30,6 +30,7 @@ import com.visiors.visualstage.renderer.DrawingContext;
 import com.visiors.visualstage.renderer.DrawingSubject;
 import com.visiors.visualstage.renderer.Resolution;
 import com.visiors.visualstage.svg.SVGDescriptor;
+import com.visiors.visualstage.svg.SVGUtil;
 import com.visiors.visualstage.tool.Interactable;
 
 public class DefaultVisualNode extends DefaultVisualGraphObject implements VisualNode {
@@ -703,6 +704,7 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 
 	protected void onSizeChanged() {
 
+
 		invalidate();
 	}
 
@@ -932,23 +934,23 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 	protected String getNodeViewDescriptor(Resolution resolution, DrawingSubject subject) {
 
 		final boolean includeChildren = resolution != Resolution.SCREEN_LOW_DETAIL && resolution != Resolution.PREVIEW;
-
 		final StringBuffer desc = new StringBuffer();
 		if (presentationId != null) {
 			if (svgDef == null) {
 				svgDef = formatDefinitionCollection.get(presentationId);
+				SVGUtil.parseElement(svgDef.definition);
 			}
 			if (svgDef != null) {
 				final Rectangle b = transform.transformToScreen(boundary);
 				final double tx = transform.getXTranslate();
 				final double ty = transform.getYTranslate();
-				if (styleId != null) {
-					if (styleId.indexOf(':') == -1) { // TODO ?
-						desc.append("<g class='" + styleId + "'>");
-					} else {
-						desc.append("<g style='" + styleId + "'>");
-					}
-				}
+				//				if (styleId != null) {
+				//					if (styleId.indexOf(':') == -1) { // TODO ?
+				//						desc.append("<g class='" + styleId + "'>");
+				//					} else {
+				//						desc.append("<g style='" + styleId + "'>");
+				//					}
+				//				}
 				desc.append("<use xlink:href='#");
 				desc.append(presentationId);
 				desc.append("' x='");
@@ -959,13 +961,40 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 				desc.append(b.width);
 				desc.append("' height='");
 				desc.append(b.height);
+				///
+
+				if(svgDef.viewPortWidth != 0){
+
+					//					desc.append("' stroke='");
+					//					desc.append("#ff0000");
+					//					desc.append("' stroke-width='");
+					//					double f = Math.min(svgDef.viewPortHeight / b.height *transform.getScale(),
+					//							svgDef.viewPortWidth / b.width *transform.getScale());
+					//					desc.append(f );
+				}
+
+
+				////
 				desc.append("'/>");
 				if (includeChildren) {
 					appendChildrenViewDescriptor(resolution, subject, desc);
 				}
-				if (styleId != null) {
-					desc.append("</g>");
-				}
+				//				if (styleId != null) {
+				//					desc.append("</g>");
+				//				}
+
+				//				// childeren
+				//				List<Shape> shapes = getChildren();
+				//				if(shapes !=null && !shapes.isEmpty()){
+				//					desc.append("\n<g>\n");
+				//					for (Shape shape : shapes) {
+				//						final String description = shape.getViewDescriptor(resolution, subject);
+				//						if (description != null && !description.isEmpty()) {
+				//							desc.append(description);
+				//						}
+				//					}
+				//					desc.append("\n</g>");
+				//				}
 			} else {
 				System.err.println("presentation-ID '" + presentationId
 						+ "' refes to an not existing graphical object.");
@@ -996,8 +1025,8 @@ public class DefaultVisualNode extends DefaultVisualGraphObject implements Visua
 
 	private void layout() {
 
-		if (compositeLayout != null) {
-			compositeLayout.layout(this, getChildren(), true);
+		if ( compositeLayout != null) {
+			compositeLayout.layout(this, true);
 		}
 
 	}

@@ -3,8 +3,10 @@ package com.visiors.visualstage.svg;
 import java.awt.Image;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.text.MessageFormat;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -20,6 +22,9 @@ import org.apache.batik.bridge.GVTBuilder;
 import org.apache.batik.bridge.UserAgent;
 import org.apache.batik.bridge.UserAgentAdapter;
 import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
+import org.apache.batik.util.XMLResourceDescriptor;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.w3c.dom.svg.SVGDocument;
 
 import com.visiors.visualstage.property.PropertyList;
@@ -192,6 +197,36 @@ public class SVGUtil {
 			e1.printStackTrace();
 		}
 		return doc;
+	}
+
+
+	public static void parseElement(String tag) {
+
+		tag = "<symbol id='presentation_fc_decision'  >"
+				+ "<path d='M 1 26 L 39 1 L 79 26 L 39 49 z'/>"
+				+ "</symbol>";
+
+
+		String svg= MessageFormat.format("<svg  xmlns:xlink=''http://www.w3.org/1999/xlink'' xmlns=''http://www.w3.org/2000/svg'' version=''1.1'' > {0} </svg>", tag);
+		StringReader reader = new StringReader(svg);
+		try {
+			String parser = XMLResourceDescriptor.getXMLParserClassName();
+			SAXSVGDocumentFactory f = new SAXSVGDocumentFactory(parser);
+			SVGDocument doc = f.createSVGDocument("http://www.w3.org/2000/svg",reader);
+
+			NodeList children = doc.getChildNodes();
+			for (int i = 0; i < children.getLength(); i++) {
+				Node child = children.item(0);
+				System.err.println(child.getNodeName() + " , "+ child.getNodeValue() + " , "+ child.getNodeType() );
+				child.getFirstChild().getNodeValue();
+			}
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+			// do your error handling here
+		} finally {
+			reader.close();
+		}
+
 	}
 
 }

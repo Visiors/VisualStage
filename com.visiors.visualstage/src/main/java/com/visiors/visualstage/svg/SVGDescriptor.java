@@ -25,6 +25,10 @@ public class SVGDescriptor {
 	public boolean keepRatio;
 	private PropertyList propertyList;
 	private PropertyList headerInfo;
+	public double viewPortX;
+	public double viewPortY;
+	public double viewPortWidth;
+	public double viewPortHeight;
 
 	private static String[] symbolAttributeTag = new String[] { "x", "y", "width", "height", "viewBox", "transform",
 	"preserveAspectRatio" };
@@ -89,6 +93,8 @@ public class SVGDescriptor {
 
 			init(svg.toString());
 
+
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -105,10 +111,10 @@ public class SVGDescriptor {
 	private void init(String svgContent) {
 
 		definition = svgContent;
-		width = getWidth(definition);
-		height = getHeight(definition);
-		ratio = keepAspectRatio(definition);
-		keepRatio = ratio != 0;
+		parseWidth();
+		parseHeight();
+		parseViewportValues();
+		computeAspectRatio();
 	}
 
 	public String[][] getDocumentAttributes() {
@@ -225,31 +231,35 @@ public class SVGDescriptor {
 		return null;
 	}
 
-	private final double getWidth(String svg) {
+	private final void parseWidth() {
 
-		return UnitUtil.strLength2px(SVGUtil.getSVGAttribute(svg, "width"));
+		width = UnitUtil.strLength2px(SVGUtil.getSVGAttribute(definition, "width"));
 	}
 
-	private final double getHeight(String svg) {
+	private final void parseHeight() {
 
-		return UnitUtil.strLength2px(SVGUtil.getSVGAttribute(svg, "height"));
+		height = UnitUtil.strLength2px(SVGUtil.getSVGAttribute(definition, "height"));
 	}
 
-	private final double keepAspectRatio(String svg) {
+	private void parseViewportValues() {
 
-		String sRatio = SVGUtil.getSVGAttribute(svg, "preserveAspectRatio");
-		if (sRatio != null && !sRatio.equalsIgnoreCase("none")) {
-			String vBox = SVGUtil.getSVGAttribute(svg, "viewBox");
-			if (vBox != null) {
-				String values[] = vBox.trim().split(" ");
-				double x = UnitUtil.strLength2px(values[0]);
-				double y = UnitUtil.strLength2px(values[1]);
-				double w = UnitUtil.strLength2px(values[2]);
-				double h = UnitUtil.strLength2px(values[3]);
-				return (w - x) / (h - y);
-			}
+		String vBox = SVGUtil.getSVGAttribute(definition, "viewBox");
+		if (vBox != null) {
+			String values[] = vBox.trim().split(" ");
+			this.viewPortX = UnitUtil.strLength2px(values[0]);
+			this.viewPortY = UnitUtil.strLength2px(values[1]);
+			this.viewPortWidth = UnitUtil.strLength2px(values[2]);
+			this.viewPortHeight = UnitUtil.strLength2px(values[3]);
 		}
-		return 0.0;
+	}
+
+	private final void computeAspectRatio() {
+
+		String sRatio = SVGUtil.getSVGAttribute(definition, "preserveAspectRatio");
+		if (sRatio != null && !sRatio.equalsIgnoreCase("none")) {
+			ratio = (viewPortWidth - viewPortX) / (viewPortHeight - viewPortY);
+			keepRatio = true;
+		}
 	}
 
 	public String getID() {

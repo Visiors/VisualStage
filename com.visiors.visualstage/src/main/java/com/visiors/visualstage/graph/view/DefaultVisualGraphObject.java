@@ -6,6 +6,7 @@ import com.visiors.visualstage.attribute.DefaultAttribute;
 import com.visiors.visualstage.graph.CustomData;
 import com.visiors.visualstage.graph.view.graph.VisualGraph;
 import com.visiors.visualstage.graph.view.shape.impl.BaseCompositeShape;
+import com.visiors.visualstage.graph.view.shape.impl.LaneLayout;
 import com.visiors.visualstage.property.PropertyList;
 import com.visiors.visualstage.property.impl.DefaultPropertyList;
 import com.visiors.visualstage.renderer.AWTCanvas;
@@ -43,6 +44,9 @@ public abstract class DefaultVisualGraphObject extends BaseCompositeShape implem
 		this.attributes = new DefaultAttribute();
 		this.offScreenRenderer = new DefaultShapeOfflineRenderer(new DefaultShapeRenderer(this));
 
+
+		compositeLayout = new LaneLayout();
+
 	}
 
 	@Override
@@ -59,6 +63,7 @@ public abstract class DefaultVisualGraphObject extends BaseCompositeShape implem
 
 	@Override
 	public void invalidate() {
+
 
 		offScreenRenderer.invalidate();
 	}
